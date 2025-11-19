@@ -56,7 +56,7 @@ export default function PrivacyPage() {
         <ul>
           <li>Právo na přístup k osobním údajům</li>
           <li>Právo na opravu</li>
-          <li>Právo na výmaz ("právo být zapomenut")</li>
+          <li>Právo na výmaz (&quot;právo být zapomenut&quot;)</li>
           <li>Právo na omezení zpracování</li>
           <li>Právo na přenositelnost údajů</li>
           <li>Právo vznést námitku proti zpracování</li>
