@@ -21,10 +21,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase (singleton pattern)
-let app: FirebaseApp;
-let realAuth: Auth;
-let realDb: Firestore;
-let realStorage: FirebaseStorage;
+let app: FirebaseApp | null = null;
+let realAuth: Auth | null = null;
+let realDb: Firestore | null = null;
+let realStorage: FirebaseStorage | null = null;
 
 if (!USE_MOCK) {
   if (!getApps().length) {
@@ -39,9 +39,9 @@ if (!USE_MOCK) {
 }
 
 // Export services (mock or real based on environment)
-export const auth: any = USE_MOCK ? mockAuth : realAuth!;
-export const db: any = USE_MOCK ? mockFirestore : realDb!;
-export const storage: any = USE_MOCK ? mockStorage : realStorage!;
+export const auth: any = USE_MOCK ? mockAuth : realAuth;
+export const db: any = USE_MOCK ? mockFirestore : realDb;
+export const storage: any = USE_MOCK ? mockStorage : realStorage;
 
 if (USE_MOCK) {
   console.log('🎭 Using MOCK Firebase services (no real Firebase needed)');
@@ -50,4 +50,4 @@ if (USE_MOCK) {
   console.log('🔥 Using REAL Firebase services');
 }
 
-export default USE_MOCK ? null : app;
+export default app;
