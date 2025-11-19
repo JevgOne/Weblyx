@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,8 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      // Use auth.signInWithEmailAndPassword directly (works with both mock and real Firebase)
+      await auth.signInWithEmailAndPassword(email, password);
       router.push("/admin/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);

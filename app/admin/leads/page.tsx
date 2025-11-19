@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,15 +73,29 @@ const statusConfig = {
 export default function AdminLeadsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [leads, setLeads] = useState(mockLeads);
+  const [leads, setLeads] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
       if (!currentUser) {
         router.push("/admin/login");
       } else {
+        // Načíst leady z Firestore
+        try {
+          const leadsSnapshot = await db.collection("leads").get();
+          const leadsData = leadsSnapshot.docs.map((doc: any) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setLeads(leadsData);
+          console.log("✅ Loaded leads:", leadsData);
+        } catch (error) {
+          console.error("❌ Error loading leads:", error);
+          // Fallback na mock data
+          setLeads(mockLeads);
+        }
         setLoading(false);
       }
     });

@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null &&
+             firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    // Project files - pouze admins
+    match /projects/{projectId}/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Lead files - pouze admins
+    match /leads/{leadId}/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

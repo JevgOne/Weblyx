@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "emulators": "firebase emulators:start --import=./firebase-data --export-on-exit",
+    "emulators:ui": "firebase emulators:start --import=./firebase-data --export-on-exit"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
@@ -34,6 +36,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "^15.0.0",
+    "firebase-tools": "^14.25.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

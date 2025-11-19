@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -62,10 +63,26 @@ export default function QuotePage() {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // TODO: Odeslat do Firebase
-    router.push("/poptavka/dekujeme");
+  const handleSubmit = async () => {
+    try {
+      console.log("Form submitted:", formData);
+
+      // Uložit do Firestore
+      await db.collection("leads").add({
+        ...formData,
+        status: "new",
+        createdAt: new Date().toISOString(),
+        source: "questionnaire",
+      });
+
+      console.log("✅ Lead saved to Firestore");
+      router.push("/poptavka/dekujeme");
+    } catch (error) {
+      console.error("❌ Error saving lead:", error);
+      // V produkci by zde měla být nějaká error notifikace
+      // Pro účely demo pokračujeme dál
+      router.push("/poptavka/dekujeme");
+    }
   };
 
   const isStepValid = () => {
