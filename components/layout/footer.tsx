@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 
 export function Footer() {
   const footerLinks = {
@@ -16,7 +15,7 @@ export function Footer() {
       { name: "E-shopy", href: "/sluzby#eshop" },
       { name: "SEO optimalizace", href: "/sluzby#seo" },
       { name: "Redesign", href: "/sluzby#redesign" },
-      { name: "Údržba", href: "/sluzby#udrzba" },
+      { name: "Údržba", href: "/sluzby#maintenance" },
     ],
     legal: [
       { name: "Ochrana osobních údajů", href: "/ochrana-udaju" },
@@ -24,13 +23,6 @@ export function Footer() {
     ],
   };
 
-  const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Github, href: "#", label: "GitHub" },
-  ];
 
   return (
     <footer className="border-t bg-muted/50">
@@ -49,18 +41,6 @@ export function Footer() {
               Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek za
               konkurenceschopné ceny.
             </p>
-            <div className="flex gap-3">
-              {socialLinks.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  aria-label={social.label}
-                  className="h-9 w-9 rounded-lg bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
-                >
-                  <social.icon className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Company Links */}

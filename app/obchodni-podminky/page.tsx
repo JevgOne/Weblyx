@@ -90,8 +90,7 @@ export default function TermsPage() {
 
         <h2>11. Kontakt</h2>
         <p>
-          Email: info@weblyx.cz<br />
-          Telefon: +420 123 456 789
+          Email: info@weblyx.cz
         </p>
       </div>
     </main>

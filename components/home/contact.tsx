@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, MapPin, Send } from "lucide-react";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -23,12 +23,57 @@ export function Contact() {
     budget: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission
-    console.log("Form submitted:", formData);
-    alert("Děkujeme za vaši zprávu! Ozveme se vám do 24 hodin.");
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: "" });
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Něco se pokazilo");
+      }
+
+      setSubmitStatus({
+        type: "success",
+        message: data.message || "Děkujeme za vaši zprávu!",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        projectType: "",
+        budget: "",
+        message: "",
+      });
+    } catch (error) {
+      setSubmitStatus({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Došlo k chybě při odesílání. Zkuste to prosím znovu.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -59,21 +104,6 @@ export function Contact() {
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
                       info@weblyx.cz
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Phone className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">Telefon</h3>
-                    <a
-                      href="tel:+420123456789"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      +420 123 456 789
                     </a>
                   </div>
                 </div>
@@ -219,9 +249,26 @@ export function Contact() {
                     </div>
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full md:w-auto">
+                  {submitStatus.type && (
+                    <div
+                      className={`p-4 rounded-lg ${
+                        submitStatus.type === "success"
+                          ? "bg-green-50 text-green-800 border border-green-200"
+                          : "bg-red-50 text-red-800 border border-red-200"
+                      }`}
+                    >
+                      {submitStatus.message}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full md:w-auto"
+                    disabled={isSubmitting}
+                  >
                     <Send className="mr-2 h-5 w-5" />
-                    Odeslat zprávu
+                    {isSubmitting ? "Odesílání..." : "Odeslat zprávu"}
                   </Button>
                 </form>
               </CardContent>
