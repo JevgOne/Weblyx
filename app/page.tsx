@@ -7,7 +7,7 @@ import { Portfolio } from "@/components/home/portfolio";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
-import { Contact } from "@/components/home/contact";
+import { ContactWow } from "@/components/home/contact-wow";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   generateOrganizationSchema,
@@ -85,7 +85,7 @@ export default async function HomePage() {
         <Pricing />
         <FAQ />
         <CTASection />
-        <Contact />
+        <ContactWow />
       </main>
     </>
   );
