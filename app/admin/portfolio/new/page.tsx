@@ -65,34 +65,39 @@ export default function NewPortfolioPage() {
     setUploading(true);
 
     try {
-      // Compress image
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true,
-      };
-
-      const compressedFile = await imageCompression(file, options);
+      // Try to compress image, fallback to original if compression fails
+      let fileToUpload = file;
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        };
+        fileToUpload = await imageCompression(file, options);
+      } catch (compressionError) {
+        console.warn("Image compression failed, using original:", compressionError);
+        // Use original file if compression fails
+      }
 
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
-      reader.readAsDataURL(compressedFile);
+      reader.readAsDataURL(fileToUpload);
 
       // Upload to Firebase Storage
       const timestamp = Date.now();
       const fileName = `portfolio/${timestamp}_${file.name}`;
       const storageRef = ref(storage, fileName);
 
-      await uploadBytes(storageRef, compressedFile);
+      await uploadBytes(storageRef, fileToUpload);
       const downloadURL = await getDownloadURL(storageRef);
 
       setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Chyba při nahrávání obrázku");
+      alert("Chyba při nahrávání obrázku: " + (error as Error).message);
     } finally {
       setUploading(false);
     }
