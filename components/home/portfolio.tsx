@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { adminDbInstance } from "@/lib/firebase-admin";
+import { getPageContent } from "@/lib/firestore-pages";
 import { PortfolioProject } from "@/types/homepage";
 
 async function getPortfolioProjects(): Promise<PortfolioProject[]> {
@@ -40,6 +41,7 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
 
 export async function Portfolio() {
   const portfolioData = await getPortfolioProjects();
+  const sectionContent = await getPageContent('homepage-portfolio');
 
   // Fallback data if fetch fails
   const projects = portfolioData.length > 0 ? portfolioData : [
@@ -67,15 +69,20 @@ export async function Portfolio() {
     },
   ];
 
+  // Use content from page_content collection or fallback
+  const heading = sectionContent?.content?.heading || 'Naše projekty';
+  const subheading = sectionContent?.content?.subheading || 'Ukázky naší práce a realizovaných projektů';
+  const buttonText = sectionContent?.content?.buttonText || 'Zobrazit všechny projekty';
+
   return (
     <section className="py-16 md:py-24 px-4 bg-muted/50">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            Naše projekty
+            {heading}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Ukázky naší práce a realizovaných projektů
+            {subheading}
           </p>
         </div>
 
@@ -126,7 +133,7 @@ export async function Portfolio() {
 
         <div className="text-center">
           <Button asChild variant="outline" size="lg">
-            <Link href="/portfolio">Zobrazit všechny projekty</Link>
+            <Link href="/portfolio">{buttonText}</Link>
           </Button>
         </div>
       </div>

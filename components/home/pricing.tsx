@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { adminDbInstance } from "@/lib/firebase-admin";
+import { getPageContent } from "@/lib/firestore-pages";
 import { PricingTier } from "@/types/cms";
 
 async function getPricingTiers(): Promise<PricingTier[]> {
@@ -37,6 +38,7 @@ async function getPricingTiers(): Promise<PricingTier[]> {
 
 export async function Pricing() {
   const pricingData = await getPricingTiers();
+  const sectionContent = await getPageContent('homepage-pricing');
 
   // Helper function to format price
   const formatPrice = (price: number, currency: string) => {
@@ -93,15 +95,20 @@ export async function Pricing() {
     },
   ];
 
+  // Use content from page_content collection or fallback
+  const heading = sectionContent?.content?.heading || 'Cenové balíčky';
+  const subheading = sectionContent?.content?.subheading || 'Transparentní ceny bez skrytých poplatků';
+  const footerNote = sectionContent?.content?.footerNote || 'Ceny jsou orientační. Finální cena závisí na rozsahu a složitosti projektu.';
+
   return (
     <section className="py-16 md:py-24 px-4">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            Cenové balíčky
+            {heading}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Transparentní ceny bez skrytých poplatků
+            {subheading}
           </p>
         </div>
 
@@ -168,7 +175,7 @@ export async function Pricing() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Ceny jsou orientační. Finální cena závisí na rozsahu a složitosti projektu.
+          {footerNote}
         </p>
       </div>
     </section>

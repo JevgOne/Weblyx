@@ -422,6 +422,82 @@ class MockFirestoreAdmin {
         enabled: true,
       }],
     ]));
+
+    // Page Content data - Universal content for static pages and section headings
+    this.data.set('page_content', new Map([
+      ['homepage-services', {
+        pageId: 'homepage-services',
+        pageName: 'Homepage - Služby sekce',
+        category: 'homepage',
+        content: {
+          heading: 'Naše služby',
+          subheading: 'Komplexní řešení pro vaši online přítomnost'
+        },
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'system'
+      }],
+      ['homepage-portfolio', {
+        pageId: 'homepage-portfolio',
+        pageName: 'Homepage - Portfolio sekce',
+        category: 'homepage',
+        content: {
+          heading: 'Naše projekty',
+          subheading: 'Ukázky naší práce a realizovaných projektů',
+          buttonText: 'Zobrazit všechny projekty'
+        },
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'system'
+      }],
+      ['homepage-pricing', {
+        pageId: 'homepage-pricing',
+        pageName: 'Homepage - Ceník sekce',
+        category: 'homepage',
+        content: {
+          heading: 'Cenové balíčky',
+          subheading: 'Transparentní ceny bez skrytých poplatků',
+          footerNote: 'Ceny jsou orientační. Finální cena závisí na rozsahu a složitosti projektu.'
+        },
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'system'
+      }],
+      ['about-page', {
+        pageId: 'about-page',
+        pageName: 'O nás - Statická stránka',
+        category: 'static-page',
+        content: {
+          heading: 'O nás',
+          subheading: 'Jsme tým, který miluje web development',
+          description: 'Vytváříme moderní webové stránky s důrazem na rychlost, design a uživatelskou zkušenost. Naše mise je pomoci malým a středním firmám získat profesionální online přítomnost za dostupné ceny.'
+        },
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'system'
+      }],
+      ['services-page', {
+        pageId: 'services-page',
+        pageName: 'Služby - Statická stránka',
+        category: 'static-page',
+        content: {
+          heading: 'Naše služby',
+          subheading: 'Kompletní řešení pro váš online úspěch',
+          description: 'Od návrhu přes vývoj až po údržbu - poskytujeme komplexní služby pro váš web.'
+        },
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'system'
+      }],
+      ['contact-info', {
+        pageId: 'contact-info',
+        pageName: 'Kontakt - Informace',
+        category: 'section',
+        content: {
+          heading: 'Napište nám',
+          subheading: 'Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme',
+          responseTime: '24 hodin',
+          availability: 'Po - Pá: 9:00 - 18:00'
+        },
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'system'
+      }],
+    ]));
   }
 
   collection(collectionName: string) {

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Menu, Home, DollarSign, ArrowLeft, GitBranch, HelpCircle, Megaphone, Mail } from "lucide-react";
+import { FileText, Menu, Home, DollarSign, ArrowLeft, GitBranch, HelpCircle, Megaphone, Mail, BookOpen } from "lucide-react";
 
 export default function ContentManagementPage() {
   const router = useRouter();
@@ -45,6 +45,32 @@ export default function ContentManagementPage() {
 
         {/* Content Sections */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Pages & Texts - NEW UNIFIED EDITOR */}
+          <Card className="hover:shadow-lg transition-shadow border-primary/50 bg-primary/5">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Stránky & Texty</CardTitle>
+                  <CardDescription>Univerzální editor</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte všechny nadpisy a texty na webu z jednoho místa
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/pages")}
+              >
+                Upravit stránky
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Hero Section */}
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
@@ -234,6 +260,14 @@ export default function ContentManagementPage() {
             <CardTitle className="text-lg">Nápověda</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p className="font-semibold text-primary pb-2">
+              Doporučeno: Použijte nový Univerzální editor stránek
+            </p>
+            <p>
+              <strong>Stránky & Texty:</strong> Nový univerzální editor pro všechny nadpisy a texty na webu - jednodušší a rychlejší
+            </p>
+            <hr className="my-3 border-primary/20" />
+            <p className="text-xs italic">Jednotlivé editory sekcí (níže) budou postupně odstraněny:</p>
             <p>
               <strong>Hero sekce:</strong> Upravte hlavní úvodní sekci s nadpisem a call-to-action tlačítkem
             </p>

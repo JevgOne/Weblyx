@@ -8,6 +8,7 @@ import {
   HeadphonesIcon,
 } from "lucide-react";
 import { adminDbInstance } from "@/lib/firebase-admin";
+import { getPageContent } from "@/lib/firestore-pages";
 import { Service } from "@/types/homepage";
 
 // Icon mapping
@@ -54,6 +55,7 @@ async function getServices(): Promise<Service[]> {
 
 export async function Services() {
   const servicesData = await getServices();
+  const sectionContent = await getPageContent('homepage-services');
 
   // Fallback data if fetch fails
   const services = servicesData.length > 0 ? servicesData : [
@@ -83,15 +85,19 @@ export async function Services() {
     },
   ];
 
+  // Use content from page_content collection or fallback
+  const heading = sectionContent?.content?.heading || 'Naše služby';
+  const subheading = sectionContent?.content?.subheading || 'Komplexní řešení pro vaši online přítomnost';
+
   return (
     <section className="py-16 md:py-24 px-4 bg-muted/50">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            Naše služby
+            {heading}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Komplexní řešení pro vaši online přítomnost
+            {subheading}
           </p>
         </div>
 
