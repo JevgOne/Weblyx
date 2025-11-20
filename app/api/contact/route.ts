@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { adminDbInstance } from "@/lib/firebase-admin";
+import { Lead } from "@/types/cms";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,17 +24,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Here you can integrate with email service (Resend, SendGrid, etc.)
-    // For now, we'll just log and return success
-    console.log("New contact form submission:", {
+    // Save lead to Firestore
+    const leadData: Omit<Lead, 'id'> = {
       name,
       email,
-      phone,
-      projectType,
-      budget,
+      phone: phone || '',
+      projectType: projectType || '',
+      budget: budget || '',
       message,
-      timestamp: new Date().toISOString(),
-    });
+      status: 'new',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    if (adminDbInstance) {
+      await adminDbInstance.collection('leads').add(leadData);
+    }
+
+    console.log("New lead created:", { name, email, projectType });
 
     // TODO: Send email notification
     // Example with Resend:

@@ -129,3 +129,77 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
+
+// AI Design Generation Types
+export interface DesignPreference {
+  industry: string;
+  targetAudience: string;
+  stylePreference: 'minimalist' | 'modern' | 'classic' | 'bold' | 'elegant';
+  colorPreferences: string[];
+  inspirationUrls: string[];
+  requiredFeatures: string[];
+  contentReady: boolean;
+  additionalNotes: string;
+}
+
+export interface ColorPalette {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  text: string;
+}
+
+export interface Typography {
+  headingFont: string;
+  bodyFont: string;
+  fontPairing: string;
+}
+
+export interface AIDesignVariant {
+  id: string;
+  name: string; // "Design A", "Design B", "Design C"
+  style: string; // "Minimalistický", "Moderní/Odvážný", "Klasický/Elegantní"
+  colorPalette: ColorPalette;
+  typography: Typography;
+  layoutStyle: string;
+  visualElements: string[];
+  moodboardPrompt: string;
+  reasoning: string; // Why this design fits the business
+}
+
+export interface AIGeneratedDesigns {
+  designs: [AIDesignVariant, AIDesignVariant, AIDesignVariant];
+  generatedAt: Date;
+  basedOn: DesignPreference;
+}
+
+// Team Assignment Types
+export type TeamMember = 'jevgenij' | 'maxim';
+
+export interface Lead {
+  id?: string;
+  // Basic info
+  name: string;
+  email: string;
+  phone: string;
+  projectType: string;
+  budget: string;
+  message: string;
+
+  // Design preferences for AI
+  designPreferences?: DesignPreference;
+
+  // AI generated designs
+  aiDesigns?: AIGeneratedDesigns;
+  selectedDesign?: string; // ID of chosen design
+
+  // Team assignment
+  assignedTo?: TeamMember;
+  assignedAt?: Date;
+  status: 'new' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
+
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+}
