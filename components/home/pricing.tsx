@@ -187,20 +187,16 @@ export function Pricing() {
                     : 'border border-border hover:border-primary/30 hover:shadow-md bg-background'
                 } group-hover:shadow-xl`}
               >
-                {/* Highlighted badge with animation */}
+                {/* Highlighted badge - inside card at top */}
                 {plan.highlighted && (
-                  <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-shimmer"></div>
-                )}
-
-                {plan.highlighted && (
-                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
-                    <Badge className="bg-primary text-primary-foreground border-0 shadow-md px-3 py-1 text-xs font-semibold">
+                  <div className="absolute top-3 right-3 z-10">
+                    <Badge className="bg-primary text-primary-foreground border-0 shadow-lg px-3 py-1.5 text-xs font-bold">
                       Nejoblíbenější
                     </Badge>
                   </div>
                 )}
 
-                <CardHeader className={`space-y-4 pb-4 relative ${plan.highlighted ? 'pt-8' : 'pt-6'}`}>
+                <CardHeader className={`space-y-4 pb-4 relative pt-6`}>
                   <div className="relative z-10">
                     <h3 className="text-xl font-bold mb-1">
                       {plan.name}

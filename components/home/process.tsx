@@ -96,7 +96,7 @@ export function Process() {
   };
 
   return (
-    <section className="py-16 md:py-24 px-4">
+    <section className="py-16 md:py-24 px-4 bg-muted/30">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
@@ -107,69 +107,62 @@ export function Process() {
           </p>
         </div>
 
-        <div className="relative">
-          {/* Connector Lines - Only visible on desktop */}
-          <div className="hidden lg:block absolute top-[32px] left-0 right-0 h-0.5 pointer-events-none">
-            {steps.map((_, index) => {
-              if (index >= steps.length - 1) return null;
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          {steps.map((step, index) => {
+            const IconComponent = getIcon(step.icon);
+            const isLastInRow = (index + 1) % 3 === 0;
+            const isNotLast = index < steps.length - 1;
 
-              const startPercent = (index / (steps.length - 1)) * 100;
-              const endPercent = ((index + 1) / (steps.length - 1)) * 100;
-              const widthPercent = endPercent - startPercent;
-
-              return (
-                <div
-                  key={`line-${index}`}
-                  className="absolute top-0 h-0.5"
-                  style={{
-                    left: `calc(${startPercent}% + 32px)`,
-                    width: `calc(${widthPercent}% - 64px)`,
-                  }}
-                >
-                  <div className="h-full bg-border relative overflow-hidden">
-                    <div
-                      className="absolute inset-0 bg-primary"
-                      style={{
-                        animation: `slideIn 2s ease-in-out ${index * 0.2}s infinite`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-            {steps.map((step) => {
-              const IconComponent = getIcon(step.icon);
-              return (
-                <div key={step.id} className="relative group">
-                  <div className="space-y-4">
-                    {/* Icon & Number */}
-                    <div className="relative">
-                      <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
-                        <IconComponent className="h-8 w-8 text-primary" />
-                      </div>
-                      <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shadow-lg">
-                        {step.number}
-                      </div>
+            return (
+              <div key={step.id} className="relative group">
+                <div className="space-y-4 bg-background rounded-2xl p-6 border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  {/* Icon & Number */}
+                  <div className="relative flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 group-hover:scale-110 transition-all duration-300 shadow-md shrink-0">
+                      <IconComponent className="h-8 w-8 text-primary" />
                     </div>
-
-                    {/* Content */}
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-semibold">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center text-lg font-bold shadow-lg shrink-0">
+                      {step.number}
                     </div>
                   </div>
+
+                  {/* Content */}
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">
+                      {step.title}
+                    </h3>
+
+                    {/* Connection line under title - only for non-last items */}
+                    {isNotLast && (
+                      <div className="hidden lg:block relative h-0.5 -mx-6">
+                        <div className="absolute left-1/2 top-0 w-screen h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent">
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary to-primary/60 animate-flow"></div>
+                        </div>
+                      </div>
+                    )}
+
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Arrow connector to next step */}
+                {isNotLast && !isLastInRow && (
+                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-primary/50 to-primary/30 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent animate-slide"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       <style jsx>{`
-        @keyframes slideIn {
+        @keyframes flow {
           0% {
             transform: translateX(-100%);
             opacity: 0;
@@ -181,6 +174,23 @@ export function Process() {
             transform: translateX(100%);
             opacity: 0;
           }
+        }
+
+        @keyframes slide {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(200%);
+          }
+        }
+
+        :global(.animate-flow) {
+          animation: flow 3s ease-in-out infinite;
+        }
+
+        :global(.animate-slide) {
+          animation: slide 2s ease-in-out infinite;
         }
       `}</style>
     </section>
