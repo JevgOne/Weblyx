@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,21 @@ export function ContactWow() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const progress = ((currentField + 1) / formFields.length) * 100;
+
+  // Trigger confetti when success screen appears
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess]);
 
   const validateField = (fieldId: string, value: string) => {
     const field = formFields.find(f => f.id === fieldId);
@@ -124,13 +139,6 @@ export function ContactWow() {
 
       // Success! 🎉
       setIsSuccess(true);
-
-      // Trigger confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
 
       // Reset form after 3 seconds
       setTimeout(() => {

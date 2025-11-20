@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -88,15 +87,17 @@ export default function AdminLeadsPage() {
 
   useEffect(() => {
     const loadLeads = async () => {
-      // Načíst leady z Firestore
+      // Načíst leady z API
       try {
-        const leadsSnapshot = await db.collection("leads").get();
-        const leadsData = leadsSnapshot.docs.map((doc: any) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setLeads(leadsData);
-        console.log("✅ Loaded leads:", leadsData);
+        const response = await fetch('/api/admin/leads');
+        const result = await response.json();
+
+        if (result.success) {
+          setLeads(result.data);
+          console.log("✅ Loaded leads from API:", result.data);
+        } else {
+          throw new Error(result.error);
+        }
       } catch (error) {
         console.error("❌ Error loading leads:", error);
         // Fallback na mock data
@@ -134,12 +135,14 @@ export default function AdminLeadsPage() {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const leadsSnapshot = await db.collection("leads").get();
-      const leadsData = leadsSnapshot.docs.map((doc: any) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setLeads(leadsData);
+      const response = await fetch('/api/admin/leads');
+      const result = await response.json();
+
+      if (result.success) {
+        setLeads(result.data);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error("Error loading leads:", error);
       setLeads(mockLeads);
@@ -368,8 +371,8 @@ export default function AdminLeadsPage() {
         {/* Info note */}
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground">
-            💡 <strong>Tip:</strong> Toto jsou demo data. Po připojení Firebase se zde zobrazí
-            reálné poptávky z kontaktního formuláře a dotazníku.
+            💡 <strong>Tip:</strong> Zde se zobrazují všechny poptávky odeslané přes kontaktní formulář.
+            Data jsou uložena v databázi a automaticky se aktualizují.
           </p>
         </div>
       </main>
