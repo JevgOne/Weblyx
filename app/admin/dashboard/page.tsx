@@ -19,7 +19,8 @@ import {
   LogOut,
   Image,
   FileEdit,
-  Tag
+  Tag,
+  Globe
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -332,6 +333,25 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <Button className="w-full" onClick={() => router.push("/admin/promo-codes")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Globe className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Web Analyzer</CardTitle>
+                    <CardDescription>Analýza konkurenčních webů</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full" onClick={() => router.push("/admin/tools/web-analyzer")}>
                   Otevřít
                 </Button>
               </CardContent>

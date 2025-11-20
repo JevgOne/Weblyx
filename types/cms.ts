@@ -221,3 +221,91 @@ export interface Lead {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Web Analyzer Types
+export interface WebAnalysisTechnical {
+  title?: string;
+  description?: string;
+  keywords?: string[];
+  hasH1: boolean;
+  h1Count: number;
+  headingsStructure: {
+    h1: number;
+    h2: number;
+    h3: number;
+    h4: number;
+    h5: number;
+    h6: number;
+  };
+  imagesWithoutAlt: number;
+  totalImages: number;
+  internalLinks: number;
+  externalLinks: number;
+  hasSitemap: boolean;
+  hasRobotsTxt: boolean;
+  loadTime: number;
+  mobileResponsive: boolean;
+  hasSSL: boolean;
+  schemaMarkup: boolean;
+}
+
+export interface WebAnalysisIssue {
+  category: 'critical' | 'warning' | 'info';
+  title: string;
+  description: string;
+  impact: string;
+  recommendation: string;
+}
+
+export interface PackageRecommendation {
+  packageId: 'start' | 'standard' | 'premium' | 'enterprise';
+  packageName: string;
+  confidence: number; // 0-100%
+  reasoning: string;
+  matchedNeeds: string[];
+}
+
+export interface WebAnalysisResult {
+  id?: string;
+  url: string;
+  analyzedAt: Date;
+
+  // Technical analysis
+  technical: WebAnalysisTechnical;
+
+  // Identified issues
+  issues: WebAnalysisIssue[];
+  issueCount: {
+    critical: number;
+    warning: number;
+    info: number;
+  };
+
+  // Score (0-100)
+  overallScore: number;
+
+  // AI Package recommendation
+  recommendation: PackageRecommendation;
+
+  // Promo code for cold email
+  promoCodeId?: string;
+  promoCodeUsed?: boolean;
+
+  // Cold email tracking
+  emailSent: boolean;
+  emailSentAt?: Date;
+  emailOpened?: boolean;
+  emailClicked?: boolean;
+
+  // Business contact info (for outreach)
+  contactEmail?: string;
+  contactName?: string;
+  businessName?: string;
+
+  // Admin notes
+  notes?: string;
+  status: 'analyzed' | 'email_sent' | 'responded' | 'converted' | 'rejected';
+
+  createdAt: Date;
+  updatedAt: Date;
+}
