@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, MapPin, Send } from "lucide-react";
+import { Mail, MapPin, Send, Phone } from "lucide-react";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -100,10 +100,25 @@ export function Contact() {
                   <div>
                     <h3 className="font-semibold mb-1">Email</h3>
                     <a
-                      href="mailto:info@weblyx.cz"
+                      href="mailto:weblyxinfo@gmail.com"
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      info@weblyx.cz
+                      weblyxinfo@gmail.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Phone className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Telefon</h3>
+                    <a
+                      href="tel:+420702110166"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      +420 702 110 166
                     </a>
                   </div>
                 </div>

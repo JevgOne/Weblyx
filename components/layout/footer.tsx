@@ -77,10 +77,26 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Legal Links */}
+          {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Právní</h3>
+            <h3 className="font-semibold">Kontakt</h3>
             <ul className="space-y-3">
+              <li>
+                <a
+                  href="mailto:weblyxinfo@gmail.com"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  weblyxinfo@gmail.com
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+420702110166"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  +420 702 110 166
+                </a>
+              </li>
               {footerLinks.legal.map((link, index) => (
                 <li key={index}>
                   <Link
