@@ -137,6 +137,7 @@ export function CookieConsent() {
                       Pouze nezbytné
                     </Button>
                     <Button
+                      variant="outline"
                       size="sm"
                       onClick={acceptAll}
                       className="w-full sm:w-auto"
@@ -224,7 +225,7 @@ export function CookieConsent() {
                     >
                       Zpět
                     </Button>
-                    <Button onClick={saveCustomPreferences} className="flex-1">
+                    <Button variant="outline" onClick={saveCustomPreferences} className="flex-1">
                       Uložit nastavení
                     </Button>
                   </div>
