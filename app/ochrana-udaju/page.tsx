@@ -66,14 +66,17 @@ export default function PrivacyPage() {
         <h2>7. Cookies</h2>
         <p>
           Naše webové stránky používají cookies pro zlepšení uživatelské zkušenosti a analytické
-          účely. Více informací naleznete v naší Cookie Policy.
+          účely. Více informací naleznete v našich{" "}
+          <a href="/cookies" className="text-primary hover:underline">zásadách cookies</a>.
         </p>
 
         <h2>8. Kontakt</h2>
         <p>
           V případě dotazů ohledně ochrany osobních údajů nás můžete kontaktovat na:
           <br />
-          Email: info@weblyx.cz
+          Email: <a href="mailto:weblyxinfo@gmail.com" className="text-primary hover:underline">weblyxinfo@gmail.com</a>
+          <br />
+          Telefon: <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a>
         </p>
       </div>
     </main>

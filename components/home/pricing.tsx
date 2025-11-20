@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Sparkles, Zap, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PricingTier } from "@/types/cms";
 
@@ -13,6 +14,12 @@ export function Pricing() {
   const [heading, setHeading] = useState('Cenové balíčky');
   const [subheading, setSubheading] = useState('Transparentní ceny bez skrytých poplatků');
   const [footerNote, setFooterNote] = useState('Ceny jsou orientační. Finální cena závisí na rozsahu a složitosti projektu.');
+
+  // Promo code state
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<any>(null);
+  const [promoError, setPromoError] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
     // In development with mock data, we use fallback data
@@ -147,6 +154,69 @@ export function Pricing() {
     return new Intl.NumberFormat('cs-CZ').format(price);
   };
 
+  // Calculate discounted price
+  const calculateDiscountedPrice = (originalPrice: number) => {
+    if (!appliedPromo) return originalPrice;
+
+    let discount = 0;
+    if (appliedPromo.discountType === 'percentage') {
+      discount = Math.round((originalPrice * appliedPromo.discountValue) / 100);
+      if (appliedPromo.maxDiscount && discount > appliedPromo.maxDiscount) {
+        discount = appliedPromo.maxDiscount;
+      }
+    } else {
+      discount = appliedPromo.discountValue;
+      if (discount > originalPrice) {
+        discount = originalPrice;
+      }
+    }
+
+    return Math.max(0, originalPrice - discount);
+  };
+
+  // Validate promo code
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      setPromoError('Zadejte promo kód');
+      return;
+    }
+
+    setIsValidating(true);
+    setPromoError('');
+
+    try {
+      // Use the first plan's price as reference for validation
+      const referencePrice = plans[0]?.price || 10000;
+
+      const response = await fetch('/api/promo-code/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: promoCode, orderValue: referencePrice }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setAppliedPromo(data.data);
+        setPromoError('');
+      } else {
+        setPromoError(data.error || 'Neplatný promo kód');
+        setAppliedPromo(null);
+      }
+    } catch (error) {
+      setPromoError('Chyba při ověřování kódu');
+      setAppliedPromo(null);
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoError('');
+  };
+
   return (
     <section className="relative py-16 md:py-24 px-4 overflow-hidden">
       {/* Animated background elements */}
@@ -156,7 +226,7 @@ export function Pricing() {
       </div>
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="text-center space-y-4 mb-16">
+        <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 animate-fade-in">
             <Sparkles className="h-4 w-4" />
             <span>Férové ceny bez skrytých poplatků</span>
@@ -167,6 +237,64 @@ export function Pricing() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in delay-200">
             {subheading}
           </p>
+        </div>
+
+        {/* Promo Code Input */}
+        <div className="max-w-md mx-auto mb-12">
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+            <CardContent className="pt-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Tag className="h-4 w-4 text-primary" />
+                  <span>Máte promo kód?</span>
+                </div>
+
+                {!appliedPromo ? (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Zadejte kód..."
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                      className="text-center font-mono font-bold"
+                    />
+                    <Button
+                      onClick={handleApplyPromo}
+                      disabled={isValidating || !promoCode.trim()}
+                      size="sm"
+                    >
+                      {isValidating ? 'Ověřuji...' : 'Použít'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-600">
+                        {appliedPromo.code}
+                      </Badge>
+                      <span className="text-sm font-medium text-green-700">
+                        {appliedPromo.discountType === 'percentage'
+                          ? `-${appliedPromo.discountValue}%`
+                          : `-${formatPrice(appliedPromo.discountValue, 'CZK')} Kč`}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRemovePromo}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+
+                {promoError && (
+                  <p className="text-xs text-destructive">{promoError}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Horizontal scrollable carousel */}
@@ -208,12 +336,28 @@ export function Pricing() {
 
                   {/* Price */}
                   <div className="space-y-1 relative">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl md:text-4xl font-black text-primary">
-                        {formatPrice(plan.price, plan.currency)}
-                      </span>
-                      <span className="text-lg text-muted-foreground font-medium">Kč</span>
-                    </div>
+                    {appliedPromo && plan.price !== calculateDiscountedPrice(plan.price) ? (
+                      <>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-bold text-muted-foreground line-through">
+                            {formatPrice(plan.price, plan.currency)}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl md:text-4xl font-black text-green-600">
+                            {formatPrice(calculateDiscountedPrice(plan.price), plan.currency)}
+                          </span>
+                          <span className="text-lg text-muted-foreground font-medium">Kč</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl md:text-4xl font-black text-primary">
+                          {formatPrice(plan.price, plan.currency)}
+                        </span>
+                        <span className="text-lg text-muted-foreground font-medium">Kč</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       <span>Jednorázová platba</span>

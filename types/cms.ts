@@ -174,6 +174,24 @@ export interface AIGeneratedDesigns {
   basedOn: DesignPreference;
 }
 
+// Promo Code Types
+export interface PromoCode {
+  id?: string;
+  code: string; // The actual promo code (e.g., "SUMMER2024")
+  description: string; // Admin description
+  discountType: 'percentage' | 'fixed'; // Percentage off or fixed amount
+  discountValue: number; // e.g., 20 for 20% or 1000 for 1000 CZK
+  minOrderValue?: number; // Minimum order value to use code
+  maxDiscount?: number; // Maximum discount amount for percentage codes
+  usageLimit?: number; // Maximum number of uses (null = unlimited)
+  usageCount: number; // Current number of uses
+  validFrom: Date; // Start date
+  validUntil: Date; // End date
+  enabled: boolean; // Active/inactive
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Team Assignment Types
 export type TeamMember = 'jevgenij' | 'maxim';
 
