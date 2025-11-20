@@ -38,10 +38,10 @@ export interface PortfolioProject {
   category: string;
   description: string;
   technologies: string[];
-  image: string;
+  imageUrl: string;
   published: boolean;
   featured: boolean;
-  displayOrder: number;
+  order: number;
 }
 
 // PricingTier interface removed - now using unified CMS schema from @/types/cms

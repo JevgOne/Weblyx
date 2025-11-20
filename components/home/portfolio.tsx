@@ -18,8 +18,6 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
       .collection('portfolio')
       .where('published', '==', true)
       .where('featured', '==', true)
-      .orderBy('displayOrder')
-      .limit(6)
       .get();
 
     if (snapshot.empty) {
@@ -29,10 +27,15 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
 
     const projects: PortfolioProject[] = [];
     snapshot.docs.forEach((doc: any) => {
-      projects.push(doc.data() as PortfolioProject);
+      const data = doc.data();
+      projects.push({
+        ...data,
+        id: doc.id,
+      } as PortfolioProject);
     });
 
-    return projects;
+    // Sort by order field and limit to 6
+    return projects.sort((a, b) => (a.order || 0) - (b.order || 0)).slice(0, 6);
   } catch (error) {
     console.error('Error fetching portfolio projects:', error);
     return [];
@@ -51,10 +54,10 @@ export async function Portfolio() {
       category: 'E-commerce',
       description: 'Moderní e-shop s pokročilými filtry a platební bránou',
       technologies: ['Next.js', 'Stripe', 'Tailwind'],
-      image: '/images/portfolio-1.jpg',
+      imageUrl: '/images/portfolio-1.jpg',
       published: true,
       featured: true,
-      displayOrder: 1,
+      order: 1,
     },
     {
       id: 'fallback-2',
@@ -62,10 +65,10 @@ export async function Portfolio() {
       category: 'Web',
       description: 'Responzivní web pro konzultační společnost',
       technologies: ['React', 'SEO', 'Analytics'],
-      image: '/images/portfolio-2.jpg',
+      imageUrl: '/images/portfolio-2.jpg',
       published: true,
       featured: true,
-      displayOrder: 2,
+      order: 2,
     },
   ];
 
@@ -93,15 +96,22 @@ export async function Portfolio() {
               className="group overflow-hidden hover:shadow-elegant transition-all duration-300"
             >
               <div className="aspect-video bg-gradient-primary relative overflow-hidden">
-                {/* Placeholder for project image */}
-                <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-                  <div className="text-center space-y-2 p-4">
-                    <div className="text-4xl font-bold text-primary/30">📸</div>
-                    <p className="text-sm text-muted-foreground">
-                      Screenshot projektu
-                    </p>
+                {project.imageUrl ? (
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
+                    <div className="text-center space-y-2 p-4">
+                      <div className="text-4xl font-bold text-primary/30">📸</div>
+                      <p className="text-sm text-muted-foreground">
+                        Screenshot projektu
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button variant="secondary" size="sm">
                     <ExternalLink className="h-4 w-4 mr-2" />
