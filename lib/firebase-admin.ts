@@ -233,40 +233,52 @@ class MockFirestoreAdmin {
           };
         },
       }),
-      where: (field: string, operator: string, value: any) => ({
-        orderBy: (orderField: string) => ({
-          limit: (limitNum: number) => ({
-            get: async () => {
-              const collection = this.data.get(collectionName);
-              if (!collection) return { docs: [], empty: true };
+      where: (field: string, operator: string, value: any) => {
+        const filters = [{ field, operator, value }];
 
-              let docs = Array.from(collection.values()).filter(doc => {
-                if (operator === '==') return doc[field] === value;
-                if (operator === '!=') return doc[field] !== value;
-                return false;
-              });
+        const buildQuery = (currentFilters: any[]) => ({
+          where: (nextField: string, nextOperator: string, nextValue: any) => {
+            currentFilters.push({ field: nextField, operator: nextOperator, value: nextValue });
+            return buildQuery(currentFilters);
+          },
+          orderBy: (orderField: string) => ({
+            limit: (limitNum: number) => ({
+              get: async () => {
+                const collection = this.data.get(collectionName);
+                if (!collection) return { docs: [], empty: true };
 
-              // Sort by orderField
-              docs.sort((a, b) => {
-                const aVal = a[orderField] ?? 0;
-                const bVal = b[orderField] ?? 0;
-                return aVal - bVal;
-              });
+                let docs = Array.from(collection.values()).filter(doc => {
+                  return currentFilters.every(filter => {
+                    if (filter.operator === '==') return doc[filter.field] === filter.value;
+                    if (filter.operator === '!=') return doc[filter.field] !== filter.value;
+                    return false;
+                  });
+                });
 
-              // Limit results
-              docs = docs.slice(0, limitNum);
+                // Sort by orderField
+                docs.sort((a, b) => {
+                  const aVal = a[orderField] ?? 0;
+                  const bVal = b[orderField] ?? 0;
+                  return aVal - bVal;
+                });
 
-              return {
-                docs: docs.map(doc => ({
-                  id: doc.id,
-                  data: () => doc,
-                })),
-                empty: docs.length === 0,
-              };
-            },
+                // Limit results
+                docs = docs.slice(0, limitNum);
+
+                return {
+                  docs: docs.map(doc => ({
+                    id: doc.id,
+                    data: () => doc,
+                  })),
+                  empty: docs.length === 0,
+                };
+              },
+            }),
           }),
-        }),
-      }),
+        });
+
+        return buildQuery(filters);
+      },
       orderBy: (orderField: string) => ({
         get: async () => {
           const collection = this.data.get(collectionName);
