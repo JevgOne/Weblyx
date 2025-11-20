@@ -403,24 +403,6 @@ export function ContactWow() {
               </div>
             </Card>
 
-            {/* AI Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Card className="backdrop-blur-sm bg-gradient-to-br from-primary/10 to-purple-500/10 border-2 border-primary/20">
-                <div className="p-4 flex items-start gap-3">
-                  <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold mb-1">AI Design Generator</p>
-                    <p className="text-xs text-muted-foreground">
-                      Po odeslání vám AI vygeneruje 3 unikátní návrhy designu
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
           </motion.div>
 
           {/* Form */}
