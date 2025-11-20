@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +22,8 @@ import {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({
     projects: 0,
     leads: 0,
@@ -30,49 +31,49 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        setUser(currentUser);
+    const fetchStats = async () => {
+      console.time("Dashboard Load");
+      // Fetch real stats from Firestore
+      try {
+        // Check if we're using mock Firebase
+        if (typeof db.collection === 'function') {
+          // Mock Firebase - parallel fetching
+          const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
+            db.collection("projects").get(),
+            db.collection("leads").get(),
+            db.collection("portfolio").get()
+          ]);
 
-        // Fetch real stats from Firestore
-        try {
-          // Check if we're using mock Firebase
-          if (typeof db.collection === 'function') {
-            // Mock Firebase
-            const projectsSnap = await db.collection("projects").get();
-            const leadsSnap = await db.collection("leads").get();
-            const portfolioSnap = await db.collection("portfolio").get();
+          setStats({
+            projects: projectsSnap.size,
+            leads: leadsSnap.size,
+            portfolio: portfolioSnap.size,
+          });
+        } else {
+          // Real Firebase - use modular API with parallel fetching
+          const { collection, getDocs } = await import("firebase/firestore");
+          const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
+            getDocs(collection(db, "projects")),
+            getDocs(collection(db, "leads")),
+            getDocs(collection(db, "portfolio"))
+          ]);
 
-            setStats({
-              projects: projectsSnap.size,
-              leads: leadsSnap.size,
-              portfolio: portfolioSnap.size,
-            });
-          } else {
-            // Real Firebase - use modular API
-            const { collection, getDocs } = await import("firebase/firestore");
-            const projectsSnap = await getDocs(collection(db, "projects"));
-            const leadsSnap = await getDocs(collection(db, "leads"));
-            const portfolioSnap = await getDocs(collection(db, "portfolio"));
-
-            setStats({
-              projects: projectsSnap.size,
-              leads: leadsSnap.size,
-              portfolio: portfolioSnap.size,
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching stats:", error);
+          setStats({
+            projects: projectsSnap.size,
+            leads: leadsSnap.size,
+            portfolio: portfolioSnap.size,
+          });
         }
-
-        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
       }
-    });
 
-    return () => unsubscribe();
-  }, [router]);
+      setLoading(false);
+      console.timeEnd("Dashboard Load");
+    };
+
+    fetchStats();
+  }, []);
 
   const handleLogout = async () => {
     await auth.signOut();

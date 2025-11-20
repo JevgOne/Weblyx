@@ -160,16 +160,20 @@ class MockFirestoreAdmin {
       }],
     ]));
 
-    // Pricing tiers data
+    // Pricing tiers data (using CMS schema)
     this.data.set('pricing_tiers', new Map([
       ['tier-1', {
         id: 'tier-1',
         name: 'Jednoduchý Web',
-        price: '10 000',
-        duration: '5-7 dní',
+        price: 10000,
+        currency: 'CZK',
+        interval: 'one-time' as const,
         description: 'Ideální pro malé firmy a živnostníky',
-        popular: false,
+        highlighted: false,
+        ctaText: 'Vybrat balíček',
+        ctaLink: '/poptavka',
         order: 1,
+        enabled: true,
         features: [
           'Až 5 podstránek',
           'Responzivní design',
@@ -177,16 +181,21 @@ class MockFirestoreAdmin {
           'Kontaktní formulář',
           'Google Analytics',
           '1 měsíc podpora zdarma',
+          'Dodání za 5-7 dní',
         ],
       }],
       ['tier-2', {
         id: 'tier-2',
         name: 'Standardní Web',
-        price: '25 000',
-        duration: '10-14 dní',
+        price: 25000,
+        currency: 'CZK',
+        interval: 'one-time' as const,
         description: 'Pro rostoucí firmy s většími požadavky',
-        popular: true,
+        highlighted: true,
+        ctaText: 'Vybrat balíček',
+        ctaLink: '/poptavka',
         order: 2,
+        enabled: true,
         features: [
           'Až 15 podstránek',
           'Pokročilý design',
@@ -196,16 +205,21 @@ class MockFirestoreAdmin {
           'Galerie obrázků',
           '3 měsíce podpora zdarma',
           'Úpravy po spuštění',
+          'Dodání za 10-14 dní',
         ],
       }],
       ['tier-3', {
         id: 'tier-3',
         name: 'E-shop / Premium',
-        price: '85 000',
-        duration: 'Individuální',
+        price: 85000,
+        currency: 'CZK',
+        interval: 'one-time' as const,
         description: 'Pro e-commerce a komplexní projekty',
-        popular: false,
+        highlighted: false,
+        ctaText: 'Vybrat balíček',
+        ctaLink: '/poptavka',
         order: 3,
+        enabled: true,
         features: [
           'Neomezený počet stránek',
           'E-shop funkcionalita',
@@ -215,7 +229,197 @@ class MockFirestoreAdmin {
           'Pokročilé funkce',
           '6 měsíců podpora zdarma',
           'Priority podpora',
+          'Dodání dle dohody',
         ],
+      }],
+    ]));
+
+    // Process section data
+    this.data.set('homepage_process', new Map([
+      ['section-meta', {
+        id: 'section-meta',
+        heading: 'Jak to funguje',
+        subheading: 'Náš proces je jednoduchý, transparentní a efektivní',
+        enabled: true,
+      }],
+      ['step-1', {
+        id: 'step-1',
+        number: '01',
+        icon: 'MessageSquare',
+        title: 'Konzultace',
+        description: 'Nezávazná konzultace zdarma, kde si vyslechneme vaše požadavky a cíle.',
+        order: 1,
+        enabled: true,
+      }],
+      ['step-2', {
+        id: 'step-2',
+        number: '02',
+        icon: 'Palette',
+        title: 'Návrh designu',
+        description: 'Vytvoříme moderní design odpovídající vaší značce a cílové skupině.',
+        order: 2,
+        enabled: true,
+      }],
+      ['step-3', {
+        id: 'step-3',
+        number: '03',
+        icon: 'Code',
+        title: 'Vývoj',
+        description: 'Naprogramujeme web s využitím nejnovějších technologií a best practices.',
+        order: 3,
+        enabled: true,
+      }],
+      ['step-4', {
+        id: 'step-4',
+        number: '04',
+        icon: 'TestTube',
+        title: 'Testování',
+        description: 'Důkladně otestujeme všechny funkce, responzivitu a rychlost načítání.',
+        order: 4,
+        enabled: true,
+      }],
+      ['step-5', {
+        id: 'step-5',
+        number: '05',
+        icon: 'Rocket',
+        title: 'Spuštění',
+        description: 'Zveřejníme váš web na internetu a zajistíme bezproblémový start.',
+        order: 5,
+        enabled: true,
+      }],
+      ['step-6', {
+        id: 'step-6',
+        number: '06',
+        icon: 'Wrench',
+        title: 'Podpora',
+        description: 'Poskytujeme následnou podporu, aktualizace a údržbu vašeho webu.',
+        order: 6,
+        enabled: true,
+      }],
+    ]));
+
+    // FAQ section data
+    this.data.set('homepage_faq', new Map([
+      ['faq-meta', {
+        id: 'faq-meta',
+        heading: 'Často kladené otázky',
+        subheading: 'Odpovědi na nejčastější dotazy',
+        enabled: true,
+      }],
+      ['faq-1', {
+        id: 'faq-1',
+        question: 'Jak dlouho trvá vytvoření webu?',
+        answer: 'Jednoduché webové stránky dodáme za 5-7 dní. Standardní weby s rozšířenými funkcemi obvykle trvají 10-14 dní. E-shopy a složitější projekty jsou individuální a závisí na rozsahu funkcí. Po úvodní konzultaci vám poskytneme přesný časový odhad.',
+        order: 1,
+        enabled: true,
+      }],
+      ['faq-2', {
+        id: 'faq-2',
+        question: 'Kolik stojí webové stránky?',
+        answer: 'Startovací cena je 10 000 Kč pro jednoduchý web s až 5 podstránkami. Standardní weby začínají na 25 000 Kč a e-shopy od 85 000 Kč. Finální cena závisí na počtu stránek, funkcích a designové složitosti. Po vyplnění dotazníku vám připravíme konkrétní nabídku.',
+        order: 2,
+        enabled: true,
+      }],
+      ['faq-3', {
+        id: 'faq-3',
+        question: 'Poskytujete i doménu a hosting?',
+        answer: 'Ano, můžeme zajistit doménu i hosting, nebo vám pomůžeme s nastavením, pokud už je máte. Doporučujeme kvalitní hosting pro optimální rychlost a bezpečnost vašeho webu. Cena hostingu začína na cca 100-300 Kč měsíčně podle typu webu.',
+        order: 3,
+        enabled: true,
+      }],
+      ['faq-4', {
+        id: 'faq-4',
+        question: 'Mohu si web spravovat sám?',
+        answer: 'Samozřejmě! Pokud chcete, implementujeme jednoduché CMS (Content Management System), které vám umožní měnit texty, přidávat fotky a publikovat články bez znalosti programování. Poskytneme vám také školení nebo video návod.',
+        order: 4,
+        enabled: true,
+      }],
+      ['faq-5', {
+        id: 'faq-5',
+        question: 'Děláte i e-shopy?',
+        answer: 'Ano, vytváříme plně funkční e-shopy s propojením na platební brány (GoPay, Stripe, PayPal), správou produktů, skladu a objednávek. E-shopy začínají na 85 000 Kč a zahrnují vše potřebné pro online prodej.',
+        order: 5,
+        enabled: true,
+      }],
+      ['faq-6', {
+        id: 'faq-6',
+        question: 'Nabízíte následnou podporu?',
+        answer: 'Ano, k jednoduchému webu poskytujeme 1 měsíc podpory zdarma, ke standardnímu 3 měsíce a k e-shopu 6 měsíců. Po této době můžete využít naše servisní balíčky nebo jednorázové úpravy podle potřeby.',
+        order: 6,
+        enabled: true,
+      }],
+      ['faq-7', {
+        id: 'faq-7',
+        question: 'Jaké technologie používáte?',
+        answer: 'Používáme moderní technologie jako Next.js, React a TypeScript pro maximální výkon a bezpečnost. Pro styling používáme Tailwind CSS. Backend řešíme přes Supabase nebo vlastní API. Všechny weby jsou responzivní a SEO optimalizované.',
+        order: 7,
+        enabled: true,
+      }],
+      ['faq-8', {
+        id: 'faq-8',
+        question: 'Jak probíhá platba?',
+        answer: 'Standardně vyžadujeme zálohu 50% před zahájením prací a zbytek před předáním hotového webu. U větších projektů můžeme dohodnout rozložení na více splátek. Platbu můžete provést fakturou s QR kódem nebo bankovním převodem.',
+        order: 8,
+        enabled: true,
+      }],
+    ]));
+
+    // CTA section data
+    this.data.set('homepage_cta', new Map([
+      ['current', {
+        id: 'current',
+        heading: 'Připraveni na nový web?',
+        subheading: 'Stačí vyplnit formulář a my se vám ozveme do 24 hodin s konkrétní nabídkou',
+        primaryButtonText: 'Začít projekt',
+        primaryButtonLink: '/poptavka',
+        secondaryButtonText: 'Kontaktovat nás',
+        secondaryButtonLink: '/kontakt',
+        benefits: [
+          { icon: 'Clock', title: '24h Odpověď', description: 'na poptávku' },
+          { icon: 'DollarSign', title: '0 Kč Poplatek', description: 'za konzultaci' },
+          { icon: 'Shield', title: '100% Bez závazků', description: 'nezávazná nabídka' },
+        ],
+        enabled: true,
+      }],
+    ]));
+
+    // Contact info data
+    this.data.set('contact_info', new Map([
+      ['current', {
+        id: 'current',
+        heading: 'Napište nám',
+        subheading: 'Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme',
+        email: 'info@weblyx.cz',
+        address: 'Praha, Česká republika',
+        openingHours: {
+          weekdays: 'Po - Pá: 9:00 - 18:00',
+          weekend: 'So - Ne: Zavřeno',
+        },
+        formLabels: {
+          name: 'Jméno a příjmení',
+          email: 'Email',
+          phone: 'Telefon',
+          projectType: 'Typ projektu',
+          budget: 'Orientační rozpočet',
+          message: 'Zpráva',
+          submit: 'Odeslat zprávu',
+          submitting: 'Odesílání...',
+        },
+        projectTypes: [
+          { value: 'web', label: 'Webové stránky' },
+          { value: 'eshop', label: 'E-shop' },
+          { value: 'redesign', label: 'Redesign' },
+          { value: 'seo', label: 'SEO optimalizace' },
+          { value: 'other', label: 'Jiné' },
+        ],
+        budgetOptions: [
+          { value: '10-20k', label: '10 000 - 20 000 Kč' },
+          { value: '20-50k', label: '20 000 - 50 000 Kč' },
+          { value: '50-100k', label: '50 000 - 100 000 Kč' },
+          { value: '100k+', label: '100 000+ Kč' },
+          { value: 'flexible', label: 'Flexibilní' },
+        ],
+        enabled: true,
       }],
     ]));
   }

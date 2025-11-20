@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import {
   getAllPricingTiers,
   createPricingTier,
@@ -31,6 +31,7 @@ import { PricingTier } from "@/types/cms";
 
 export default function PricingManagementPage() {
   const router = useRouter();
+  const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<PricingTier[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -56,17 +57,13 @@ export default function PricingManagementPage() {
   });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        await loadPricingTiers();
-        setLoading(false);
-      }
-    });
+    const loadData = async () => {
+      await loadPricingTiers();
+      setLoading(false);
+    };
 
-    return () => unsubscribe();
-  }, [router]);
+    loadData();
+  }, []);
 
   const loadPricingTiers = async () => {
     try {
@@ -78,7 +75,7 @@ export default function PricingManagementPage() {
     }
   };
 
-  const handleInputChange = (
+  const handleInputChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
@@ -89,38 +86,40 @@ export default function PricingManagementPage() {
           ? parseFloat(value) || 0
           : value,
     }));
-  };
+  }, []);
 
-  const handleFeatureChange = (index: number, value: string) => {
-    const newFeatures = [...formData.features];
-    newFeatures[index] = value;
-    setFormData((prev) => ({
-      ...prev,
-      features: newFeatures,
-    }));
-  };
+  const handleFeatureChange = useCallback((index: number, value: string) => {
+    setFormData((prev) => {
+      const newFeatures = [...prev.features];
+      newFeatures[index] = value;
+      return {
+        ...prev,
+        features: newFeatures,
+      };
+    });
+  }, []);
 
-  const addFeature = () => {
+  const addFeature = useCallback(() => {
     setFormData((prev) => ({
       ...prev,
       features: [...prev.features, ""],
     }));
-  };
+  }, []);
 
-  const removeFeature = (index: number) => {
+  const removeFeature = useCallback((index: number) => {
     setFormData((prev) => ({
       ...prev,
       features: prev.features.filter((_, i) => i !== index),
     }));
-  };
+  }, []);
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: checked,
     }));
-  };
+  }, []);
 
   const startCreating = () => {
     setFormData({

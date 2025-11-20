@@ -1,38 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Menu, Home, DollarSign, ArrowLeft } from "lucide-react";
+import { FileText, Menu, Home, DollarSign, ArrowLeft, GitBranch, HelpCircle, Megaphone, Mail } from "lucide-react";
 
 export default function ContentManagementPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
-          <p className="text-muted-foreground">Načítání...</p>
-        </div>
-      </div>
-    );
-  }
+  const { user } = useAdminAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -146,6 +122,110 @@ export default function ContentManagementPage() {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Process Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <GitBranch className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Proces</CardTitle>
+                  <CardDescription>Jak to funguje</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Spravujte kroky pracovního procesu
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/process")}
+              >
+                Spravovat Proces
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* FAQ Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <HelpCircle className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>FAQ</CardTitle>
+                  <CardDescription>Často kladené otázky</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte otázky a odpovědi pro zákazníky
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/faq")}
+              >
+                Spravovat FAQ
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* CTA Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Megaphone className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>CTA sekce</CardTitle>
+                  <CardDescription>Call-to-Action banner</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte výzvu k akci na konci homepage
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/cta")}
+              >
+                Upravit CTA
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Contact Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Mail className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Kontakt</CardTitle>
+                  <CardDescription>Kontaktní informace</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte kontaktní údaje a formulář
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/contact")}
+              >
+                Upravit Kontakt
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Help Section */}
@@ -162,6 +242,18 @@ export default function ContentManagementPage() {
             </p>
             <p>
               <strong>Ceníky:</strong> Spravujte cenové úrovně, ceny a funkce jednotlivých plánů
+            </p>
+            <p>
+              <strong>Proces:</strong> Definujte kroky vašeho pracovního procesu od konzultace po podporu
+            </p>
+            <p>
+              <strong>FAQ:</strong> Přidávejte často kladené otázky a odpovědi pro vaše zákazníky
+            </p>
+            <p>
+              <strong>CTA sekce:</strong> Upravte Call-to-Action banner s výhodami a tlačítky
+            </p>
+            <p>
+              <strong>Kontakt:</strong> Spravujte kontaktní informace, formulář a otevírací dobu
             </p>
           </CardContent>
         </Card>

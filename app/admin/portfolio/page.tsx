@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { db } from "@/lib/firebase";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import {
   collection,
   getDocs,
@@ -44,22 +44,15 @@ import { PortfolioProject } from "@/types/portfolio";
 
 export default function AdminPortfolioPage() {
   const router = useRouter();
+  const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [savingOrder, setSavingOrder] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        loadProjects();
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
+    loadProjects();
+  }, []);
 
   const loadProjects = async () => {
     try {

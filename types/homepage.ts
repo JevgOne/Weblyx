@@ -44,13 +44,6 @@ export interface PortfolioProject {
   displayOrder: number;
 }
 
-export interface PricingTier {
-  id: string;
-  name: string;
-  price: string;
-  duration: string;
-  description: string;
-  popular: boolean;
-  order: number;
-  features: string[];
-}
+// PricingTier interface removed - now using unified CMS schema from @/types/cms
+// This ensures consistency between homepage display and admin CMS
+// Import PricingTier from @/types/cms instead

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,6 +75,7 @@ const statusConfig = {
 
 export default function AdminLeadsPage() {
   const router = useRouter();
+  const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,41 +84,39 @@ export default function AdminLeadsPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        // Načíst leady z Firestore
-        try {
-          const leadsSnapshot = await db.collection("leads").get();
-          const leadsData = leadsSnapshot.docs.map((doc: any) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setLeads(leadsData);
-          console.log("✅ Loaded leads:", leadsData);
-        } catch (error) {
-          console.error("❌ Error loading leads:", error);
-          // Fallback na mock data
-          setLeads(mockLeads);
-        }
-        setLoading(false);
+    const loadLeads = async () => {
+      // Načíst leady z Firestore
+      try {
+        const leadsSnapshot = await db.collection("leads").get();
+        const leadsData = leadsSnapshot.docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setLeads(leadsData);
+        console.log("✅ Loaded leads:", leadsData);
+      } catch (error) {
+        console.error("❌ Error loading leads:", error);
+        // Fallback na mock data
+        setLeads(mockLeads);
       }
+      setLoading(false);
+    };
+
+    loadLeads();
+  }, []);
+
+  const filteredLeads = useMemo(() => {
+    return leads.filter((lead) => {
+      const matchesSearch =
+        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.company?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
     });
-
-    return () => unsubscribe();
-  }, [router]);
-
-  const filteredLeads = leads.filter((lead) => {
-    const matchesSearch =
-      lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.company?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  }, [leads, searchTerm, statusFilter]);
 
   const handleConvertLead = (lead: any) => {
     setSelectedLead(lead);

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { adminDbInstance } from "@/lib/firebase-admin";
-import { PricingTier } from "@/types/homepage";
+import { PricingTier } from "@/types/cms";
 
 async function getPricingTiers(): Promise<PricingTier[]> {
   try {
@@ -38,16 +38,25 @@ async function getPricingTiers(): Promise<PricingTier[]> {
 export async function Pricing() {
   const pricingData = await getPricingTiers();
 
-  // Fallback data if fetch fails
+  // Helper function to format price
+  const formatPrice = (price: number, currency: string) => {
+    return new Intl.NumberFormat('cs-CZ').format(price);
+  };
+
+  // Fallback data if fetch fails (using CMS schema)
   const plans = pricingData.length > 0 ? pricingData : [
     {
       id: 'fallback-1',
       name: 'Jednoduchý Web',
-      price: '10 000',
-      duration: '5-7 dní',
+      price: 10000,
+      currency: 'CZK',
+      interval: 'one-time' as const,
       description: 'Ideální pro malé firmy a živnostníky',
-      popular: false,
+      highlighted: false,
+      ctaText: 'Vybrat balíček',
+      ctaLink: '/poptavka',
       order: 1,
+      enabled: true,
       features: [
         'Až 5 podstránek',
         'Responzivní design',
@@ -55,16 +64,21 @@ export async function Pricing() {
         'Kontaktní formulář',
         'Google Analytics',
         '1 měsíc podpora zdarma',
+        'Dodání za 5-7 dní',
       ],
     },
     {
       id: 'fallback-2',
       name: 'Standardní Web',
-      price: '25 000',
-      duration: '10-14 dní',
+      price: 25000,
+      currency: 'CZK',
+      interval: 'one-time' as const,
       description: 'Pro rostoucí firmy s většími požadavky',
-      popular: true,
+      highlighted: true,
+      ctaText: 'Vybrat balíček',
+      ctaLink: '/poptavka',
       order: 2,
+      enabled: true,
       features: [
         'Až 15 podstránek',
         'Pokročilý design',
@@ -74,6 +88,7 @@ export async function Pricing() {
         'Galerie obrázků',
         '3 měsíce podpora zdarma',
         'Úpravy po spuštění',
+        'Dodání za 10-14 dní',
       ],
     },
   ];
@@ -95,15 +110,15 @@ export async function Pricing() {
             <Card
               key={plan.id}
               className={`relative overflow-hidden ${
-                plan.popular
+                plan.highlighted
                   ? "border-primary shadow-elegant scale-105"
                   : "hover:shadow-lg"
               } transition-all duration-300`}
             >
-              {plan.popular && (
+              {plan.highlighted && (
                 <div className="absolute top-0 right-0">
                   <Badge className="rounded-none rounded-bl-lg">
-                    Nejpopulárnější
+                    Nejoblíbenější
                   </Badge>
                 </div>
               )}
@@ -118,13 +133,15 @@ export async function Pricing() {
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold">
-                      {plan.price}
+                      {formatPrice(plan.price, plan.currency)}
                     </span>
                     <span className="text-muted-foreground">Kč</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Dodání: {plan.duration}
-                  </p>
+                  {plan.interval === 'one-time' && (
+                    <p className="text-sm text-muted-foreground">
+                      Jednorázová platba
+                    </p>
+                  )}
                 </div>
               </CardHeader>
 
@@ -141,9 +158,9 @@ export async function Pricing() {
                 <Button
                   asChild
                   className="w-full"
-                  variant={plan.popular ? "default" : "outline"}
+                  variant={plan.highlighted ? "default" : "outline"}
                 >
-                  <Link href="/poptavka">Začít projekt</Link>
+                  <Link href={plan.ctaLink}>{plan.ctaText}</Link>
                 </Button>
               </CardContent>
             </Card>

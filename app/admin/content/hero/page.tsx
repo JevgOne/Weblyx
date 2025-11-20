@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { getHomepageSections, updateHeroSection } from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { HeroSection } from "@/types/cms";
 
 export default function HeroEditorPage() {
   const router = useRouter();
+  const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -33,17 +34,13 @@ export default function HeroEditorPage() {
   });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        await loadHeroData();
-        setLoading(false);
-      }
-    });
+    const loadData = async () => {
+      await loadHeroData();
+      setLoading(false);
+    };
 
-    return () => unsubscribe();
-  }, [router]);
+    loadData();
+  }, []);
 
   const loadHeroData = async () => {
     try {

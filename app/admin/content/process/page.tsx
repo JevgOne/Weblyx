@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import {
-  getAllServices,
-  createService,
-  updateService,
-  deleteService,
+  getProcessSection,
+  updateProcessSection,
+  getAllProcessSteps,
+  createProcessStep,
+  updateProcessStep,
+  deleteProcessStep,
 } from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,13 +28,18 @@ import {
   CheckCircle2,
   GripVertical,
 } from "lucide-react";
-import { Service } from "@/types/cms";
+import { ProcessSection, ProcessStep } from "@/types/cms";
 
-export default function ServicesManagementPage() {
+export default function ProcessManagementPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
-  const [services, setServices] = useState<Service[]>([]);
+  const [sectionData, setSectionData] = useState<ProcessSection>({
+    heading: "",
+    subheading: "",
+    enabled: true,
+  });
+  const [steps, setSteps] = useState<ProcessStep[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -41,31 +48,74 @@ export default function ServicesManagementPage() {
     message: string;
   } | null>(null);
 
-  const [formData, setFormData] = useState<Omit<Service, "id" | "createdAt" | "updatedAt">>({
+  const [formData, setFormData] = useState<Omit<ProcessStep, "id" | "createdAt" | "updatedAt">>({
+    number: "",
+    icon: "",
     title: "",
     description: "",
-    icon: "",
-    features: [""],
     order: 0,
     enabled: true,
   });
 
   useEffect(() => {
-    const loadData = async () => {
-      await loadServices();
+    const fetchData = async () => {
+      await loadData();
       setLoading(false);
     };
 
-    loadData();
+    fetchData();
   }, []);
 
-  const loadServices = async () => {
+  const loadData = async () => {
     try {
-      const data = await getAllServices();
-      setServices(data);
+      const [section, stepsData] = await Promise.all([
+        getProcessSection(),
+        getAllProcessSteps(),
+      ]);
+
+      if (section) {
+        setSectionData(section);
+      }
+      setSteps(stepsData);
     } catch (error) {
-      console.error("Error loading services:", error);
-      showNotification("error", "Chyba při načítání služeb");
+      console.error("Error loading process data:", error);
+      showNotification("error", "Chyba při načítání dat");
+    }
+  };
+
+  const handleSectionChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setSectionData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSectionCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSectionData((prev) => ({
+      ...prev,
+      enabled: e.target.checked,
+    }));
+  };
+
+  const handleSaveSection = async () => {
+    if (!sectionData.heading.trim()) {
+      showNotification("error", "Nadpis je povinný");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await updateProcessSection(sectionData);
+      showNotification("success", "Sekce byla úspěšně uložena!");
+      await loadData();
+    } catch (error) {
+      console.error("Error saving section:", error);
+      showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -79,29 +129,6 @@ export default function ServicesManagementPage() {
     }));
   };
 
-  const handleFeatureChange = (index: number, value: string) => {
-    const newFeatures = [...formData.features];
-    newFeatures[index] = value;
-    setFormData((prev) => ({
-      ...prev,
-      features: newFeatures,
-    }));
-  };
-
-  const addFeature = () => {
-    setFormData((prev) => ({
-      ...prev,
-      features: [...prev.features, ""],
-    }));
-  };
-
-  const removeFeature = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index),
-    }));
-  };
-
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
@@ -112,27 +139,27 @@ export default function ServicesManagementPage() {
 
   const startCreating = () => {
     setFormData({
+      number: String(steps.length + 1).padStart(2, '0'),
+      icon: "",
       title: "",
       description: "",
-      icon: "",
-      features: [""],
-      order: services.length,
+      order: steps.length + 1,
       enabled: true,
     });
     setIsCreating(true);
     setEditingId(null);
   };
 
-  const startEditing = (service: Service) => {
+  const startEditing = (step: ProcessStep) => {
     setFormData({
-      title: service.title,
-      description: service.description,
-      icon: service.icon,
-      features: service.features.length > 0 ? service.features : [""],
-      order: service.order,
-      enabled: service.enabled,
+      number: step.number,
+      icon: step.icon,
+      title: step.title,
+      description: step.description,
+      order: step.order,
+      enabled: step.enabled,
     });
-    setEditingId(service.id || null);
+    setEditingId(step.id || null);
     setIsCreating(false);
   };
 
@@ -140,56 +167,47 @@ export default function ServicesManagementPage() {
     setEditingId(null);
     setIsCreating(false);
     setFormData({
+      number: "",
+      icon: "",
       title: "",
       description: "",
-      icon: "",
-      features: [""],
       order: 0,
       enabled: true,
     });
   };
 
   const handleSave = async () => {
-    // Validation
+    if (!formData.number.trim()) {
+      showNotification("error", "Číslo kroku je povinné");
+      return;
+    }
     if (!formData.title.trim()) {
-      showNotification("error", "Název služby je povinný");
+      showNotification("error", "Název kroku je povinný");
       return;
     }
     if (!formData.description.trim()) {
-      showNotification("error", "Popis služby je povinný");
+      showNotification("error", "Popis kroku je povinný");
       return;
     }
     if (!formData.icon.trim()) {
-      showNotification("error", "Ikona služby je povinná");
-      return;
-    }
-
-    // Filter out empty features
-    const cleanedFeatures = formData.features.filter((f) => f.trim() !== "");
-    if (cleanedFeatures.length === 0) {
-      showNotification("error", "Přidejte alespoň jednu funkci");
+      showNotification("error", "Ikona kroku je povinná");
       return;
     }
 
     setSaving(true);
     try {
-      const dataToSave = {
-        ...formData,
-        features: cleanedFeatures,
-      };
-
       if (isCreating) {
-        await createService(dataToSave);
-        showNotification("success", "Služba byla úspěšně vytvořena!");
+        await createProcessStep(formData);
+        showNotification("success", "Krok byl úspěšně vytvořen!");
       } else if (editingId) {
-        await updateService(editingId, dataToSave);
-        showNotification("success", "Služba byla úspěšně aktualizována!");
+        await updateProcessStep(editingId, formData);
+        showNotification("success", "Krok byl úspěšně aktualizován!");
       }
 
-      await loadServices();
+      await loadData();
       cancelEditing();
     } catch (error) {
-      console.error("Error saving service:", error);
+      console.error("Error saving step:", error);
       showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
     } finally {
       setSaving(false);
@@ -197,16 +215,16 @@ export default function ServicesManagementPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Opravdu chcete smazat tuto službu?")) {
+    if (!confirm("Opravdu chcete smazat tento krok?")) {
       return;
     }
 
     try {
-      await deleteService(id);
-      showNotification("success", "Služba byla úspěšně smazána!");
-      await loadServices();
+      await deleteProcessStep(id);
+      showNotification("success", "Krok byl úspěšně smazán!");
+      await loadData();
     } catch (error) {
-      console.error("Error deleting service:", error);
+      console.error("Error deleting step:", error);
       showNotification("error", "Chyba při mazání. Zkuste to prosím znovu.");
     }
   };
@@ -243,16 +261,16 @@ export default function ServicesManagementPage() {
               Zpět
             </Button>
             <div>
-              <h1 className="text-xl font-bold">Správa služeb</h1>
+              <h1 className="text-xl font-bold">Správa procesu</h1>
               <p className="text-sm text-muted-foreground">
-                {services.length} služeb celkem
+                {steps.length} kroků celkem
               </p>
             </div>
           </div>
 
           <Button onClick={startCreating} className="gap-2" disabled={isCreating || editingId !== null}>
             <Plus className="h-4 w-4" />
-            Přidat službu
+            Přidat krok
           </Button>
         </div>
       </header>
@@ -277,12 +295,68 @@ export default function ServicesManagementPage() {
           </Alert>
         )}
 
+        {/* Section Settings */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Nastavení sekce</CardTitle>
+            <CardDescription>
+              Upravte hlavní nadpis a podnadpis sekce procesu
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="heading">
+                Hlavní nadpis <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="heading"
+                name="heading"
+                value={sectionData.heading}
+                onChange={handleSectionChange}
+                placeholder="Jak to funguje"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="subheading">Podnadpis</Label>
+              <Textarea
+                id="subheading"
+                name="subheading"
+                value={sectionData.subheading}
+                onChange={handleSectionChange}
+                placeholder="Náš proces je jednoduchý, transparentní a efektivní"
+                rows={2}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="section-enabled"
+                checked={sectionData.enabled}
+                onChange={handleSectionCheckboxChange}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="section-enabled" className="font-normal cursor-pointer">
+                Zobrazit sekci na webu
+              </Label>
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={handleSaveSection} disabled={saving}>
+                <Save className="h-4 w-4 mr-2" />
+                {saving ? "Ukládání..." : "Uložit sekci"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Create/Edit Form */}
         {(isCreating || editingId) && (
           <Card className="mb-6 border-primary">
             <CardHeader>
               <CardTitle>
-                {isCreating ? "Vytvořit novou službu" : "Upravit službu"}
+                {isCreating ? "Vytvořit nový krok" : "Upravit krok"}
               </CardTitle>
               <CardDescription>
                 Vyplňte všechny povinné údaje
@@ -290,18 +364,18 @@ export default function ServicesManagementPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
-                {/* Title */}
+                {/* Number */}
                 <div className="space-y-2">
-                  <Label htmlFor="title">
-                    Název služby <span className="text-destructive">*</span>
+                  <Label htmlFor="number">
+                    Číslo kroku <span className="text-destructive">*</span>
                   </Label>
                   <Input
-                    id="title"
-                    name="title"
-                    value={formData.title}
+                    id="number"
+                    name="number"
+                    value={formData.number}
                     onChange={handleInputChange}
-                    placeholder="Např. Web Design"
-                    required
+                    placeholder="01"
+                    maxLength={2}
                   />
                 </div>
 
@@ -315,13 +389,26 @@ export default function ServicesManagementPage() {
                     name="icon"
                     value={formData.icon}
                     onChange={handleInputChange}
-                    placeholder="Např. Palette, Code, Rocket"
-                    required
+                    placeholder="MessageSquare, Palette, Code..."
                   />
                   <p className="text-xs text-muted-foreground">
                     Viz lucide.dev/icons
                   </p>
                 </div>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-2">
+                <Label htmlFor="title">
+                  Název <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="Konzultace"
+                />
               </div>
 
               {/* Description */}
@@ -334,46 +421,9 @@ export default function ServicesManagementPage() {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Krátký popis služby..."
+                  placeholder="Podrobný popis kroku..."
                   rows={3}
-                  required
                 />
-              </div>
-
-              {/* Features */}
-              <div className="space-y-2">
-                <Label>
-                  Funkce <span className="text-destructive">*</span>
-                </Label>
-                {formData.features.map((feature, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={feature}
-                      onChange={(e) => handleFeatureChange(index, e.target.value)}
-                      placeholder="Funkce služby..."
-                    />
-                    {formData.features.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeFeature(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addFeature}
-                  className="gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Přidat funkci
-                </Button>
               </div>
 
               {/* Order */}
@@ -388,7 +438,7 @@ export default function ServicesManagementPage() {
                   min="0"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Určuje pořadí zobrazení (0 = první)
+                  Určuje pořadí zobrazení (1 = první)
                 </p>
               </div>
 
@@ -403,7 +453,7 @@ export default function ServicesManagementPage() {
                   className="h-4 w-4 rounded border-gray-300"
                 />
                 <Label htmlFor="enabled" className="font-normal cursor-pointer">
-                  Zobrazit službu na webu
+                  Zobrazit krok na webu
                 </Label>
               </div>
 
@@ -422,42 +472,42 @@ export default function ServicesManagementPage() {
           </Card>
         )}
 
-        {/* Services List */}
+        {/* Steps List */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Všechny služby</h2>
-          {services.length === 0 ? (
+          <h2 className="text-2xl font-bold">Všechny kroky</h2>
+          {steps.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-muted-foreground">
-                <p>Zatím nejsou žádné služby.</p>
+                <p>Zatím nejsou žádné kroky.</p>
                 <Button onClick={startCreating} className="mt-4 gap-2">
                   <Plus className="h-4 w-4" />
-                  Přidat první službu
+                  Přidat první krok
                 </Button>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {services.map((service) => (
+              {steps.map((step) => (
                 <Card
-                  key={service.id}
+                  key={step.id}
                   className={`${
-                    !service.enabled ? "opacity-50" : ""
+                    !step.enabled ? "opacity-50" : ""
                   } hover:shadow-lg transition-shadow`}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <GripVertical className="h-5 w-5 text-primary" />
+                          <span className="text-sm font-bold text-primary">{step.number}</span>
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{service.title}</CardTitle>
+                          <CardTitle className="text-lg">{step.title}</CardTitle>
                           <p className="text-xs text-muted-foreground">
-                            Pořadí: {service.order}
+                            Pořadí: {step.order}
                           </p>
                         </div>
                       </div>
-                      {!service.enabled && (
+                      {!step.enabled && (
                         <span className="text-xs bg-muted px-2 py-1 rounded">
                           Skryto
                         </span>
@@ -466,20 +516,17 @@ export default function ServicesManagementPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-3">
-                      {service.description}
+                      {step.description}
                     </p>
                     <div className="text-xs text-muted-foreground mb-4">
-                      <strong>Ikona:</strong> {service.icon}
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-4">
-                      <strong>Funkce:</strong> {service.features.length}
+                      <strong>Ikona:</strong> {step.icon}
                     </div>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         className="flex-1 gap-2"
-                        onClick={() => startEditing(service)}
+                        onClick={() => startEditing(step)}
                       >
                         <Edit className="h-4 w-4" />
                         Upravit
@@ -487,7 +534,7 @@ export default function ServicesManagementPage() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => service.id && handleDelete(service.id)}
+                        onClick={() => step.id && handleDelete(step.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
