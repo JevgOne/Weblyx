@@ -169,15 +169,19 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-          {plans.map((plan, index) => (
-            <div
-              key={plan.id}
-              className={`group relative animate-fade-in-up ${
-                plan.highlighted ? 'lg:scale-105 lg:-mt-4' : ''
-              }`}
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
+        {/* Horizontal scrollable carousel */}
+        <div className="relative mb-12">
+          {/* Scroll container */}
+          <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+            <div className="flex gap-6 pb-8 px-4 min-w-min">
+              {plans.map((plan, index) => (
+                <div
+                  key={plan.id}
+                  className={`group relative animate-fade-in-up snap-center shrink-0 w-[340px] md:w-[380px] ${
+                    plan.highlighted ? 'md:scale-105 md:-mt-4' : ''
+                  }`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
               {/* Glow effect for highlighted plan */}
               {plan.highlighted && (
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-cyan-500 to-primary rounded-2xl opacity-75 blur-sm group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
@@ -273,8 +277,26 @@ export function Pricing() {
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
                 )}
               </Card>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Scroll indicators (dots) */}
+          <div className="flex justify-center gap-2 mt-6">
+            {plans.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === 2 ? 'w-8 bg-primary' : 'w-2 bg-primary/30'
+                }`}
+              ></div>
+            ))}
+          </div>
+
+          {/* Gradient fade edges */}
+          <div className="absolute left-0 top-0 bottom-8 w-20 bg-gradient-to-r from-background to-transparent pointer-events-none hidden md:block"></div>
+          <div className="absolute right-0 top-0 bottom-8 w-20 bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block"></div>
         </div>
 
         <div className="text-center space-y-4 animate-fade-in delay-1000">
@@ -287,7 +309,18 @@ export function Pricing() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
+        /* Hide scrollbar but keep functionality */
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          scroll-behavior: smooth;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+
         @keyframes fade-in {
           from {
             opacity: 0;
