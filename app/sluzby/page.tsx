@@ -279,7 +279,7 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                <Button asChild size="lg">
+                <Button variant="outline" asChild size="lg">
                   <Link href="/poptavka">
                     Nezávazná poptávka
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -312,7 +312,7 @@ export default function ServicesPage() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
+            <Button variant="outline" asChild size="lg">
               <Link href="/poptavka">Vyplnit dotazník</Link>
             </Button>
             <Button asChild variant="outline" size="lg">

@@ -62,7 +62,7 @@ export default function ThankYouPage() {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-              <Button asChild size="lg">
+              <Button variant="outline" asChild size="lg">
                 <Link href="/" className="gap-2">
                   Zpět na hlavní stránku
                   <ArrowRight className="h-4 w-4" />

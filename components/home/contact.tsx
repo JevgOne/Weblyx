@@ -277,6 +277,7 @@ export function Contact() {
                   )}
 
                   <Button
+                    variant="outline"
                     type="submit"
                     size="lg"
                     className="w-full md:w-auto"

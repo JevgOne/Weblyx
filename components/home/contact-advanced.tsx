@@ -610,6 +610,7 @@ export function ContactAdvanced() {
 
                     {(currentStep < 3 || !wantAIDesigns) ? (
                       <Button
+                        variant="outline"
                         type="button"
                         onClick={handleNext}
                         disabled={!canProceed() || isSubmitting}
@@ -628,6 +629,7 @@ export function ContactAdvanced() {
                       </Button>
                     ) : (
                       <Button
+                        variant="outline"
                         type="button"
                         onClick={handleSubmit}
                         disabled={isSubmitting || !formData.industry || !formData.targetAudience || !formData.stylePreference}

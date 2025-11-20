@@ -43,7 +43,7 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button asChild className="shadow-elegant">
+            <Button variant="outline" asChild className="shadow-elegant">
               <Link href="/poptavka">Nezávazná poptávka</Link>
             </Button>
           </div>
@@ -77,7 +77,7 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <Button asChild className="w-full">
+            <Button variant="outline" asChild className="w-full">
               <Link href="/poptavka">Nezávazná poptávka</Link>
             </Button>
           </div>

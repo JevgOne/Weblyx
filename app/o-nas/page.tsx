@@ -251,7 +251,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
+            <Button variant="outline" asChild size="lg">
               <Link href="/poptavka">Začít projekt</Link>
             </Button>
             <Button asChild variant="outline" size="lg">

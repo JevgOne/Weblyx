@@ -152,7 +152,7 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
               <p className="text-sm text-muted-foreground mb-4">
                 Pro tento lead ještě nebyl vygenerován AI design návrh.
               </p>
-              <Button onClick={generateDesign} disabled={generating}>
+              <Button variant="outline" onClick={generateDesign} disabled={generating}>
                 {generating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />

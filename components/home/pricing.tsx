@@ -259,6 +259,7 @@ export function Pricing() {
                       className="text-center font-mono font-bold"
                     />
                     <Button
+                      variant="outline"
                       onClick={handleApplyPromo}
                       disabled={isValidating || !promoCode.trim()}
                       size="sm"
