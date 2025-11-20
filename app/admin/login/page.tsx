@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,8 +24,14 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // Use auth.signInWithEmailAndPassword directly (works with both mock and real Firebase)
-      await auth.signInWithEmailAndPassword(email, password);
+      // Check if using mock or real Firebase
+      if (typeof auth.signInWithEmailAndPassword === 'function') {
+        // Mock Firebase
+        await auth.signInWithEmailAndPassword(email, password);
+      } else {
+        // Real Firebase
+        await signInWithEmailAndPassword(auth, email, password);
+      }
       router.push("/admin/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
