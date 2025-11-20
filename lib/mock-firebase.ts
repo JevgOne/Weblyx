@@ -274,8 +274,28 @@ export const mockStorageRef = (storage: any, path: string) => {
   };
 };
 
+// In-memory storage for uploaded files (base64 data URLs)
+const mockStorageFiles = new Map<string, string>();
+
 export const mockUploadBytes = async (ref: any, data: Blob | Uint8Array | ArrayBuffer) => {
   if (DEBUG_LOGS) console.log('🎭 Mock Storage: uploadBytes', ref.fullPath);
+
+  // Convert data to base64 data URL for preview
+  let dataUrl: string;
+  if (data instanceof Blob) {
+    // For Blob, create a data URL
+    dataUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(data);
+    });
+  } else {
+    // For ArrayBuffer/Uint8Array, create a simple placeholder
+    dataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+  }
+
+  // Store the data URL in memory
+  mockStorageFiles.set(ref.fullPath, dataUrl);
 
   // Simulate upload delay
   await new Promise(resolve => setTimeout(resolve, 500));
@@ -296,8 +316,14 @@ export const mockUploadBytes = async (ref: any, data: Blob | Uint8Array | ArrayB
 export const mockGetDownloadURL = async (ref: any) => {
   if (DEBUG_LOGS) console.log('🎭 Mock Storage: getDownloadURL', ref.fullPath);
 
-  // Return mock URL
-  return `https://mock-storage.com/${ref.fullPath}`;
+  // Return the stored data URL if it exists, otherwise return a placeholder
+  const dataUrl = mockStorageFiles.get(ref.fullPath);
+  if (dataUrl) {
+    return dataUrl;
+  }
+
+  // Fallback to placeholder image
+  return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Nb2NrIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
 };
 
 export const mockDeleteObject = async (ref: any) => {
