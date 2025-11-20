@@ -26,7 +26,8 @@ const mockPages: PageContentItem[] = [
     category: 'homepage',
     content: {
       heading: 'Naše služby',
-      subheading: 'Komplexní řešení pro vaši online přítomnost'
+      subheading: 'Komplexní řešení pro vaši online přítomnost',
+      phone: '+420 123 456 789'
     },
     updatedAt: new Date().toISOString(),
     updatedBy: 'admin'

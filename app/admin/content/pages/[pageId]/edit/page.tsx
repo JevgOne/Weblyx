@@ -29,7 +29,8 @@ const mockPagesData: Record<string, PageContentItem> = {
     category: 'homepage',
     content: {
       heading: 'Naše služby',
-      subheading: 'Komplexní řešení pro vaši online přítomnost'
+      subheading: 'Komplexní řešení pro vaši online přítomnost',
+      phone: '+420 123 456 789'
     },
     updatedAt: new Date().toISOString(),
     updatedBy: 'admin'
@@ -118,6 +119,7 @@ const fieldMetadata: Record<string, { label: string; description: string; type: 
   footerNote: { label: 'Poznámka v patičce', description: 'Doplňující informace pod obsahem', type: 'textarea' },
   responseTime: { label: 'Doba odezvy', description: 'Jak rychle odpovídáte', type: 'input' },
   availability: { label: 'Dostupnost', description: 'Otevírací doba nebo dostupnost', type: 'input' },
+  phone: { label: 'Telefonní číslo', description: 'Kontaktní telefon pro zákazníky', type: 'input' },
 };
 
 export default function PageEditorPage() {
