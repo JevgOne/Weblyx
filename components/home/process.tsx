@@ -1,14 +1,89 @@
+"use client";
+
 import * as LucideIcons from "lucide-react";
-import { getServerProcessSection, getServerProcessSteps } from "@/lib/firestore-server";
+import { useEffect, useState } from "react";
 
-export async function Process() {
-  const [section, stepsData] = await Promise.all([
-    getServerProcessSection(),
-    getServerProcessSteps(),
-  ]);
+interface ProcessStep {
+  id: string;
+  number: number;
+  title: string;
+  description: string;
+  icon: string;
+  enabled: boolean;
+}
 
-  // Filter only enabled steps
-  const steps = stepsData.filter((step) => step.enabled);
+interface ProcessSection {
+  enabled: boolean;
+  heading: string;
+  subheading: string;
+}
+
+export function Process() {
+  const [steps, setSteps] = useState<ProcessStep[]>([]);
+  const [section, setSection] = useState<ProcessSection | null>(null);
+
+  useEffect(() => {
+    // In development with mock data, we can use fallback data
+    const mockSection: ProcessSection = {
+      enabled: true,
+      heading: "Jak to funguje",
+      subheading: "Náš proces je jednoduchý, transparentní a efektivní"
+    };
+
+    const mockSteps: ProcessStep[] = [
+      {
+        id: "1",
+        number: 1,
+        title: "Konzultace",
+        description: "Nezávazná konzultace zdarma, kde si vyslechneme vaše požadavky a cíle.",
+        icon: "MessageCircle",
+        enabled: true
+      },
+      {
+        id: "2",
+        number: 2,
+        title: "Návrh designu",
+        description: "Vytvoříme moderní design odpovídající vaší značce a cílové skupině.",
+        icon: "Palette",
+        enabled: true
+      },
+      {
+        id: "3",
+        number: 3,
+        title: "Vývoj",
+        description: "Naprogramujeme web s využitím nejnovějších technologií a best practices.",
+        icon: "Code",
+        enabled: true
+      },
+      {
+        id: "4",
+        number: 4,
+        title: "Testování",
+        description: "Důkladně otestujeme všechny funkce, responzivitu a rychlost načítání.",
+        icon: "TestTube",
+        enabled: true
+      },
+      {
+        id: "5",
+        number: 5,
+        title: "Spuštění",
+        description: "Zveřejníme váš web na internetu a zajistíme bezproblémový start.",
+        icon: "Rocket",
+        enabled: true
+      },
+      {
+        id: "6",
+        number: 6,
+        title: "Podpora",
+        description: "Poskytujeme následnou podporu, aktualizace a údržbu vašeho webu.",
+        icon: "HeadphonesIcon",
+        enabled: true
+      }
+    ];
+
+    setSection(mockSection);
+    setSteps(mockSteps.filter(step => step.enabled));
+  }, []);
 
   if (!section || !section.enabled || steps.length === 0) {
     return null;
@@ -53,7 +128,7 @@ export async function Process() {
                 >
                   <div className="h-full bg-border relative overflow-hidden">
                     <div
-                      className="absolute inset-0 bg-primary animate-pulse"
+                      className="absolute inset-0 bg-primary"
                       style={{
                         animation: `slideIn 2s ease-in-out ${index * 0.2}s infinite`,
                       }}
