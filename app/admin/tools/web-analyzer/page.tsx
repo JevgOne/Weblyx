@@ -410,15 +410,56 @@ export default function WebAnalyzerPage() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-3">
-                <Button variant="default">
+                <Button
+                  variant="default"
+                  onClick={async () => {
+                    if (!analysis.id) return;
+                    try {
+                      const response = await fetch("/api/admin/generate-pdf", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          analysisId: analysis.id,
+                          includePromo: true,
+                          businessName,
+                        }),
+                      });
+
+                      if (!response.ok) throw new Error("Failed to generate PDF");
+
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `web-analysis-${analysis.id}.pdf`;
+                      document.body.appendChild(a);
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                      document.body.removeChild(a);
+                    } catch (err) {
+                      console.error("PDF generation error:", err);
+                      alert("Chyba při generování PDF");
+                    }
+                  }}
+                >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Vygenerovat PDF report
                 </Button>
-                <Button variant="outline">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    alert("Email funkce bude přidána v další verzi s Resend.com integrací");
+                  }}
+                >
                   <Globe className="h-4 w-4 mr-2" />
                   Odeslat cold email
                 </Button>
-                <Button variant="outline">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    window.open("/admin/promo-codes", "_blank");
+                  }}
+                >
                   Vytvořit promo kód
                 </Button>
               </div>
