@@ -79,10 +79,9 @@ export default function BlogPage() {
       }
     };
 
-    if (user) {
-      fetchPosts();
-    }
-  }, [user]);
+    // Start fetching immediately, don't wait for user
+    fetchPosts();
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Opravdu chcete smazat tento článek?")) return;

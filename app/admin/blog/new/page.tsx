@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { db, storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
@@ -33,13 +33,20 @@ export default function NewBlogPostPage() {
     slug: "",
     excerpt: "",
     content: "",
-    author: user?.email?.split("@")[0] || "Admin",
+    author: "Admin",
     published: false,
     featured: false,
     category: "",
     tags: [] as string[],
     imageUrl: "",
   });
+
+  // Update author when user loads
+  useEffect(() => {
+    if (user?.email) {
+      setFormData((prev) => ({ ...prev, author: user.email.split("@")[0] }));
+    }
+  }, [user]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
