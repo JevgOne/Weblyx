@@ -44,7 +44,8 @@ export default function NewBlogPostPage() {
   // Update author when user loads
   useEffect(() => {
     if (user?.email) {
-      setFormData((prev) => ({ ...prev, author: user.email.split("@")[0] }));
+      const email = user.email;
+      setFormData((prev) => ({ ...prev, author: email.split("@")[0] }));
     }
   }, [user]);
 
