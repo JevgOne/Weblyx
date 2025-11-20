@@ -549,6 +549,19 @@ class MockFirestoreAdmin {
 
   collection(collectionName: string) {
     return {
+      // Add new document
+      add: async (data: any) => {
+        if (!this.data.has(collectionName)) {
+          this.data.set(collectionName, new Map());
+        }
+        const collection = this.data.get(collectionName)!;
+        const id = `${collectionName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const docData = { ...data, id };
+        collection.set(id, docData);
+        console.log(`✅ Mock Firebase: Added document to ${collectionName}:`, id);
+        return { id };
+      },
+      // Get document by ID
       doc: (docId: string) => ({
         get: async () => {
           const collection = this.data.get(collectionName);
@@ -559,7 +572,45 @@ class MockFirestoreAdmin {
             id: docId,
           };
         },
+        // Update document
+        update: async (updateData: any) => {
+          if (!this.data.has(collectionName)) {
+            throw new Error(`Collection ${collectionName} does not exist`);
+          }
+          const collection = this.data.get(collectionName)!;
+          const existingData = collection.get(docId);
+          if (!existingData) {
+            throw new Error(`Document ${docId} does not exist in ${collectionName}`);
+          }
+          const updated = { ...existingData, ...updateData, updatedAt: new Date() };
+          collection.set(docId, updated);
+          console.log(`✅ Mock Firebase: Updated document ${collectionName}/${docId}`);
+        },
+        // Delete document
+        delete: async () => {
+          if (!this.data.has(collectionName)) {
+            throw new Error(`Collection ${collectionName} does not exist`);
+          }
+          const collection = this.data.get(collectionName)!;
+          collection.delete(docId);
+          console.log(`✅ Mock Firebase: Deleted document ${collectionName}/${docId}`);
+        },
       }),
+      // Get all documents
+      get: async () => {
+        const collection = this.data.get(collectionName);
+        if (!collection) return { docs: [], empty: true, size: 0 };
+
+        const docs = Array.from(collection.values());
+        return {
+          docs: docs.map(doc => ({
+            id: doc.id,
+            data: () => doc,
+          })),
+          empty: docs.length === 0,
+          size: docs.length,
+        };
+      },
       where: (field: string, operator: string, value: any) => {
         const filters = [{ field, operator, value }];
 
