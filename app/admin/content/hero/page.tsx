@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Save, AlertCircle, CheckCircle2, Eye } from "lucide-react";
 import { HeroSection } from "@/types/cms";
 
@@ -108,17 +109,6 @@ export default function HeroEditorPage() {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 5000);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
-          <p className="text-muted-foreground">Načítání...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -229,108 +219,136 @@ export default function HeroEditorPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Headline */}
-            <div className="space-y-2">
-              <Label htmlFor="headline">
-                Hlavní nadpis <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="headline"
-                name="headline"
-                value={formData.headline}
-                onChange={handleInputChange}
-                placeholder="Např. Tvoříme moderní webové stránky"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Hlavní nadpis zobrazený ve velké velikosti
-              </p>
-            </div>
+            {loading ? (
+              // Skeleton loading for form
+              <>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-24 w-full" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Headline */}
+                <div className="space-y-2">
+                  <Label htmlFor="headline">
+                    Hlavní nadpis <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="headline"
+                    name="headline"
+                    value={formData.headline}
+                    onChange={handleInputChange}
+                    placeholder="Např. Tvoříme moderní webové stránky"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Hlavní nadpis zobrazený ve velké velikosti
+                  </p>
+                </div>
 
-            {/* Subheadline */}
-            <div className="space-y-2">
-              <Label htmlFor="subheadline">
-                Podnadpis <span className="text-destructive">*</span>
-              </Label>
-              <Textarea
-                id="subheadline"
-                name="subheadline"
-                value={formData.subheadline}
-                onChange={handleInputChange}
-                placeholder="Např. Profesionální webdesign a vývoj pro váš byznys"
-                rows={3}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Krátký popis pod hlavním nadpisem
-              </p>
-            </div>
+                {/* Subheadline */}
+                <div className="space-y-2">
+                  <Label htmlFor="subheadline">
+                    Podnadpis <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    id="subheadline"
+                    name="subheadline"
+                    value={formData.subheadline}
+                    onChange={handleInputChange}
+                    placeholder="Např. Profesionální webdesign a vývoj pro váš byznys"
+                    rows={3}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Krátký popis pod hlavním nadpisem
+                  </p>
+                </div>
 
-            {/* CTA Text */}
-            <div className="space-y-2">
-              <Label htmlFor="ctaText">
-                Text CTA tlačítka <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="ctaText"
-                name="ctaText"
-                value={formData.ctaText}
-                onChange={handleInputChange}
-                placeholder="Např. Začít projekt"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Text zobrazený na hlavním tlačítku
-              </p>
-            </div>
+                {/* CTA Text */}
+                <div className="space-y-2">
+                  <Label htmlFor="ctaText">
+                    Text CTA tlačítka <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="ctaText"
+                    name="ctaText"
+                    value={formData.ctaText}
+                    onChange={handleInputChange}
+                    placeholder="Např. Začít projekt"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Text zobrazený na hlavním tlačítku
+                  </p>
+                </div>
 
-            {/* CTA Link */}
-            <div className="space-y-2">
-              <Label htmlFor="ctaLink">
-                Odkaz CTA tlačítka <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="ctaLink"
-                name="ctaLink"
-                value={formData.ctaLink}
-                onChange={handleInputChange}
-                placeholder="Např. /kontakt nebo #kontakt-form"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                URL nebo kotvový odkaz pro CTA tlačítko
-              </p>
-            </div>
+                {/* CTA Link */}
+                <div className="space-y-2">
+                  <Label htmlFor="ctaLink">
+                    Odkaz CTA tlačítka <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="ctaLink"
+                    name="ctaLink"
+                    value={formData.ctaLink}
+                    onChange={handleInputChange}
+                    placeholder="Např. /kontakt nebo #kontakt-form"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    URL nebo kotvový odkaz pro CTA tlačítko
+                  </p>
+                </div>
 
-            {/* Background Image */}
-            <div className="space-y-2">
-              <Label htmlFor="backgroundImage">URL pozadí (volitelné)</Label>
-              <Input
-                id="backgroundImage"
-                name="backgroundImage"
-                value={formData.backgroundImage}
-                onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
-              />
-              <p className="text-xs text-muted-foreground">
-                Nechte prázdné pro použití výchozího gradientu
-              </p>
-            </div>
+                {/* Background Image */}
+                <div className="space-y-2">
+                  <Label htmlFor="backgroundImage">URL pozadí (volitelné)</Label>
+                  <Input
+                    id="backgroundImage"
+                    name="backgroundImage"
+                    value={formData.backgroundImage}
+                    onChange={handleInputChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Nechte prázdné pro použití výchozího gradientu
+                  </p>
+                </div>
 
-            {/* Enabled Checkbox */}
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="enabled"
-                name="enabled"
-                checked={formData.enabled}
-                onChange={handleCheckboxChange}
-                className="h-4 w-4 rounded border-gray-300"
-              />
-              <Label htmlFor="enabled" className="font-normal cursor-pointer">
-                Zobrazit Hero sekci na webu
-              </Label>
-            </div>
+                {/* Enabled Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="enabled"
+                    name="enabled"
+                    checked={formData.enabled}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="enabled" className="font-normal cursor-pointer">
+                    Zobrazit Hero sekci na webu
+                  </Label>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 

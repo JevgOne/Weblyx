@@ -6,6 +6,7 @@ import { auth, db } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   LayoutDashboard,
   Users,
@@ -80,17 +81,6 @@ export default function AdminDashboard() {
     router.push("/admin/login");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
-          <p className="text-muted-foreground">Načítání...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -144,10 +134,19 @@ export default function AdminDashboard() {
               <FolderKanban className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.projects}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Celkem projektů
-              </p>
+              {loading ? (
+                <>
+                  <Skeleton className="h-9 w-16 mb-2" />
+                  <Skeleton className="h-3 w-24" />
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl font-bold">{stats.projects}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Celkem projektů
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -159,10 +158,19 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.leads}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Celkem poptávek
-              </p>
+              {loading ? (
+                <>
+                  <Skeleton className="h-9 w-16 mb-2" />
+                  <Skeleton className="h-3 w-24" />
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl font-bold">{stats.leads}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Celkem poptávek
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -174,10 +182,19 @@ export default function AdminDashboard() {
               <Image className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.portfolio}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Publikované na webu
-              </p>
+              {loading ? (
+                <>
+                  <Skeleton className="h-9 w-16 mb-2" />
+                  <Skeleton className="h-3 w-24" />
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl font-bold">{stats.portfolio}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Publikované na webu
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

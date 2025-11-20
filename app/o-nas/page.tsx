@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Target, Heart, Zap, Shield, Users, TrendingUp } from "lucide-react";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateAboutPageSchema, generateOrganizationSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
   title: "O nás | Weblyx - Moderní webová agentura",
@@ -40,8 +42,33 @@ export default function AboutPage() {
     { value: "< 2s", label: "Průměrná rychlost" },
   ];
 
+  // Generate schemas
+  const aboutPageSchema = generateAboutPageSchema();
+  const organizationSchema = generateOrganizationSchema({
+    foundingDate: '2025',
+  });
+
+  // Generate breadcrumb
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: 'Domů', url: 'https://weblyx.cz' },
+    { name: 'O nás', url: 'https://weblyx.cz/o-nas' },
+  ];
+
+  const webpageSchema = generateWebPageSchema({
+    name: 'O nás',
+    description: 'Jsme moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
+    url: 'https://weblyx.cz/o-nas',
+    breadcrumbs,
+  });
+
   return (
-    <main className="min-h-screen">
+    <>
+      {/* Schema.org JSON-LD */}
+      <JsonLd data={aboutPageSchema} />
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={webpageSchema} />
+
+      <main className="min-h-screen">
       {/* Hero Section */}
       <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
@@ -183,6 +210,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

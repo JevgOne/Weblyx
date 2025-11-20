@@ -13,6 +13,9 @@ import {
   Check,
   ArrowRight,
 } from "lucide-react";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
+import { Service as ServiceType } from "@/types/cms";
 
 export const metadata: Metadata = {
   title: "Služby | Weblyx - Tvorba webů, E-shopy, SEO",
@@ -138,9 +141,58 @@ export default function ServicesPage() {
     },
   ];
 
+  // Generate breadcrumb schema
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: 'Domů', url: 'https://weblyx.cz' },
+    { name: 'Služby', url: 'https://weblyx.cz/sluzby' },
+  ];
+
+  // Generate webpage schema
+  const webpageSchema = generateWebPageSchema({
+    name: 'Služby',
+    description: 'Nabízíme tvorbu webových stránek, e-shopů, SEO optimalizaci, redesign, optimalizaci rychlosti a následnou podporu',
+    url: 'https://weblyx.cz/sluzby',
+    breadcrumbs,
+  });
+
+  // Convert services to Service schema format
+  const servicesForSchema: ServiceType[] = services.map((service) => ({
+    id: service.slug,
+    title: service.title,
+    description: service.description,
+    icon: service.icon.displayName || 'Globe',
+    features: service.includes,
+    order: services.indexOf(service),
+    enabled: true,
+  }));
+
+  // Generate individual service schemas
+  const serviceSchemas = servicesForSchema.map(service => ({
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.title,
+    description: service.description,
+    provider: {
+      '@type': 'Organization',
+      name: 'Weblyx',
+      url: 'https://weblyx.cz',
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: 'Czech Republic',
+    },
+  }));
+
   return (
-    <main className="min-h-screen">
-      {/* Hero Section */}
+    <>
+      {/* Schema.org JSON-LD */}
+      <JsonLd data={webpageSchema} />
+      {serviceSchemas.map((schema, index) => (
+        <JsonLd key={index} data={schema} />
+      ))}
+
+      <main className="min-h-screen">
+        {/* Hero Section */}
       <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
@@ -242,6 +294,7 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

@@ -6,18 +6,83 @@ import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
 import { Contact } from "@/components/home/contact";
+import { JsonLd } from "@/components/seo/JsonLd";
+import {
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+  generateFAQSchema,
+  generateOffersSchema,
+} from "@/lib/schema-org";
+import { getServerFAQItems } from "@/lib/firestore-server";
+import { adminDbInstance } from "@/lib/firebase-admin";
+import { PricingTier } from "@/types/cms";
 
-export default function HomePage() {
+async function getPricingTiers(): Promise<PricingTier[]> {
+  try {
+    if (!adminDbInstance) {
+      return [];
+    }
+
+    const snapshot = await adminDbInstance
+      .collection('pricing_tiers')
+      .orderBy('order')
+      .get();
+
+    if (snapshot.empty) {
+      return [];
+    }
+
+    const tiers: PricingTier[] = [];
+    snapshot.docs.forEach((doc: any) => {
+      const data = doc.data();
+      if (data.enabled) {
+        tiers.push({ id: doc.id, ...data } as PricingTier);
+      }
+    });
+
+    return tiers;
+  } catch (error) {
+    console.error('Error fetching pricing tiers:', error);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  // Fetch data for schemas
+  const [faqItems, pricingTiers] = await Promise.all([
+    getServerFAQItems(),
+    getPricingTiers(),
+  ]);
+
+  // Filter enabled FAQs
+  const enabledFaqs = faqItems.filter(faq => faq.enabled);
+
+  // Generate schemas
+  const organizationSchema = generateOrganizationSchema();
+  const websiteSchema = generateWebSiteSchema();
+  const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
+  const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;
+
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <Services />
-      <Process />
-      <Portfolio />
-      <Pricing />
-      <FAQ />
-      <CTASection />
-      <Contact />
-    </main>
+    <>
+      {/* Schema.org JSON-LD */}
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={websiteSchema} />
+      {faqSchema && <JsonLd data={faqSchema} />}
+      {offersSchema && offersSchema.map((offer, index) => (
+        <JsonLd key={index} data={offer} />
+      ))}
+
+      <main className="min-h-screen">
+        <Hero />
+        <Services />
+        <Process />
+        <Portfolio />
+        <Pricing />
+        <FAQ />
+        <CTASection />
+        <Contact />
+      </main>
+    </>
   );
 }

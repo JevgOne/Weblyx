@@ -24,9 +24,16 @@ interface AdminAuthProviderProps {
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Optimized: Check if Firebase has a cached user first to skip initial loading
+  const [loading, setLoading] = useState(!auth.currentUser);
 
   useEffect(() => {
+    // If we already have a cached user, set it immediately
+    if (auth.currentUser) {
+      setUser(auth.currentUser);
+      setLoading(false);
+    }
+
     const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
       if (!currentUser) {
         router.push("/admin/login");

@@ -64,15 +64,18 @@ export const mockAuth = {
   }
 };
 
+// Debug flag - set to false in production
+const DEBUG_LOGS = false;
+
 // Mock Firestore Service
 export const mockFirestore = {
   collection: (collectionName: string) => {
-    console.log('🎭 Mock Firestore: collection', collectionName);
+    if (DEBUG_LOGS) console.log('🎭 Mock Firestore: collection', collectionName);
 
     return {
       doc: (docId: string) => ({
         get: async () => {
-          console.log('🎭 Mock Firestore: get doc', collectionName, docId);
+          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: get doc', collectionName, docId);
 
           let data = null;
 
@@ -88,7 +91,7 @@ export const mockFirestore = {
         },
 
         set: async (data: any) => {
-          console.log('🎭 Mock Firestore: set doc', collectionName, docId, data);
+          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: set doc', collectionName, docId, data);
 
           if (collectionName === 'admins') {
             const existingIndex = mockAdmins.findIndex(a => a.uid === docId);
@@ -115,12 +118,12 @@ export const mockFirestore = {
         },
 
         update: async (data: any) => {
-          console.log('🎭 Mock Firestore: update doc', collectionName, docId, data);
+          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: update doc', collectionName, docId, data);
           // Similar to set but merges data
         },
 
         delete: async () => {
-          console.log('🎭 Mock Firestore: delete doc', collectionName, docId);
+          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: delete doc', collectionName, docId);
 
           if (collectionName === 'leads') {
             mockLeads = mockLeads.filter(l => l.id !== docId);
@@ -131,7 +134,7 @@ export const mockFirestore = {
       }),
 
       add: async (data: any) => {
-        console.log('🎭 Mock Firestore: add doc', collectionName, data);
+        if (DEBUG_LOGS) console.log('🎭 Mock Firestore: add doc', collectionName, data);
 
         const id = `${collectionName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -145,7 +148,7 @@ export const mockFirestore = {
       },
 
       get: async () => {
-        console.log('🎭 Mock Firestore: get collection', collectionName);
+        if (DEBUG_LOGS) console.log('🎭 Mock Firestore: get collection', collectionName);
 
         let docs: any[] = [];
 
@@ -241,12 +244,12 @@ export const mockStorage = {
 // Export helper functions
 export function addMockLead(lead: any) {
   mockLeads.push(lead);
-  console.log('🎭 Mock: Added lead', lead);
+  if (DEBUG_LOGS) console.log('🎭 Mock: Added lead', lead);
 }
 
 export function addMockProject(project: any) {
   mockProjects.push(project);
-  console.log('🎭 Mock: Added project', project);
+  if (DEBUG_LOGS) console.log('🎭 Mock: Added project', project);
 }
 
 export function getMockLeads() {
@@ -263,64 +266,76 @@ export function clearMockData() {
   console.log('🎭 Mock: Cleared all data');
 }
 
-// Seed some demo data
-addMockLead({
-  id: 'lead-1',
-  projectType: 'eshop',
-  companyName: 'Test Company s.r.o.',
-  businessDescription: 'Prodej outdoorového vybavení',
-  features: ['product-catalog', 'shopping-cart', 'payment-gateway'],
-  budget: '50000-100000',
-  timeline: '3-6',
-  name: 'Jan Novák',
-  email: 'jan.novak@example.com',
-  phone: '+420 123 456 789',
-  status: 'new',
-  createdAt: new Date().toISOString(),
-});
+// Singleton pattern - seed data only once
+let _mockDataInitialized = false;
+function initializeMockData() {
+  if (_mockDataInitialized) return;
+  _mockDataInitialized = true;
 
-addMockLead({
-  id: 'lead-2',
-  projectType: 'presentation',
-  companyName: 'Stavební firma ABC',
-  businessDescription: 'Výstavba rodinných domů',
-  features: ['contact-form', 'gallery', 'references'],
-  budget: '20000-50000',
-  timeline: '1-3',
-  name: 'Marie Svobodová',
-  email: 'marie.svobodova@example.com',
-  phone: '+420 987 654 321',
-  status: 'contacted',
-  createdAt: new Date(Date.now() - 86400000).toISOString(),
-});
+  // Seed demo data
+  addMockLead({
+    id: 'lead-1',
+    projectType: 'eshop',
+    companyName: 'Test Company s.r.o.',
+    businessDescription: 'Prodej outdoorového vybavení',
+    features: ['product-catalog', 'shopping-cart', 'payment-gateway'],
+    budget: '50000-100000',
+    timeline: '3-6',
+    name: 'Jan Novák',
+    email: 'jan.novak@example.com',
+    phone: '+420 123 456 789',
+    status: 'new',
+    createdAt: new Date().toISOString(),
+  });
 
-addMockLead({
-  id: 'lead-3',
-  projectType: 'Web',
-  company: 'Fitness Studio Pro',
-  name: 'Petr Dvořák',
-  email: 'petr@fitness.cz',
-  phone: '+420 777 999 888',
-  message: 'Potřebujeme nový web pro fitness studio',
-  budget: '30000-50000',
-  status: 'approved',
-  createdAt: new Date(Date.now() - 172800000).toISOString(),
-});
+  addMockLead({
+    id: 'lead-2',
+    projectType: 'presentation',
+    companyName: 'Stavební firma ABC',
+    businessDescription: 'Výstavba rodinných domů',
+    features: ['contact-form', 'gallery', 'references'],
+    budget: '20000-50000',
+    timeline: '1-3',
+    name: 'Marie Svobodová',
+    email: 'marie.svobodova@example.com',
+    phone: '+420 987 654 321',
+    status: 'contacted',
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+  });
 
-addMockProject({
-  id: 'project-1',
-  projectNumber: 'WBX-2025-0001',
-  name: 'E-shop Outdoor',
-  clientName: 'Test Company s.r.o.',
-  status: 'in_progress',
-  priority: 'high',
-  priceTotal: 85000,
-  pricePaid: 42500,
-  progress: 65,
-  startDate: '2025-01-15',
-  deadline: '2025-04-15',
-  createdAt: new Date(Date.now() - 2592000000).toISOString(),
-});
+  addMockLead({
+    id: 'lead-3',
+    projectType: 'Web',
+    company: 'Fitness Studio Pro',
+    name: 'Petr Dvořák',
+    email: 'petr@fitness.cz',
+    phone: '+420 777 999 888',
+    message: 'Potřebujeme nový web pro fitness studio',
+    budget: '30000-50000',
+    status: 'approved',
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
+  });
 
-console.log('🎭 Mock Firebase Service loaded');
-console.log('📧 Demo admin: admin@weblyx.cz / Admin123!');
+  addMockProject({
+    id: 'project-1',
+    projectNumber: 'WBX-2025-0001',
+    name: 'E-shop Outdoor',
+    clientName: 'Test Company s.r.o.',
+    status: 'in_progress',
+    priority: 'high',
+    priceTotal: 85000,
+    pricePaid: 42500,
+    progress: 65,
+    startDate: '2025-01-15',
+    deadline: '2025-04-15',
+    createdAt: new Date(Date.now() - 2592000000).toISOString(),
+  });
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🎭 Mock Firebase Service loaded (initialized once)');
+    console.log('📧 Demo admin: admin@weblyx.cz / Admin123!');
+  }
+}
+
+// Initialize on first import
+initializeMockData();

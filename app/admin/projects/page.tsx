@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -90,6 +91,7 @@ export default function AdminProjectsPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
   const [projects, setProjects] = useState(mockProjects);
+  const [loading, setLoading] = useState(false); // Projects page uses mock data, so no real loading
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -244,7 +246,44 @@ export default function AdminProjectsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProjects.length === 0 ? (
+              {loading ? (
+                // Skeleton loading rows
+                Array.from({ length: 3 }).map((_, i) => (
+                  <TableRow key={`skeleton-${i}`}>
+                    <TableCell>
+                      <Skeleton className="h-5 w-32 mb-2" />
+                      <Skeleton className="h-3 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-28 mb-1" />
+                      <Skeleton className="h-3 w-32" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-5 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-5 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-28 mb-1" />
+                      <Skeleton className="h-3 w-32" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-12 mb-1" />
+                      <Skeleton className="h-2 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-8 w-16 ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : filteredProjects.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center text-muted-foreground py-12">
                     Žádné projekty nenalezeny

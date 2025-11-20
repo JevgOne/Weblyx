@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -172,14 +173,6 @@ export default function AdminPortfolioPage() {
     )
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -223,7 +216,11 @@ export default function AdminPortfolioPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{projects.length}</div>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <div className="text-2xl font-bold">{projects.length}</div>
+              )}
             </CardContent>
           </Card>
 
@@ -234,9 +231,13 @@ export default function AdminPortfolioPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {projects.filter((p) => p.published).length}
-              </div>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <div className="text-2xl font-bold">
+                  {projects.filter((p) => p.published).length}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -247,9 +248,13 @@ export default function AdminPortfolioPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {projects.filter((p) => p.featured).length}
-              </div>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <div className="text-2xl font-bold">
+                  {projects.filter((p) => p.featured).length}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -260,9 +265,13 @@ export default function AdminPortfolioPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {projects.filter((p) => !p.published).length}
-              </div>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <div className="text-2xl font-bold">
+                  {projects.filter((p) => !p.published).length}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -298,7 +307,22 @@ export default function AdminPortfolioPage() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {filteredProjects.length === 0 ? (
+            {loading ? (
+              <div className="p-6 space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <Skeleton className="h-5 w-5" />
+                    <Skeleton className="h-16 w-16 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-48" />
+                      <Skeleton className="h-4 w-64" />
+                    </div>
+                    <Skeleton className="h-8 w-24" />
+                    <Skeleton className="h-8 w-32" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredProjects.length === 0 ? (
               <div className="text-center text-muted-foreground py-12">
                 {searchTerm ? "Žádné projekty nenalezeny" : "Zatím žádné projekty"}
               </div>
