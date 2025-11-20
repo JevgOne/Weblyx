@@ -75,7 +75,7 @@ const statusConfig = {
   unpaid: { label: "Nezaplaceno", color: "bg-red-500" },
   awaiting_invoice: { label: "Čeká na fakturu", color: "bg-orange-500" },
   in_progress: { label: "Rozpracováno", color: "bg-blue-500" },
-  delivered: { label: "Předáno", color: "bg-green-500" },
+  delivered: { label: "Předáno", color: "bg-cyan-500" },
   warranty_ended: { label: "Záruka ukončena", color: "bg-gray-500" },
   cancelled: { label: "Zrušeno", color: "bg-gray-700" },
   paused: { label: "Pozastaveno", color: "bg-yellow-500" },
@@ -84,7 +84,7 @@ const statusConfig = {
 const priorityConfig = {
   high: { label: "Vysoká", color: "text-red-600" },
   medium: { label: "Střední", color: "text-yellow-600" },
-  low: { label: "Nízká", color: "text-green-600" },
+  low: { label: "Nízká", color: "text-cyan-600" },
 };
 
 export default function AdminProjectsPage() {

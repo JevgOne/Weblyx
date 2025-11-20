@@ -10,8 +10,8 @@ export default function ThankYouPage() {
         <Card className="shadow-lg">
           <CardContent className="pt-12 pb-12 text-center space-y-8">
             {/* Success Icon */}
-            <div className="mx-auto h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+            <div className="mx-auto h-20 w-20 rounded-full bg-cyan-100 flex items-center justify-center">
+              <CheckCircle className="h-12 w-12 text-cyan-600" />
             </div>
 
             {/* Title */}

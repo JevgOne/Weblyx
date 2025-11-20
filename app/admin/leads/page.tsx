@@ -65,7 +65,7 @@ const statusConfig = {
   new: { label: "Nová", color: "bg-red-500" },
   contacted: { label: "Kontaktován", color: "bg-blue-500" },
   quoted: { label: "Nabídka odeslána", color: "bg-yellow-500" },
-  approved: { label: "Schváleno", color: "bg-green-500" },
+  approved: { label: "Schváleno", color: "bg-cyan-500" },
   rejected: { label: "Zamítnuto", color: "bg-gray-500" },
   paused: { label: "Pozastaveno", color: "bg-orange-500" },
 };
