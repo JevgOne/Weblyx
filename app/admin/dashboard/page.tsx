@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/leads")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/leads")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -237,7 +237,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/projects")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/projects")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/portfolio")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/portfolio")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/content")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/content")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -294,7 +294,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/stats")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/stats")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -313,7 +313,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/blog")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/blog")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/promo-codes")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/promo-codes")}>
                   Otevřít
                 </Button>
               </CardContent>
@@ -351,7 +351,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => router.push("/admin/tools/web-analyzer")}>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/tools/web-analyzer")}>
                   Otevřít
                 </Button>
               </CardContent>
