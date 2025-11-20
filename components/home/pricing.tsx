@@ -178,13 +178,13 @@ export function Pricing() {
                 <div
                   key={plan.id}
                   className={`group relative animate-fade-in-up snap-center shrink-0 w-[340px] md:w-[380px] ${
-                    plan.highlighted ? 'md:scale-105 md:-mt-4' : ''
+                    plan.highlighted ? 'md:scale-110 md:-mt-8 md:mb-4' : ''
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
               {/* Glow effect for highlighted plan */}
               {plan.highlighted && (
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-cyan-500 to-primary rounded-2xl opacity-75 blur-sm group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-cyan-500 to-primary rounded-2xl opacity-60 blur-xl group-hover:opacity-90 transition duration-500 animate-pulse-slow"></div>
               )}
 
               <Card
@@ -200,15 +200,15 @@ export function Pricing() {
                 )}
 
                 {plan.highlighted && (
-                  <div className="absolute top-4 right-4 z-10">
-                    <Badge className="bg-gradient-to-r from-primary to-cyan-500 text-white border-0 shadow-lg animate-bounce-slow px-4 py-1.5 text-sm font-bold">
-                      <Zap className="h-3.5 w-3.5 mr-1 inline" />
-                      Nejoblíbenější
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <Badge className="bg-gradient-to-r from-primary via-cyan-500 to-primary text-white border-0 shadow-2xl animate-bounce-slow px-6 py-2 text-sm font-bold whitespace-nowrap">
+                      <Zap className="h-4 w-4 mr-1.5 inline animate-pulse" />
+                      ⚡ Nejoblíbenější
                     </Badge>
                   </div>
                 )}
 
-                <CardHeader className="space-y-6 pb-6 pt-8 relative">
+                <CardHeader className={`space-y-6 pb-6 relative ${plan.highlighted ? 'pt-10' : 'pt-8'}`}>
                   {/* Decorative corner gradient */}
                   <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-primary/10 to-transparent rounded-br-full opacity-50"></div>
 
