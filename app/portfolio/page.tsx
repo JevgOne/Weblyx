@@ -5,8 +5,33 @@ import { generatePortfolioSchema, BreadcrumbItem, generateWebPageSchema, Portfol
 import { adminDbInstance } from "@/lib/firebase-admin";
 
 export const metadata: Metadata = {
-  title: "Portfolio | Weblyx - Naše projekty",
-  description: "Podívejte se na naše realizované projekty a ukázky naší práce. Webové stránky, e-shopy a další řešení.",
+  title: "Naše projekty – weby a e-shopy, které přináší výsledky",
+  description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili. Každý projekt je rychlý, responzivní a přizpůsobený konkrétnímu byznysu – od malých webů pro živnostníky až po komplexnější firemní řešení.",
+  keywords: [
+    "portfolio webů",
+    "ukázky webů",
+    "reference",
+    "realizované projekty",
+    "weby na míru",
+    "e-shopy na míru"
+  ],
+  openGraph: {
+    title: "Portfolio | Naše projekty – weby a e-shopy",
+    description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili pro naše klienty.",
+    url: "https://weblyx.cz/portfolio",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Weblyx - Portfolio"
+      }
+    ],
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/portfolio"
+  }
 };
 
 async function getPortfolioProjects() {

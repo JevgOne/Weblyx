@@ -4,8 +4,32 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateContactPageSchema, generateLocalBusinessSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
-  title: "Kontakt | Weblyx - Napište nám",
-  description: "Máte dotaz nebo zájem o spolupráci? Napište nám a my se vám ozveme do 24 hodin.",
+  title: "Kontakt – nezávazná konzultace zdarma",
+  description: "Máte zájem o nový web, redesign nebo zrychlení webu? Napište nám pár detailů o projektu a my se vám do 24 hodin ozveme s návrhem řešení a orientační cenou. Nezávazná konzultace zdarma.",
+  keywords: [
+    "kontakt webová agentura",
+    "tvorba webu Praha",
+    "nezávazná konzultace",
+    "poptávka webu",
+    "web pro živnostníky",
+  ],
+  openGraph: {
+    title: "Kontakt | Weblyx – nezávazná konzultace zdarma",
+    description: "Máte zájem o nový web? Napište nám a my se vám ozveme do 24 hodin s návrhem řešení.",
+    url: "https://weblyx.cz/kontakt",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Weblyx - Kontakt"
+      }
+    ],
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/kontakt"
+  }
 };
 
 export default function ContactPage() {

@@ -10,21 +10,79 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Weblyx | Tvorba webů od 10 000 Kč | Dodání za 5-7 dní",
-  description: "Profesionální webové stránky za skvělé ceny. Dodání za 5-7 dní. Moderní design, SEO optimalizace a rychlé načítání. Nezávazná konzultace zdarma.",
-  keywords: ["tvorba webů", "webové stránky", "levné weby", "e-shop", "SEO", "webová agentura"],
-  authors: [{ name: "Weblyx" }],
+  metadataBase: new URL("https://weblyx.cz"),
+  title: {
+    default: "Tvorba webových stránek od 8 990 Kč | Web do 7 dní | Weblyx",
+    template: "%s | Weblyx",
+  },
+  description: "Moderní a rychlá tvorba webových stránek od 8 990 Kč. Web do 5–7 dní, načítání pod 2 sekundy, SEO v ceně a transparentní balíčky STARTER, BUSINESS a ENTERPRISE. Nezávazná konzultace zdarma.",
+  keywords: [
+    "tvorba webů",
+    "webové stránky",
+    "levné weby",
+    "e-shop",
+    "SEO optimalizace",
+    "webová agentura",
+    "tvorba e-shopů",
+    "redesign webu",
+    "rychlé weby",
+    "responzivní design",
+    "webdesign",
+    "vývojář webů",
+  ],
+  authors: [{ name: "Weblyx", url: "https://weblyx.cz" }],
+  creator: "Weblyx",
+  publisher: "Weblyx",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     type: "website",
     locale: "cs_CZ",
     url: "https://weblyx.cz",
-    title: "Weblyx | Tvorba webů od 10 000 Kč",
-    description: "Profesionální webové stránky za skvělé ceny. Dodání za 5-7 dní.",
+    title: "Tvorba webových stránek od 8 990 Kč | Web do 7 dní",
+    description: "Moderní a rychlá tvorba webových stránek od 8 990 Kč. Web do 5–7 dní, načítání pod 2 sekundy, SEO v ceně.",
     siteName: "Weblyx",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Weblyx - Tvorba webových stránek od 8 990 Kč",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tvorba webových stránek od 8 990 Kč | Web do 7 dní",
+    description: "Moderní a rychlá tvorba webových stránek od 8 990 Kč. Web do 5–7 dní, načítání pod 2 sekundy.",
+    images: ["/og-image.jpg"],
+    creator: "@weblyx",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  alternates: {
+    canonical: "https://weblyx.cz",
+  },
+  verification: {
+    google: "google-site-verification-code", // TODO: Add actual verification code
   },
 };
 

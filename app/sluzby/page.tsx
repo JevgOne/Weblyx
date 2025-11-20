@@ -18,8 +18,35 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 import { Service as ServiceType } from "@/types/cms";
 
 export const metadata: Metadata = {
-  title: "Služby | Weblyx - Tvorba webů, E-shopy, SEO",
-  description: "Nabízíme tvorbu webových stránek, e-shopů, SEO optimalizaci, redesign, optimalizaci rychlosti a následnou podporu. Od 10 000 Kč.",
+  title: "Naše služby – tvorba webových stránek, e-shopů a SEO",
+  description: "Komplexní řešení pro vaši online prezentaci: tvorba webových stránek od 8 990 Kč, e-shopů, redesign, SEO i rychlostní optimalizace. Rychlý web na míru pro živnostníky i firmy.",
+  keywords: [
+    "tvorba webových stránek",
+    "tvorba webu",
+    "tvorba e-shopu",
+    "SEO optimalizace",
+    "redesign webu",
+    "web pro živnostníky",
+    "optimalizace rychlosti webu",
+    "údržba webu"
+  ],
+  openGraph: {
+    title: "Naše služby – tvorba webových stránek, e-shopů a SEO",
+    description: "Komplexní řešení pro vaši online prezentaci. Tvorba webů od 8 990 Kč, e-shopy, SEO.",
+    url: "https://weblyx.cz/sluzby",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Weblyx - Služby"
+      }
+    ],
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/sluzby"
+  }
 };
 
 export default function ServicesPage() {

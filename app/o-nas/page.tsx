@@ -7,8 +7,32 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, generateOrganizationSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
-  title: "O nás | Weblyx - Moderní webová agentura",
-  description: "Jsme moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií pro rychlejší a efektivnější vývoj.",
+  title: "O nás – moderní webová agentura zaměřená na rychlé a levné webové stránky",
+  description: "Weblyx je moderní webová agentura z Prahy, která spojuje rychlou tvorbu webu, moderní technologie a férové ceny. Pomáháme živnostníkům, malým firmám i rostoucím projektům získat web, který je rychlejší než konkurence a přitom nezruinuje rozpočet.",
+  keywords: [
+    "o nás webová agentura",
+    "webová agentura Praha",
+    "moderní technologie",
+    "tvorba webu Praha",
+    "Next.js React"
+  ],
+  openGraph: {
+    title: "O nás | Weblyx – moderní webová agentura",
+    description: "Moderní webová agentura z Prahy zaměřená na rychlé a kvalitní webové stránky.",
+    url: "https://weblyx.cz/o-nas",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Weblyx - O nás"
+      }
+    ],
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/o-nas"
+  }
 };
 
 export default function AboutPage() {

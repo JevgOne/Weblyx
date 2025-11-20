@@ -5,8 +5,33 @@ import Link from "next/link";
 import { Clock, Calendar } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Blog | Weblyx - Tipy a trendy ze světa webu",
-  description: "Články o tvorbě webů, SEO, designu a webových technologiích. Praktické tipy a návody.",
+  title: "Blog – tipy a trendy ze světa webu a online marketingu",
+  description: "Sdílíme know-how z oblasti tvorby webu, SEO, rychlosti webu a online marketingu. Články píšeme tak, aby byly srozumitelné a praktické – od \"kolik stojí web v roce 2025\" po srovnání WordPress vs. Next.js.",
+  keywords: [
+    "blog tvorba webů",
+    "SEO tipy",
+    "rychlost webu",
+    "WordPress vs Next.js",
+    "webové technologie",
+    "online marketing"
+  ],
+  openGraph: {
+    title: "Blog | Weblyx – tipy ze světa webu",
+    description: "Praktické tipy z oblasti tvorby webu, SEO a online marketingu.",
+    url: "https://weblyx.cz/blog",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Weblyx - Blog"
+      }
+    ],
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/blog"
+  }
 };
 
 export default function BlogPage() {
