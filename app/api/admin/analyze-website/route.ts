@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     // Check if we're using mock Firebase
     if (typeof adminDbInstance.collection === 'function') {
       // Mock Firebase
-      const snapshot = await adminDbInstance.collection('web_analyses').orderBy('analyzedAt', 'desc').get();
+      const snapshot = await adminDbInstance.collection('web_analyses').orderBy('analyzedAt').get();
       const analyses: any[] = [];
 
       snapshot.docs.forEach((doc: any) => {
@@ -86,6 +86,13 @@ export async function GET(request: NextRequest) {
         });
       });
 
+      // Sort manually for mock
+      analyses.sort((a, b) => {
+        const aDate = a.analyzedAt?.toDate ? a.analyzedAt.toDate() : new Date(a.analyzedAt);
+        const bDate = b.analyzedAt?.toDate ? b.analyzedAt.toDate() : new Date(b.analyzedAt);
+        return bDate.getTime() - aDate.getTime();
+      });
+
       return NextResponse.json({
         success: true,
         data: analyses,
@@ -93,7 +100,7 @@ export async function GET(request: NextRequest) {
     } else {
       // Real Firebase - use modular API
       const { collection, getDocs, query, orderBy } = await import('firebase/firestore');
-      const db = adminDbInstance;
+      const db = adminDbInstance as any;
       const q = query(collection(db, 'web_analyses'), orderBy('analyzedAt', 'desc'));
       const snapshot = await getDocs(q);
 

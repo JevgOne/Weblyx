@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
     } else {
       // Real Firebase
       const { doc, getDoc } = await import('firebase/firestore');
-      const docRef = doc(adminDbInstance, 'web_analyses', analysisId);
+      const db = adminDbInstance as any;
+      const docRef = doc(db, 'web_analyses', analysisId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         analysis = { id: docSnap.id, ...docSnap.data() } as WebAnalysisResult;
@@ -58,7 +59,8 @@ export async function POST(request: NextRequest) {
         }
       } else {
         const { doc, getDoc } = await import('firebase/firestore');
-        const promoRef = doc(adminDbInstance, 'promo_codes', analysis.promoCodeId);
+        const db = adminDbInstance as any;
+        const promoRef = doc(db, 'promo_codes', analysis.promoCodeId);
         const promoSnap = await getDoc(promoRef);
         if (promoSnap.exists()) {
           promoCode = { id: promoSnap.id, ...promoSnap.data() } as PromoCode;
@@ -67,18 +69,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate PDF
-    const stream = await renderToStream(
-      WebAnalysisReport({
-        analysis,
-        promoCode,
-        businessName: businessName || analysis.businessName,
-      })
-    );
+    const pdfElement = WebAnalysisReport({
+      analysis,
+      promoCode,
+      businessName: businessName || analysis.businessName,
+    });
+
+    const stream = await renderToStream(pdfElement as any);
 
     // Convert stream to buffer
-    const chunks: Uint8Array[] = [];
+    const chunks: Buffer[] = [];
     for await (const chunk of stream) {
-      chunks.push(chunk);
+      chunks.push(Buffer.from(chunk));
     }
     const buffer = Buffer.concat(chunks);
 

@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
     const snapshot = await adminDbInstance
       .collection('promo_codes')
       .where('code', '==', code.toUpperCase())
-      .limit(1)
       .get();
 
     if (snapshot.empty) {
