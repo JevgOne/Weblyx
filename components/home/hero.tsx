@@ -38,16 +38,16 @@ export async function Hero() {
 
   // Fallback data if fetch fails
   const data: HeroData = heroData || {
-    badge: '🚀 Rychlá tvorba webu',
-    title: 'Profesionální tvorba webových stránek',
-    titleHighlight: 'od 8 990 Kč',
-    subtitle: 'Moderní web, který se načte <strong>pod 2 sekundy</strong>, dorazí do <strong>5–7 dní</strong> a skutečně prodává. Levné webové stránky bez kompromisů v kvalitě.',
+    badge: '⚡ Nejrychlejší tvorba webu v ČR',
+    title: 'Profesionální web za týden',
+    titleHighlight: 'od 7 990 Kč',
+    subtitle: 'Moderní web postavený na <strong>Next.js místo WordPressu</strong>. Dodání za <strong>3–7 dní</strong>, rychlost <strong>pod 2 sekundy</strong>. Levnější než šablona, rychlejší než konkurence.',
     ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
     ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
     stats: [
-      { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu – váš nový web spouštíme už během jednoho týdne.' },
-      { icon: 'Zap', value: '< 2 s načtení', label: 'Super rychlé webové stránky = lepší SEO, vyšší konverze a spokojenější návštěvníci.' },
-      { icon: 'TrendingUp', value: 'Transparentní ceny', label: 'Web od 8 990 Kč. Jasné balíčky, žádné skryté poplatky, přesná kalkulace předem.' },
+      { icon: 'Clock', value: '3–7 dní', label: 'Nejrychlejší dodání – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
+      { icon: 'Zap', value: 'Next.js', label: 'Moderní technologie místo zastaralého WordPressu = vyšší rychlost a bezpečnost.' },
+      { icon: 'TrendingUp', value: 'Od 7 990 Kč', label: 'Férové ceny bez skrytých poplatků. Profesionální web za cenu levné šablony.' },
     ],
   };
 
