@@ -132,19 +132,19 @@ export default function AboutPage() {
               <h2 className="text-3xl md:text-4xl font-bold">Náš příběh</h2>
               <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
                 <p>
-                  Weblyx vznikl v roce 2025 s jasnou vizí: zpřístupnit kvalitní webové stránky
-                  malým a středním firmám za dostupné ceny. Věříme, že každá firma si zaslouží
-                  profesionální online prezentaci, která jí pomůže růst.
+                  Myšlenka na Weblyx se zrodila na začátku roku 2025. Potřebovali jsme vlastní web – moderní, rychlý a přizpůsobený tomu, kdo jsme a jak chceme působit. Obcházeli jsme studia, freelancery i „levné weby" a všude slyšeli to samé: šablonové WordPress řešení, dlouhé dodací lhůty a spoustu kompromisů.
                 </p>
                 <p>
-                  Díky využití moderních AI technologií jsme schopni zkrátit dobu vývoje bez
-                  kompromisů v kvalitě. To nám umožňuje nabídnout konkurenceschopné ceny a rychlé
-                  dodání. Náš tým má dlouholeté zkušenosti s vývojem webových aplikací a e-shopů.
+                  V jednu chvíli nám došla trpělivost a řekli jsme si jednoduché: „OK, tak si to radši uděláme sami." Začaly večery a noci strávené u tutoriálů, kurzů a kódu – Next.js, React, SEO, rychlost načítání, UX, AI nástroje. První web jsme postavili pro sebe. Nebyl dokonalý, ale byl náš. Rychlý, moderní a přesně takový, jaký jsme chtěli od začátku.
                 </p>
                 <p>
-                  Nesnažíme se být největší agentura na trhu. Chceme být ti nejlepší pro naše
-                  klienty. Proto klademe důraz na osobní přístup, transparentní komunikaci a
-                  dlouhodobou spolupráci.
+                  Pak přišel kamarád, který potřeboval web. Potom další. Doporučení se začala nabalovat a z jednoho „uděláme si to sami" se postupně stal plnohodnotný projekt. Z koníčku vznikla značka Weblyx 🚀
+                </p>
+                <p>
+                  Dnes pomáháme firmám, které jsou ve stejné situaci, jako jsme byli my: chtějí web, který dává smysl, vypadá profesionálně a funguje rychle – ale nechtějí platit statisíce nebo čekat měsíce. Každý nový web bereme trochu osobně, protože moc dobře víme, jak frustrující je hledat někoho, kdo vás opravdu poslouchá.
+                </p>
+                <p>
+                  Proto stavíme weby tak, jak bychom tehdy chtěli, aby někdo postavil ten náš – na míru, srozumitelně, bez bullshitu, s důrazem na výsledky a rychlost. Díky moderním technologiím a chytrému využití AI dokážeme vyvíjet rychle, držet férové ceny a tvořit weby, které se načítají pod 2 sekundy a jsou připravené růst spolu s vaším byznysem. ❤️‍🔥
                 </p>
               </div>
             </div>
@@ -162,11 +162,23 @@ export default function AboutPage() {
                   <Target className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold">Naše mise</h3>
-                <p className="text-muted-foreground">
-                  Pomáhat firmám růst prostřednictvím kvalitních webových řešení. Zpřístupnit
-                  moderní technologie i menším firmám za dostupné ceny. Být partnerem, na kterého
-                  se můžete spolehnout.
-                </p>
+                <div className="text-muted-foreground space-y-3">
+                  <p>
+                    Naší misí je dělat moderní weby dostupné – jak cenou, tak rychlostí dodání.
+                  </p>
+                  <p>
+                    Chceme, aby každý živnostník, malá firma nebo rozjíždějící se projekt mohl mít web, který:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>je rychlý (načítání pod 2 sekundy),</li>
+                    <li>je srozumitelný (jasná struktura, logický obsah),</li>
+                    <li>je přizpůsobený konkrétnímu byznysu, ne jen univerzální šabloně,</li>
+                    <li>a dá se dál rozvíjet, ne rovnou zahodit při první změně.</li>
+                  </ul>
+                  <p>
+                    Nechceme být další agentura, která „prodá web a zmizí". Naším cílem je být partner, za kterým můžete kdykoliv přijít s tím, že chcete něco zlepšit, zrychlit, napojit nebo rozšířit. 🚀
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -176,11 +188,25 @@ export default function AboutPage() {
                   <TrendingUp className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold">Naše vize</h3>
-                <p className="text-muted-foreground">
-                  Stát se přední AI-powered webovou agenturou v České republice. Neustále
-                  inovovat a přinášet nejnovější technologie našim klientům. Budovat dlouhodobé
-                  vztahy založené na důvěře a výsledcích.
-                </p>
+                <div className="text-muted-foreground space-y-3">
+                  <p>
+                    Naší vizí je vybudovat značku, která bude v Česku vnímaná jako:
+                  </p>
+                  <p className="font-semibold">
+                    „Ti, co dělají nejrychlejší a nejrozumnější weby za normální peníze."
+                  </p>
+                  <p>
+                    Chceme, aby si každý, kdo uvažuje o novém webu, vybavil tři věci:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Weblyx = rychlost – dodání do 5–7 dní a web, který se neseká.</li>
+                    <li>Weblyx = férovost – jasný ceník, žádné hvězdičky a skryté položky.</li>
+                    <li>Weblyx = moderní přístup – Next.js, React, AI, žádné zastaralé technologie.</li>
+                  </ul>
+                  <p>
+                    Dlouhodobě chceme tvořit nejen jednotlivé weby, ale i dlouhodobé vztahy – být tým, který zná váš byznys, rozumí vašim cílům a pomáhá vám je online plnit. Ať už jste na začátku, nebo škálujete. 🌱📈
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
