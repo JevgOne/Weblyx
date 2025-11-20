@@ -1,0 +1,171 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FileText, Menu, Home, DollarSign, ArrowLeft } from "lucide-react";
+
+export default function ContentManagementPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
+      if (!currentUser) {
+        router.push("/admin/login");
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+          <p className="text-muted-foreground">Načítání...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push("/admin/dashboard")}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Zpět
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold">Správa obsahu</h1>
+              <p className="text-sm text-muted-foreground">CMS Editor</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Správa homepage</h2>
+          <p className="text-muted-foreground">
+            Upravte obsah jednotlivých sekcí vaší domovské stránky
+          </p>
+        </div>
+
+        {/* Content Sections */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Hero Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Home className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Hero sekce</CardTitle>
+                  <CardDescription>Úvodní banner</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte hlavní nadpis, podnadpis a CTA tlačítko
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/hero")}
+              >
+                Upravit Hero
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Services Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Menu className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Služby</CardTitle>
+                  <CardDescription>6 servisních karet</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Spravujte karty služeb - přidávejte, upravujte nebo odstraňujte
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/services")}
+              >
+                Spravovat Služby
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Pricing Section */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Ceníky</CardTitle>
+                  <CardDescription>Cenové úrovně</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte cenové plány a jejich funkce
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/content/pricing")}
+              >
+                Spravovat Ceníky
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Help Section */}
+        <Card className="mt-8 border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-lg">Nápověda</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p>
+              <strong>Hero sekce:</strong> Upravte hlavní úvodní sekci s nadpisem a call-to-action tlačítkem
+            </p>
+            <p>
+              <strong>Služby:</strong> Přidávejte nebo upravujte až 6 servisních karet s ikonami a funkcemi
+            </p>
+            <p>
+              <strong>Ceníky:</strong> Spravujte cenové úrovně, ceny a funkce jednotlivých plánů
+            </p>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
+}

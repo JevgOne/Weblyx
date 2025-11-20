@@ -3,56 +3,77 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
+import { adminDbInstance } from "@/lib/firebase-admin";
+import { PricingTier } from "@/types/homepage";
 
-export function Pricing() {
-  const plans = [
+async function getPricingTiers(): Promise<PricingTier[]> {
+  try {
+    if (!adminDbInstance) {
+      console.error('Firebase Admin not initialized');
+      return [];
+    }
+
+    const snapshot = await adminDbInstance
+      .collection('pricing_tiers')
+      .orderBy('order')
+      .get();
+
+    if (snapshot.empty) {
+      console.error('No pricing tiers found');
+      return [];
+    }
+
+    const tiers: PricingTier[] = [];
+    snapshot.docs.forEach((doc: any) => {
+      tiers.push(doc.data() as PricingTier);
+    });
+
+    return tiers;
+  } catch (error) {
+    console.error('Error fetching pricing tiers:', error);
+    return [];
+  }
+}
+
+export async function Pricing() {
+  const pricingData = await getPricingTiers();
+
+  // Fallback data if fetch fails
+  const plans = pricingData.length > 0 ? pricingData : [
     {
-      name: "Jednoduchý Web",
-      price: "10 000",
-      duration: "5-7 dní",
-      description: "Ideální pro malé firmy a živnostníky",
+      id: 'fallback-1',
+      name: 'Jednoduchý Web',
+      price: '10 000',
+      duration: '5-7 dní',
+      description: 'Ideální pro malé firmy a živnostníky',
       popular: false,
+      order: 1,
       features: [
-        "Až 5 podstránek",
-        "Responzivní design",
-        "Základní SEO",
-        "Kontaktní formulář",
-        "Google Analytics",
-        "1 měsíc podpora zdarma",
+        'Až 5 podstránek',
+        'Responzivní design',
+        'Základní SEO',
+        'Kontaktní formulář',
+        'Google Analytics',
+        '1 měsíc podpora zdarma',
       ],
     },
     {
-      name: "Standardní Web",
-      price: "25 000",
-      duration: "10-14 dní",
-      description: "Pro rostoucí firmy s většími požadavky",
+      id: 'fallback-2',
+      name: 'Standardní Web',
+      price: '25 000',
+      duration: '10-14 dní',
+      description: 'Pro rostoucí firmy s většími požadavky',
       popular: true,
+      order: 2,
       features: [
-        "Až 15 podstránek",
-        "Pokročilý design",
-        "Pokročilé SEO",
-        "Blog/Aktuality",
-        "Animace a efekty",
-        "Galerie obrázků",
-        "3 měsíce podpora zdarma",
-        "Úpravy po spuštění",
-      ],
-    },
-    {
-      name: "E-shop / Premium",
-      price: "85 000",
-      duration: "Individuální",
-      description: "Pro e-commerce a komplexní projekty",
-      popular: false,
-      features: [
-        "Neomezený počet stránek",
-        "E-shop funkcionalita",
-        "Payment gateway integrace",
-        "Admin panel",
-        "Správa produktů",
-        "Pokročilé funkce",
-        "6 měsíců podpora zdarma",
-        "Priority podpora",
+        'Až 15 podstránek',
+        'Pokročilý design',
+        'Pokročilé SEO',
+        'Blog/Aktuality',
+        'Animace a efekty',
+        'Galerie obrázků',
+        '3 měsíce podpora zdarma',
+        'Úpravy po spuštění',
       ],
     },
   ];
@@ -70,9 +91,9 @@ export function Pricing() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {plans.map((plan, index) => (
+          {plans.map((plan) => (
             <Card
-              key={index}
+              key={plan.id}
               className={`relative overflow-hidden ${
                 plan.popular
                   ? "border-primary shadow-elegant scale-105"

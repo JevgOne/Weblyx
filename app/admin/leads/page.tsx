@@ -22,7 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar } from "lucide-react";
+import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight } from "lucide-react";
+import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
 
 // Mock data pro demo
 const mockLeads = [
@@ -66,6 +67,7 @@ const statusConfig = {
   contacted: { label: "Kontaktován", color: "bg-blue-500" },
   quoted: { label: "Nabídka odeslána", color: "bg-yellow-500" },
   approved: { label: "Schváleno", color: "bg-cyan-500" },
+  converted: { label: "Převedeno na projekt", color: "bg-green-500" },
   rejected: { label: "Zamítnuto", color: "bg-gray-500" },
   paused: { label: "Pozastaveno", color: "bg-orange-500" },
 };
@@ -76,6 +78,8 @@ export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<any>(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
@@ -113,6 +117,11 @@ export default function AdminLeadsPage() {
 
     return matchesSearch && matchesStatus;
   });
+
+  const handleConvertLead = (lead: any) => {
+    setSelectedLead(lead);
+    setConvertDialogOpen(true);
+  };
 
   if (loading) {
     return (
@@ -177,6 +186,7 @@ export default function AdminLeadsPage() {
                   <SelectItem value="contacted">Kontaktované</SelectItem>
                   <SelectItem value="quoted">Nabídka odeslána</SelectItem>
                   <SelectItem value="approved">Schváleno</SelectItem>
+                  <SelectItem value="converted">Převedeno na projekt</SelectItem>
                   <SelectItem value="rejected">Zamítnuto</SelectItem>
                   <SelectItem value="paused">Pozastaveno</SelectItem>
                 </SelectContent>
@@ -261,9 +271,21 @@ export default function AdminLeadsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="ghost">
-                        Detail
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="ghost">
+                          Detail
+                        </Button>
+                        {(lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleConvertLead(lead)}
+                            className="gap-1"
+                          >
+                            <ArrowRight className="h-3 w-3" />
+                            Převést na projekt
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -271,6 +293,15 @@ export default function AdminLeadsPage() {
             </TableBody>
           </Table>
         </Card>
+
+        {/* Conversion Dialog */}
+        {selectedLead && (
+          <ConvertLeadDialog
+            open={convertDialogOpen}
+            onOpenChange={setConvertDialogOpen}
+            lead={selectedLead}
+          />
+        )}
 
         {/* Info note */}
         <div className="mt-6 p-4 bg-muted rounded-lg">

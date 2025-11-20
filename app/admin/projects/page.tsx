@@ -339,7 +339,11 @@ export default function AdminProjectsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="ghost">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => router.push(`/admin/projects/${project.id}`)}
+                      >
                         Detail
                       </Button>
                     </TableCell>

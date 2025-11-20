@@ -294,6 +294,19 @@ addMockLead({
   createdAt: new Date(Date.now() - 86400000).toISOString(),
 });
 
+addMockLead({
+  id: 'lead-3',
+  projectType: 'Web',
+  company: 'Fitness Studio Pro',
+  name: 'Petr Dvořák',
+  email: 'petr@fitness.cz',
+  phone: '+420 777 999 888',
+  message: 'Potřebujeme nový web pro fitness studio',
+  budget: '30000-50000',
+  status: 'approved',
+  createdAt: new Date(Date.now() - 172800000).toISOString(),
+});
+
 addMockProject({
   id: 'project-1',
   projectNumber: 'WBX-2025-0001',

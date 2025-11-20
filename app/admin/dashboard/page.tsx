@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,20 +14,59 @@ import {
   BarChart,
   FileText,
   Settings,
-  LogOut
+  LogOut,
+  Image,
+  FileEdit
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [stats, setStats] = useState({
+    projects: 0,
+    leads: 0,
+    portfolio: 0,
+  });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser: any) => {
       if (!currentUser) {
         router.push("/admin/login");
       } else {
         setUser(currentUser);
+
+        // Fetch real stats from Firestore
+        try {
+          // Check if we're using mock Firebase
+          if (typeof db.collection === 'function') {
+            // Mock Firebase
+            const projectsSnap = await db.collection("projects").get();
+            const leadsSnap = await db.collection("leads").get();
+            const portfolioSnap = await db.collection("portfolio").get();
+
+            setStats({
+              projects: projectsSnap.size,
+              leads: leadsSnap.size,
+              portfolio: portfolioSnap.size,
+            });
+          } else {
+            // Real Firebase - use modular API
+            const { collection, getDocs } = await import("firebase/firestore");
+            const projectsSnap = await getDocs(collection(db, "projects"));
+            const leadsSnap = await getDocs(collection(db, "leads"));
+            const portfolioSnap = await getDocs(collection(db, "portfolio"));
+
+            setStats({
+              projects: projectsSnap.size,
+              leads: leadsSnap.size,
+              portfolio: portfolioSnap.size,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching stats:", error);
+        }
+
         setLoading(false);
       }
     });
@@ -95,7 +134,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -104,9 +143,9 @@ export default function AdminDashboard() {
               <FolderKanban className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">12</div>
+              <div className="text-3xl font-bold">{stats.projects}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                +2 tento týden
+                Celkem projektů
               </p>
             </CardContent>
           </Card>
@@ -114,14 +153,14 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Nové poptávky
+                Poptávky (Leads)
               </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">8</div>
+              <div className="text-3xl font-bold">{stats.leads}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Za posledních 7 dní
+                Celkem poptávek
               </p>
             </CardContent>
           </Card>
@@ -129,29 +168,14 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Nepřečtené emaily
+                Portfolio projekty
               </CardTitle>
-              <Mail className="h-4 w-4 text-muted-foreground" />
+              <Image className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">5</div>
+              <div className="text-3xl font-bold">{stats.portfolio}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                3 urgentní
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Deadline dnes
-              </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                2 blízko termínu
+                Publikované na webu
               </p>
             </CardContent>
           </Card>
@@ -203,17 +227,17 @@ export default function AdminDashboard() {
               <CardHeader>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Mail className="h-6 w-6 text-primary" />
+                    <Image className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <CardTitle>Emaily</CardTitle>
-                    <CardDescription>Správa emailů</CardDescription>
+                    <CardTitle>Portfolio</CardTitle>
+                    <CardDescription>Správa portfolia</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" variant="secondary">
-                  Brzy dostupné
+                <Button className="w-full" onClick={() => router.push("/admin/portfolio")}>
+                  Otevřít
                 </Button>
               </CardContent>
             </Card>
@@ -222,17 +246,17 @@ export default function AdminDashboard() {
               <CardHeader>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-primary" />
+                    <FileEdit className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <CardTitle>Kalendář</CardTitle>
-                    <CardDescription>Deadliny & události</CardDescription>
+                    <CardTitle>Content (CMS)</CardTitle>
+                    <CardDescription>Úprava obsahu webu</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" variant="secondary">
-                  Brzy dostupné
+                <Button className="w-full" onClick={() => router.push("/admin/content")}>
+                  Otevřít
                 </Button>
               </CardContent>
             </Card>

@@ -3,50 +3,67 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
+import { adminDbInstance } from "@/lib/firebase-admin";
+import { PortfolioProject } from "@/types/homepage";
 
-export function Portfolio() {
-  const projects = [
+async function getPortfolioProjects(): Promise<PortfolioProject[]> {
+  try {
+    if (!adminDbInstance) {
+      console.error('Firebase Admin not initialized');
+      return [];
+    }
+
+    const snapshot = await adminDbInstance
+      .collection('portfolio')
+      .where('published', '==', true)
+      .where('featured', '==', true)
+      .orderBy('displayOrder')
+      .limit(6)
+      .get();
+
+    if (snapshot.empty) {
+      console.error('No portfolio projects found');
+      return [];
+    }
+
+    const projects: PortfolioProject[] = [];
+    snapshot.docs.forEach((doc: any) => {
+      projects.push(doc.data() as PortfolioProject);
+    });
+
+    return projects;
+  } catch (error) {
+    console.error('Error fetching portfolio projects:', error);
+    return [];
+  }
+}
+
+export async function Portfolio() {
+  const portfolioData = await getPortfolioProjects();
+
+  // Fallback data if fetch fails
+  const projects = portfolioData.length > 0 ? portfolioData : [
     {
-      title: "E-shop s módou",
-      category: "E-commerce",
-      description: "Moderní e-shop s pokročilými filtry a platební bránou",
-      technologies: ["Next.js", "Stripe", "Tailwind"],
-      image: "/images/portfolio-1.jpg",
+      id: 'fallback-1',
+      title: 'E-shop s módou',
+      category: 'E-commerce',
+      description: 'Moderní e-shop s pokročilými filtry a platební bránou',
+      technologies: ['Next.js', 'Stripe', 'Tailwind'],
+      image: '/images/portfolio-1.jpg',
+      published: true,
+      featured: true,
+      displayOrder: 1,
     },
     {
-      title: "Firemní prezentace",
-      category: "Web",
-      description: "Responzivní web pro konzultační společnost",
-      technologies: ["React", "SEO", "Analytics"],
-      image: "/images/portfolio-2.jpg",
-    },
-    {
-      title: "Restaurace & Menu",
-      category: "Web",
-      description: "Web s online rezervačním systémem a menu",
-      technologies: ["Next.js", "Booking", "Maps"],
-      image: "/images/portfolio-3.jpg",
-    },
-    {
-      title: "Portfolio fotografa",
-      category: "Portfolio",
-      description: "Galerie s optimalizací obrázků a lazy loading",
-      technologies: ["Next.js", "Image Opt", "Lightbox"],
-      image: "/images/portfolio-4.jpg",
-    },
-    {
-      title: "SaaS Landing Page",
-      category: "Landing",
-      description: "Konverzní landing page s A/B testingem",
-      technologies: ["React", "Analytics", "CRO"],
-      image: "/images/portfolio-5.jpg",
-    },
-    {
-      title: "Blog & Magazín",
-      category: "Blog",
-      description: "Content-focused web s CMS a vyhledáváním",
-      technologies: ["Next.js", "CMS", "Search"],
-      image: "/images/portfolio-6.jpg",
+      id: 'fallback-2',
+      title: 'Firemní prezentace',
+      category: 'Web',
+      description: 'Responzivní web pro konzultační společnost',
+      technologies: ['React', 'SEO', 'Analytics'],
+      image: '/images/portfolio-2.jpg',
+      published: true,
+      featured: true,
+      displayOrder: 2,
     },
   ];
 
@@ -63,9 +80,9 @@ export function Portfolio() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {projects.map((project, index) => (
+          {projects.map((project) => (
             <Card
-              key={index}
+              key={project.id}
               className="group overflow-hidden hover:shadow-elegant transition-all duration-300"
             >
               <div className="aspect-video bg-gradient-primary relative overflow-hidden">
