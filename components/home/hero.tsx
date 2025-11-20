@@ -38,16 +38,16 @@ export async function Hero() {
 
   // Fallback data if fetch fails
   const data: HeroData = heroData || {
-    badge: 'AI-powered workflow',
-    title: 'Moderní weby za ceny,',
-    titleHighlight: 'které vás překvapí',
-    subtitle: 'Profesionální webové stránky od <strong>10 000 Kč</strong> • Dodání za <strong>5-7 dní</strong> • SEO optimalizace zdarma',
-    ctaPrimary: { text: 'Nezávazná poptávka', href: '/poptavka' },
+    badge: '🚀 Rychlá tvorba webu',
+    title: 'Profesionální tvorba webových stránek',
+    titleHighlight: 'od 8 990 Kč',
+    subtitle: 'Moderní web, který se načte <strong>pod 2 sekundy</strong>, dorazí do <strong>5–7 dní</strong> a skutečně prodává. Levné webové stránky bez kompromisů v kvalitě.',
+    ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
     ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
     stats: [
-      { icon: 'Clock', value: '5-7 dní', label: 'Dodání' },
-      { icon: 'TrendingUp', value: '100%', label: 'Spokojenost' },
-      { icon: 'Zap', value: '< 2s', label: 'Načtení' },
+      { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu – váš nový web spouštíme už během jednoho týdne.' },
+      { icon: 'Zap', value: '< 2 s načtení', label: 'Super rychlé webové stránky = lepší SEO, vyšší konverze a spokojenější návštěvníci.' },
+      { icon: 'TrendingUp', value: 'Transparentní ceny', label: 'Web od 8 990 Kč. Jasné balíčky, žádné skryté poplatky, přesná kalkulace předem.' },
     ],
   };
 

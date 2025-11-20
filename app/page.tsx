@@ -1,4 +1,6 @@
 import { Hero } from "@/components/home/hero";
+import { TargetAudience } from "@/components/home/target-audience";
+import { USPSection } from "@/components/home/usp-section";
 import { Services } from "@/components/home/services";
 import { Process } from "@/components/home/process";
 import { Portfolio } from "@/components/home/portfolio";
@@ -75,6 +77,8 @@ export default async function HomePage() {
 
       <main className="min-h-screen">
         <Hero />
+        <TargetAudience />
+        <USPSection />
         <Services />
         <Process />
         <Portfolio />
