@@ -33,9 +33,10 @@ async function generateProjectNumber(): Promise<string> {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const leadId = params.id;
     const body = await request.json();
 
