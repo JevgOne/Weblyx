@@ -24,8 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight } from "lucide-react";
+import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles } from "lucide-react";
 import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
+import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
 
 // Mock data pro demo
 const mockLeads = [
@@ -82,6 +83,7 @@ export default function AdminLeadsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<any>(null);
 
   useEffect(() => {
@@ -122,6 +124,27 @@ export default function AdminLeadsPage() {
   const handleConvertLead = (lead: any) => {
     setSelectedLead(lead);
     setConvertDialogOpen(true);
+  };
+
+  const handleViewDetail = (lead: any) => {
+    setSelectedLead(lead);
+    setDetailDialogOpen(true);
+  };
+
+  const fetchLeads = async () => {
+    setLoading(true);
+    try {
+      const leadsSnapshot = await db.collection("leads").get();
+      const leadsData = leadsSnapshot.docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setLeads(leadsData);
+    } catch (error) {
+      console.error("Error loading leads:", error);
+      setLeads(mockLeads);
+    }
+    setLoading(false);
   };
 
   return (
@@ -248,7 +271,14 @@ export default function AdminLeadsPage() {
                   <TableRow key={lead.id} className="cursor-pointer hover:bg-muted/50">
                     <TableCell>
                       <div>
-                        <div className="font-medium">{lead.name}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{lead.name}</span>
+                          {lead.aiDesignSuggestion && (
+                            <Badge variant="secondary" className="gap-1">
+                              <Sparkles className="h-3 w-3" /> AI
+                            </Badge>
+                          )}
+                        </div>
                         {lead.company && (
                           <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                             <Building2 className="h-3 w-3" />
@@ -294,7 +324,7 @@ export default function AdminLeadsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="ghost">
+                        <Button size="sm" variant="ghost" onClick={() => handleViewDetail(lead)}>
                           Detail
                         </Button>
                         {(lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
@@ -315,6 +345,16 @@ export default function AdminLeadsPage() {
             </TableBody>
           </Table>
         </Card>
+
+        {/* Detail Dialog */}
+        {selectedLead && (
+          <LeadDetailDialog
+            open={detailDialogOpen}
+            onOpenChange={setDetailDialogOpen}
+            lead={selectedLead}
+            onRefresh={fetchLeads}
+          />
+        )}
 
         {/* Conversion Dialog */}
         {selectedLead && (
