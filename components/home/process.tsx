@@ -108,10 +108,8 @@ export function Process() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-          {steps.map((step, index) => {
+          {steps.map((step) => {
             const IconComponent = getIcon(step.icon);
-            const isLastInRow = (index + 1) % 3 === 0;
-            const isNotLast = index < steps.length - 1;
 
             return (
               <div key={step.id} className="relative group">
@@ -132,67 +130,17 @@ export function Process() {
                       {step.title}
                     </h3>
 
-                    {/* Connection line under title - only for non-last items */}
-                    {isNotLast && (
-                      <div className="hidden lg:block relative h-0.5 -mx-6">
-                        <div className="absolute left-1/2 top-0 w-screen h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent">
-                          <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary to-primary/60 animate-flow"></div>
-                        </div>
-                      </div>
-                    )}
-
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {step.description}
                     </p>
                   </div>
                 </div>
-
-                {/* Arrow connector to next step */}
-                {isNotLast && !isLastInRow && (
-                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                    <div className="w-8 h-0.5 bg-gradient-to-r from-primary/50 to-primary/30 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent animate-slide"></div>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes flow {
-          0% {
-            transform: translateX(-100%);
-            opacity: 0;
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-        }
-
-        @keyframes slide {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(200%);
-          }
-        }
-
-        :global(.animate-flow) {
-          animation: flow 3s ease-in-out infinite;
-        }
-
-        :global(.animate-slide) {
-          animation: slide 2s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 }
