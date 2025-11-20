@@ -131,11 +131,7 @@ export default function StatsPage() {
     }
   }, [user]);
 
-  if (!user) {
-    return null;
-  }
-
-  if (loading) {
+  if (!user || loading) {
     return (
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-7xl mx-auto space-y-8">

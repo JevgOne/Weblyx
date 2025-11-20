@@ -23,40 +23,24 @@ interface AdminAuthProviderProps {
 
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  // Optimized: Check if Firebase has a cached user first to skip initial loading
-  const [loading, setLoading] = useState(!auth.currentUser);
+  // Start with cached user immediately if available
+  const [user, setUser] = useState<User | null>(auth.currentUser);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // If we already have a cached user, set it immediately
-    if (auth.currentUser) {
-      setUser(auth.currentUser);
-      setLoading(false);
-    }
-
     const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
       if (!currentUser) {
         router.push("/admin/login");
       } else {
         setUser(currentUser);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, [router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
-          <p className="text-muted-foreground">Načítání...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // Don't block rendering - let pages handle their own loading states
   return (
     <AdminAuthContext.Provider value={{ user, loading }}>
       {children}
