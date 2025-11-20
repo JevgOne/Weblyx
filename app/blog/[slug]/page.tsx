@@ -212,7 +212,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <p className="text-muted-foreground">
             Naše agentura vám pomůže s tvorbou webu, SEO nebo redesignem.
           </p>
-          <Button variant="outline" asChild size="lg">
+          <Button asChild size="lg">
             <Link href="/kontakt">Kontaktujte nás</Link>
           </Button>
         </div>

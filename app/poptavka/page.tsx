@@ -700,13 +700,12 @@ export default function QuotePage() {
               )}
 
               {step < totalSteps ? (
-                <Button variant="outline" onClick={handleNext} disabled={!isStepValid()} className="gap-2 ml-auto">
+                <Button onClick={handleNext} disabled={!isStepValid()} className="gap-2 ml-auto">
                   Pokračovat
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
                 <Button
-                  variant="outline"
                   onClick={handleSubmit}
                   disabled={!isStepValid()}
                   className="gap-2 ml-auto"

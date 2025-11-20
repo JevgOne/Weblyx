@@ -465,7 +465,6 @@ export function ContactWow() {
 
                     {currentField === formFields.length - 1 ? (
                       <Button
-                        variant="outline"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
                         className="min-w-32 gap-2"

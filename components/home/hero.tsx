@@ -73,7 +73,7 @@ export async function Hero() {
             />
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button asChild variant="outline" size="lg" className="shadow-elegant text-base">
+              <Button asChild size="lg" className="shadow-elegant text-base">
                 <Link href={data.ctaPrimary.href}>
                   {data.ctaPrimary.text}
                   <ArrowRight className="ml-2 h-5 w-5" />
