@@ -522,6 +522,33 @@ class MockFirestoreAdmin {
             return buildQuery(currentFilters);
           },
           orderBy: (orderField: string) => ({
+            get: async () => {
+              const collection = this.data.get(collectionName);
+              if (!collection) return { docs: [], empty: true };
+
+              let docs = Array.from(collection.values()).filter(doc => {
+                return currentFilters.every(filter => {
+                  if (filter.operator === '==') return doc[filter.field] === filter.value;
+                  if (filter.operator === '!=') return doc[filter.field] !== filter.value;
+                  return false;
+                });
+              });
+
+              // Sort by orderField
+              docs.sort((a, b) => {
+                const aVal = a[orderField] ?? 0;
+                const bVal = b[orderField] ?? 0;
+                return aVal - bVal;
+              });
+
+              return {
+                docs: docs.map(doc => ({
+                  id: doc.id,
+                  data: () => doc,
+                })),
+                empty: docs.length === 0,
+              };
+            },
             limit: (limitNum: number) => ({
               get: async () => {
                 const collection = this.data.get(collectionName);

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AIDesignSuggestion } from "@/types/ai-design";
 
 /**
@@ -65,37 +65,35 @@ Return ONLY valid JSON without markdown formatting.`;
 }
 
 /**
- * Call Claude API to generate design suggestions
+ * Call Gemini API to generate design suggestions
  */
-async function callClaudeAPI(prompt: string): Promise<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+async function callGeminiAPI(prompt: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error("ANTHROPIC_API_KEY is not configured");
+    throw new Error("GEMINI_API_KEY is not configured");
   }
 
-  const anthropic = new Anthropic({
-    apiKey: apiKey,
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  // Use Gemini 1.5 Pro for best results
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-pro",
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 4096,
+    }
   });
 
-  const message = await anthropic.messages.create({
-    model: "claude-3-5-sonnet-20241022",
-    max_tokens: 4096,
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-  });
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  const text = response.text();
 
-  // Extract JSON from response
-  const content = message.content[0];
-  if (content.type === "text") {
-    return content.text;
+  if (!text) {
+    throw new Error("Empty response from Gemini API");
   }
 
-  throw new Error("Unexpected response format from Claude API");
+  return text;
 }
 
 /**
@@ -160,12 +158,12 @@ export async function POST(
     // 3. Build AI prompt with lead data
     const prompt = buildDesignPrompt(leadData);
 
-    // 4. Call Claude API
+    // 4. Call Gemini API
     let aiResponse: string;
     try {
-      aiResponse = await callClaudeAPI(prompt);
+      aiResponse = await callGeminiAPI(prompt);
     } catch (error: any) {
-      console.error("❌ Claude API error:", error);
+      console.error("❌ Gemini API error:", error);
       return NextResponse.json(
         {
           error: "AI generation failed",

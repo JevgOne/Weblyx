@@ -174,27 +174,69 @@ export const mockFirestore = {
       where: (field: string, operator: string, value: any) => {
         console.log('🎭 Mock Firestore: where', field, operator, value);
 
-        return {
-          get: async () => {
-            let docs: any[] = [];
+        // Helper to filter documents
+        const filterDocs = () => {
+          let docs: any[] = [];
 
-            if (collectionName === 'leads') {
-              docs = mockLeads.filter(l => {
-                if (operator === '==') return l[field] === value;
-                if (operator === '!=') return l[field] !== value;
-                if (operator === '>') return l[field] > value;
-                if (operator === '<') return l[field] < value;
-                return false;
+          if (collectionName === 'leads') {
+            docs = mockLeads.filter(l => {
+              if (operator === '==') return l[field] === value;
+              if (operator === '!=') return l[field] !== value;
+              if (operator === '>') return l[field] > value;
+              if (operator === '<') return l[field] < value;
+              return false;
+            });
+          } else if (collectionName === 'projects') {
+            docs = mockProjects.filter(p => {
+              if (operator === '==') return p[field] === value;
+              if (operator === '!=') return p[field] !== value;
+              if (operator === '>') return p[field] > value;
+              if (operator === '<') return p[field] < value;
+              return false;
+            });
+          } else if (collectionName === 'page_content') {
+            // Add page_content filtering support
+            const allPages = [
+              { pageId: 'homepage-services', category: 'homepage' },
+              { pageId: 'homepage-portfolio', category: 'homepage' },
+              { pageId: 'homepage-pricing', category: 'homepage' },
+            ];
+            docs = allPages.filter(p => {
+              if (operator === '==') return (p as any)[field] === value;
+              if (operator === '!=') return (p as any)[field] !== value;
+              return false;
+            });
+          }
+
+          return docs;
+        };
+
+        return {
+          orderBy: (orderField: string) => ({
+            get: async () => {
+              const docs = filterDocs();
+              // Simple sorting by field
+              docs.sort((a, b) => {
+                const aVal = a[orderField];
+                const bVal = b[orderField];
+                if (aVal < bVal) return -1;
+                if (aVal > bVal) return 1;
+                return 0;
               });
-            } else if (collectionName === 'projects') {
-              docs = mockProjects.filter(p => {
-                if (operator === '==') return p[field] === value;
-                if (operator === '!=') return p[field] !== value;
-                if (operator === '>') return p[field] > value;
-                if (operator === '<') return p[field] < value;
-                return false;
-              });
+
+              return {
+                docs: docs.map(doc => ({
+                  id: doc.id || doc.pageId,
+                  data: () => doc,
+                  exists: () => true,
+                })),
+                empty: docs.length === 0,
+                size: docs.length,
+              };
             }
+          }),
+          get: async () => {
+            const docs = filterDocs();
 
             return {
               docs: docs.map(doc => ({
@@ -213,32 +255,53 @@ export const mockFirestore = {
 };
 
 // Mock Storage Service
+// Mock Firebase Storage (compatible with Firebase Storage API)
 export const mockStorage = {
-  ref: (path: string) => {
-    console.log('🎭 Mock Storage: ref', path);
+  _bucket: 'mock-storage.com',
+  _type: 'mock'
+};
 
-    return {
-      put: async (file: any) => {
-        console.log('🎭 Mock Storage: put', path);
-        // Simulate upload
-        return {
-          ref: {
-            getDownloadURL: async () => {
-              return `https://mock-storage.com/${path}`;
-            }
-          }
-        };
-      },
+// Mock Storage functions to match Firebase Storage API
+export const mockStorageRef = (storage: any, path: string) => {
+  if (DEBUG_LOGS) console.log('🎭 Mock Storage: ref', path);
 
-      getDownloadURL: async () => {
-        return `https://mock-storage.com/${path}`;
-      },
+  return {
+    bucket: 'mock-storage.com',
+    fullPath: path,
+    name: path.split('/').pop() || '',
+    storage,
+    toString: () => `gs://mock-storage.com/${path}`
+  };
+};
 
-      delete: async () => {
-        console.log('🎭 Mock Storage: delete', path);
-      }
-    };
-  }
+export const mockUploadBytes = async (ref: any, data: Blob | Uint8Array | ArrayBuffer) => {
+  if (DEBUG_LOGS) console.log('🎭 Mock Storage: uploadBytes', ref.fullPath);
+
+  // Simulate upload delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  return {
+    metadata: {
+      bucket: 'mock-storage.com',
+      fullPath: ref.fullPath,
+      name: ref.name,
+      size: data instanceof Blob ? data.size : (data as any).byteLength || 0,
+      timeCreated: new Date().toISOString(),
+      updated: new Date().toISOString()
+    },
+    ref
+  };
+};
+
+export const mockGetDownloadURL = async (ref: any) => {
+  if (DEBUG_LOGS) console.log('🎭 Mock Storage: getDownloadURL', ref.fullPath);
+
+  // Return mock URL
+  return `https://mock-storage.com/${ref.fullPath}`;
+};
+
+export const mockDeleteObject = async (ref: any) => {
+  if (DEBUG_LOGS) console.log('🎭 Mock Storage: deleteObject', ref.fullPath);
 };
 
 // Export helper functions
