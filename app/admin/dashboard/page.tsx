@@ -292,8 +292,8 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" variant="secondary">
-                  Brzy dostupné
+                <Button className="w-full" onClick={() => router.push("/admin/stats")}>
+                  Otevřít
                 </Button>
               </CardContent>
             </Card>
@@ -311,8 +311,8 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" variant="secondary">
-                  Brzy dostupné
+                <Button className="w-full" onClick={() => router.push("/admin/blog")}>
+                  Otevřít
                 </Button>
               </CardContent>
             </Card>
