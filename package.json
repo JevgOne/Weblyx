@@ -11,6 +11,7 @@
     "emulators:ui": "firebase emulators:start --import=./firebase-data --export-on-exit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.1",
     "@google/generative-ai": "^0.24.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@radix-ui/react-accordion": "^1.2.12",
