@@ -32,8 +32,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                <span className="text-white font-bold text-xl">W</span>
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-md">
+                <span className="text-primary-foreground font-bold text-xl">W</span>
               </div>
               <span className="font-bold text-xl">Weblyx</span>
             </Link>
