@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Clock, Calendar } from "lucide-react";
+import { adminDbInstance } from "@/lib/firebase-admin";
 
 export const metadata: Metadata = {
   title: "Blog – tipy a trendy ze světa webu a online marketingu",
@@ -34,33 +35,53 @@ export const metadata: Metadata = {
   }
 };
 
-export default function BlogPage() {
-  const posts = [
-    {
-      title: "Jak vybrat správnou webovou agenturu v roce 2025",
-      excerpt: "Tipy a rady, na co se zaměřit při výběru partnera pro tvorbu webu",
-      category: "Průvodce",
-      date: "15. 11. 2025",
-      readTime: "5 min",
-      slug: "jak-vybrat-webovou-agenturu-2025",
-    },
-    {
-      title: "10 důvodů, proč potřebujete responzivní web",
-      excerpt: "Mobilní zařízení tvoří více než 60% návštěvnosti. Je váš web připraven?",
-      category: "Web Design",
-      date: "12. 11. 2025",
-      readTime: "4 min",
-      slug: "10-duvodu-proc-potrebujete-responzivni-web",
-    },
-    {
-      title: "SEO základy: Jak dostat web na první stránku Google",
-      excerpt: "Kompletní průvodce SEO optimalizací pro začátečníky i pokročilé",
-      category: "SEO",
-      date: "8. 11. 2025",
-      readTime: "8 min",
-      slug: "seo-zaklady-prvni-stranka-google",
-    },
-  ];
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content?: string;
+  author?: string;
+  category: string;
+  tags?: string[];
+  published: boolean;
+  featured?: boolean;
+  coverImage?: string;
+  createdAt: any;
+  updatedAt?: any;
+}
+
+export default async function BlogPage() {
+  let posts: BlogPost[] = [];
+
+  try {
+    if (adminDbInstance) {
+      const snapshot = await adminDbInstance
+        .collection('blog')
+        .where('published', '==', true)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+      posts = snapshot.docs.map((doc: any) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          // Format date for display
+          date: data.createdAt ? new Date(data.createdAt.toDate ? data.createdAt.toDate() : data.createdAt).toLocaleDateString('cs-CZ', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+          }) : '',
+          readTime: data.readTime || '5 min',
+        };
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    // Fallback to empty array on error
+    posts = [];
+  }
 
   return (
     <main className="min-h-screen">
@@ -77,34 +98,46 @@ export default function BlogPage() {
 
       <section className="py-16 md:py-24 px-4">
         <div className="container mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post, index) => (
-              <Link key={index} href={`/blog/${post.slug}`}>
-                <Card className="h-full hover:shadow-elegant transition-all">
-                  <div className="aspect-video bg-gradient-hero flex items-center justify-center">
-                    <p className="text-muted-foreground">📝 Náhledový obrázek</p>
-                  </div>
-                  <CardContent className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary">{post.category}</Badge>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {post.readTime}
+          {posts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                Zatím zde nejsou žádné publikované články. Brzy se tu objeví nový obsah!
+              </p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <Card className="h-full hover:shadow-elegant transition-all">
+                    {post.coverImage ? (
+                      <div className="aspect-video bg-cover bg-center" style={{ backgroundImage: `url(${post.coverImage})` }} />
+                    ) : (
+                      <div className="aspect-video bg-gradient-hero flex items-center justify-center">
+                        <p className="text-muted-foreground">📝 Náhledový obrázek</p>
                       </div>
-                    </div>
-                    <h3 className="text-xl font-semibold hover:text-primary transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-muted-foreground">{post.excerpt}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
-                      <Calendar className="h-4 w-4" />
-                      {post.date}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    )}
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Badge variant="secondary">{post.category}</Badge>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          {post.readTime || '5 min'}
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-semibold hover:text-primary transition-colors">
+                        {post.title}
+                      </h3>
+                      <p className="text-muted-foreground">{post.excerpt}</p>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                        <Calendar className="h-4 w-4" />
+                        {(post as any).date}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>

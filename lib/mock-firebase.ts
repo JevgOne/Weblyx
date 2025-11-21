@@ -23,6 +23,7 @@ let mockAdmins: any[] = [
 
 let mockLeads: any[] = [];
 let mockProjects: any[] = [];
+let mockBlogs: any[] = [];
 
 // Mock Auth Service
 export const mockAuth = {
@@ -114,6 +115,13 @@ export const mockFirestore = {
             } else {
               mockProjects.push({ ...data, id: docId });
             }
+          } else if (collectionName === 'blog') {
+            const existingIndex = mockBlogs.findIndex(b => b.id === docId);
+            if (existingIndex >= 0) {
+              mockBlogs[existingIndex] = { ...data, id: docId };
+            } else {
+              mockBlogs.push({ ...data, id: docId });
+            }
           }
         },
 
@@ -129,6 +137,8 @@ export const mockFirestore = {
             mockLeads = mockLeads.filter(l => l.id !== docId);
           } else if (collectionName === 'projects') {
             mockProjects = mockProjects.filter(p => p.id !== docId);
+          } else if (collectionName === 'blog') {
+            mockBlogs = mockBlogs.filter(b => b.id !== docId);
           }
         }
       }),
@@ -142,6 +152,8 @@ export const mockFirestore = {
           mockLeads.push({ ...data, id });
         } else if (collectionName === 'projects') {
           mockProjects.push({ ...data, id });
+        } else if (collectionName === 'blog') {
+          mockBlogs.push({ ...data, id });
         }
 
         return { id };
@@ -158,6 +170,8 @@ export const mockFirestore = {
           docs = mockProjects;
         } else if (collectionName === 'admins') {
           docs = mockAdmins;
+        } else if (collectionName === 'blog') {
+          docs = mockBlogs;
         }
 
         return {
@@ -192,6 +206,14 @@ export const mockFirestore = {
               if (operator === '!=') return p[field] !== value;
               if (operator === '>') return p[field] > value;
               if (operator === '<') return p[field] < value;
+              return false;
+            });
+          } else if (collectionName === 'blog') {
+            docs = mockBlogs.filter(b => {
+              if (operator === '==') return b[field] === value;
+              if (operator === '!=') return b[field] !== value;
+              if (operator === '>') return b[field] > value;
+              if (operator === '<') return b[field] < value;
               return false;
             });
           } else if (collectionName === 'page_content') {

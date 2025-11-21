@@ -95,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     if (adminDbInstance) {
       const blogSnapshot = await adminDbInstance
-        .collection('blog_posts')
+        .collection('blog')
         .where('published', '==', true)
         .get();
 
