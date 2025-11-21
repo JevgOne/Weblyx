@@ -15,9 +15,26 @@ export async function GET(request: NextRequest) {
     const leads: any[] = [];
 
     leadsSnapshot.docs.forEach((doc: any) => {
+      const data = doc.data();
+
+      // Convert Firestore timestamps to ISO strings for client
+      const convertTimestamp = (timestamp: any) => {
+        if (!timestamp) return new Date().toISOString();
+        if (timestamp._seconds) {
+          return new Date(timestamp._seconds * 1000).toISOString();
+        }
+        if (timestamp.toDate) {
+          return timestamp.toDate().toISOString();
+        }
+        return new Date(timestamp).toISOString();
+      };
+
       leads.push({
         id: doc.id,
-        ...doc.data()
+        ...data,
+        created: convertTimestamp(data.createdAt),
+        createdAt: convertTimestamp(data.createdAt),
+        updatedAt: convertTimestamp(data.updatedAt),
       });
     });
 
