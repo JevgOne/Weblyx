@@ -2,7 +2,7 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { getStorage, FirebaseStorage, ref as firebaseRef, uploadBytes as firebaseUploadBytes, getDownloadURL as firebaseGetDownloadURL, deleteObject as firebaseDeleteObject } from 'firebase/storage';
 
 // Import mock services
 import {
@@ -56,10 +56,10 @@ export const db: any = USE_MOCK ? mockFirestore : realDb;
 export const storage: any = USE_MOCK ? mockStorage : realStorage;
 
 // Export Storage functions (mock or real)
-export const ref: any = USE_MOCK ? mockStorageRef : require('firebase/storage').ref;
-export const uploadBytes: any = USE_MOCK ? mockUploadBytes : require('firebase/storage').uploadBytes;
-export const getDownloadURL: any = USE_MOCK ? mockGetDownloadURL : require('firebase/storage').getDownloadURL;
-export const deleteObject: any = USE_MOCK ? mockDeleteObject : require('firebase/storage').deleteObject;
+export const ref: any = USE_MOCK ? mockStorageRef : firebaseRef;
+export const uploadBytes: any = USE_MOCK ? mockUploadBytes : firebaseUploadBytes;
+export const getDownloadURL: any = USE_MOCK ? mockGetDownloadURL : firebaseGetDownloadURL;
+export const deleteObject: any = USE_MOCK ? mockDeleteObject : firebaseDeleteObject;
 
 if (USE_MOCK) {
   console.log('🎭 Using MOCK Firebase services (no real Firebase needed)');

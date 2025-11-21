@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { AdminAuthProvider } from "./_components/AdminAuthProvider";
+import { QueryProvider } from "./_components/QueryProvider";
 
 export default function AdminLayout({
   children,
@@ -15,5 +16,9 @@ export default function AdminLayout({
     return <>{children}</>;
   }
 
-  return <AdminAuthProvider>{children}</AdminAuthProvider>;
+  return (
+    <QueryProvider>
+      <AdminAuthProvider>{children}</AdminAuthProvider>
+    </QueryProvider>
+  );
 }
