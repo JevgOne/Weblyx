@@ -45,16 +45,16 @@
     --background: 220 20% 8%;
     --foreground: 0 0% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 188 94% 43%;
     --primary-foreground: 0 0% 100%;
 
-    --primary-light: 213 94% 68%;
-    --primary-dark: 221 83% 53%;
+    --primary-light: 186 94% 56%;
+    --primary-dark: 189 85% 35%;
 
-    --secondary: 220 18% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 172 66% 50%;
+    --secondary-foreground: 0 0% 100%;
 
-    --accent: 217 91% 60%;
+    --accent: 188 94% 43%;
     --accent-foreground: 0 0% 100%;
 
     --muted: 220 18% 15%;
@@ -65,7 +65,7 @@
 
     --border: 220 18% 18%;
     --input: 220 18% 18%;
-    --ring: 217 91% 60%;
+    --ring: 188 94% 43%;
 
     --card: 220 18% 12%;
     --card-foreground: 0 0% 98%;
