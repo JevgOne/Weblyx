@@ -57,14 +57,12 @@ export default function AdminPortfolioPage() {
 
   const loadProjects = async () => {
     try {
-      const q = query(collection(db, "portfolio"), orderBy("order", "asc"));
-      const querySnapshot = await getDocs(q);
-      const projectsData: PortfolioProject[] = [];
+      const response = await fetch('/api/admin/portfolio');
+      const result = await response.json();
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        projectsData.push({
-          id: doc.id,
+      if (result.success) {
+        const projectsData: PortfolioProject[] = result.data.map((data: any) => ({
+          id: data.id,
           title: data.title || "",
           category: data.category || "",
           description: data.description || "",
@@ -73,12 +71,13 @@ export default function AdminPortfolioPage() {
           published: data.published || false,
           featured: data.featured || false,
           order: data.order || 0,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        });
-      });
-
-      setProjects(projectsData);
+          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+        }));
+        setProjects(projectsData);
+      } else {
+        console.error("Failed to load projects:", result.error);
+      }
     } catch (error) {
       console.error("Error loading projects:", error);
     } finally {

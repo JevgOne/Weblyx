@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06B6D4"/>
+      <stop offset="100%" style="stop-color:#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="#FFFFFF"/>
+  <rect width="512" height="512" rx="100" fill="none" stroke="#E2E8F0" stroke-width="2"/>
+  <circle cx="256" cy="256" r="140" fill="url(#brandGradient)" opacity="0.08"/>
+  <g transform="translate(116, 156)">
+    <path d="M0 0 L70 200 L140 70 L210 200 L280 0"
+          stroke="url(#brandGradient)"
+          stroke-width="32"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
+</svg>

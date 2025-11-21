@@ -21,11 +21,8 @@ export function Header() {
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <span className="text-white font-bold text-xl">W</span>
-            </div>
-            <span className="font-bold text-xl">Weblyx</span>
+          <Link href="/" className="flex items-center">
+            <img src="/logo.svg" alt="Weblyx" className="h-10" />
           </Link>
 
           {/* Desktop Navigation */}
