@@ -20,7 +20,7 @@ const hasFirebaseCredentials = !!(
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
 );
-const USE_MOCK = !hasFirebaseCredentials || (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_USE_REAL_FIREBASE);
+const USE_MOCK = !hasFirebaseCredentials;
 
 // Firebase config - using demo project for development
 const firebaseConfig = {

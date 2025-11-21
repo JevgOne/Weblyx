@@ -90,10 +90,33 @@ const priorityConfig = {
 export default function AdminProjectsPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
-  const [projects, setProjects] = useState(mockProjects);
-  const [loading, setLoading] = useState(false); // Projects page uses mock data, so no real loading
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const response = await fetch('/api/admin/projects');
+        const result = await response.json();
+
+        if (result.success) {
+          setProjects(result.data);
+          console.log("✅ Loaded projects from API:", result.data);
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        console.error("❌ Error loading projects:", error);
+        // Fallback to mock data
+        setProjects(mockProjects);
+      }
+      setLoading(false);
+    };
+
+    loadProjects();
+  }, []);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
