@@ -268,12 +268,12 @@ export function Pricing() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/20">
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-green-600">
+                      <Badge className="bg-primary">
                         {appliedPromo.code}
                       </Badge>
-                      <span className="text-sm font-medium text-green-700">
+                      <span className="text-sm font-medium text-primary">
                         {appliedPromo.discountType === 'percentage'
                           ? `-${appliedPromo.discountValue}%`
                           : `-${formatPrice(appliedPromo.discountValue, 'CZK')} Kč`}
@@ -345,7 +345,7 @@ export function Pricing() {
                           </span>
                         </div>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-3xl md:text-4xl font-black text-green-600">
+                          <span className="text-3xl md:text-4xl font-black text-primary">
                             {formatPrice(calculateDiscountedPrice(plan.price), plan.currency)}
                           </span>
                           <span className="text-lg text-muted-foreground font-medium">Kč</span>

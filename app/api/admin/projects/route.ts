@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       .orderBy("createdAt", "desc")
       .get();
 
-    const projects = projectsSnapshot.docs.map((doc) => {
+    const projects = projectsSnapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,

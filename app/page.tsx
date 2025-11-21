@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
 import { TargetAudience } from "@/components/home/target-audience";
 import { USPSection } from "@/components/home/usp-section";
@@ -7,7 +8,11 @@ import { Portfolio } from "@/components/home/portfolio";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
-import { ContactWow } from "@/components/home/contact-wow";
+
+// Dynamic import for heavy Contact component (code splitting)
+const ContactWow = dynamic(() => import("@/components/home/contact-wow").then(mod => ({ default: mod.ContactWow })), {
+  loading: () => <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center">Načítání...</div></div>,
+});
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   generateOrganizationSchema,

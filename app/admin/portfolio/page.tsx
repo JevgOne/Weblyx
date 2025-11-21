@@ -405,7 +405,7 @@ export default function AdminPortfolioPage() {
                                       title={project.published ? "Skrýt" : "Publikovat"}
                                     >
                                       {project.published ? (
-                                        <Eye className="h-4 w-4 text-green-600" />
+                                        <Eye className="h-4 w-4 text-primary" />
                                       ) : (
                                         <EyeOff className="h-4 w-4 text-muted-foreground" />
                                       )}

@@ -48,8 +48,8 @@ export function USPSection() {
             <h3 className="text-2xl font-semibold mb-6">Co děláme jinak:</h3>
             <div className="space-y-3">
               {goodPractices.map((item, index) => (
-                <div key={index} className="flex items-start gap-3 p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30">
-                  <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <div key={index} className="flex items-start gap-3 p-4 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/30">
+                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">{item}</span>
                 </div>
               ))}

@@ -76,14 +76,14 @@ export default function WebAnalyzerPage() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600";
+    if (score >= 80) return "text-primary";
     if (score >= 60) return "text-yellow-600";
     if (score >= 40) return "text-orange-600";
     return "text-red-600";
   };
 
   const getScoreBadge = (score: number) => {
-    if (score >= 80) return { label: "Výborné", variant: "default" as const, className: "bg-green-600" };
+    if (score >= 80) return { label: "Výborné", variant: "default" as const, className: "bg-primary" };
     if (score >= 60) return { label: "Dobré", variant: "default" as const, className: "bg-yellow-600" };
     if (score >= 40) return { label: "Slabé", variant: "default" as const, className: "bg-orange-600" };
     return { label: "Kritické", variant: "destructive" as const, className: "" };
@@ -261,7 +261,7 @@ export default function WebAnalyzerPage() {
                   <ul className="space-y-1">
                     {analysis.recommendation.matchedNeeds.map((need, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                         {need}
                       </li>
                     ))}
@@ -279,7 +279,7 @@ export default function WebAnalyzerPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
-                  <Shield className={analysis.technical.hasSSL ? "text-green-600" : "text-red-600"} />
+                  <Shield className={analysis.technical.hasSSL ? "text-primary" : "text-red-600"} />
                   <div>
                     <p className="text-sm font-medium">SSL/HTTPS</p>
                     <p className="text-xs text-muted-foreground">
@@ -289,7 +289,7 @@ export default function WebAnalyzerPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Smartphone className={analysis.technical.mobileResponsive ? "text-green-600" : "text-red-600"} />
+                  <Smartphone className={analysis.technical.mobileResponsive ? "text-primary" : "text-red-600"} />
                   <div>
                     <p className="text-sm font-medium">Mobilní</p>
                     <p className="text-xs text-muted-foreground">
@@ -299,7 +299,7 @@ export default function WebAnalyzerPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <FileText className={analysis.technical.title ? "text-green-600" : "text-red-600"} />
+                  <FileText className={analysis.technical.title ? "text-primary" : "text-red-600"} />
                   <div>
                     <p className="text-sm font-medium">Title tag</p>
                     <p className="text-xs text-muted-foreground">
@@ -309,7 +309,7 @@ export default function WebAnalyzerPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <FileText className={analysis.technical.hasH1 ? "text-green-600" : "text-red-600"} />
+                  <FileText className={analysis.technical.hasH1 ? "text-primary" : "text-red-600"} />
                   <div>
                     <p className="text-sm font-medium">H1 nadpis</p>
                     <p className="text-xs text-muted-foreground">

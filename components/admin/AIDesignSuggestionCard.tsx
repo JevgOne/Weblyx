@@ -147,7 +147,7 @@ export function AIDesignSuggestionCard({
           <h4 className="font-semibold mb-2">Poznámky pro implementaci</h4>
           <div className="space-y-2">
             <div>
-              <span className="text-sm font-medium text-green-600">Priority:</span>
+              <span className="text-sm font-medium text-primary">Priority:</span>
               <ul className="list-disc list-inside text-sm">
                 {suggestion.implementationNotes.priorities.map((note, i) => (
                   <li key={i}>{note}</li>

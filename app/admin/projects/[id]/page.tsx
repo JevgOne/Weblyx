@@ -203,7 +203,7 @@ export default function ProjectDetailPage() {
                 <div
                   className={`flex items-center gap-2 px-4 py-2 rounded-md ${
                     message.type === "success"
-                      ? "bg-green-50 text-green-700 border border-green-200"
+                      ? "bg-primary/10 text-primary border border-primary/20"
                       : "bg-red-50 text-red-700 border border-red-200"
                   }`}
                 >
@@ -287,7 +287,7 @@ export default function ProjectDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-primary">
                 {formData.pricePaid?.toLocaleString()} {formData.currency}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -583,7 +583,7 @@ export default function ProjectDetailPage() {
                       </div>
                       <div className="w-full bg-background rounded-full h-2">
                         <div
-                          className="bg-green-500 h-2 rounded-full transition-all"
+                          className="bg-primary h-2 rounded-full transition-all"
                           style={{
                             width: `${
                               formData.priceTotal > 0

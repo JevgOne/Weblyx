@@ -588,7 +588,7 @@ export function ContactAdvanced() {
                     <div
                       className={`p-4 rounded-lg ${
                         submitStatus.type === "success"
-                          ? "bg-green-50 text-green-800 border border-green-200"
+                          ? "bg-primary/10 text-primary border border-primary/20"
                           : "bg-red-50 text-red-800 border border-red-200"
                       }`}
                     >

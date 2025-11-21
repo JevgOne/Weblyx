@@ -185,7 +185,7 @@ export default function BlogPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h2 className="text-xl font-semibold">{post.title}</h2>
                         {post.published ? (
-                          <Badge variant="default" className="bg-green-600">
+                          <Badge variant="default" className="bg-primary">
                             <Eye className="h-3 w-3 mr-1" />
                             Publikováno
                           </Badge>

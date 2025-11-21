@@ -100,7 +100,7 @@ const mockPagesData: Record<string, PageContentItem> = {
 
 const categoryColors = {
   homepage: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  'static-page': 'bg-green-500/10 text-green-700 border-green-200',
+  'static-page': 'bg-primary/10 text-primary border-primary/20',
   section: 'bg-purple-500/10 text-purple-700 border-purple-200',
 };
 
@@ -278,9 +278,9 @@ export default function PageEditorPage() {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Status Messages */}
         {saveStatus === 'success' && (
-          <Alert className="mb-6 border-green-200 bg-green-50 dark:bg-green-950/30">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800 dark:text-green-200">
+          <Alert className="mb-6 border-primary/20 bg-primary/10 dark:bg-primary/10">
+            <CheckCircle2 className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-primary dark:text-primary">
               Změny byly úspěšně uloženy
             </AlertDescription>
           </Alert>

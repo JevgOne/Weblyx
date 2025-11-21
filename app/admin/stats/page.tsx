@@ -185,7 +185,7 @@ export default function StatsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <TrendingUp className="h-4 w-4 mr-1 text-green-500" />
+                    <TrendingUp className="h-4 w-4 mr-1 text-primary" />
                     Všechny projekty
                   </div>
                 </CardContent>
@@ -207,11 +207,11 @@ export default function StatsPage() {
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Dokončené</CardDescription>
-                  <CardTitle className="text-3xl text-green-600">{stats.projects.completed}</CardTitle>
+                  <CardTitle className="text-3xl text-primary">{stats.projects.completed}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 mr-1 text-primary" />
                     Úspěšně dokončeno
                   </div>
                 </CardContent>
@@ -281,11 +281,11 @@ export default function StatsPage() {
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Konvertované</CardDescription>
-                  <CardTitle className="text-3xl text-green-600">{stats.leads.converted}</CardTitle>
+                  <CardTitle className="text-3xl text-primary">{stats.leads.converted}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <TrendingUp className="h-4 w-4 mr-1 text-green-500" />
+                    <TrendingUp className="h-4 w-4 mr-1 text-primary" />
                     Staly se projekty
                   </div>
                 </CardContent>
@@ -316,11 +316,11 @@ export default function StatsPage() {
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Publikované</CardDescription>
-                  <CardTitle className="text-3xl text-green-600">{stats.portfolio.published}</CardTitle>
+                  <CardTitle className="text-3xl text-primary">{stats.portfolio.published}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 mr-1 text-primary" />
                     Veřejně viditelné
                   </div>
                 </CardContent>

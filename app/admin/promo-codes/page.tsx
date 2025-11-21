@@ -421,7 +421,7 @@ export default function PromoCodesPage() {
                         ) : usageLimitReached ? (
                           <Badge variant="destructive">Vyčerpán</Badge>
                         ) : (
-                          <Badge variant="default" className="bg-green-600">Aktivní</Badge>
+                          <Badge variant="default" className="bg-primary">Aktivní</Badge>
                         )}
                       </TableCell>
                       <TableCell>
