@@ -1,15 +1,13 @@
 /**
  * Firebase Admin SDK for Server-Side Data Fetching
  * Used in Next.js 15 Server Components for SEO-optimized data fetching
- *
- * Note: Currently uses mock implementation. To use real Firebase Admin SDK:
- * 1. Install firebase-admin: npm install firebase-admin
- * 2. Set FIREBASE_SERVICE_ACCOUNT environment variable
- * 3. Set NEXT_PUBLIC_USE_REAL_FIREBASE=true
  */
 
-// Mock Firestore for development (without real Firebase)
-const USE_MOCK = true; // Always use mock for now (firebase-admin not installed)
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
+// Use real Firebase when credentials are available, mock otherwise
+const USE_MOCK = !process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
 
 // Mock Firestore implementation for development
 class MockFirestoreAdmin {
@@ -734,7 +732,42 @@ class MockFirestoreAdmin {
 // Create mock instance
 const mockDb = new MockFirestoreAdmin();
 
-// Export the database instance (always mock for now)
-export const adminDbInstance = mockDb;
+// Initialize Real Firebase Admin (only in production)
+let realAdminDb: any = null;
 
-console.log('🎭 Using MOCK Firebase Admin (server-side) - Install firebase-admin for production use');
+if (!USE_MOCK) {
+  try {
+    // Initialize Firebase Admin with service account credentials
+    if (!getApps().length) {
+      const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+
+      if (!serviceAccountBase64) {
+        throw new Error('Missing FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable');
+      }
+
+      // Decode base64 service account
+      const serviceAccountJSON = Buffer.from(serviceAccountBase64, 'base64').toString('utf-8');
+      const serviceAccount = JSON.parse(serviceAccountJSON);
+
+      const app = initializeApp({
+        credential: cert(serviceAccount),
+      });
+      realAdminDb = getFirestore(app);
+      console.log('🔥 Using REAL Firebase Admin (server-side)');
+    } else {
+      realAdminDb = getFirestore();
+      console.log('🔥 Using REAL Firebase Admin (server-side) - existing instance');
+    }
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin:', error);
+    console.log('⚠️ Falling back to MOCK Firebase Admin');
+    realAdminDb = null;
+  }
+}
+
+// Export the database instance (mock in dev, real in production)
+export const adminDbInstance = USE_MOCK || !realAdminDb ? mockDb : realAdminDb;
+
+if (USE_MOCK) {
+  console.log('🎭 Using MOCK Firebase Admin (server-side) - development mode');
+}

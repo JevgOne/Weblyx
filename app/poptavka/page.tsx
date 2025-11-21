@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -106,40 +105,28 @@ export default function QuotePage() {
     try {
       console.log("Form submitted:", formData);
 
-      // Uložit do Firestore
-      const leadRef = await db.collection("leads").add({
-        ...formData,
-        status: "new",
-        createdAt: new Date().toISOString(),
-        source: "questionnaire",
+      // Submit to API endpoint
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
-      console.log("✅ Lead saved to Firestore");
+      const data = await response.json();
 
-      // Trigger AI design generation in background
-      // This runs asynchronously and doesn't block the user flow
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      fetch(`${siteUrl}/api/leads/${leadRef.id}/generate-design`, {
-        method: "POST",
-      })
-        .then((res) => {
-          if (res.ok) {
-            console.log("✅ AI design generation triggered successfully");
-          } else {
-            console.error("⚠️ AI design generation failed:", res.statusText);
-          }
-        })
-        .catch((err) => {
-          console.error("⚠️ AI design generation error:", err);
-          // Don't block user flow on AI generation failure
-        });
+      if (!response.ok) {
+        console.error("❌ Error saving lead:", data.error);
+        alert(data.error || "Došlo k chybě při odesílání. Zkuste to prosím znovu.");
+        return;
+      }
 
+      console.log("✅ Lead saved successfully:", data.leadId);
       router.push("/poptavka/dekujeme");
     } catch (error) {
       console.error("❌ Error saving lead:", error);
-      // V produkci by zde měla být nějaká error notifikace
-      // Pro účely demo pokračujeme dál
-      router.push("/poptavka/dekujeme");
+      alert("Došlo k chybě při odesílání. Zkuste to prosím znovu.");
     }
   };
 
