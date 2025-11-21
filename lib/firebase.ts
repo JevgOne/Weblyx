@@ -15,8 +15,12 @@ import {
   mockDeleteObject
 } from './mock-firebase';
 
-// Use mock services in development, real Firebase in production
-const USE_MOCK = process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_USE_REAL_FIREBASE;
+// Use real Firebase if credentials are present, otherwise use mock
+const hasFirebaseCredentials = !!(
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+  process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+);
+const USE_MOCK = !hasFirebaseCredentials || (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_USE_REAL_FIREBASE);
 
 // Firebase config - using demo project for development
 const firebaseConfig = {
