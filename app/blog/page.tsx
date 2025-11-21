@@ -47,6 +47,7 @@ interface BlogPost {
   published: boolean;
   featured?: boolean;
   coverImage?: string;
+  readTime?: string;
   createdAt: any;
   updatedAt?: any;
 }
