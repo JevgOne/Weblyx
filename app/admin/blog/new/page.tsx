@@ -42,6 +42,7 @@ export default function NewBlogPostPage() {
     category: "",
     tags: [] as string[],
     imageUrl: "",
+    publishedAt: new Date().toISOString().slice(0, 16), // Default to current date/time
   });
 
   // Update author when user loads
@@ -185,21 +186,21 @@ export default function NewBlogPostPage() {
     setSaving(true);
 
     try {
+      // Convert publishedAt string to Date object
+      const blogData = {
+        ...formData,
+        publishedAt: new Date(formData.publishedAt),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
       if (typeof db.collection === 'function') {
         // Mock Firebase
-        await db.collection("blog").add({
-          ...formData,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+        await db.collection("blog").add(blogData);
       } else {
         // Real Firebase
         const { collection, addDoc } = await import('firebase/firestore');
-        await addDoc(collection(db, "blog"), {
-          ...formData,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+        await addDoc(collection(db, "blog"), blogData);
       }
 
       router.push("/admin/blog");
@@ -505,6 +506,22 @@ export default function NewBlogPostPage() {
                     setFormData((prev) => ({ ...prev, author: e.target.value }))
                   }
                 />
+              </div>
+
+              {/* Published Date */}
+              <div className="space-y-2">
+                <Label htmlFor="publishedAt">Datum publikace</Label>
+                <Input
+                  id="publishedAt"
+                  type="datetime-local"
+                  value={formData.publishedAt}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, publishedAt: e.target.value }))
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Datum a čas kdy byl/bude článek publikován
+                </p>
               </div>
 
               {/* Published */}

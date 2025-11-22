@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Firebase Storage Upload</title>
+</head>
+<body>
+  <h1>Test Firebase Storage Upload</h1>
+  <input type="file" id="fileInput" accept="image/*">
+  <button onclick="uploadFile()">Upload Test</button>
+  <div id="status"></div>
+  <div id="result"></div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB3aZX7dfRF7qKWH9JRf05cJCctfKNWvE",
+      authDomain: "weblyx-prod-38054.firebaseapp.com",
+      projectId: "weblyx-prod-38054",
+      storageBucket: "weblyx-prod-38054.firebasestorage.app",
+      messagingSenderId: "440732433732",
+      appId: "1:440732433732:web:be17be9c62a18e9c54ae08"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    window.uploadFile = async function() {
+      const fileInput = document.getElementById('fileInput');
+      const statusDiv = document.getElementById('status');
+      const resultDiv = document.getElementById('result');
+      
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please select a file');
+        return;
+      }
+
+      statusDiv.innerHTML = 'Uploading...';
+      
+      try {
+        // Check if user is signed in
+        const user = auth.currentUser;
+        statusDiv.innerHTML += '<br>User: ' + (user ? user.email : 'NOT SIGNED IN');
+        
+        const timestamp = Date.now();
+        const fileName = `test/${timestamp}_${file.name}`;
+        const storageRef = ref(storage, fileName);
+        
+        statusDiv.innerHTML += '<br>Uploading to: ' + fileName;
+        
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        
+        resultDiv.innerHTML = '<div style="color: green">✅ SUCCESS!</div>';
+        resultDiv.innerHTML += '<br>URL: <a href="' + downloadURL + '" target="_blank">' + downloadURL + '</a>';
+        statusDiv.innerHTML += '<br>Upload complete!';
+      } catch (error) {
+        resultDiv.innerHTML = '<div style="color: red">❌ ERROR: ' + error.message + '</div>';
+        resultDiv.innerHTML += '<br>Code: ' + error.code;
+        console.error('Full error:', error);
+      }
+    };
+  </script>
+</body>
+</html>
