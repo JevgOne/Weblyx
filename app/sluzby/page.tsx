@@ -18,8 +18,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 import { Service as ServiceType } from "@/types/cms";
 
 export const metadata: Metadata = {
-  title: "Naše služby – tvorba webových stránek, e-shopů a SEO",
-  description: "Komplexní řešení pro vaši online prezentaci: tvorba webových stránek od 8 990 Kč, e-shopů, redesign, SEO i rychlostní optimalizace. Rychlý web na míru pro živnostníky i firmy.",
+  title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
+  description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč), e-shopy na míru, SEO optimalizace. Web do týdne (5-7 dní), Next.js místo WordPressu. Kolik stojí web? Od 10K!",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
     "údržba webu"
   ],
   openGraph: {
-    title: "Naše služby – tvorba webových stránek, e-shopů a SEO",
-    description: "Komplexní řešení pro vaši online prezentaci. Tvorba webů od 8 990 Kč, e-shopy, SEO.",
+    title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
+    description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne, Next.js místo WordPressu.",
     url: "https://weblyx.cz/sluzby",
     type: "website",
     images: [

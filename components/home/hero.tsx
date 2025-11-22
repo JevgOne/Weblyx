@@ -38,16 +38,16 @@ export async function Hero() {
 
   // Fallback data if fetch fails
   const data: HeroData = heroData || {
-    badge: '⚡ Nejrychlejší tvorba webu v ČR',
-    title: 'Profesionální web za týden',
-    titleHighlight: 'od 7 990 Kč',
-    subtitle: 'Moderní web postavený na <strong>Next.js místo WordPressu</strong>. Dodání za <strong>3–7 dní</strong>, rychlost <strong>pod 2 sekundy</strong>. Levnější než šablona, rychlejší než konkurence.',
+    badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
+    title: 'Tvorba webových stránek za týden',
+    titleHighlight: 'od 10 000 Kč',
+    subtitle: 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
     ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
     ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
     stats: [
-      { icon: 'Clock', value: '3–7 dní', label: 'Nejrychlejší dodání – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
-      { icon: 'Zap', value: 'Next.js', label: 'Moderní technologie místo zastaralého WordPressu = vyšší rychlost a bezpečnost.' },
-      { icon: 'TrendingUp', value: 'Od 7 990 Kč', label: 'Férové ceny bez skrytých poplatků. Profesionální web za cenu levné šablony.' },
+      { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
+      { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
+      { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Webové stránky cena od 10 000 Kč. Akční sleva 7 990 Kč – férové ceny bez skrytých poplatků.' },
     ],
   };
 

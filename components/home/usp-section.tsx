@@ -9,11 +9,11 @@ export function USPSection() {
   ];
 
   const goodPractices = [
-    "Tvorba webu na míru s dodáním do 5–7 dní",
-    "Web pod 2 sekundy – optimalizovaný pro Core Web Vitals",
-    "Přehledné balíčky od 8 990 Kč",
-    "Dlouhodobá podpora, údržba a modernizace",
-    "AI a moderní frameworky místo zastaralých technologií",
+    "⚡ Rychlá tvorba webu na míru – web do týdne (5–7 dní)",
+    "🚀 Nejrychlejší weby v ČR – načítání pod 2 sekundy (PageSpeed 95+)",
+    "💰 Webové stránky cena od 10 000 Kč – AKČNÍ SLEVA 7 990 Kč",
+    "✅ Dlouhodobá podpora, údržba a modernizace webu",
+    "🎯 Next.js a moderní frameworky místo zastaralého WordPressu",
   ];
 
   return (
@@ -21,11 +21,11 @@ export function USPSection() {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl font-bold">
-            Proč si vybrat Weblyx místo{" "}
-            <span className="text-primary">levného WordPressu</span>
+            Kolik stojí webové stránky?{" "}
+            <span className="text-primary">Od 10 000 Kč!</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Na rozdíl od šablonových „levných webů" stavíme projekty na moderních technologiích (Next.js, React), s důrazem na rychlost a dlouhodobou udržitelnost.
+            Na rozdíl od šablonových levných webů stavíme projekty na moderních technologiích (<strong>Next.js</strong> místo <strong>WordPressu</strong>), s důrazem na rychlost pod 2 sekundy a dlouhodobou udržitelnost. Rychlá tvorba webových stránek pro živnostníky a firmy.
           </p>
         </div>
 
