@@ -47,33 +47,34 @@ export async function Process() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {enabledSteps.map((step, index) => {
             const IconComponent = getIcon(step.icon);
+            const isLastInRow = (index + 1) % 3 === 0;
             return (
               <div key={step.id} className="relative group">
-                {/* Connector Line (desktop only) */}
-                {index < enabledSteps.length - 1 && (
+                {/* Connector Line (desktop only, not on last item in row) */}
+                {index < enabledSteps.length - 1 && !isLastInRow && (
                   <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-border -z-10">
                     <div className="h-full w-0 bg-primary group-hover:w-full transition-all duration-500"></div>
                   </div>
                 )}
 
-                <div className="space-y-4">
+                <div className="space-y-4 h-full flex flex-col">
                   {/* Icon & Number */}
-                  <div className="relative">
+                  <div className="relative flex-shrink-0">
                     <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <IconComponent className="h-8 w-8 text-primary" />
                     </div>
-                    <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                    <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shadow-lg">
                       {step.number}
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">{step.title}</h3>
-                    <p className="text-muted-foreground">{step.description}</p>
+                  <div className="space-y-2 flex-1">
+                    <h3 className="text-lg md:text-xl font-semibold">{step.title}</h3>
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{step.description}</p>
                   </div>
                 </div>
               </div>
