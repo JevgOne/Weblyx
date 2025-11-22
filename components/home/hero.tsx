@@ -12,125 +12,200 @@ const iconMap: Record<string, any> = {
   Zap,
 };
 
-async function getHeroData(): Promise<HeroData | null> {
+async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection | null }> {
   try {
     const sections = await getHomepageSections();
 
-    if (!sections || !sections.hero) {
-      console.error('Hero data not found');
-      return null;
-    }
-
-    const heroSection: HeroSection = sections.hero;
+    const heroSection: HeroSection | null = sections?.hero || null;
 
     // Convert Turso HeroSection to legacy HeroData format
-    return {
+    const data: HeroData = {
       badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
-      title: heroSection.headline,
+      title: heroSection?.headline || 'Tvorba webových stránek za týden',
       titleHighlight: '',
-      subtitle: heroSection.subheadline,
-      ctaPrimary: { text: heroSection.ctaText, href: heroSection.ctaLink },
+      subtitle: heroSection?.subheadline || 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
+      ctaPrimary: {
+        text: heroSection?.ctaText || 'Nezávazná konzultace zdarma',
+        href: heroSection?.ctaLink || '/poptavka'
+      },
       ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
       stats: [
         { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
         { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
         { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Webové stránky cena od 10 000 Kč. Akční sleva 7 990 Kč – férové ceny bez skrytých poplatků.' },
       ],
-    } as HeroData;
+    };
+
+    return { data, heroSection };
   } catch (error) {
     console.error('Error fetching hero data:', error);
-    return null;
+    return {
+      data: {
+        badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
+        title: 'Tvorba webových stránek za týden',
+        titleHighlight: '',
+        subtitle: 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
+        ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
+        ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
+        stats: [
+          { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
+          { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
+          { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Webové stránky cena od 10 000 Kč. Akční sleva 7 990 Kč – férové ceny bez skrytých poplatků.' },
+        ],
+      },
+      heroSection: null,
+    };
   }
 }
 
 export async function Hero() {
-  const heroData = await getHeroData();
-
-  // Fallback data if fetch fails
-  const data: HeroData = heroData || {
-    badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
-    title: 'Tvorba webových stránek za týden',
-    titleHighlight: 'od 10 000 Kč',
-    subtitle: 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
-    ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
-    ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
-    stats: [
-      { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
-      { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
-      { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Webové stránky cena od 10 000 Kč. Akční sleva 7 990 Kč – férové ceny bez skrytých poplatků.' },
-    ],
-  };
+  const { data, heroSection } = await getHeroData();
 
   return (
-    <section className="relative py-20 md:py-32 px-4 overflow-hidden gradient-hero grid-pattern">
-      <div className="container mx-auto max-w-7xl">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Text */}
-          <div className="space-y-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+    <section className="relative min-h-[90vh] flex items-center py-20 md:py-0 px-4 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        {/* Grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)] opacity-20"></div>
+      </div>
+
+      <div className="container mx-auto max-w-7xl relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Column - Content */}
+          <div className="space-y-8 lg:space-y-10">
+            {/* Badge */}
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-transparent text-primary text-sm font-medium border border-primary/20 shadow-lg shadow-primary/5 backdrop-blur-sm"
+              style={{ animation: 'fadeInUp 0.6s ease-out' }}
+            >
               <Zap className="h-4 w-4" />
               <span>{data.badge}</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              {data.title}{" "}
-              <span className="text-primary">{data.titleHighlight}</span>
-            </h1>
+            {/* Heading */}
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+                <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                  {data.title}
+                </span>
+                {data.titleHighlight && (
+                  <>
+                    {" "}
+                    <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+                      {data.titleHighlight}
+                    </span>
+                  </>
+                )}
+              </h1>
 
-            <p
-              className="text-lg md:text-xl text-muted-foreground max-w-2xl"
-              dangerouslySetInnerHTML={{ __html: data.subtitle }}
-            />
+              <p
+                className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: data.subtitle }}
+              />
+            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button asChild size="lg" className="shadow-elegant text-base">
-                <Link href={data.ctaPrimary.href}>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <Button
+                asChild
+                size="lg"
+                className="text-base px-8 py-6 shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-primary to-primary/90"
+              >
+                <Link href={data.ctaPrimary.href} className="group">
                   {data.ctaPrimary.text}
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-base">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="text-base px-8 py-6 border-2 hover:bg-muted hover:border-primary/50 transition-all duration-300"
+              >
                 <Link href={data.ctaSecondary.href}>{data.ctaSecondary.text}</Link>
               </Button>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t">
+            {/* Stats - Compact Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
               {data.stats.map((stat, index) => {
                 const IconComponent = iconMap[stat.icon] || Zap;
                 return (
-                  <div key={index} className="space-y-1">
-                    <IconComponent className="h-5 w-5 text-primary mb-2" />
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div
+                    key={index}
+                    className="group relative p-4 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <IconComponent className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xl font-bold mb-1">{stat.value}</div>
+                        <div className="text-xs text-muted-foreground line-clamp-2">
+                          {stat.label}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Right Column - Visual */}
-          <div className="relative hidden lg:block">
-            <div className="relative aspect-square max-w-lg mx-auto">
-              {/* Placeholder for hero image/illustration */}
-              <div className="absolute inset-0 bg-gradient-primary rounded-3xl opacity-20 blur-3xl"></div>
-              <div className="relative h-full w-full rounded-2xl border-2 border-primary/20 bg-background/50 backdrop-blur flex items-center justify-center">
-                <div className="text-center space-y-4 p-8">
-                  <div className="text-6xl font-bold text-primary">W</div>
-                  <p className="text-muted-foreground">Hero Visual Placeholder</p>
-                  <p className="text-sm text-muted-foreground">
-                    Sem přijde ilustrace nebo mockup webu
-                  </p>
+          {/* Right Column - Visual/Image */}
+          <div className="relative lg:h-[600px] h-[400px] flex items-center justify-center">
+            <div className="relative w-full h-full max-w-lg mx-auto">
+              {/* Decorative elements */}
+              <div className="absolute -top-4 -right-4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
+              <div className="absolute -bottom-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
+
+              {heroSection?.backgroundImage ? (
+                // Hero image from database
+                <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
+                  <img
+                    src={heroSection.backgroundImage}
+                    alt="Weblyx - Moderní webové stránky"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
                 </div>
-              </div>
+              ) : (
+                // Modern placeholder
+                <div className="relative h-full w-full rounded-3xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-card via-background to-muted/50 backdrop-blur flex items-center justify-center overflow-hidden group hover:border-primary/50 transition-all duration-300">
+                  {/* Animated gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 animate-pulse"></div>
+
+                  <div className="relative text-center space-y-6 p-8">
+                    {/* Large W logo */}
+                    <div className="relative inline-block">
+                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl"></div>
+                      <div className="relative text-8xl font-bold bg-gradient-to-br from-primary via-primary to-primary/70 bg-clip-text text-transparent">
+                        W
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-lg font-semibold text-foreground">Hero Obrázek</p>
+                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                        Nahrajte obrázek v <span className="text-primary font-medium">admin panelu</span> pro zobrazení zde
+                      </p>
+                    </div>
+
+                    {/* Upload hint */}
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                      <span>Admin → Hero sekce</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute top-20 right-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl -z-10"></div>
-      <div className="absolute bottom-20 left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"></div>
     </section>
   );
 }
