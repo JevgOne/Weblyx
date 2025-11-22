@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { db, storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
+import { storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -189,18 +189,20 @@ export default function NewBlogPostPage() {
       // Convert publishedAt string to Date object
       const blogData = {
         ...formData,
-        publishedAt: new Date(formData.publishedAt),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        publishedAt: formData.publishedAt,
       };
 
-      if (typeof db.collection === 'function') {
-        // Mock Firebase
-        await db.collection("blog").add(blogData);
-      } else {
-        // Real Firebase
-        const { collection, addDoc } = await import('firebase/firestore');
-        await addDoc(collection(db, "blog"), blogData);
+      // Use API endpoint instead of direct Firebase access
+      const response = await fetch('/api/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(blogData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create blog post');
       }
 
       router.push("/admin/blog");

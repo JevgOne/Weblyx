@@ -4,7 +4,7 @@ import {
   createPortfolio,
   updatePortfolio,
   deletePortfolio,
-} from '@/lib/turso';
+} from '@/lib/turso/portfolio';
 
 export const runtime = 'edge';
 

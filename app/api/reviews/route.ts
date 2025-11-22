@@ -4,7 +4,7 @@ import {
   createReview,
   updateReview,
   deleteReview,
-} from '@/lib/turso';
+} from '@/lib/turso/reviews';
 
 export const runtime = 'edge';
 
