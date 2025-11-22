@@ -30,24 +30,39 @@ export default function MediaLibraryPage() {
   // Load media files
   const loadMediaFiles = async () => {
     setLoading(true);
+    setError(""); // Clear previous errors
     try {
       const mediaRef = ref(storage, "media");
       const result = await listAll(mediaRef);
 
+      if (result.items.length === 0) {
+        setFiles([]);
+        setLoading(false);
+        return;
+      }
+
       const filePromises = result.items.map(async (itemRef) => {
-        const url = await getDownloadURL(itemRef);
-        return {
-          url,
-          path: itemRef.fullPath,
-          name: itemRef.name,
-        };
+        try {
+          const url = await getDownloadURL(itemRef);
+          return {
+            url,
+            path: itemRef.fullPath,
+            name: itemRef.name,
+          };
+        } catch (err) {
+          console.error(`Error getting URL for ${itemRef.name}:`, err);
+          return null;
+        }
       });
 
-      const mediaFiles = await Promise.all(filePromises);
+      const mediaFiles = (await Promise.all(filePromises)).filter(Boolean) as MediaFile[];
       setFiles(mediaFiles);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error loading media:", err);
-      setError("Chyba při načítání médií");
+      // Don't show error if folder is just empty
+      if (err.code !== 'storage/object-not-found') {
+        setError(`Načítání médií selhalo: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
