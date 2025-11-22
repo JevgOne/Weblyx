@@ -90,7 +90,7 @@ export function CookieConsent() {
         <div className="mx-auto max-w-7xl">
           <div className="relative rounded-2xl border border-border bg-background/95 backdrop-blur-lg shadow-2xl overflow-hidden">
             {/* Decorative gradient */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary" />
 
             <div className="p-6 sm:p-8">
               {!showSettings ? (

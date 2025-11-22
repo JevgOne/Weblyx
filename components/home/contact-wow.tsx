@@ -286,7 +286,7 @@ export function ContactWow() {
     return (
       <section id="contact" className="relative py-16 md:py-24 px-4 overflow-hidden">
         {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5 animate-gradient" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/3 animate-gradient" />
 
         <div className="container mx-auto max-w-4xl relative z-10">
           <motion.div
@@ -322,7 +322,7 @@ export function ContactWow() {
   return (
     <section id="contact" className="relative py-16 md:py-24 px-4 overflow-hidden">
       {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5 animate-gradient" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/3 animate-gradient" />
 
       <div className="container mx-auto max-w-7xl relative z-10">
         <motion.div
@@ -430,7 +430,7 @@ export function ContactWow() {
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <motion.div
-                        className="h-full bg-gradient-to-r from-primary to-purple-500"
+                        className="h-full bg-gradient-to-r from-primary to-secondary"
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}
                         transition={{ duration: 0.3 }}
