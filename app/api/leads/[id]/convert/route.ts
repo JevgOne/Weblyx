@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc } from "firebase/firestore";
 
 // Format AI design suggestions for project notes
 function formatAINotesForProject(aiSuggestion: any): string {
@@ -49,11 +50,11 @@ async function generateProjectNumber(): Promise<string> {
 
   try {
     // Get all projects to find the highest number
-    const projectsSnapshot = await db.collection("projects").get();
+    const projectsSnapshot = await getDocs(collection(db, "projects"));
 
     let maxNumber = 0;
-    projectsSnapshot.docs.forEach((doc: any) => {
-      const project = doc.data();
+    projectsSnapshot.docs.forEach((docSnapshot) => {
+      const project = docSnapshot.data();
       if (project.projectNumber && project.projectNumber.startsWith(prefix)) {
         const numberPart = parseInt(project.projectNumber.split("-").pop() || "0");
         if (numberPart > maxNumber) {
@@ -90,7 +91,7 @@ export async function POST(
     }
 
     // Fetch the lead
-    const leadDoc = await db.collection("leads").doc(leadId).get();
+    const leadDoc = await getDoc(doc(db, "leads", leadId));
 
     if (!leadDoc.exists()) {
       return NextResponse.json(
@@ -164,10 +165,10 @@ export async function POST(
     };
 
     // Add project to Firestore
-    const projectRef = await db.collection("projects").add(projectData);
+    const projectRef = await addDoc(collection(db, "projects"), projectData);
 
     // Update lead status to "converted" and link to project
-    await db.collection("leads").doc(leadId).update({
+    await updateDoc(doc(db, "leads", leadId), {
       status: "converted",
       convertedToProjectId: projectRef.id,
       convertedAt: new Date().toISOString(),

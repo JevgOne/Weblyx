@@ -53,72 +53,38 @@ export default function StatsPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Check if we're using mock Firebase
-        if (typeof db.collection === 'function') {
-          // Mock Firebase
-          const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
-            db.collection("projects").get(),
-            db.collection("leads").get(),
-            db.collection("portfolio").get()
-          ]);
+        // Real Firebase (modular v9+)
+        const { collection, getDocs } = await import('firebase/firestore');
 
-          const projects = projectsSnap.docs.map((doc: any) => doc.data());
-          const leads = leadsSnap.docs.map((doc: any) => doc.data());
-          const portfolio = portfolioSnap.docs.map((doc: any) => doc.data());
+        const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
+          getDocs(collection(db, "projects")),
+          getDocs(collection(db, "leads")),
+          getDocs(collection(db, "portfolio"))
+        ]);
 
-          setStats({
-            projects: {
-              total: projects.length,
-              active: projects.filter((p: any) => p.status === 'in_progress').length,
-              completed: projects.filter((p: any) => p.status === 'completed').length,
-              pending: projects.filter((p: any) => p.status === 'pending').length,
-            },
-            leads: {
-              total: leads.length,
-              new: leads.filter((l: any) => l.status === 'new').length,
-              contacted: leads.filter((l: any) => l.status === 'contacted').length,
-              converted: leads.filter((l: any) => l.status === 'converted').length,
-            },
-            portfolio: {
-              total: portfolio.length,
-              published: portfolio.filter((p: any) => p.published).length,
-              featured: portfolio.filter((p: any) => p.featured).length,
-            },
-          });
-        } else {
-          // Real Firebase (modular v9+)
-          const { collection, getDocs } = await import('firebase/firestore');
+        const projects = projectsSnap.docs.map(doc => doc.data());
+        const leads = leadsSnap.docs.map(doc => doc.data());
+        const portfolio = portfolioSnap.docs.map(doc => doc.data());
 
-          const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
-            getDocs(collection(db, "projects")),
-            getDocs(collection(db, "leads")),
-            getDocs(collection(db, "portfolio"))
-          ]);
-
-          const projects = projectsSnap.docs.map(doc => doc.data());
-          const leads = leadsSnap.docs.map(doc => doc.data());
-          const portfolio = portfolioSnap.docs.map(doc => doc.data());
-
-          setStats({
-            projects: {
-              total: projects.length,
-              active: projects.filter((p: any) => p.status === 'in_progress').length,
-              completed: projects.filter((p: any) => p.status === 'completed').length,
-              pending: projects.filter((p: any) => p.status === 'pending').length,
-            },
-            leads: {
-              total: leads.length,
-              new: leads.filter((l: any) => l.status === 'new').length,
-              contacted: leads.filter((l: any) => l.status === 'contacted').length,
-              converted: leads.filter((l: any) => l.status === 'converted').length,
-            },
-            portfolio: {
-              total: portfolio.length,
-              published: portfolio.filter((p: any) => p.published).length,
-              featured: portfolio.filter((p: any) => p.featured).length,
-            },
-          });
-        }
+        setStats({
+          projects: {
+            total: projects.length,
+            active: projects.filter((p: any) => p.status === 'in_progress').length,
+            completed: projects.filter((p: any) => p.status === 'completed').length,
+            pending: projects.filter((p: any) => p.status === 'pending').length,
+          },
+          leads: {
+            total: leads.length,
+            new: leads.filter((l: any) => l.status === 'new').length,
+            contacted: leads.filter((l: any) => l.status === 'contacted').length,
+            converted: leads.filter((l: any) => l.status === 'converted').length,
+          },
+          portfolio: {
+            total: portfolio.length,
+            published: portfolio.filter((p: any) => p.published).length,
+            featured: portfolio.filter((p: any) => p.featured).length,
+          },
+        });
       } catch (error) {
         console.error("Error fetching stats:", error);
       } finally {

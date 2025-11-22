@@ -134,7 +134,9 @@ export async function POST(
     console.log(`🎨 Generating AI design for lead: ${leadId}`);
 
     // 1. Fetch lead from Firestore
-    const leadDoc = await db.collection("leads").doc(leadId).get();
+    const { doc, getDoc } = await import('firebase/firestore');
+    const leadDocRef = doc(db, "leads", leadId);
+    const leadDoc = await getDoc(leadDocRef);
 
     if (!leadDoc.exists()) {
       return NextResponse.json(
@@ -189,7 +191,8 @@ export async function POST(
     }
 
     // 6. Save to Firestore
-    await db.collection("leads").doc(leadId).update({
+    const { doc: docRef, updateDoc } = await import('firebase/firestore');
+    await updateDoc(docRef(db, "leads", leadId), {
       aiDesignSuggestion: designSuggestion,
       aiGeneratedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
