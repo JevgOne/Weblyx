@@ -49,8 +49,28 @@ export const metadata: Metadata = {
   }
 };
 
-export default function ServicesPage() {
-  const services = [
+async function getServicesFromFirestore() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz'}/api/services`, {
+      cache: 'no-store',
+    });
+    const result = await response.json();
+
+    if (result.success && result.data.length > 0) {
+      return result.data;
+    }
+  } catch (error) {
+    console.error('Error fetching services:', error);
+  }
+  return null;
+}
+
+export default async function ServicesPage() {
+  // Try to load from Firestore first
+  const firestoreServices = await getServicesFromFirestore();
+
+  // Fallback hardcoded services
+  const hardcodedServices = [
     {
       icon: Globe,
       title: "Tvorba webových stránek",
@@ -168,6 +188,28 @@ export default function ServicesPage() {
       ideal: ["Všechny typy webů", "E-shopy", "Kritické weby", "Dlouhodobá spolupráce"],
     },
   ];
+
+  // Use Firestore services if available, otherwise fallback to hardcoded
+  const services = firestoreServices && firestoreServices.length > 0
+    ? firestoreServices.map((fsService: any) => {
+        // Map Firestore service to expected format
+        // Find matching hardcoded service for additional data (price, includes, ideal)
+        const hardcodedMatch = hardcodedServices.find(hs =>
+          hs.title.toLowerCase().includes(fsService.title.toLowerCase().split(' ')[0])
+        );
+
+        return {
+          icon: Globe, // Default icon, could be mapped based on fsService.icon
+          title: fsService.title,
+          slug: fsService.id,
+          price: hardcodedMatch?.price || "Cena na dotaz",
+          imageUrl: fsService.imageUrl,
+          description: fsService.description,
+          includes: fsService.features || hardcodedMatch?.includes || [],
+          ideal: hardcodedMatch?.ideal || [],
+        };
+      })
+    : hardcodedServices;
 
   // Generate breadcrumb schema
   const breadcrumbs: BreadcrumbItem[] = [
