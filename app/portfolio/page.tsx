@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Portfolio } from "@/components/home/portfolio";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generatePortfolioSchema, BreadcrumbItem, generateWebPageSchema, PortfolioItem } from "@/lib/schema-org";
-import { adminDbInstance } from "@/lib/firebase-admin";
+import { getAllPortfolio } from "@/lib/turso/portfolio";
 
 export const metadata: Metadata = {
   title: "Naše projekty – weby a e-shopy, které přináší výsledky",
@@ -36,35 +36,21 @@ export const metadata: Metadata = {
 
 async function getPortfolioProjects() {
   try {
-    if (!adminDbInstance) {
-      return [];
-    }
+    // Fetch from Turso
+    const allProjects = await getAllPortfolio();
 
-    const snapshot = await adminDbInstance
-      .collection('portfolio')
-      .orderBy('order')
-      .get();
-
-    if (snapshot.empty) {
-      return [];
-    }
-
-    const projects: PortfolioItem[] = [];
-    snapshot.docs.forEach((doc: any) => {
-      const data = doc.data();
-      // Only include published projects
-      if (data.published) {
-        projects.push({
-          id: doc.id,
-          title: data.title,
-          description: data.description,
-          imageUrl: data.imageUrl,
-          url: data.liveUrl,
-          tags: data.technologies || [],
-          dateCreated: data.createdAt?.toDate(),
-        });
-      }
-    });
+    // Only include published projects, map to schema format
+    const projects: PortfolioItem[] = allProjects
+      .filter(project => project.published)
+      .map(data => ({
+        id: data.id,
+        title: data.title,
+        description: data.description || '',
+        imageUrl: data.imageUrl,
+        url: data.projectUrl || '',
+        tags: data.technologies || [],
+        dateCreated: data.createdAt,
+      }));
 
     return projects;
   } catch (error) {
