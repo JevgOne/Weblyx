@@ -6,7 +6,7 @@ import {
   deletePortfolio,
 } from '@/lib/turso/portfolio';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // GET /api/portfolio - Get all portfolio items
 export async function GET(request: NextRequest) {

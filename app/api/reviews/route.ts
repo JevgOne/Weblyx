@@ -6,7 +6,7 @@ import {
   deleteReview,
 } from '@/lib/turso/reviews';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // GET /api/reviews - Get all reviews
 export async function GET(request: NextRequest) {
