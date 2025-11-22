@@ -72,7 +72,7 @@ export default function ServicesManagementPage() {
           title: item.title,
           description: item.description,
           icon: item.icon || '',
-          imageUrl: '', // Turso services don't have imageUrl
+          imageUrl: item.imageUrl || '',
           features: item.features || [],
           order: item.order || 0,
           enabled: item.active !== false,
@@ -259,6 +259,7 @@ export default function ServicesManagementPage() {
         title: formData.title,
         description: formData.description,
         icon: formData.icon,
+        imageUrl: formData.imageUrl,
         features: cleanedFeatures,
         active: formData.enabled,
       };

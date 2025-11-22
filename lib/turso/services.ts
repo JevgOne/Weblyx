@@ -125,6 +125,7 @@ export async function updateService(
     title: string;
     description: string;
     icon: string;
+    imageUrl: string;
     features: string[];
     priceFrom: number;
     priceTo: number;
@@ -147,6 +148,10 @@ export async function updateService(
   if (data.icon !== undefined) {
     updates.push('icon = ?');
     args.push(data.icon || null);
+  }
+  if (data.imageUrl !== undefined) {
+    updates.push('image_url = ?');
+    args.push(data.imageUrl || null);
   }
   if (data.features !== undefined) {
     updates.push('features = ?');
