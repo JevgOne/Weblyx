@@ -97,27 +97,18 @@ export default function MediaLibraryPage() {
         await uploadBytes(storageRef, compressedFile);
         const downloadURL = await getDownloadURL(storageRef);
 
-        // Auto-generate ALT text
-        const altResponse = await fetch("/api/media/generate-alt", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageUrl: downloadURL, fileName: file.name }),
-        });
-
-        const altResult = await altResponse.json();
-        const alt = altResult.success ? altResult.data.alt : "";
-
+        // Skip AI ALT generation during upload (can generate later with button)
         return {
           url: downloadURL,
           path: fileName,
           name: file.name,
-          alt,
+          alt: "", // User can generate ALT later with "AI ALT" button
         };
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
       setFiles([...uploadedFiles, ...files]);
-      setSuccess(`✅ Nahráno ${uploadedFiles.length} souborů (s AI ALT texty)`);
+      setSuccess(`✅ Nahráno ${uploadedFiles.length} souborů! Vygeneruj ALT texty tlačítkem "AI ALT".`);
       e.target.value = "";
     } catch (err: any) {
       console.error("Upload error:", err);
@@ -214,7 +205,7 @@ export default function MediaLibraryPage() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            💡 Vyberte více souborů najednou. AI automaticky vygeneruje ALT texty.
+            💡 Vyberte více souborů najednou. Po nahrání klikněte "AI ALT" pro generování popisků.
           </p>
         </CardContent>
       </Card>
