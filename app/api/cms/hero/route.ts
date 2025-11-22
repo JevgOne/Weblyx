@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getHomepageSections, updateHeroSection } from '@/lib/turso/cms';
 
 export const runtime = 'nodejs';
@@ -33,6 +34,9 @@ export async function PUT(request: NextRequest) {
       backgroundImage: body.backgroundImage || '',
       enabled: body.enabled !== undefined ? body.enabled : true,
     });
+
+    // Revalidate homepage to show changes immediately
+    revalidatePath('/');
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
