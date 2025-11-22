@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { Instagram, Facebook, MessageCircle } from "lucide-react";
 
 export function Footer() {
   const footerLinks = {
@@ -41,6 +42,36 @@ export function Footer() {
               Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek za
               konkurenceschopné ceny.
             </p>
+            {/* Social Media Links */}
+            <div className="flex gap-3">
+              <a
+                href="https://instagram.com/weblyx.cz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a
+                href="https://facebook.com/weblyx.cz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a
+                href="https://wa.me/420702110166"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </a>
+            </div>
           </div>
 
           {/* Company Links */}
