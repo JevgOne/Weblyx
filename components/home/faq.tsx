@@ -5,29 +5,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { FAQSection, FAQItem } from "@/types/cms";
+import { getFAQSection, getAllFAQItems } from "@/lib/turso/cms";
 
 async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQItem[] }> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/faq`, {
-      cache: 'no-store',
-      next: { tags: ['faq'] }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch FAQ data:', res.statusText);
-      return { section: null, items: [] };
-    }
-
-    const json = await res.json();
-
-    if (!json.success) {
-      console.error('FAQ data error:', json.error);
-      return { section: null, items: [] };
-    }
+    const [section, items] = await Promise.all([
+      getFAQSection(),
+      getAllFAQItems()
+    ]);
 
     return {
-      section: json.data?.section || null,
-      items: json.data?.items || []
+      section,
+      items: items || []
     };
   } catch (error) {
     console.error('Error fetching FAQ data:', error);

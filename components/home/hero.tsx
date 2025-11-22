@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Clock, TrendingUp } from "lucide-react";
 import { HeroSection } from "@/types/cms";
 import { HeroData } from "@/types/homepage";
+import { getHomepageSections } from "@/lib/turso/cms";
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -13,24 +14,14 @@ const iconMap: Record<string, any> = {
 
 async function getHeroData(): Promise<HeroData | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/hero`, {
-      cache: 'no-store',
-      next: { tags: ['hero'] }
-    });
+    const sections = await getHomepageSections();
 
-    if (!res.ok) {
-      console.error('Failed to fetch hero data:', res.statusText);
+    if (!sections || !sections.hero) {
+      console.error('Hero data not found');
       return null;
     }
 
-    const json = await res.json();
-
-    if (!json.success || !json.data) {
-      console.error('Hero data not found in response');
-      return null;
-    }
-
-    const heroSection: HeroSection = json.data;
+    const heroSection: HeroSection = sections.hero;
 
     // Convert Turso HeroSection to legacy HeroData format
     return {

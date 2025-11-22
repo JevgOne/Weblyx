@@ -3,27 +3,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { CTASection as CTASectionType } from "@/types/cms";
+import { getCTASection } from "@/lib/turso/cms";
 
 async function getCTAData(): Promise<CTASectionType | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/cta`, {
-      cache: 'no-store',
-      next: { tags: ['cta'] }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch CTA data:', res.statusText);
-      return null;
-    }
-
-    const json = await res.json();
-
-    if (!json.success || !json.data) {
-      console.error('CTA data not found in response');
-      return null;
-    }
-
-    return json.data;
+    const section = await getCTASection();
+    return section;
   } catch (error) {
     console.error('Error fetching CTA data:', error);
     return null;

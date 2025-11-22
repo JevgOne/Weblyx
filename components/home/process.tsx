@@ -1,6 +1,7 @@
 import { MessageSquare, Palette, Code, TestTube, Rocket, HeadphonesIcon } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { ProcessSection, ProcessStep } from "@/types/cms";
+import { getProcessSection, getAllProcessSteps } from "@/lib/turso/cms";
 
 const iconMap: Record<string, any> = {
   MessageSquare,
@@ -13,26 +14,14 @@ const iconMap: Record<string, any> = {
 
 async function getProcessData(): Promise<{ section: ProcessSection | null; steps: ProcessStep[] }> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/process`, {
-      cache: 'no-store',
-      next: { tags: ['process'] }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch process data:', res.statusText);
-      return { section: null, steps: [] };
-    }
-
-    const json = await res.json();
-
-    if (!json.success) {
-      console.error('Process data error:', json.error);
-      return { section: null, steps: [] };
-    }
+    const [section, steps] = await Promise.all([
+      getProcessSection(),
+      getAllProcessSteps()
+    ]);
 
     return {
-      section: json.data?.section || null,
-      steps: json.data?.steps || []
+      section,
+      steps: steps || []
     };
   } catch (error) {
     console.error('Error fetching process data:', error);
