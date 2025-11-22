@@ -39,34 +39,8 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
 }
 
 export async function Portfolio() {
-  const portfolioData = await getPortfolioProjects();
+  const projects = await getPortfolioProjects();
   const sectionContent = await getPageContent('homepage-portfolio');
-
-  // Fallback data if fetch fails
-  const projects = portfolioData.length > 0 ? portfolioData : [
-    {
-      id: 'fallback-1',
-      title: 'E-shop s módou',
-      category: 'E-commerce',
-      description: 'Moderní e-shop s pokročilými filtry a platební bránou',
-      technologies: ['Next.js', 'Stripe', 'Tailwind'],
-      imageUrl: '/images/portfolio-1.jpg',
-      published: true,
-      featured: true,
-      order: 1,
-    },
-    {
-      id: 'fallback-2',
-      title: 'Firemní prezentace',
-      category: 'Web',
-      description: 'Responzivní web pro konzultační společnost',
-      technologies: ['React', 'SEO', 'Analytics'],
-      imageUrl: '/images/portfolio-2.jpg',
-      published: true,
-      featured: true,
-      order: 2,
-    },
-  ];
 
   // Use content from page_content collection or fallback
   const heading = sectionContent?.content?.heading || 'Naše projekty';
@@ -87,10 +61,15 @@ export async function Portfolio() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {projects.map((project) => (
-            <Card
+            <Link
               key={project.id}
-              className="group overflow-hidden hover:shadow-elegant transition-all duration-300"
+              href={project.projectUrl || '#'}
+              target={project.projectUrl ? '_blank' : undefined}
+              rel={project.projectUrl ? 'noopener noreferrer' : undefined}
+              className={project.projectUrl ? '' : 'pointer-events-none'}
             >
+              <Card className="group overflow-hidden hover:shadow-elegant transition-all duration-300 cursor-pointer h-full">
+
               <div className="aspect-video bg-gradient-primary relative overflow-hidden">
                 {project.imageUrl ? (
                   <Image
@@ -110,12 +89,14 @@ export async function Portfolio() {
                     </div>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Button variant="secondary" size="sm">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Zobrazit detail
-                  </Button>
-                </div>
+                {project.projectUrl && (
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button variant="secondary" size="sm">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Zobrazit web
+                    </Button>
+                  </div>
+                )}
               </div>
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-start justify-between">
@@ -135,7 +116,8 @@ export async function Portfolio() {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
 
