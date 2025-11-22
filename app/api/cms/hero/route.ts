@@ -25,40 +25,11 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validation
-    if (!body.headline?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'Headline is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.subheadline?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'Subheadline is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.ctaText?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'CTA text is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.ctaLink?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'CTA link is required' },
-        { status: 400 }
-      );
-    }
-
     await updateHeroSection({
-      headline: body.headline,
-      subheadline: body.subheadline,
-      ctaText: body.ctaText,
-      ctaLink: body.ctaLink,
+      headline: body.headline || '',
+      subheadline: body.subheadline || '',
+      ctaText: body.ctaText || '',
+      ctaLink: body.ctaLink || '',
       backgroundImage: body.backgroundImage || '',
       enabled: body.enabled !== undefined ? body.enabled : true,
     });
