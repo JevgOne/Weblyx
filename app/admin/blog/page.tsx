@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
+// Firebase removed - using API endpoints
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,40 +46,24 @@ export default function BlogPage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Check if we're using mock Firebase
-        if (typeof db.collection === 'function') {
-          // Mock Firebase
-          const snapshot = await db.collection("blog").orderBy("createdAt", "desc").get();
-          const postsData = snapshot.docs.map((doc: any) => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate() || new Date(),
-            updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-          }));
-          setPosts(postsData);
+        // Use API endpoint
+        const response = await fetch('/api/blog');
+        const result = await response.json();
+
+        if (result.success) {
+          setPosts(result.data);
         } else {
-          // Real Firebase (modular v9+)
-          const { collection, getDocs, query, orderBy } = await import('firebase/firestore');
-          const q = query(collection(db, "blog"), orderBy("createdAt", "desc"));
-          const snapshot = await getDocs(q);
-          const postsData = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate() || new Date(),
-            updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-          } as BlogPost));
-          setPosts(postsData);
+          console.error("Error fetching blog posts:", result.error);
+          setPosts([]);
         }
       } catch (error) {
         console.error("Error fetching blog posts:", error);
-        // If collection doesn't exist yet, just set empty array
         setPosts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    // Start fetching immediately, don't wait for user
     fetchPosts();
   }, []);
 
@@ -87,13 +71,18 @@ export default function BlogPage() {
     if (!confirm("Opravdu chcete smazat tento článek?")) return;
 
     try {
-      if (typeof db.collection === 'function') {
-        await db.collection("blog").doc(id).delete();
+      const response = await fetch(`/api/blog?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setPosts(posts.filter(p => p.id !== id));
       } else {
-        const { doc, deleteDoc } = await import('firebase/firestore');
-        await deleteDoc(doc(db, "blog", id));
+        console.error("Error deleting post:", result.error);
+        alert("Chyba při mazání článku");
       }
-      setPosts(posts.filter(p => p.id !== id));
     } catch (error) {
       console.error("Error deleting post:", error);
       alert("Chyba při mazání článku");
@@ -103,13 +92,20 @@ export default function BlogPage() {
   const togglePublish = async (post: BlogPost) => {
     try {
       const newPublished = !post.published;
-      if (typeof db.collection === 'function') {
-        await db.collection("blog").doc(post.id).update({ published: newPublished });
+      const response = await fetch('/api/blog', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: post.id, published: newPublished }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setPosts(posts.map(p => p.id === post.id ? { ...p, published: newPublished } : p));
       } else {
-        const { doc, updateDoc } = await import('firebase/firestore');
-        await updateDoc(doc(db, "blog", post.id), { published: newPublished });
+        console.error("Error toggling publish:", result.error);
+        alert("Chyba při změně stavu publikace");
       }
-      setPosts(posts.map(p => p.id === post.id ? { ...p, published: newPublished } : p));
     } catch (error) {
       console.error("Error toggling publish:", error);
       alert("Chyba při změně stavu publikace");

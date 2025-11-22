@@ -24,14 +24,8 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // Check if using mock or real Firebase
-      if (typeof auth.signInWithEmailAndPassword === 'function') {
-        // Mock Firebase
-        await auth.signInWithEmailAndPassword(email, password);
-      } else {
-        // Real Firebase
-        await signInWithEmailAndPassword(auth, email, password);
-      }
+      // Real Firebase only - no mock
+      await signInWithEmailAndPassword(auth, email, password);
       router.push("/admin/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
