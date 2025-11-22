@@ -9,6 +9,8 @@ import {
   updateService,
   deleteService,
 } from "@/lib/firestore-cms";
+import { storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
+import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +27,9 @@ import {
   AlertCircle,
   CheckCircle2,
   GripVertical,
+  Upload,
+  Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import { Service } from "@/types/cms";
 
@@ -36,6 +41,8 @@ export default function ServicesManagementPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [notification, setNotification] = useState<{
     type: "success" | "error";
     message: string;
@@ -45,6 +52,7 @@ export default function ServicesManagementPage() {
     title: "",
     description: "",
     icon: "",
+    imageUrl: "",
     features: [""],
     order: 0,
     enabled: true,
@@ -110,15 +118,68 @@ export default function ServicesManagementPage() {
     }));
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showNotification("error", "Prosím vyberte obrázek");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Try to compress image
+      let fileToUpload = file;
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1200,
+          useWebWorker: true,
+        };
+        fileToUpload = await imageCompression(file, options);
+      } catch (compressionError) {
+        console.warn("Image compression failed, using original:", compressionError);
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(fileToUpload);
+
+      // Upload to Firebase Storage
+      const timestamp = Date.now();
+      const fileName = `services/${timestamp}_${file.name}`;
+      const storageRef = ref(storage, fileName);
+
+      await uploadBytes(storageRef, fileToUpload);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
+      showNotification("success", "Obrázek byl úspěšně nahrán!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      showNotification("error", "Chyba při nahrávání obrázku: " + (error as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const startCreating = () => {
     setFormData({
       title: "",
       description: "",
       icon: "",
+      imageUrl: "",
       features: [""],
       order: services.length,
       enabled: true,
     });
+    setImagePreview("");
     setIsCreating(true);
     setEditingId(null);
   };
@@ -128,10 +189,12 @@ export default function ServicesManagementPage() {
       title: service.title,
       description: service.description,
       icon: service.icon,
+      imageUrl: service.imageUrl || "",
       features: service.features.length > 0 ? service.features : [""],
       order: service.order,
       enabled: service.enabled,
     });
+    setImagePreview(service.imageUrl || "");
     setEditingId(service.id || null);
     setIsCreating(false);
   };
@@ -139,10 +202,12 @@ export default function ServicesManagementPage() {
   const cancelEditing = () => {
     setEditingId(null);
     setIsCreating(false);
+    setImagePreview("");
     setFormData({
       title: "",
       description: "",
       icon: "",
+      imageUrl: "",
       features: [""],
       order: 0,
       enabled: true,
@@ -321,6 +386,59 @@ export default function ServicesManagementPage() {
                   <p className="text-xs text-muted-foreground">
                     Viz lucide.dev/icons
                   </p>
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="image">
+                  Obrázek služby
+                </Label>
+                <div className="flex items-center gap-4">
+                  {imagePreview || formData.imageUrl ? (
+                    <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-border">
+                      <img
+                        src={imagePreview || formData.imageUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => {
+                          setImagePreview("");
+                          setFormData((prev) => ({ ...prev, imageUrl: "" }));
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="w-32 h-32 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted">
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-2">
+                    <Input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                      className="cursor-pointer"
+                    />
+                    {uploading && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Nahrávání...
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Doporučená velikost: 1200x800px (poměr 3:2)
+                    </p>
+                  </div>
                 </div>
               </div>
 

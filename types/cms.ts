@@ -14,6 +14,7 @@ export interface Service {
   title: string;
   description: string;
   icon: string;
+  imageUrl?: string; // Optional image for service display
   features: string[];
   order: number;
   enabled: boolean;

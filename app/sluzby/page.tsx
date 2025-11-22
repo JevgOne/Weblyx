@@ -56,6 +56,7 @@ export default function ServicesPage() {
       title: "Tvorba webových stránek",
       slug: "web",
       price: "od 10 000 Kč",
+      imageUrl: undefined, // Optional: Add image URL from Firebase Storage
       description:
         "Vytvoříme pro vás moderní, responzivní webové stránky přizpůsobené na míru vašim potřebám a cílové skupině.",
       includes: [
@@ -288,11 +289,23 @@ export default function ServicesPage() {
               </div>
 
               <Card className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                <CardContent className="p-8 aspect-square flex items-center justify-center bg-gradient-hero">
-                  <div className="text-center space-y-4">
-                    <service.icon className="h-24 w-24 text-primary/30 mx-auto" />
-                    <p className="text-sm text-muted-foreground">Visual placeholder</p>
-                  </div>
+                <CardContent className="p-0 aspect-square flex items-center justify-center overflow-hidden">
+                  {service.imageUrl ? (
+                    <div className="w-full h-full relative">
+                      <img
+                        src={service.imageUrl}
+                        alt={service.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-hero flex items-center justify-center">
+                      <div className="text-center space-y-4">
+                        <service.icon className="h-24 w-24 text-primary/30 mx-auto" />
+                        <p className="text-sm text-muted-foreground">Visual placeholder</p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
