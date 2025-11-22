@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminDbInstance } from "@/lib/firebase-admin";
+import { turso } from "@/lib/turso";
 
 export async function GET() {
   try {
@@ -10,17 +11,17 @@ export async function GET() {
       );
     }
 
-    // Parallel fetch all stats
-    const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
+    // Fetch stats - Portfolio from Turso, rest from Firebase
+    const [projectsSnap, leadsSnap, portfolioResult] = await Promise.all([
       adminDbInstance.collection("projects").count().get(),
       adminDbInstance.collection("leads").count().get(),
-      adminDbInstance.collection("portfolio").count().get(),
+      turso.execute("SELECT COUNT(*) as count FROM portfolio"),
     ]);
 
     const stats = {
       projects: projectsSnap.data().count,
       leads: leadsSnap.data().count,
-      portfolio: portfolioSnap.data().count,
+      portfolio: Number(portfolioResult.rows[0].count) || 0,
     };
 
     return NextResponse.json({ success: true, data: stats });
