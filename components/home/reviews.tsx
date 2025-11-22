@@ -1,48 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
-import { adminDbInstance } from "@/lib/firebase-admin";
 import { Review } from "@/types/review";
+import { getPublishedReviews } from "@/lib/turso/reviews";
 
 async function getReviews(): Promise<Review[]> {
   try {
-    if (!adminDbInstance) {
-      console.error('Firebase Admin not initialized');
-      return [];
-    }
-
-    const snapshot = await adminDbInstance
-      .collection('reviews')
-      .where('published', '==', true)
-      .orderBy('order', 'asc')
-      .limit(6)
-      .get();
-
-    if (snapshot.empty) {
-      return [];
-    }
-
-    const reviews: Review[] = [];
-    snapshot.docs.forEach((doc: any) => {
-      const data = doc.data();
-      reviews.push({
-        id: doc.id,
-        authorName: data.authorName || "",
-        authorImage: data.authorImage || "",
-        authorRole: data.authorRole || "",
-        rating: data.rating || 5,
-        text: data.text || "",
-        date: data.date?.toDate?.() || new Date(),
-        source: data.source || "manual",
-        sourceUrl: data.sourceUrl || "",
-        published: data.published || false,
-        featured: data.featured || false,
-        order: data.order || 0,
-        createdAt: data.createdAt?.toDate?.() || new Date(),
-        updatedAt: data.updatedAt?.toDate?.() || new Date(),
-      } as Review);
-    });
-
-    return reviews;
+    const reviews = await getPublishedReviews();
+    // Limit to 6 most important reviews (sorted by order)
+    return reviews.slice(0, 6);
   } catch (error) {
     console.error('Error fetching reviews:', error);
     return [];

@@ -21,9 +21,8 @@ export function Pricing() {
   const [promoError, setPromoError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
 
-  useEffect(() => {
-    // In development with mock data, we use fallback data
-    const mockPlans: PricingTier[] = [
+  // Fallback mock data (used only if API fails)
+  const mockPlans: PricingTier[] = [
       {
         id: 'tier-1',
         name: 'Landing Page',
@@ -146,8 +145,27 @@ export function Pricing() {
       },
     ];
 
-    setPlans(mockPlans);
-  }, []);
+  useEffect(() => {
+    // Fetch pricing tiers from API
+    async function loadPricingTiers() {
+      try {
+        const res = await fetch('/api/cms/pricing');
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          setPlans(json.data.filter((tier: PricingTier) => tier.enabled));
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading pricing tiers:', error);
+      }
+
+      // Fallback to mock data if API fails
+      setPlans(mockPlans);
+    }
+
+    loadPricingTiers();
+  }, [mockPlans]);
 
   // Helper function to format price
   const formatPrice = (price: number, currency: string) => {

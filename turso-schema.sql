@@ -264,6 +264,7 @@ CREATE INDEX IF NOT EXISTS idx_pricing_order ON pricing_tiers("order");
 -- Process Steps (CMS)
 CREATE TABLE IF NOT EXISTS process_steps (
     id TEXT PRIMARY KEY,
+    number TEXT DEFAULT '1',
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     icon TEXT,

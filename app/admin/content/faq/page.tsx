@@ -61,11 +61,16 @@ export default function FAQManagementPage() {
       const result = await response.json();
 
       if (result.success && result.data) {
-        setSectionData(result.data);
-      }
+        // Set section data
+        if (result.data.section) {
+          setSectionData(result.data.section);
+        }
 
-      // TODO: Load FAQ items from API once endpoint is created
-      setFaqs([]);
+        // Set FAQ items
+        if (result.data.items) {
+          setFaqs(result.data.items);
+        }
+      }
     } catch (error) {
       console.error("Error loading FAQ data:", error);
       showNotification("error", "Chyba při načítání dat");
@@ -182,20 +187,43 @@ export default function FAQManagementPage() {
 
     setSaving(true);
     try {
-      // TODO: Implement API endpoint for FAQ items CRUD
-      showNotification("error", "FAQ items API not yet implemented");
-      /*
       if (isCreating) {
-        await createFAQItem(formData);
+        // Create new FAQ item
+        const response = await fetch('/api/cms/faq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to create FAQ item');
+        }
+
         showNotification("success", "FAQ bylo úspěšně vytvořeno!");
       } else if (editingId) {
-        await updateFAQItem(editingId, formData);
+        // Update existing FAQ item
+        const response = await fetch('/api/cms/faq', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: editingId,
+            ...formData,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update FAQ item');
+        }
+
         showNotification("success", "FAQ bylo úspěšně aktualizováno!");
       }
 
       await loadData();
       cancelEditing();
-      */
     } catch (error) {
       console.error("Error saving FAQ:", error);
       showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
@@ -210,13 +238,18 @@ export default function FAQManagementPage() {
     }
 
     try {
-      // TODO: Implement API endpoint for FAQ items CRUD
-      showNotification("error", "FAQ items API not yet implemented");
-      /*
-      await deleteFAQItem(id);
+      const response = await fetch(`/api/cms/faq?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete FAQ item');
+      }
+
       showNotification("success", "FAQ bylo úspěšně smazáno!");
       await loadData();
-      */
     } catch (error) {
       console.error("Error deleting FAQ:", error);
       showNotification("error", "Chyba při mazání. Zkuste to prosím znovu.");

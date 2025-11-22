@@ -199,8 +199,8 @@ export async function getAllPricingTiers(): Promise<PricingTier[]> {
       highlighted: Boolean(row.highlighted),
       ctaText: row.cta_text || 'Vybrat balíček',
       ctaLink: row.cta_link || '#contact',
-      order: row.order,
-      enabled: true,
+      order: row.order || 0,
+      enabled: Boolean(row.active),
       createdAt: unixToDate(row.created_at) || undefined,
       updatedAt: unixToDate(row.updated_at) || undefined,
     }));
@@ -229,8 +229,8 @@ export async function getPricingTier(id: string): Promise<PricingTier | null> {
         highlighted: Boolean(result.highlighted),
         ctaText: result.cta_text || 'Vybrat balíček',
         ctaLink: result.cta_link || '#contact',
-        order: result.order,
-        enabled: true,
+        order: result.order || 0,
+        enabled: Boolean(result.active),
         createdAt: unixToDate(result.created_at) || undefined,
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
@@ -248,9 +248,24 @@ export async function createPricingTier(tier: Omit<PricingTier, 'id' | 'createdA
     const now = Math.floor(Date.now() / 1000);
 
     await executeQuery(
-      `INSERT INTO pricing_tiers (id, name, price, currency, features, highlighted, "order", created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, tier.name, tier.price, tier.currency, stringifyJSON(tier.features), tier.highlighted ? 1 : 0, tier.order, now, now]
+      `INSERT INTO pricing_tiers (id, name, description, price, currency, interval, features, highlighted, cta_text, cta_link, "order", active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        tier.name,
+        tier.description || '',
+        tier.price,
+        tier.currency,
+        tier.interval,
+        stringifyJSON(tier.features),
+        tier.highlighted ? 1 : 0,
+        tier.ctaText,
+        tier.ctaLink,
+        tier.order,
+        tier.enabled ? 1 : 0,
+        now,
+        now
+      ]
     );
 
     return id;
@@ -270,6 +285,10 @@ export async function updatePricingTier(id: string, tier: Partial<PricingTier>):
       updates.push('name = ?');
       params.push(tier.name);
     }
+    if (tier.description !== undefined) {
+      updates.push('description = ?');
+      params.push(tier.description);
+    }
     if (tier.price !== undefined) {
       updates.push('price = ?');
       params.push(tier.price);
@@ -277,6 +296,10 @@ export async function updatePricingTier(id: string, tier: Partial<PricingTier>):
     if (tier.currency !== undefined) {
       updates.push('currency = ?');
       params.push(tier.currency);
+    }
+    if (tier.interval !== undefined) {
+      updates.push('interval = ?');
+      params.push(tier.interval);
     }
     if (tier.features !== undefined) {
       updates.push('features = ?');
@@ -286,9 +309,21 @@ export async function updatePricingTier(id: string, tier: Partial<PricingTier>):
       updates.push('highlighted = ?');
       params.push(tier.highlighted ? 1 : 0);
     }
+    if (tier.ctaText !== undefined) {
+      updates.push('cta_text = ?');
+      params.push(tier.ctaText);
+    }
+    if (tier.ctaLink !== undefined) {
+      updates.push('cta_link = ?');
+      params.push(tier.ctaLink);
+    }
     if (tier.order !== undefined) {
       updates.push('"order" = ?');
       params.push(tier.order);
+    }
+    if (tier.enabled !== undefined) {
+      updates.push('active = ?');
+      params.push(tier.enabled ? 1 : 0);
     }
 
     updates.push('updated_at = ?');
@@ -410,9 +445,9 @@ export async function createProcessStep(step: Omit<ProcessStep, 'id' | 'createdA
     const now = Math.floor(Date.now() / 1000);
 
     await executeQuery(
-      `INSERT INTO process_steps (id, title, description, icon, "order", created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, step.title, step.description, step.icon, step.order, now, now]
+      `INSERT INTO process_steps (id, number, title, description, icon, "order", created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, step.number, step.title, step.description, step.icon, step.order, now, now]
     );
 
     return id;
@@ -428,6 +463,10 @@ export async function updateProcessStep(id: string, step: Partial<ProcessStep>):
     const updates: string[] = [];
     const params: any[] = [];
 
+    if (step.number !== undefined) {
+      updates.push('number = ?');
+      params.push(step.number);
+    }
     if (step.title !== undefined) {
       updates.push('title = ?');
       params.push(step.title);

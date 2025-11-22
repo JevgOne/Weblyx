@@ -24,36 +24,26 @@ import {
   generateFAQSchema,
   generateOffersSchema,
 } from "@/lib/schema-org";
-import { getServerFAQItems } from "@/lib/firestore-server";
-import { adminDbInstance } from "@/lib/firebase-admin";
-import { PricingTier } from "@/types/cms";
+import { getAllFAQItems } from "@/lib/turso/cms";
+import { getAllPricingTiers } from "@/lib/turso/cms";
+import { PricingTier, FAQItem } from "@/types/cms";
 
 async function getPricingTiers(): Promise<PricingTier[]> {
   try {
-    if (!adminDbInstance) {
-      return [];
-    }
-
-    const snapshot = await adminDbInstance
-      .collection('pricing_tiers')
-      .orderBy('order')
-      .get();
-
-    if (snapshot.empty) {
-      return [];
-    }
-
-    const tiers: PricingTier[] = [];
-    snapshot.docs.forEach((doc: any) => {
-      const data = doc.data();
-      if (data.enabled) {
-        tiers.push({ id: doc.id, ...data } as PricingTier);
-      }
-    });
-
-    return tiers;
+    const tiers = await getAllPricingTiers();
+    return tiers.filter(tier => tier.enabled);
   } catch (error) {
     console.error('Error fetching pricing tiers:', error);
+    return [];
+  }
+}
+
+async function getFAQItems(): Promise<FAQItem[]> {
+  try {
+    const items = await getAllFAQItems();
+    return items.filter(item => item.enabled);
+  } catch (error) {
+    console.error('Error fetching FAQ items:', error);
     return [];
   }
 }
@@ -61,12 +51,12 @@ async function getPricingTiers(): Promise<PricingTier[]> {
 export default async function HomePage() {
   // Fetch data for schemas
   const [faqItems, pricingTiers] = await Promise.all([
-    getServerFAQItems(),
+    getFAQItems(),
     getPricingTiers(),
   ]);
 
-  // Filter enabled FAQs
-  const enabledFaqs = faqItems.filter(faq => faq.enabled);
+  // Already filtered enabled items in fetch functions
+  const enabledFaqs = faqItems;
 
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();

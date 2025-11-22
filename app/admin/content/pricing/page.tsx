@@ -205,25 +205,33 @@ export default function PricingManagementPage() {
 
     setSaving(true);
     try {
-      // TODO: Implement API endpoint for Pricing tiers CRUD
-      showNotification("error", "Pricing tiers API not yet implemented");
-      /*
       const dataToSave = {
         ...formData,
         features: cleanedFeatures,
       };
 
       if (isCreating) {
-        await createPricingTier(dataToSave);
+        const response = await fetch('/api/cms/pricing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataToSave),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
         showNotification("success", "Ceník byl úspěšně vytvořen!");
       } else if (editingId) {
-        await updatePricingTier(editingId, dataToSave);
+        const response = await fetch('/api/cms/pricing', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingId, ...dataToSave }),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
         showNotification("success", "Ceník byl úspěšně aktualizován!");
       }
 
       await loadPricingTiers();
       cancelEditing();
-      */
     } catch (error) {
       console.error("Error saving pricing tier:", error);
       showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
@@ -238,13 +246,14 @@ export default function PricingManagementPage() {
     }
 
     try {
-      // TODO: Implement API endpoint for Pricing tiers CRUD
-      showNotification("error", "Pricing tiers API not yet implemented");
-      /*
-      await deletePricingTier(id);
+      const response = await fetch(`/api/cms/pricing?id=${id}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+
       showNotification("success", "Ceník byl úspěšně smazán!");
       await loadPricingTiers();
-      */
     } catch (error) {
       console.error("Error deleting pricing tier:", error);
       showNotification("error", "Chyba při mazání. Zkuste to prosím znovu.");

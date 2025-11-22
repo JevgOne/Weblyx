@@ -2,10 +2,36 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import * as LucideIcons from "lucide-react";
-import { getServerCTASection } from "@/lib/firestore-server";
+import { CTASection as CTASectionType } from "@/types/cms";
+
+async function getCTAData(): Promise<CTASectionType | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/cta`, {
+      cache: 'no-store',
+      next: { tags: ['cta'] }
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch CTA data:', res.statusText);
+      return null;
+    }
+
+    const json = await res.json();
+
+    if (!json.success || !json.data) {
+      console.error('CTA data not found in response');
+      return null;
+    }
+
+    return json.data;
+  } catch (error) {
+    console.error('Error fetching CTA data:', error);
+    return null;
+  }
+}
 
 export async function CTASection() {
-  const section = await getServerCTASection();
+  const section = await getCTAData();
 
   if (!section || !section.enabled) {
     return null;

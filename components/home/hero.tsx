@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Clock, TrendingUp } from "lucide-react";
-import { adminDbInstance } from "@/lib/firebase-admin";
+import { HeroSection } from "@/types/cms";
 import { HeroData } from "@/types/homepage";
 
 // Icon mapping
@@ -13,20 +13,39 @@ const iconMap: Record<string, any> = {
 
 async function getHeroData(): Promise<HeroData | null> {
   try {
-    if (!adminDbInstance) {
-      console.error('Firebase Admin not initialized');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/hero`, {
+      cache: 'no-store',
+      next: { tags: ['hero'] }
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch hero data:', res.statusText);
       return null;
     }
 
-    const docRef = adminDbInstance.collection('homepage_sections').doc('current');
-    const doc = await docRef.get();
+    const json = await res.json();
 
-    if (!doc.exists) {
-      console.error('Hero section document not found');
+    if (!json.success || !json.data) {
+      console.error('Hero data not found in response');
       return null;
     }
 
-    return doc.data() as HeroData;
+    const heroSection: HeroSection = json.data;
+
+    // Convert Turso HeroSection to legacy HeroData format
+    return {
+      badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
+      title: heroSection.headline,
+      titleHighlight: '',
+      subtitle: heroSection.subheadline,
+      ctaPrimary: { text: heroSection.ctaText, href: heroSection.ctaLink },
+      ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
+      stats: [
+        { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
+        { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
+        { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Webové stránky cena od 10 000 Kč. Akční sleva 7 990 Kč – férové ceny bez skrytých poplatků.' },
+      ],
+    } as HeroData;
   } catch (error) {
     console.error('Error fetching hero data:', error);
     return null;

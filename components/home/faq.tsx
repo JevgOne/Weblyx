@@ -4,13 +4,39 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { getServerFAQSection, getServerFAQItems } from "@/lib/firestore-server";
+import { FAQSection, FAQItem } from "@/types/cms";
+
+async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQItem[] }> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cms/faq`, {
+      cache: 'no-store',
+      next: { tags: ['faq'] }
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch FAQ data:', res.statusText);
+      return { section: null, items: [] };
+    }
+
+    const json = await res.json();
+
+    if (!json.success) {
+      console.error('FAQ data error:', json.error);
+      return { section: null, items: [] };
+    }
+
+    return {
+      section: json.data?.section || null,
+      items: json.data?.items || []
+    };
+  } catch (error) {
+    console.error('Error fetching FAQ data:', error);
+    return { section: null, items: [] };
+  }
+}
 
 export async function FAQ() {
-  const [section, faqData] = await Promise.all([
-    getServerFAQSection(),
-    getServerFAQItems(),
-  ]);
+  const { section, items: faqData } = await getFAQData();
 
   // Filter only enabled FAQs
   const faqs = faqData.filter((faq) => faq.enabled);
