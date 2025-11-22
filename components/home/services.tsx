@@ -7,9 +7,8 @@ import {
   Zap,
   HeadphonesIcon,
 } from "lucide-react";
-import { adminDbInstance } from "@/lib/firebase-admin";
+import { getActiveServices } from "@/lib/turso/services";
 import { getPageContent } from "@/lib/firestore-pages";
-import { Service } from "@/types/homepage";
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -21,31 +20,10 @@ const iconMap: Record<string, any> = {
   HeadphonesIcon,
 };
 
-async function getServices(): Promise<Service[]> {
+async function getServices() {
   try {
-    if (!adminDbInstance) {
-      console.error('Firebase Admin not initialized');
-      return [];
-    }
-
-    const snapshot = await adminDbInstance
-      .collection('services')
-      .orderBy('order')
-      .get();
-
-    if (snapshot.empty) {
-      console.error('No services found');
-      return [];
-    }
-
-    const services: Service[] = [];
-    snapshot.docs.forEach((doc: any) => {
-      const data = doc.data() as Service;
-      if (data.isActive) {
-        services.push(data);
-      }
-    });
-
+    // Fetch active services from Turso
+    const services = await getActiveServices();
     return services;
   } catch (error) {
     console.error('Error fetching services:', error);
