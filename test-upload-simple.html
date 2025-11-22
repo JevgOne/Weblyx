@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 Test Storage Rules - Weblyx</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 { color: #06B6D4; }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-weight: 500;
+    }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+
+    button {
+      background: #06B6D4;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    button:hover { background: #0891b2; }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px dashed #06B6D4;
+      border-radius: 5px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    #log {
+      background: #2d3748;
+      color: #48bb78;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+
+    .step {
+      background: #e6fffa;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-left: 4px solid #06B6D4;
+      border-radius: 3px;
+    }
+
+    pre {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔥 Test Firebase Storage Upload</h1>
+
+    <div class="status info">
+      <strong>📍 Projekt:</strong> weblyx-prod-38054<br>
+      <strong>🎯 Účel:</strong> Ověření že Storage Rules jsou správně nasazené<br>
+      <strong>⚡ Očekávaný výsledek:</strong> Upload proběhne za 2-5 sekund
+    </div>
+
+    <div id="authStatus" class="status warning">
+      ⏳ Kontrolujem Firebase Auth...
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📤 Upload Test</h2>
+
+    <div class="step">
+      <strong>1.</strong> Nejprve se přihlas do admin panelu:
+      <a href="https://weblyx.cz/admin" target="_blank">https://weblyx.cz/admin</a>
+    </div>
+
+    <div class="step">
+      <strong>2.</strong> Pak se vrať sem a vyber obrázek
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="testUpload()" id="uploadBtn">🚀 Spustit Upload Test</button>
+
+    <div id="status"></div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Live Log</h3>
+    <div id="log"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB3aZX7dfRF7qKWH9JRf05cJCctfKNWvE",
+      authDomain: "weblyx-prod-38054.firebaseapp.com",
+      projectId: "weblyx-prod-38054",
+      storageBucket: "weblyx-prod-38054.firebasestorage.app",
+      messagingSenderId: "440732433732",
+      appId: "1:440732433732:web:be17be9c62a18e9c54ae08"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    let logDiv = document.getElementById('log');
+    let statusDiv = document.getElementById('status');
+    let authStatusDiv = document.getElementById('authStatus');
+    let uploadBtn = document.getElementById('uploadBtn');
+
+    function log(message, emoji = '📝') {
+      const time = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `<div>[${time}] ${emoji} ${message}</div>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+
+    function showStatus(message, type) {
+      statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    // Check auth state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        log(`Přihlášený uživatel: ${user.email}`, '✅');
+        authStatusDiv.className = 'status success';
+        authStatusDiv.innerHTML = `<strong>✅ Přihlášen jako:</strong> ${user.email}<br><strong>UID:</strong> ${user.uid.substring(0, 10)}...`;
+        uploadBtn.disabled = false;
+      } else {
+        log(`NEJSI PŘIHLÁŠENÝ! Jdi na admin panel a přihlas se.`, '⚠️');
+        authStatusDiv.className = 'status error';
+        authStatusDiv.innerHTML = `
+          <strong>❌ NEJSI PŘIHLÁŠENÝ!</strong><br><br>
+          <strong>Řešení:</strong><br>
+          1. Otevři v novém tabu: <a href="https://weblyx.cz/admin" target="_blank">https://weblyx.cz/admin</a><br>
+          2. Přihlas se<br>
+          3. Vrať se sem a zkus znovu
+        `;
+        uploadBtn.disabled = true;
+      }
+    });
+
+    window.testUpload = async function() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('❌ Vyber nejdřív obrázek!');
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        showStatus('❌ NEJSI PŘIHLÁŠENÝ! Otevři admin panel a přihlas se.', 'error');
+        return;
+      }
+
+      logDiv.innerHTML = ''; // Clear log
+      log(`📁 Soubor: ${file.name}`, '📁');
+      log(`📊 Velikost: ${(file.size / 1024).toFixed(2)} KB`, '📊');
+      log(`👤 User ID: ${user.uid.substring(0, 10)}...`, '👤');
+      log(`🔑 Email: ${user.email}`, '🔑');
+
+      showStatus('⏳ Nahrávám obrázek do Firebase Storage...', 'info');
+      uploadBtn.disabled = true;
+
+      try {
+        const timestamp = Date.now();
+        const fileName = `test/${timestamp}_${file.name}`;
+        const storageRef = ref(storage, fileName);
+
+        log(`📤 Upload path: ${fileName}`, '📤');
+        log(`⏱️  Čas začátku: ${new Date().toLocaleTimeString()}`, '⏱️');
+
+        const uploadStart = Date.now();
+
+        // Upload with timeout
+        const uploadPromise = uploadBytes(storageRef, file);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('TIMEOUT - Upload trval déle než 30s')), 30000)
+        );
+
+        await Promise.race([uploadPromise, timeoutPromise]);
+
+        const uploadDuration = ((Date.now() - uploadStart) / 1000).toFixed(2);
+        log(`✅ Upload dokončen za ${uploadDuration}s!`, '✅');
+
+        log(`🔗 Získávám download URL...`, '🔗');
+        const downloadURL = await getDownloadURL(storageRef);
+        log(`✅ Download URL získána`, '✅');
+
+        showStatus(`
+          <strong>✅ ÚSPĚCH!</strong><br><br>
+          <strong>⏱️ Čas uploadu:</strong> ${uploadDuration}s<br>
+          <strong>📂 Path:</strong> ${fileName}<br><br>
+          <strong>🔗 URL:</strong><br>
+          <a href="${downloadURL}" target="_blank" style="word-break: break-all; font-size: 12px;">${downloadURL}</a><br><br>
+          <img src="${downloadURL}" style="max-width: 100%; margin-top: 10px; border-radius: 5px;" />
+        `, 'success');
+
+        log(`🎉 STORAGE RULES FUNGUJÍ SPRÁVNĚ!`, '🎉');
+
+      } catch (error) {
+        const errorDuration = ((Date.now() - uploadStart) / 1000).toFixed(2);
+        log(`❌ CHYBA po ${errorDuration}s: ${error.message}`, '❌');
+        log(`❌ Error code: ${error.code}`, '❌');
+
+        let help = '';
+        let helpClass = 'error';
+
+        if (error.code === 'storage/unauthorized') {
+          help = `
+            <strong>❌ Storage/Unauthorized</strong><br><br>
+            <strong>🔍 Diagnóza:</strong> Storage Rules NEJSOU správně nasazené v Firebase Console<br><br>
+            <strong>✅ Řešení:</strong><br>
+            1. Otevři: <a href="https://console.firebase.google.com/project/weblyx-prod-38054/storage/weblyx-prod-38054.firebasestorage.app/rules" target="_blank">Firebase Console → Storage Rules</a><br>
+            2. Otevři soubor: <strong>NASAĎ_STORAGE_RULES.md</strong> v projektu<br>
+            3. Zkopíruj Rules z toho souboru<br>
+            4. Vlož do Firebase Console<br>
+            5. Klikni "Publish"<br>
+            6. Počkej 1 minutu<br>
+            7. Zkus znovu
+          `;
+        } else if (error.message.includes('TIMEOUT')) {
+          help = `
+            <strong>⏱️ Timeout</strong><br><br>
+            <strong>🔍 Diagnóza:</strong> Upload se zasekl - pravděpodobně Storage Rules problém<br><br>
+            <strong>✅ Řešení:</strong> Stejné jako výše - nasaď Storage Rules
+          `;
+        } else if (error.message.includes('NEJSI PŘIHLÁŠENÝ')) {
+          help = `
+            <strong>🔐 Nepřihlášený</strong><br><br>
+            <strong>✅ Řešení:</strong> Otevři <a href="https://weblyx.cz/admin" target="_blank">admin panel</a> a přihlas se
+          `;
+        } else {
+          help = `
+            <strong>❌ Neznámá chyba</strong><br><br>
+            <pre>${JSON.stringify(error, null, 2)}</pre>
+          `;
+        }
+
+        showStatus(help, 'error');
+
+      } finally {
+        uploadBtn.disabled = false;
+      }
+    };
+
+    log('🚀 Test připraven!', '🚀');
+    log('⚠️  Nezapomeň se přihlásit do admin panelu!', '⚠️');
+  </script>
+</body>
+</html>

@@ -31,6 +31,15 @@ service firebase.storage {
       allow write, delete: if request.auth != null;
     }
 
+    // Media library - allow upload for authenticated users (admin)
+    match /media/{imageId=**} {
+      // Allow read for everyone
+      allow read: if true;
+
+      // Allow write/delete only for authenticated users
+      allow write, delete: if request.auth != null;
+    }
+
     // Default: deny all other paths
     match /{allPaths=**} {
       allow read: if false;

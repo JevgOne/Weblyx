@@ -18,6 +18,7 @@ import {
   Settings,
   LogOut,
   Image,
+  Images,
   FileEdit,
   Tag,
   Globe
@@ -235,6 +236,25 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full" onClick={() => router.push("/admin/portfolio")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-primary/5 to-secondary/5">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-primary flex items-center justify-center">
+                    <Images className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Média 📸</CardTitle>
+                    <CardDescription>Knihovna obrázků</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="default" className="w-full" onClick={() => router.push("/admin/media")}>
                   Otevřít
                 </Button>
               </CardContent>
