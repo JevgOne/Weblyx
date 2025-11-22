@@ -2,18 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-  writeBatch,
-  query,
-  orderBy,
-} from "firebase/firestore";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,8 +79,16 @@ export default function AdminPortfolioPage() {
     if (!confirm("Opravdu chcete smazat tento projekt?")) return;
 
     try {
-      await deleteDoc(doc(db, "portfolio", id));
-      setProjects(projects.filter((p) => p.id !== id));
+      const response = await fetch(`/api/portfolio?id=${id}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setProjects(projects.filter((p) => p.id !== id));
+      } else {
+        throw new Error(result.error || 'Failed to delete');
+      }
     } catch (error) {
       console.error("Error deleting project:", error);
       alert("Chyba při mazání projektu");
@@ -100,15 +97,22 @@ export default function AdminPortfolioPage() {
 
   const togglePublished = async (id: string, currentState: boolean) => {
     try {
-      await updateDoc(doc(db, "portfolio", id), {
-        published: !currentState,
-        updatedAt: new Date(),
+      const response = await fetch('/api/portfolio', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, published: !currentState }),
       });
-      setProjects(
-        projects.map((p) =>
-          p.id === id ? { ...p, published: !currentState } : p
-        )
-      );
+      const result = await response.json();
+
+      if (result.success) {
+        setProjects(
+          projects.map((p) =>
+            p.id === id ? { ...p, published: !currentState } : p
+          )
+        );
+      } else {
+        throw new Error(result.error || 'Failed to update');
+      }
     } catch (error) {
       console.error("Error toggling published:", error);
       alert("Chyba při změně stavu publikace");
@@ -117,15 +121,22 @@ export default function AdminPortfolioPage() {
 
   const toggleFeatured = async (id: string, currentState: boolean) => {
     try {
-      await updateDoc(doc(db, "portfolio", id), {
-        featured: !currentState,
-        updatedAt: new Date(),
+      const response = await fetch('/api/portfolio', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, featured: !currentState }),
       });
-      setProjects(
-        projects.map((p) =>
-          p.id === id ? { ...p, featured: !currentState } : p
-        )
-      );
+      const result = await response.json();
+
+      if (result.success) {
+        setProjects(
+          projects.map((p) =>
+            p.id === id ? { ...p, featured: !currentState } : p
+          )
+        );
+      } else {
+        throw new Error(result.error || 'Failed to update');
+      }
     } catch (error) {
       console.error("Error toggling featured:", error);
       alert("Chyba při změně featured stavu");
@@ -147,15 +158,19 @@ export default function AdminPortfolioPage() {
 
     setProjects(updatedItems);
 
-    // Save new order to Firestore
+    // Save new order via API
     setSavingOrder(true);
     try {
-      const batch = writeBatch(db);
-      updatedItems.forEach((item) => {
-        const docRef = doc(db, "portfolio", item.id);
-        batch.update(docRef, { order: item.order, updatedAt: new Date() });
-      });
-      await batch.commit();
+      // Update all items in parallel
+      await Promise.all(
+        updatedItems.map(item =>
+          fetch('/api/portfolio', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: item.id, order: item.order }),
+          })
+        )
+      );
     } catch (error) {
       console.error("Error saving order:", error);
       alert("Chyba při ukládání pořadí");
