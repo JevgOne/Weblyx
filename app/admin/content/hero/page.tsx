@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
+import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Save, AlertCircle, CheckCircle2, Eye } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, CheckCircle2, Eye, Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { HeroSection } from "@/types/cms";
 
 export default function HeroEditorPage() {
@@ -18,6 +19,8 @@ export default function HeroEditorPage() {
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [showPreview, setShowPreview] = useState(false);
   const [notification, setNotification] = useState<{
     type: "success" | "error";
@@ -49,6 +52,9 @@ export default function HeroEditorPage() {
 
       if (result.success && result.data) {
         setFormData(result.data);
+        if (result.data.backgroundImage) {
+          setImagePreview(result.data.backgroundImage);
+        }
       }
     } catch (error) {
       console.error("Error loading hero data:", error);
@@ -72,6 +78,64 @@ export default function HeroEditorPage() {
       ...prev,
       [name]: checked,
     }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showNotification("error", "Prosím vyberte obrázek");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Try to compress image
+      let fileToUpload = file;
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        };
+        fileToUpload = await imageCompression(file, options);
+      } catch (compressionError) {
+        console.warn("Image compression failed, using original:", compressionError);
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(fileToUpload);
+
+      // Upload via API
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', fileToUpload, file.name);
+
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
+
+      setFormData((prev) => ({ ...prev, backgroundImage: uploadResult.url }));
+      showNotification("success", "Obrázek byl úspěšně nahrán!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      showNotification("error", "Chyba při nahrávání obrázku: " + (error as Error).message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -330,19 +394,55 @@ export default function HeroEditorPage() {
                   </p>
                 </div>
 
-                {/* Background Image */}
+                {/* Background Image Upload */}
                 <div className="space-y-2">
-                  <Label htmlFor="backgroundImage">URL pozadí (volitelné)</Label>
-                  <Input
-                    id="backgroundImage"
-                    name="backgroundImage"
-                    value={formData.backgroundImage}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Nechte prázdné pro použití výchozího gradientu
-                  </p>
+                  <Label htmlFor="backgroundImage">Hero obrázek (volitelné)</Label>
+                  <div className="flex items-center gap-4">
+                    {imagePreview || formData.backgroundImage ? (
+                      <div className="relative w-48 h-32 rounded-lg overflow-hidden border-2 border-border">
+                        <img
+                          src={imagePreview || formData.backgroundImage}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-1 right-1 h-6 w-6"
+                          onClick={() => {
+                            setImagePreview("");
+                            setFormData((prev) => ({ ...prev, backgroundImage: "" }));
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="w-48 h-32 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="flex-1 space-y-2">
+                      <Input
+                        id="backgroundImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="cursor-pointer"
+                      />
+                      {uploading && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Nahrávání...
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Doporučená velikost: 1920x1080px. Nechte prázdné pro gradient.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Enabled Checkbox */}
