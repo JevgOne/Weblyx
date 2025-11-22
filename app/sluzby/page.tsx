@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 async function getServicesFromFirestore() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz'}/api/services`, {
-      cache: 'no-store',
+      next: { revalidate: 3600 }, // Cache for 1 hour instead of no-store
     });
     const result = await response.json();
 
@@ -226,7 +226,7 @@ export default async function ServicesPage() {
   });
 
   // Convert services to Service schema format
-  const servicesForSchema: ServiceType[] = services.map((service) => ({
+  const servicesForSchema: ServiceType[] = services.map((service: any) => ({
     id: service.slug,
     title: service.title,
     description: service.description,
@@ -278,7 +278,7 @@ export default async function ServicesPage() {
       {/* Services Detail */}
       <section className="py-16 md:py-24 px-4">
         <div className="container mx-auto max-w-7xl space-y-24">
-          {services.map((service, index) => (
+          {services.map((service: any, index: number) => (
             <div
               key={index}
               id={service.slug}
@@ -302,7 +302,7 @@ export default async function ServicesPage() {
                 <div className="space-y-3">
                   <h3 className="font-semibold text-lg">Co zahrnuje:</h3>
                   <ul className="space-y-2">
-                    {service.includes.map((item, i) => (
+                    {service.includes.map((item: string, i: number) => (
                       <li key={i} className="flex items-start gap-3">
                         <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                         <span className="text-muted-foreground">{item}</span>
@@ -314,7 +314,7 @@ export default async function ServicesPage() {
                 <div className="space-y-2">
                   <h3 className="font-semibold">Pro koho je vhodné:</h3>
                   <div className="flex flex-wrap gap-2">
-                    {service.ideal.map((tag, i) => (
+                    {service.ideal.map((tag: string, i: number) => (
                       <Badge key={i} variant="outline">
                         {tag}
                       </Badge>
