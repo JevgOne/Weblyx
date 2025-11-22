@@ -324,7 +324,7 @@ export default function HeroEditorPage() {
                 {/* Headline */}
                 <div className="space-y-2">
                   <Label htmlFor="headline">
-                    Hlavní nadpis <span className="text-destructive">*</span>
+                    Hlavní nadpis
                   </Label>
                   <Input
                     id="headline"
@@ -332,7 +332,6 @@ export default function HeroEditorPage() {
                     value={formData.headline}
                     onChange={handleInputChange}
                     placeholder="Např. Tvoříme moderní webové stránky"
-                    required
                   />
                   <p className="text-xs text-muted-foreground">
                     Hlavní nadpis zobrazený ve velké velikosti
@@ -342,7 +341,7 @@ export default function HeroEditorPage() {
                 {/* Subheadline */}
                 <div className="space-y-2">
                   <Label htmlFor="subheadline">
-                    Podnadpis <span className="text-destructive">*</span>
+                    Podnadpis
                   </Label>
                   <Textarea
                     id="subheadline"
@@ -351,7 +350,6 @@ export default function HeroEditorPage() {
                     onChange={handleInputChange}
                     placeholder="Např. Profesionální webdesign a vývoj pro váš byznys"
                     rows={3}
-                    required
                   />
                   <p className="text-xs text-muted-foreground">
                     Krátký popis pod hlavním nadpisem
@@ -361,7 +359,7 @@ export default function HeroEditorPage() {
                 {/* CTA Text */}
                 <div className="space-y-2">
                   <Label htmlFor="ctaText">
-                    Text CTA tlačítka <span className="text-destructive">*</span>
+                    Text CTA tlačítka
                   </Label>
                   <Input
                     id="ctaText"
@@ -369,7 +367,6 @@ export default function HeroEditorPage() {
                     value={formData.ctaText}
                     onChange={handleInputChange}
                     placeholder="Např. Začít projekt"
-                    required
                   />
                   <p className="text-xs text-muted-foreground">
                     Text zobrazený na hlavním tlačítku
@@ -379,7 +376,7 @@ export default function HeroEditorPage() {
                 {/* CTA Link */}
                 <div className="space-y-2">
                   <Label htmlFor="ctaLink">
-                    Odkaz CTA tlačítka <span className="text-destructive">*</span>
+                    Odkaz CTA tlačítka
                   </Label>
                   <Input
                     id="ctaLink"
@@ -387,7 +384,6 @@ export default function HeroEditorPage() {
                     value={formData.ctaLink}
                     onChange={handleInputChange}
                     placeholder="Např. /kontakt nebo #kontakt-form"
-                    required
                   />
                   <p className="text-xs text-muted-foreground">
                     URL nebo kotvový odkaz pro CTA tlačítko
