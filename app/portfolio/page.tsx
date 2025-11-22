@@ -4,6 +4,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generatePortfolioSchema, BreadcrumbItem, generateWebPageSchema, PortfolioItem } from "@/lib/schema-org";
 import { getAllPortfolio } from "@/lib/turso/portfolio";
 
+// Revalidate every 60 seconds
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Naše projekty – weby a e-shopy, které přináší výsledky",
   description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili. Každý projekt je rychlý, responzivní a přizpůsobený konkrétnímu byznysu – od malých webů pro živnostníky až po komplexnější firemní řešení.",

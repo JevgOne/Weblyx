@@ -10,6 +10,9 @@ import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
 
+// Revalidate every 60 seconds
+export const revalidate = 60;
+
 // Dynamic import for heavy Contact component (code splitting)
 const ContactWow = dynamic(() => import("@/components/home/contact-wow").then(mod => ({ default: mod.ContactWow })), {
   loading: () => <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center">Načítání...</div></div>,
