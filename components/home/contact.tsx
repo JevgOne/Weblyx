@@ -268,7 +268,7 @@ export function Contact() {
                     <div
                       className={`p-4 rounded-lg ${
                         submitStatus.type === "success"
-                          ? "bg-cyan-50 text-cyan-800 border border-cyan-200"
+                          ? "bg-primary/10 text-primary border border-primary/20"
                           : "bg-red-50 text-red-800 border border-red-200"
                       }`}
                     >
