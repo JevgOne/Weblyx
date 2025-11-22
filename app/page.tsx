@@ -5,6 +5,7 @@ import { USPSection } from "@/components/home/usp-section";
 import { Services } from "@/components/home/services";
 import { Process } from "@/components/home/process";
 import { Portfolio } from "@/components/home/portfolio";
+import { Reviews } from "@/components/home/reviews";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
@@ -87,6 +88,7 @@ export default async function HomePage() {
         <Services />
         <Process />
         <Portfolio />
+        <Reviews />
         <Pricing />
         <FAQ />
         <CTASection />
