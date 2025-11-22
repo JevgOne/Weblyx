@@ -43,25 +43,15 @@ export default function PromoCodesPage() {
   const fetchPromoCodes = async () => {
     setLoading(true);
     try {
-      if (typeof db.collection === 'function') {
-        // Mock Firebase
-        const snapshot = await db.collection("promo_codes").get();
-        const codes: PromoCode[] = [];
-        snapshot.docs.forEach((doc: any) => {
-          codes.push({ id: doc.id, ...doc.data() } as PromoCode);
-        });
-        setPromoCodes(codes);
-      } else {
-        // Real Firebase
-        const { collection, getDocs, query, orderBy } = await import('firebase/firestore');
-        const q = query(collection(db, "promo_codes"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        const codes: PromoCode[] = [];
-        snapshot.forEach((doc) => {
-          codes.push({ id: doc.id, ...doc.data() } as PromoCode);
-        });
-        setPromoCodes(codes);
-      }
+      // Real Firebase only
+      const { collection, getDocs, query, orderBy } = await import('firebase/firestore');
+      const q = query(collection(db, "promo_codes"), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      const codes: PromoCode[] = [];
+      snapshot.forEach((doc) => {
+        codes.push({ id: doc.id, ...doc.data() } as PromoCode);
+      });
+      setPromoCodes(codes);
     } catch (error) {
       console.error("Error fetching promo codes:", error);
     } finally {
@@ -90,27 +80,16 @@ export default function PromoCodesPage() {
 
     try {
       if (editingCode && editingCode.id) {
-        // Update existing
-        if (typeof db.collection === 'function') {
-          await db.collection("promo_codes").doc(editingCode.id).update({
-            ...promoData,
-            createdAt: editingCode.createdAt,
-          });
-        } else {
-          const { doc, updateDoc } = await import('firebase/firestore');
-          await updateDoc(doc(db, "promo_codes", editingCode.id), {
-            ...promoData,
-            createdAt: editingCode.createdAt,
-          });
-        }
+        // Update existing - Real Firebase only
+        const { doc, updateDoc } = await import('firebase/firestore');
+        await updateDoc(doc(db, "promo_codes", editingCode.id), {
+          ...promoData,
+          createdAt: editingCode.createdAt,
+        });
       } else {
-        // Create new
-        if (typeof db.collection === 'function') {
-          await db.collection("promo_codes").add(promoData);
-        } else {
-          const { collection, addDoc } = await import('firebase/firestore');
-          await addDoc(collection(db, "promo_codes"), promoData);
-        }
+        // Create new - Real Firebase only
+        const { collection, addDoc } = await import('firebase/firestore');
+        await addDoc(collection(db, "promo_codes"), promoData);
       }
 
       await fetchPromoCodes();
@@ -143,12 +122,9 @@ export default function PromoCodesPage() {
     if (!confirm("Opravdu chcete smazat tento promo kód?")) return;
 
     try {
-      if (typeof db.collection === 'function') {
-        await db.collection("promo_codes").doc(id).delete();
-      } else {
-        const { doc, deleteDoc } = await import('firebase/firestore');
-        await deleteDoc(doc(db, "promo_codes", id));
-      }
+      // Real Firebase only
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, "promo_codes", id));
       await fetchPromoCodes();
     } catch (error) {
       console.error("Error deleting promo code:", error);
