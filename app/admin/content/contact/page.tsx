@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import { getContactInfo, updateContactInfo } from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,9 +57,11 @@ export default function ContactEditorPage() {
 
   const loadData = async () => {
     try {
-      const data = await getContactInfo();
-      if (data) {
-        setFormData(data);
+      const response = await fetch('/api/cms/contact');
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setFormData(result.data);
       }
     } catch (error) {
       console.error("Error loading contact data:", error);
@@ -119,10 +120,6 @@ export default function ContactEditorPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.heading.trim()) {
-      showNotification("error", "Nadpis je povinný");
-      return;
-    }
     if (!formData.email.trim()) {
       showNotification("error", "Email je povinný");
       return;
@@ -130,7 +127,18 @@ export default function ContactEditorPage() {
 
     setSaving(true);
     try {
-      await updateContactInfo(formData);
+      const response = await fetch('/api/cms/contact', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save');
+      }
+
       showNotification("success", "Kontaktní informace byly úspěšně uloženy!");
       await loadData();
     } catch (error) {

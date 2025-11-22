@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import { getCTASection, updateCTASection } from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,9 +49,11 @@ export default function CTAEditorPage() {
 
   const loadData = async () => {
     try {
-      const data = await getCTASection();
-      if (data) {
-        setFormData(data);
+      const response = await fetch('/api/cms/cta');
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setFormData(result.data);
       }
     } catch (error) {
       console.error("Error loading CTA data:", error);
@@ -94,7 +95,18 @@ export default function CTAEditorPage() {
 
     setSaving(true);
     try {
-      await updateCTASection(formData);
+      const response = await fetch('/api/cms/cta', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save');
+      }
+
       showNotification("success", "CTA sekce byla úspěšně uložena!");
       await loadData();
     } catch (error) {

@@ -3,12 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import {
-  getAllPricingTiers,
-  createPricingTier,
-  updatePricingTier,
-  deletePricingTier,
-} from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,8 +61,12 @@ export default function PricingManagementPage() {
 
   const loadPricingTiers = async () => {
     try {
-      const data = await getAllPricingTiers();
-      setTiers(data);
+      const response = await fetch('/api/cms/pricing');
+      const result = await response.json();
+
+      if (result.success) {
+        setTiers(result.data || []);
+      }
     } catch (error) {
       console.error("Error loading pricing tiers:", error);
       showNotification("error", "Chyba při načítání ceníků");
@@ -207,6 +205,9 @@ export default function PricingManagementPage() {
 
     setSaving(true);
     try {
+      // TODO: Implement API endpoint for Pricing tiers CRUD
+      showNotification("error", "Pricing tiers API not yet implemented");
+      /*
       const dataToSave = {
         ...formData,
         features: cleanedFeatures,
@@ -222,6 +223,7 @@ export default function PricingManagementPage() {
 
       await loadPricingTiers();
       cancelEditing();
+      */
     } catch (error) {
       console.error("Error saving pricing tier:", error);
       showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
@@ -236,9 +238,13 @@ export default function PricingManagementPage() {
     }
 
     try {
+      // TODO: Implement API endpoint for Pricing tiers CRUD
+      showNotification("error", "Pricing tiers API not yet implemented");
+      /*
       await deletePricingTier(id);
       showNotification("success", "Ceník byl úspěšně smazán!");
       await loadPricingTiers();
+      */
     } catch (error) {
       console.error("Error deleting pricing tier:", error);
       showNotification("error", "Chyba při mazání. Zkuste to prosím znovu.");

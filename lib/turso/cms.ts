@@ -1,5 +1,5 @@
 // Turso CMS Utility Functions
-import { executeQuery, executeOne, dateToUnix, unixToDate, parseJSON, stringifyJSON } from './turso';
+import { executeQuery, executeOne, dateToUnix, unixToDate, parseJSON, stringifyJSON } from '../turso';
 import {
   HeroSection,
   Service,
@@ -624,10 +624,14 @@ export async function getCTASection(): Promise<CTASection | null> {
 
     if (result) {
       return {
-        title: result.title || '',
-        description: result.description || '',
-        buttonText: result.button_text || '',
-        buttonLink: result.button_link || '',
+        heading: result.title || '',
+        subheading: result.description || '',
+        primaryButtonText: result.button_text || '',
+        primaryButtonLink: result.button_link || '',
+        secondaryButtonText: '',
+        secondaryButtonLink: '',
+        benefits: [],
+        enabled: true,
       };
     }
     return null;
@@ -649,7 +653,7 @@ export async function updateCTASection(section: CTASection): Promise<void> {
          button_text = excluded.button_text,
          button_link = excluded.button_link,
          updated_at = excluded.updated_at`,
-      ['current', section.title, section.description, section.buttonText, section.buttonLink, now]
+      ['current', section.heading, section.subheading, section.primaryButtonText, section.primaryButtonLink, now]
     );
   } catch (error) {
     console.error('Error updating CTA section:', error);
@@ -666,10 +670,26 @@ export async function getContactInfo(): Promise<ContactInfo | null> {
     );
 
     if (result) {
+      // ContactInfo interface has complex structure but DB only stores simple fields
       return {
+        heading: '',
+        subheading: '',
         email: result.email || '',
-        phone: result.phone || '',
         address: result.address || '',
+        openingHours: { weekdays: '', weekend: '' },
+        formLabels: {
+          name: '',
+          email: '',
+          phone: '',
+          projectType: '',
+          budget: '',
+          message: '',
+          submit: '',
+          submitting: '',
+        },
+        projectTypes: [],
+        budgetOptions: [],
+        enabled: true,
       };
     }
     return null;
@@ -682,15 +702,15 @@ export async function getContactInfo(): Promise<ContactInfo | null> {
 export async function updateContactInfo(info: ContactInfo): Promise<void> {
   try {
     const now = Math.floor(Date.now() / 1000);
+    // ContactInfo has complex structure, we just store simple fields in DB for now
     await executeQuery(
-      `INSERT INTO contact_info (id, email, phone, address, updated_at)
-       VALUES (?, ?, ?, ?, ?)
+      `INSERT INTO contact_info (id, email, address, updated_at)
+       VALUES (?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
          email = excluded.email,
-         phone = excluded.phone,
          address = excluded.address,
          updated_at = excluded.updated_at`,
-      ['current', info.email, info.phone, info.address, now]
+      ['current', info.email, info.address, now]
     );
   } catch (error) {
     console.error('Error updating contact info:', error);

@@ -39,6 +39,8 @@ export interface PortfolioProject {
   description: string;
   technologies: string[];
   imageUrl: string;
+  projectUrl?: string;
+  clientName?: string;
   published: boolean;
   featured: boolean;
   order: number;

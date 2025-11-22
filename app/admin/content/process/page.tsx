@@ -3,14 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import {
-  getProcessSection,
-  updateProcessSection,
-  getAllProcessSteps,
-  createProcessStep,
-  updateProcessStep,
-  deleteProcessStep,
-} from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,15 +60,15 @@ export default function ProcessManagementPage() {
 
   const loadData = async () => {
     try {
-      const [section, stepsData] = await Promise.all([
-        getProcessSection(),
-        getAllProcessSteps(),
-      ]);
+      const response = await fetch('/api/cms/process');
+      const result = await response.json();
 
-      if (section) {
-        setSectionData(section);
+      if (result.success && result.data) {
+        setSectionData(result.data);
       }
-      setSteps(stepsData);
+
+      // TODO: Load process steps from API once endpoint is created
+      setSteps([]);
     } catch (error) {
       console.error("Error loading process data:", error);
       showNotification("error", "Chyba při načítání dat");
@@ -108,7 +100,18 @@ export default function ProcessManagementPage() {
 
     setSaving(true);
     try {
-      await updateProcessSection(sectionData);
+      const response = await fetch('/api/cms/process', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sectionData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save');
+      }
+
       showNotification("success", "Sekce byla úspěšně uložena!");
       await loadData();
     } catch (error) {
@@ -196,6 +199,9 @@ export default function ProcessManagementPage() {
 
     setSaving(true);
     try {
+      // TODO: Implement API endpoint for Process steps CRUD
+      showNotification("error", "Process steps API not yet implemented");
+      /*
       if (isCreating) {
         await createProcessStep(formData);
         showNotification("success", "Krok byl úspěšně vytvořen!");
@@ -206,6 +212,7 @@ export default function ProcessManagementPage() {
 
       await loadData();
       cancelEditing();
+      */
     } catch (error) {
       console.error("Error saving step:", error);
       showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
@@ -220,9 +227,13 @@ export default function ProcessManagementPage() {
     }
 
     try {
+      // TODO: Implement API endpoint for Process steps CRUD
+      showNotification("error", "Process steps API not yet implemented");
+      /*
       await deleteProcessStep(id);
       showNotification("success", "Krok byl úspěšně smazán!");
       await loadData();
+      */
     } catch (error) {
       console.error("Error deleting step:", error);
       showNotification("error", "Chyba při mazání. Zkuste to prosím znovu.");

@@ -3,14 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import {
-  getFAQSection,
-  updateFAQSection,
-  getAllFAQItems,
-  createFAQItem,
-  updateFAQItem,
-  deleteFAQItem,
-} from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,15 +57,15 @@ export default function FAQManagementPage() {
 
   const loadData = async () => {
     try {
-      const [section, faqData] = await Promise.all([
-        getFAQSection(),
-        getAllFAQItems(),
-      ]);
+      const response = await fetch('/api/cms/faq');
+      const result = await response.json();
 
-      if (section) {
-        setSectionData(section);
+      if (result.success && result.data) {
+        setSectionData(result.data);
       }
-      setFaqs(faqData);
+
+      // TODO: Load FAQ items from API once endpoint is created
+      setFaqs([]);
     } catch (error) {
       console.error("Error loading FAQ data:", error);
       showNotification("error", "Chyba při načítání dat");
@@ -105,7 +97,18 @@ export default function FAQManagementPage() {
 
     setSaving(true);
     try {
-      await updateFAQSection(sectionData);
+      const response = await fetch('/api/cms/faq', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sectionData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save');
+      }
+
       showNotification("success", "Sekce byla úspěšně uložena!");
       await loadData();
     } catch (error) {
@@ -179,6 +182,9 @@ export default function FAQManagementPage() {
 
     setSaving(true);
     try {
+      // TODO: Implement API endpoint for FAQ items CRUD
+      showNotification("error", "FAQ items API not yet implemented");
+      /*
       if (isCreating) {
         await createFAQItem(formData);
         showNotification("success", "FAQ bylo úspěšně vytvořeno!");
@@ -189,6 +195,7 @@ export default function FAQManagementPage() {
 
       await loadData();
       cancelEditing();
+      */
     } catch (error) {
       console.error("Error saving FAQ:", error);
       showNotification("error", "Chyba při ukládání. Zkuste to prosím znovu.");
@@ -203,9 +210,13 @@ export default function FAQManagementPage() {
     }
 
     try {
+      // TODO: Implement API endpoint for FAQ items CRUD
+      showNotification("error", "FAQ items API not yet implemented");
+      /*
       await deleteFAQItem(id);
       showNotification("success", "FAQ bylo úspěšně smazáno!");
       await loadData();
+      */
     } catch (error) {
       console.error("Error deleting FAQ:", error);
       showNotification("error", "Chyba při mazání. Zkuste to prosím znovu.");

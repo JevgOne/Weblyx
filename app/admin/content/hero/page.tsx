@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import { getHomepageSections, updateHeroSection } from "@/lib/firestore-cms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,9 +44,11 @@ export default function HeroEditorPage() {
 
   const loadHeroData = async () => {
     try {
-      const data = await getHomepageSections();
-      if (data?.hero) {
-        setFormData(data.hero);
+      const response = await fetch('/api/cms/hero');
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setFormData(result.data);
       }
     } catch (error) {
       console.error("Error loading hero data:", error);
@@ -94,7 +95,18 @@ export default function HeroEditorPage() {
 
     setSaving(true);
     try {
-      await updateHeroSection(formData);
+      const response = await fetch('/api/cms/hero', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save');
+      }
+
       showNotification("success", "Hero sekce byla úspěšně uložena!");
       await loadHeroData(); // Reload to get updated timestamp
     } catch (error) {

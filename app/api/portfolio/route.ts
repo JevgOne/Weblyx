@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getAllPortfolio,
+  getPortfolioById,
   createPortfolio,
   updatePortfolio,
   deletePortfolio,
@@ -8,9 +9,25 @@ import {
 
 export const runtime = 'nodejs';
 
-// GET /api/portfolio - Get all portfolio items
+// GET /api/portfolio - Get all portfolio items or single item by ID
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    // If ID is provided, get single item
+    if (id) {
+      const item = await getPortfolioById(id);
+      if (!item) {
+        return NextResponse.json(
+          { success: false, error: 'Portfolio item not found' },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({ success: true, data: item });
+    }
+
+    // Otherwise get all items
     const items = await getAllPortfolio();
     return NextResponse.json({ success: true, data: items });
   } catch (error: any) {

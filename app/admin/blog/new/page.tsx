@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,35 +64,41 @@ export default function NewBlogPostPage() {
     setUploading(true);
 
     try {
-      let fileToUpload = file;
-      try {
-        const options = {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 1920,
-          useWebWorker: true,
-        };
-        fileToUpload = await imageCompression(file, options);
-      } catch (compressionError) {
-        console.warn("Image compression failed, using original:", compressionError);
-      }
+      // Compress image
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
 
+      const compressedFile = await imageCompression(file, options);
+
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
-      reader.readAsDataURL(fileToUpload);
+      reader.readAsDataURL(compressedFile);
 
-      const timestamp = Date.now();
-      const fileName = `blog/${timestamp}_${file.name}`;
-      const storageRef = ref(storage, fileName);
+      // Upload to Vercel Blob via API
+      const formData = new FormData();
+      formData.append("file", compressedFile, file.name);
 
-      await uploadBytes(storageRef, fileToUpload);
-      const downloadURL = await getDownloadURL(storageRef);
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      setFormData((prev) => ({ ...prev, imageUrl: result.url }));
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Chyba při nahrávání obrázku: " + (error as Error).message);
+      alert("Chyba při nahrávání obrázku");
     } finally {
       setUploading(false);
     }
