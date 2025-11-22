@@ -7,6 +7,7 @@ export interface Service {
   title: string;
   description: string;
   icon?: string;
+  imageUrl?: string;
   features: string[];
   priceFrom?: number;
   priceTo?: number;
@@ -21,6 +22,7 @@ interface ServiceRow {
   title: string;
   description: string;
   icon: string | null;
+  image_url: string | null;
   features: string | null;
   price_from: number | null;
   price_to: number | null;
@@ -36,6 +38,7 @@ function rowToService(row: ServiceRow): Service {
     title: row.title,
     description: row.description,
     icon: row.icon || undefined,
+    imageUrl: row.image_url || undefined,
     features: row.features ? JSON.parse(row.features) : [],
     priceFrom: row.price_from || undefined,
     priceTo: row.price_to || undefined,
@@ -74,6 +77,7 @@ export async function createService(data: {
   title: string;
   description: string;
   icon?: string;
+  imageUrl?: string;
   features?: string[];
   priceFrom?: number;
   priceTo?: number;
@@ -90,15 +94,16 @@ export async function createService(data: {
 
   await turso.execute({
     sql: `INSERT INTO services (
-      id, title, description, icon, features,
+      id, title, description, icon, image_url, features,
       price_from, price_to, "order", active,
       created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.title,
       data.description,
       data.icon || null,
+      data.imageUrl || null,
       data.features ? JSON.stringify(data.features) : null,
       data.priceFrom || null,
       data.priceTo || null,

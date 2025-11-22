@@ -8,20 +8,20 @@
     --background: 0 0% 100%;
     --foreground: 222 47% 11%; /* Slate 900 #0F172A */
 
-    /* Primary - Cyan Brand Color #06B6D4 (default state) */
-    --primary: 187 95% 43%;
+    /* Primary - Teal Brand Color #14B8A6 */
+    --primary: 172 78% 40%;
     --primary-foreground: 0 0% 100%;
 
-    /* Primary Hover - Teal #14B8A6 */
-    --primary-hover: 172 78% 40%;
+    /* Primary Hover - Darker Teal */
+    --primary-hover: 172 78% 32%;
     --primary-light: 172 78% 50%;
-    --primary-dark: 172 78% 32%;
+    --primary-dark: 172 78% 28%;
 
     /* Secondary - Teal Brand Color #14B8A6 */
     --secondary: 172 78% 40%;
     --secondary-foreground: 0 0% 100%;
 
-    --accent: 187 95% 43%;
+    --accent: 172 78% 40%;
     --accent-foreground: 0 0% 100%;
 
     --muted: 210 20% 98%;
@@ -32,7 +32,7 @@
 
     --border: 215 20% 91%; /* Slate 200 #E2E8F0 */
     --input: 215 20% 91%;
-    --ring: 187 95% 43%;
+    --ring: 172 78% 40%;
 
     --card: 0 0% 100%;
     --card-foreground: 220 15% 15%;
@@ -48,19 +48,19 @@
     --background: 220 20% 8%;
     --foreground: 0 0% 98%;
 
-    /* Primary - Cyan Brand Color #06B6D4 (default state) */
-    --primary: 187 95% 43%;
+    /* Primary - Teal Brand Color #14B8A6 */
+    --primary: 172 78% 40%;
     --primary-foreground: 0 0% 100%;
 
-    /* Primary Hover - Teal #14B8A6 */
-    --primary-hover: 172 78% 40%;
+    /* Primary Hover - Darker Teal */
+    --primary-hover: 172 78% 32%;
     --primary-light: 172 78% 50%;
-    --primary-dark: 172 78% 32%;
+    --primary-dark: 172 78% 28%;
 
     --secondary: 172 78% 40%;
     --secondary-foreground: 0 0% 100%;
 
-    --accent: 187 95% 43%;
+    --accent: 172 78% 40%;
     --accent-foreground: 0 0% 100%;
 
     --muted: 220 18% 15%;
@@ -71,7 +71,7 @@
 
     --border: 220 18% 18%;
     --input: 220 18% 18%;
-    --ring: 187 95% 43%;
+    --ring: 172 78% 40%;
 
     --card: 220 18% 12%;
     --card-foreground: 0 0% 98%;
