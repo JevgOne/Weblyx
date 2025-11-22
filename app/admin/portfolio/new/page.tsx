@@ -62,27 +62,37 @@ export default function NewPortfolioPage() {
       return;
     }
 
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Soubor je příliš velký. Maximum je 10MB.");
+      return;
+    }
+
     setUploading(true);
+    console.log("🔵 Starting upload for:", file.name, "Size:", (file.size / 1024).toFixed(2), "KB");
 
     try {
       // Try to compress image, fallback to original if compression fails
       let fileToUpload = file;
       try {
+        console.log("🔵 Compressing image...");
         const options = {
           maxSizeMB: 1,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
         };
         fileToUpload = await imageCompression(file, options);
+        console.log("✅ Compressed to:", (fileToUpload.size / 1024).toFixed(2), "KB");
       } catch (compressionError) {
-        console.warn("Image compression failed, using original:", compressionError);
-        // Use original file if compression fails
+        console.warn("⚠️ Image compression failed, using original:", compressionError);
       }
 
       // Create preview
+      console.log("🔵 Creating preview...");
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+        console.log("✅ Preview created");
       };
       reader.readAsDataURL(fileToUpload);
 
@@ -91,13 +101,38 @@ export default function NewPortfolioPage() {
       const fileName = `portfolio/${timestamp}_${file.name}`;
       const storageRef = ref(storage, fileName);
 
-      await uploadBytes(storageRef, fileToUpload);
+      console.log("🔵 Uploading to Firebase Storage:", fileName);
+
+      // Add timeout to detect stuck uploads
+      const uploadPromise = uploadBytes(storageRef, fileToUpload);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Upload timeout - Storage Rules možná nejsou nasazené")), 30000)
+      );
+
+      await Promise.race([uploadPromise, timeoutPromise]);
+      console.log("✅ Upload complete");
+
+      console.log("🔵 Getting download URL...");
       const downloadURL = await getDownloadURL(storageRef);
+      console.log("✅ Download URL:", downloadURL);
 
       setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("Chyba při nahrávání obrázku: " + (error as Error).message);
+      alert("✅ Obrázek byl úspěšně nahrán!");
+    } catch (error: any) {
+      console.error("❌ Error uploading image:", error);
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
+
+      let errorMessage = "Chyba při nahrávání obrázku: " + error.message;
+
+      if (error.code === 'storage/unauthorized') {
+        errorMessage = "❌ Chyba: Storage Rules nejsou nasazené nebo nemáte oprávnění.\n\nNasaďte storage.rules v Firebase Console:\nStorage → Rules → Zkopírujte obsah z /storage.rules";
+      } else if (error.message.includes("timeout")) {
+        errorMessage = "❌ Upload se zasekl (timeout).\n\nPravděpodobná příčina: Storage Rules nejsou nasazené v Firebase Console.";
+      }
+
+      alert(errorMessage);
+      setImagePreview("");
     } finally {
       setUploading(false);
     }
