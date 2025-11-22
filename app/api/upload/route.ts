@@ -5,20 +5,6 @@ export const runtime = 'nodejs';
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    // Check content type
-    const contentType = request.headers.get('content-type') || '';
-
-    if (!contentType.includes('multipart/form-data')) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Content-Type must be multipart/form-data',
-          receivedType: contentType
-        },
-        { status: 400 }
-      );
-    }
-
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
