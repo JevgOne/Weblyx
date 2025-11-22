@@ -139,24 +139,6 @@ export default function HeroEditorPage() {
   };
 
   const handleSave = async () => {
-    // Validation
-    if (!formData.headline.trim()) {
-      showNotification("error", "Hlavní nadpis je povinný");
-      return;
-    }
-    if (!formData.subheadline.trim()) {
-      showNotification("error", "Podnadpis je povinný");
-      return;
-    }
-    if (!formData.ctaText.trim()) {
-      showNotification("error", "Text CTA tlačítka je povinný");
-      return;
-    }
-    if (!formData.ctaLink.trim()) {
-      showNotification("error", "Odkaz CTA tlačítka je povinný");
-      return;
-    }
-
     setSaving(true);
     try {
       const response = await fetch('/api/cms/hero', {
