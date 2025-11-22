@@ -28,9 +28,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    // Upload to Vercel Blob
+    // Upload to Vercel Blob with unique filename
     const blob = await put(file.name, file, {
       access: 'public',
+      addRandomSuffix: true,
     });
 
     // Generate unique ID for media record
