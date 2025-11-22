@@ -46,7 +46,7 @@ export default function AdminPortfolioPage() {
 
   const loadProjects = async () => {
     try {
-      const response = await fetch('/api/admin/portfolio');
+      const response = await fetch('/api/portfolio');
       const result = await response.json();
 
       if (result.success) {
