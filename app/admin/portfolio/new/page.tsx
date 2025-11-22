@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -159,14 +159,18 @@ export default function NewPortfolioPage() {
     setSaving(true);
 
     try {
-      // Get the highest order number to add new project at the end
-      const q = query(collection(db, "portfolio"), orderBy("order", "desc"), limit(1));
-      const querySnapshot = await getDocs(q);
+      // Get all projects to find max order (simpler, no index needed)
+      const querySnapshot = await getDocs(collection(db, "portfolio"));
       let maxOrder = 0;
 
-      if (!querySnapshot.empty) {
-        maxOrder = querySnapshot.docs[0].data().order || 0;
-      }
+      querySnapshot.forEach((doc) => {
+        const order = doc.data().order || 0;
+        if (order > maxOrder) {
+          maxOrder = order;
+        }
+      });
+
+      console.log("Creating portfolio project with order:", maxOrder + 1);
 
       await addDoc(collection(db, "portfolio"), {
         ...formData,
@@ -175,10 +179,11 @@ export default function NewPortfolioPage() {
         updatedAt: new Date(),
       });
 
+      console.log("Portfolio project created successfully");
       router.push("/admin/portfolio");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating project:", error);
-      alert("Chyba při vytváření projektu");
+      alert(`Chyba při vytváření projektu: ${error.message || error}`);
       setSaving(false);
     }
   };
