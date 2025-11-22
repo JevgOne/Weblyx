@@ -1,19 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { storage } from "@/lib/firebase";
-import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from "firebase/storage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, Trash2, Copy, Check, Image as ImageIcon, Sparkles } from "lucide-react";
 import imageCompression from "browser-image-compression";
 
 interface MediaFile {
   url: string;
-  path: string;
   name: string;
   alt?: string;
 }
@@ -27,42 +23,22 @@ export default function MediaLibraryPage() {
   const [copiedUrl, setCopiedUrl] = useState("");
   const [generatingAlt, setGeneratingAlt] = useState<string | null>(null);
 
-  // Load media files
+  // Load media files from API
   const loadMediaFiles = async () => {
     setLoading(true);
-    setError(""); // Clear previous errors
+    setError("");
     try {
-      const mediaRef = ref(storage, "media");
-      const result = await listAll(mediaRef);
+      const response = await fetch("/api/media/list");
+      const result = await response.json();
 
-      if (result.items.length === 0) {
-        setFiles([]);
-        setLoading(false);
-        return;
+      if (result.success) {
+        setFiles(result.data || []);
+      } else {
+        setError(result.error || "Chyba při načítání médií");
       }
-
-      const filePromises = result.items.map(async (itemRef) => {
-        try {
-          const url = await getDownloadURL(itemRef);
-          return {
-            url,
-            path: itemRef.fullPath,
-            name: itemRef.name,
-          };
-        } catch (err) {
-          console.error(`Error getting URL for ${itemRef.name}:`, err);
-          return null;
-        }
-      });
-
-      const mediaFiles = (await Promise.all(filePromises)).filter(Boolean) as MediaFile[];
-      setFiles(mediaFiles);
     } catch (err: any) {
       console.error("Error loading media:", err);
-      // Don't show error if folder is just empty
-      if (err.code !== 'storage/object-not-found') {
-        setError(`Načítání médií selhalo: ${err.message}`);
-      }
+      setError("Chyba při načítání médií");
     } finally {
       setLoading(false);
     }
@@ -72,7 +48,7 @@ export default function MediaLibraryPage() {
     loadMediaFiles();
   }, []);
 
-  // Upload files
+  // Upload files using Vercel Blob
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
@@ -83,6 +59,7 @@ export default function MediaLibraryPage() {
 
     try {
       const uploadPromises = Array.from(selectedFiles).map(async (file) => {
+        // Compress image
         const options = {
           maxSizeMB: 1,
           maxWidthOrHeight: 1920,
@@ -90,25 +67,32 @@ export default function MediaLibraryPage() {
         };
 
         const compressedFile = await imageCompression(file, options);
-        const timestamp = Date.now();
-        const fileName = `media/${timestamp}_${file.name}`;
-        const storageRef = ref(storage, fileName);
 
-        await uploadBytes(storageRef, compressedFile);
-        const downloadURL = await getDownloadURL(storageRef);
+        // Upload to Vercel Blob via API
+        const formData = new FormData();
+        formData.append("file", compressedFile, file.name);
 
-        // Skip AI ALT generation during upload (can generate later with button)
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || "Upload failed");
+        }
+
         return {
-          url: downloadURL,
-          path: fileName,
+          url: result.url,
           name: file.name,
-          alt: "", // User can generate ALT later with "AI ALT" button
+          alt: "",
         };
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
       setFiles([...uploadedFiles, ...files]);
-      setSuccess(`✅ Nahráno ${uploadedFiles.length} souborů! Vygeneruj ALT texty tlačítkem "AI ALT".`);
+      setSuccess(`✅ Nahráno ${uploadedFiles.length} souborů! Klikni "AI ALT" pro popisky.`);
       e.target.value = "";
     } catch (err: any) {
       console.error("Upload error:", err);
@@ -123,10 +107,20 @@ export default function MediaLibraryPage() {
     if (!confirm(`Smazat ${file.name}?`)) return;
 
     try {
-      const fileRef = ref(storage, file.path);
-      await deleteObject(fileRef);
-      setFiles(files.filter((f) => f.path !== file.path));
-      setSuccess("✅ Smazáno");
+      const response = await fetch("/api/media/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: file.url }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFiles(files.filter((f) => f.url !== file.url));
+        setSuccess("✅ Smazáno");
+      } else {
+        setError(result.error || "Chyba při mazání");
+      }
     } catch (err) {
       setError("Chyba při mazání");
     }
@@ -139,9 +133,9 @@ export default function MediaLibraryPage() {
     setTimeout(() => setCopiedUrl(""), 2000);
   };
 
-  // Generate ALT for existing image
+  // Generate ALT for image
   const handleGenerateAlt = async (file: MediaFile) => {
-    setGeneratingAlt(file.path);
+    setGeneratingAlt(file.url);
     try {
       const response = await fetch("/api/media/generate-alt", {
         method: "POST",
@@ -152,7 +146,7 @@ export default function MediaLibraryPage() {
       const result = await response.json();
       if (result.success) {
         setFiles(files.map((f) =>
-          f.path === file.path ? { ...f, alt: result.data.alt } : f
+          f.url === file.url ? { ...f, alt: result.data.alt } : f
         ));
         setSuccess("✅ ALT text vygenerován");
       }
@@ -168,7 +162,7 @@ export default function MediaLibraryPage() {
       <div>
         <h1 className="text-3xl font-bold">📸 Knihovna médií</h1>
         <p className="text-muted-foreground">
-          Nahraj obrázky hromadně, AI vygeneruje ALT texty automaticky
+          Nahraj obrázky hromadně (Vercel Blob Storage), AI vygeneruje ALT texty
         </p>
       </div>
 
@@ -205,7 +199,7 @@ export default function MediaLibraryPage() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            💡 Vyberte více souborů najednou. Po nahrání klikněte "AI ALT" pro generování popisků.
+            💡 Vyberte více souborů najednou. Upload je RYCHLÝ (Vercel Blob)!
           </p>
         </CardContent>
       </Card>
@@ -226,7 +220,7 @@ export default function MediaLibraryPage() {
           ) : (
             <div className="grid gap-6">
               {files.map((file) => (
-                <div key={file.path} className="border rounded-lg p-4 space-y-4">
+                <div key={file.url} className="border rounded-lg p-4 space-y-4">
                   <div className="flex gap-4">
                     {/* Thumbnail */}
                     <div className="w-32 h-32 rounded overflow-hidden bg-muted shrink-0">
@@ -278,10 +272,10 @@ export default function MediaLibraryPage() {
                           size="sm"
                           variant="secondary"
                           onClick={() => handleGenerateAlt(file)}
-                          disabled={generatingAlt === file.path}
+                          disabled={generatingAlt === file.url}
                         >
                           <Sparkles className="mr-2 h-4 w-4" />
-                          {generatingAlt === file.path ? "Generuji..." : "AI ALT"}
+                          {generatingAlt === file.url ? "Generuji..." : "AI ALT"}
                         </Button>
 
                         <Button
