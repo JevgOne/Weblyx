@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { MediaPicker } from "@/components/admin/MediaPicker";
 import {
   ArrowLeft,
   Upload,
@@ -21,6 +22,7 @@ import {
   Loader2,
   Image as ImageIcon,
   Link as LinkIcon,
+  FolderOpen,
 } from "lucide-react";
 import { PortfolioFormData } from "@/types/portfolio";
 
@@ -31,6 +33,7 @@ export default function NewPortfolioPage() {
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [techInput, setTechInput] = useState("");
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [formData, setFormData] = useState<PortfolioFormData>({
     title: "",
     category: "",
@@ -105,6 +108,11 @@ export default function NewPortfolioPage() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleMediaSelect = (url: string) => {
+    setImagePreview(url);
+    setFormData((prev) => ({ ...prev, imageUrl: url }));
   };
 
   const addTechnology = () => {
@@ -262,6 +270,15 @@ export default function NewPortfolioPage() {
                           {imagePreview ? "Změnit obrázek" : "Nahrát obrázek"}
                         </>
                       )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={uploading}
+                      onClick={() => setMediaPickerOpen(true)}
+                    >
+                      <FolderOpen className="mr-2 h-4 w-4" />
+                      Vybrat z knihovny
                     </Button>
                   </div>
 
@@ -431,6 +448,12 @@ export default function NewPortfolioPage() {
           </div>
         </form>
       </main>
+
+      <MediaPicker
+        open={mediaPickerOpen}
+        onOpenChange={setMediaPickerOpen}
+        onSelect={handleMediaSelect}
+      />
     </div>
   );
 }
