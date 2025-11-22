@@ -8,12 +8,14 @@
     --background: 0 0% 100%;
     --foreground: 222 47% 11%; /* Slate 900 #0F172A */
 
-    /* Primary - Cyan Brand Color #06B6D4 */
+    /* Primary - Cyan Brand Color #06B6D4 (default state) */
     --primary: 187 95% 43%;
     --primary-foreground: 0 0% 100%;
 
-    --primary-light: 187 95% 56%;
-    --primary-dark: 187 95% 35%;
+    /* Primary Hover - Teal #14B8A6 */
+    --primary-hover: 172 78% 40%;
+    --primary-light: 172 78% 50%;
+    --primary-dark: 172 78% 32%;
 
     /* Secondary - Teal Brand Color #14B8A6 */
     --secondary: 172 78% 40%;
@@ -46,11 +48,14 @@
     --background: 220 20% 8%;
     --foreground: 0 0% 98%;
 
+    /* Primary - Cyan Brand Color #06B6D4 (default state) */
     --primary: 187 95% 43%;
     --primary-foreground: 0 0% 100%;
 
-    --primary-light: 187 95% 56%;
-    --primary-dark: 187 95% 35%;
+    /* Primary Hover - Teal #14B8A6 */
+    --primary-hover: 172 78% 40%;
+    --primary-light: 172 78% 50%;
+    --primary-dark: 172 78% 32%;
 
     --secondary: 172 78% 40%;
     --secondary-foreground: 0 0% 100%;
@@ -97,7 +102,7 @@
 }
 
 .gradient-hero {
-  background: linear-gradient(180deg, hsl(187 95% 97%) 0%, hsl(0 0% 100%) 100%);
+  background: linear-gradient(180deg, hsl(172 78% 97%) 0%, hsl(0 0% 100%) 100%);
 }
 
 /* Grid Pattern Background */

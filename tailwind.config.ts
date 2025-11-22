@@ -90,8 +90,8 @@ export default {
   			'fade-in': 'fadeIn 0.6s ease-out'
   		},
   		boxShadow: {
-  			elegant: '0 10px 30px -10px rgba(6, 182, 212, 0.12)',
-  			glow: '0 0 40px rgba(6, 182, 212, 0.15)'
+  			elegant: '0 10px 30px -10px rgba(20, 184, 166, 0.12)',
+  			glow: '0 0 40px rgba(20, 184, 166, 0.15)'
   		}
   	}
   },
