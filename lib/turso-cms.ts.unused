@@ -24,11 +24,12 @@ export async function getHomepageSections(): Promise<HomepageSections | null> {
     if (result) {
       return {
         hero: {
-          title: result.hero_title || '',
-          subtitle: result.hero_subtitle || '',
+          headline: result.hero_title || '',
+          subheadline: result.hero_subtitle || '',
           ctaText: result.hero_cta_text || '',
           ctaLink: result.hero_cta_link || '',
-          image: result.hero_image || '',
+          backgroundImage: result.hero_image || '',
+          enabled: true,
         },
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
@@ -53,7 +54,7 @@ export async function updateHeroSection(hero: HeroSection): Promise<void> {
          hero_cta_link = excluded.hero_cta_link,
          hero_image = excluded.hero_image,
          updated_at = excluded.updated_at`,
-      ['current', hero.title, hero.subtitle, hero.ctaText, hero.ctaLink, hero.image, now]
+      ['current', hero.headline, hero.subheadline, hero.ctaText, hero.ctaLink, hero.backgroundImage, now]
     );
   } catch (error) {
     console.error('Error updating hero section:', error);
@@ -75,6 +76,7 @@ export async function getAllServices(): Promise<Service[]> {
       icon: row.icon || '',
       features: parseJSON(row.features) || [],
       order: row.order,
+      enabled: true,
       createdAt: unixToDate(row.created_at) || undefined,
       updatedAt: unixToDate(row.updated_at) || undefined,
     }));
@@ -99,6 +101,7 @@ export async function getService(id: string): Promise<Service | null> {
         icon: result.icon || '',
         features: parseJSON(result.features) || [],
         order: result.order,
+        enabled: true,
         createdAt: unixToDate(result.created_at) || undefined,
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
@@ -188,11 +191,16 @@ export async function getAllPricingTiers(): Promise<PricingTier[]> {
     return results.map(row => ({
       id: row.id,
       name: row.name,
+      description: row.description || '',
       price: row.price,
       currency: row.currency || 'CZK',
+      interval: (row.interval as 'month' | 'year' | 'one-time') || 'month',
       features: parseJSON(row.features) || [],
       highlighted: Boolean(row.highlighted),
+      ctaText: row.cta_text || 'Vybrat balíček',
+      ctaLink: row.cta_link || '#contact',
       order: row.order,
+      enabled: true,
       createdAt: unixToDate(row.created_at) || undefined,
       updatedAt: unixToDate(row.updated_at) || undefined,
     }));
@@ -213,11 +221,16 @@ export async function getPricingTier(id: string): Promise<PricingTier | null> {
       return {
         id: result.id,
         name: result.name,
+        description: result.description || '',
         price: result.price,
         currency: result.currency || 'CZK',
+        interval: (result.interval as 'month' | 'year' | 'one-time') || 'month',
         features: parseJSON(result.features) || [],
         highlighted: Boolean(result.highlighted),
+        ctaText: result.cta_text || 'Vybrat balíček',
+        ctaLink: result.cta_link || '#contact',
         order: result.order,
+        enabled: true,
         createdAt: unixToDate(result.created_at) || undefined,
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
@@ -311,8 +324,9 @@ export async function getProcessSection(): Promise<ProcessSection | null> {
 
     if (result) {
       return {
-        title: result.title || '',
-        subtitle: result.subtitle || '',
+        heading: result.title || '',
+        subheading: result.subtitle || '',
+        enabled: true,
       };
     }
     return null;
@@ -332,7 +346,7 @@ export async function updateProcessSection(section: ProcessSection): Promise<voi
          title = excluded.title,
          subtitle = excluded.subtitle,
          updated_at = excluded.updated_at`,
-      ['current', section.title, section.subtitle, now]
+      ['current', section.heading, section.subheading, now]
     );
   } catch (error) {
     console.error('Error updating process section:', error);
@@ -348,10 +362,12 @@ export async function getAllProcessSteps(): Promise<ProcessStep[]> {
 
     return results.map(row => ({
       id: row.id,
+      number: row.number || '1',
       title: row.title,
       description: row.description,
       icon: row.icon || '',
       order: row.order,
+      enabled: true,
       createdAt: unixToDate(row.created_at) || undefined,
       updatedAt: unixToDate(row.updated_at) || undefined,
     }));
@@ -371,10 +387,12 @@ export async function getProcessStep(id: string): Promise<ProcessStep | null> {
     if (result) {
       return {
         id: result.id,
+        number: result.number || '1',
         title: result.title,
         description: result.description,
         icon: result.icon || '',
         order: result.order,
+        enabled: true,
         createdAt: unixToDate(result.created_at) || undefined,
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
@@ -460,8 +478,9 @@ export async function getFAQSection(): Promise<FAQSection | null> {
 
     if (result) {
       return {
-        title: result.title || '',
-        subtitle: result.subtitle || '',
+        heading: result.title || '',
+        subheading: result.subtitle || '',
+        enabled: true,
       };
     }
     return null;
@@ -481,7 +500,7 @@ export async function updateFAQSection(section: FAQSection): Promise<void> {
          title = excluded.title,
          subtitle = excluded.subtitle,
          updated_at = excluded.updated_at`,
-      ['current', section.title, section.subtitle, now]
+      ['current', section.heading, section.subheading, now]
     );
   } catch (error) {
     console.error('Error updating FAQ section:', error);
@@ -500,6 +519,7 @@ export async function getAllFAQItems(): Promise<FAQItem[]> {
       question: row.question,
       answer: row.answer,
       order: row.order,
+      enabled: true,
       createdAt: unixToDate(row.created_at) || undefined,
       updatedAt: unixToDate(row.updated_at) || undefined,
     }));
@@ -522,6 +542,7 @@ export async function getFAQItem(id: string): Promise<FAQItem | null> {
         question: result.question,
         answer: result.answer,
         order: result.order,
+        enabled: true,
         createdAt: unixToDate(result.created_at) || undefined,
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
