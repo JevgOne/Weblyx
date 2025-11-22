@@ -26,6 +26,7 @@ export default function NewBlogPostPage() {
   const { user } = useAdminAuth();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [tagInput, setTagInput] = useState("");
   const [formData, setFormData] = useState({
@@ -33,6 +34,8 @@ export default function NewBlogPostPage() {
     slug: "",
     excerpt: "",
     content: "",
+    metaTitle: "",
+    metaDescription: "",
     author: "Admin",
     published: false,
     featured: false,
@@ -92,6 +95,43 @@ export default function NewBlogPostPage() {
       alert("Chyba při nahrávání obrázku: " + (error as Error).message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const generateMeta = async () => {
+    if (!formData.title || !formData.content) {
+      alert("Vyplňte název a obsah článku před generováním meta tagů");
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const response = await fetch("/api/blog/generate-meta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFormData((prev) => ({
+          ...prev,
+          metaTitle: result.data.metaTitle,
+          metaDescription: result.data.metaDescription,
+        }));
+        alert("✅ Meta tagy vygenerovány pomocí AI!");
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      console.error("Error generating meta:", error);
+      alert("Chyba při generování: " + error.message);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -308,6 +348,81 @@ export default function NewBlogPostPage() {
                   }
                   rows={3}
                 />
+              </div>
+
+              {/* SEO Meta Tags Section */}
+              <div className="border-t pt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">SEO Meta Tagy</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Optimalizované pro vyhledávače
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={generateMeta}
+                    disabled={generating || !formData.title || !formData.content}
+                    className="gap-2"
+                  >
+                    {generating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Generování...
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-lg">✨</span>
+                        Generovat AI
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Meta Title */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="metaTitle">Meta Title</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {formData.metaTitle.length}/60
+                      </span>
+                    </div>
+                    <Input
+                      id="metaTitle"
+                      placeholder="SEO optimalizovaný titul (max 60 znaků)"
+                      value={formData.metaTitle}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))
+                      }
+                      maxLength={70}
+                    />
+                  </div>
+
+                  {/* Meta Description */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="metaDescription">Meta Description</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {formData.metaDescription.length}/160
+                      </span>
+                    </div>
+                    <Textarea
+                      id="metaDescription"
+                      placeholder="SEO popis pro vyhledávače (max 160 znaků)"
+                      value={formData.metaDescription}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          metaDescription: e.target.value,
+                        }))
+                      }
+                      rows={3}
+                      maxLength={165}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Content */}

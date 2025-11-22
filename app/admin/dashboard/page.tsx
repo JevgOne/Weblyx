@@ -36,36 +36,14 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       console.time("Dashboard Load");
-      // Fetch real stats from Firestore
       try {
-        // Check if we're using mock Firebase
-        if (typeof db.collection === 'function') {
-          // Mock Firebase - parallel fetching
-          const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
-            db.collection("projects").get(),
-            db.collection("leads").get(),
-            db.collection("portfolio").get()
-          ]);
+        const response = await fetch('/api/admin/stats');
+        const result = await response.json();
 
-          setStats({
-            projects: projectsSnap.size,
-            leads: leadsSnap.size,
-            portfolio: portfolioSnap.size,
-          });
+        if (result.success) {
+          setStats(result.data);
         } else {
-          // Real Firebase - use modular API with parallel fetching
-          const { collection, getDocs } = await import("firebase/firestore");
-          const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
-            getDocs(collection(db, "projects")),
-            getDocs(collection(db, "leads")),
-            getDocs(collection(db, "portfolio"))
-          ]);
-
-          setStats({
-            projects: projectsSnap.size,
-            leads: leadsSnap.size,
-            portfolio: portfolioSnap.size,
-          });
+          console.error("Failed to fetch stats:", result.error);
         }
       } catch (error) {
         console.error("Error fetching stats:", error);
