@@ -1,71 +1,39 @@
-// 🔥 Firebase Configuration
+// 🔥 Firebase Configuration - Production Only
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage, ref as firebaseRef, uploadBytes as firebaseUploadBytes, getDownloadURL as firebaseGetDownloadURL, deleteObject as firebaseDeleteObject } from 'firebase/storage';
-
-// Import mock services
 import {
-  mockAuth,
-  mockFirestore,
-  mockStorage,
-  mockStorageRef,
-  mockUploadBytes,
-  mockGetDownloadURL,
-  mockDeleteObject
-} from './mock-firebase';
+  getStorage,
+  FirebaseStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
+} from 'firebase/storage';
 
-// Use real Firebase if credentials are present, otherwise use mock
-const hasFirebaseCredentials = !!(
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-  process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-);
-const USE_MOCK = !hasFirebaseCredentials;
-
-// Firebase config - using demo project for development
+// Firebase production config
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-weblyx",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "demo-weblyx.appspot.com",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:demo",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
 // Initialize Firebase (singleton pattern)
-let app: FirebaseApp | null = null;
-let realAuth: Auth | null = null;
-let realDb: Firestore | null = null;
-let realStorage: FirebaseStorage | null = null;
+const app: FirebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApps()[0];
 
-if (!USE_MOCK) {
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApps()[0];
-  }
+// Initialize services
+export const auth: Auth = getAuth(app);
+export const db: Firestore = getFirestore(app);
+export const storage: FirebaseStorage = getStorage(app);
 
-  realAuth = getAuth(app);
-  realDb = getFirestore(app);
-  realStorage = getStorage(app);
-}
+// Re-export Storage functions
+export { ref, uploadBytes, getDownloadURL, deleteObject };
 
-// Export services (mock or real based on environment)
-export const auth: any = USE_MOCK ? mockAuth : realAuth;
-export const db: any = USE_MOCK ? mockFirestore : realDb;
-export const storage: any = USE_MOCK ? mockStorage : realStorage;
-
-// Export Storage functions (mock or real)
-export const ref: any = USE_MOCK ? mockStorageRef : firebaseRef;
-export const uploadBytes: any = USE_MOCK ? mockUploadBytes : firebaseUploadBytes;
-export const getDownloadURL: any = USE_MOCK ? mockGetDownloadURL : firebaseGetDownloadURL;
-export const deleteObject: any = USE_MOCK ? mockDeleteObject : firebaseDeleteObject;
-
-if (USE_MOCK) {
-  console.log('🎭 Using MOCK Firebase services (no real Firebase needed)');
-  console.log('📧 Demo admin: admin@weblyx.cz / Admin123!');
-} else {
-  console.log('🔥 Using REAL Firebase services');
-}
+console.log('🔥 Firebase initialized - Production mode');
 
 export default app;
