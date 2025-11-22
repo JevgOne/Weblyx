@@ -344,15 +344,15 @@ export default function NewPortfolioPage() {
                 </Label>
                 <Input
                   id="projectUrl"
-                  type="url"
-                  placeholder="https://priklad-webu.cz"
+                  type="text"
+                  placeholder="www.priklad-webu.cz"
                   value={formData.projectUrl || ""}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, projectUrl: e.target.value }))
                   }
                 />
                 <p className="text-xs text-muted-foreground">
-                  Pokud má projekt živou URL adresu, zadejte ji zde. Zobrazí se jako odkaz "Navštívit web".
+                  Zadejte URL projektu (např. www.weblyx.cz nebo weblyx.cz). Zobrazí se jako odkaz "Navštívit web".
                 </p>
               </div>
 
