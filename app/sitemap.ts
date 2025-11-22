@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { adminDbInstance } from '@/lib/firebase-admin';
+import { getAllPortfolio } from '@/lib/turso/portfolio';
 
 /**
  * Dynamic sitemap generation for better SEO
@@ -67,25 +68,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch dynamic portfolio items
+  // Fetch dynamic portfolio items from Turso
   let portfolioRoutes: MetadataRoute.Sitemap = [];
   try {
-    if (adminDbInstance) {
-      const portfolioSnapshot = await adminDbInstance
-        .collection('portfolio')
-        .where('published', '==', true)
-        .get();
+    const allPortfolio = await getAllPortfolio();
+    const publishedPortfolio = allPortfolio.filter(p => p.published);
 
-      portfolioRoutes = portfolioSnapshot.docs.map((doc: any) => {
-        const data = doc.data();
-        return {
-          url: `${baseUrl}/portfolio/${doc.id}`,
-          lastModified: data.updatedAt?.toDate() || new Date(),
-          changeFrequency: 'monthly' as const,
-          priority: 0.6,
-        };
-      });
-    }
+    portfolioRoutes = publishedPortfolio.map((project) => ({
+      url: `${baseUrl}/portfolio/${project.id}`,
+      lastModified: project.updatedAt ? new Date(project.updatedAt) : new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
   } catch (error) {
     console.error('Error fetching portfolio for sitemap:', error);
   }

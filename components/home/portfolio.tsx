@@ -4,39 +4,34 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import { adminDbInstance } from "@/lib/firebase-admin";
+import { getAllPortfolio } from "@/lib/turso/portfolio";
 import { getPageContent } from "@/lib/firestore-pages";
 import { PortfolioProject } from "@/types/homepage";
 
 async function getPortfolioProjects(): Promise<PortfolioProject[]> {
   try {
-    if (!adminDbInstance) {
-      console.error('Firebase Admin not initialized');
-      return [];
-    }
+    // Fetch from Turso
+    const allProjects = await getAllPortfolio();
 
-    const snapshot = await adminDbInstance
-      .collection('portfolio')
-      .where('published', '==', true)
-      .where('featured', '==', true)
-      .get();
+    // Filter for published and featured, then sort and limit
+    const projects = allProjects
+      .filter(p => p.published && p.featured)
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .slice(0, 6)
+      .map(data => ({
+        id: data.id,
+        title: data.title,
+        category: data.category || '',
+        description: data.description || '',
+        technologies: data.technologies || [],
+        imageUrl: data.imageUrl,
+        projectUrl: data.projectUrl,
+        published: data.published,
+        featured: data.featured,
+        order: data.order || 0,
+      } as PortfolioProject));
 
-    if (snapshot.empty) {
-      console.error('No portfolio projects found');
-      return [];
-    }
-
-    const projects: PortfolioProject[] = [];
-    snapshot.docs.forEach((doc: any) => {
-      const data = doc.data();
-      projects.push({
-        ...data,
-        id: doc.id,
-      } as PortfolioProject);
-    });
-
-    // Sort by order field and limit to 6
-    return projects.sort((a, b) => (a.order || 0) - (b.order || 0)).slice(0, 6);
+    return projects;
   } catch (error) {
     console.error('Error fetching portfolio projects:', error);
     return [];

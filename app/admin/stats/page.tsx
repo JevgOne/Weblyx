@@ -53,34 +53,42 @@ export default function StatsPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Real Firebase (modular v9+)
-        const { collection, getDocs } = await import('firebase/firestore');
+        // Fetch basic counts from API
+        const response = await fetch('/api/admin/stats');
+        const result = await response.json();
 
-        const [projectsSnap, leadsSnap, portfolioSnap] = await Promise.all([
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch stats');
+        }
+
+        // Fetch detailed data for status breakdowns
+        const { collection, getDocs } = await import('firebase/firestore');
+        const [projectsSnap, leadsSnap, portfolioResponse] = await Promise.all([
           getDocs(collection(db, "projects")),
           getDocs(collection(db, "leads")),
-          getDocs(collection(db, "portfolio"))
+          fetch('/api/portfolio')
         ]);
 
         const projects = projectsSnap.docs.map(doc => doc.data());
         const leads = leadsSnap.docs.map(doc => doc.data());
-        const portfolio = portfolioSnap.docs.map(doc => doc.data());
+        const portfolioResult = await portfolioResponse.json();
+        const portfolio = portfolioResult.success ? portfolioResult.data : [];
 
         setStats({
           projects: {
-            total: projects.length,
+            total: result.data.projects,
             active: projects.filter((p: any) => p.status === 'in_progress').length,
             completed: projects.filter((p: any) => p.status === 'completed').length,
             pending: projects.filter((p: any) => p.status === 'pending').length,
           },
           leads: {
-            total: leads.length,
+            total: result.data.leads,
             new: leads.filter((l: any) => l.status === 'new').length,
             contacted: leads.filter((l: any) => l.status === 'contacted').length,
             converted: leads.filter((l: any) => l.status === 'converted').length,
           },
           portfolio: {
-            total: portfolio.length,
+            total: result.data.portfolio,
             published: portfolio.filter((p: any) => p.published).length,
             featured: portfolio.filter((p: any) => p.featured).length,
           },

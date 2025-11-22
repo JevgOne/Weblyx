@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -64,11 +63,11 @@ export default function EditPortfolioPage() {
 
   const loadProject = async () => {
     try {
-      const docRef = doc(db, "portfolio", projectId);
-      const docSnap = await getDoc(docRef);
+      const response = await fetch(`/api/portfolio?id=${projectId}`);
+      const result = await response.json();
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      if (result.success && result.data) {
+        const data = result.data;
         const projectData: PortfolioFormData = {
           title: data.title || "",
           category: data.category || "",
@@ -198,11 +197,20 @@ export default function EditPortfolioPage() {
     setSaving(true);
 
     try {
-      const docRef = doc(db, "portfolio", projectId);
-      await updateDoc(docRef, {
-        ...formData,
-        updatedAt: new Date(),
+      const response = await fetch('/api/portfolio', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: projectId,
+          ...formData,
+        }),
       });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update project');
+      }
 
       router.push("/admin/portfolio");
     } catch (error) {
@@ -220,7 +228,16 @@ export default function EditPortfolioPage() {
     setDeleting(true);
 
     try {
-      await deleteDoc(doc(db, "portfolio", projectId));
+      const response = await fetch(`/api/portfolio?id=${projectId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete project');
+      }
+
       router.push("/admin/portfolio");
     } catch (error) {
       console.error("Error deleting project:", error);
