@@ -6,7 +6,7 @@
   :root {
     /* Light Theme - Weblyx Design System */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 222 47% 11%; /* Slate 900 #0F172A */
 
     /* Primary - Cyan Brand Color #06B6D4 */
     --primary: 187 95% 43%;
@@ -28,8 +28,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 215 20% 91%; /* Slate 200 #E2E8F0 */
+    --input: 215 20% 91%;
     --ring: 187 95% 43%;
 
     --card: 0 0% 100%;
