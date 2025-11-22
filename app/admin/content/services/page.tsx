@@ -3,13 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import {
-  getAllServices,
-  createService,
-  updateService,
-  deleteService,
-} from "@/lib/firestore-cms";
-import { storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,8 +62,25 @@ export default function ServicesManagementPage() {
 
   const loadServices = async () => {
     try {
-      const data = await getAllServices();
-      setServices(data);
+      const response = await fetch('/api/services');
+      const result = await response.json();
+
+      if (result.success) {
+        // Map Turso data to CMS Service type
+        const servicesData = result.data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          icon: item.icon || '',
+          imageUrl: '', // Turso services don't have imageUrl
+          features: item.features || [],
+          order: item.order || 0,
+          enabled: item.active !== false,
+        }));
+        setServices(servicesData);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error("Error loading services:", error);
       showNotification("error", "Chyba při načítání služeb");
@@ -151,15 +161,22 @@ export default function ServicesManagementPage() {
       };
       reader.readAsDataURL(fileToUpload);
 
-      // Upload to Firebase Storage
-      const timestamp = Date.now();
-      const fileName = `services/${timestamp}_${file.name}`;
-      const storageRef = ref(storage, fileName);
+      // Upload via API
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', fileToUpload, file.name);
 
-      await uploadBytes(storageRef, fileToUpload);
-      const downloadURL = await getDownloadURL(storageRef);
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
 
-      setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
+
+      setFormData((prev) => ({ ...prev, imageUrl: uploadResult.url }));
       showNotification("success", "Obrázek byl úspěšně nahrán!");
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -239,15 +256,30 @@ export default function ServicesManagementPage() {
     setSaving(true);
     try {
       const dataToSave = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        icon: formData.icon,
         features: cleanedFeatures,
+        active: formData.enabled,
       };
 
       if (isCreating) {
-        await createService(dataToSave);
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataToSave),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
         showNotification("success", "Služba byla úspěšně vytvořena!");
       } else if (editingId) {
-        await updateService(editingId, dataToSave);
+        const response = await fetch('/api/services', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingId, ...dataToSave }),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
         showNotification("success", "Služba byla úspěšně aktualizována!");
       }
 
@@ -267,7 +299,12 @@ export default function ServicesManagementPage() {
     }
 
     try {
-      await deleteService(id);
+      const response = await fetch(`/api/services?id=${id}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+
       showNotification("success", "Služba byla úspěšně smazána!");
       await loadServices();
     } catch (error) {
