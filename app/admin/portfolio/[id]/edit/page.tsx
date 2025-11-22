@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,7 @@ export default function EditPortfolioPage() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
+  const { user } = useAdminAuth();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -50,16 +50,10 @@ export default function EditPortfolioPage() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        loadProject();
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router, projectId]);
+    if (user) {
+      loadProject();
+    }
+  }, [user, projectId]);
 
   const loadProject = async () => {
     try {
