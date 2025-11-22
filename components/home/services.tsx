@@ -81,7 +81,7 @@ export async function Services() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service) => {
-            const IconComponent = iconMap[service.icon] || Globe;
+            const IconComponent = (service.icon && iconMap[service.icon as keyof typeof iconMap]) || Globe;
             return (
               <Card
                 key={service.id}
