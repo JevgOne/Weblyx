@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db, storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
@@ -20,6 +20,7 @@ import {
   Plus,
   Loader2,
   Image as ImageIcon,
+  Link as LinkIcon,
 } from "lucide-react";
 import { PortfolioFormData } from "@/types/portfolio";
 
@@ -36,6 +37,7 @@ export default function NewPortfolioPage() {
     description: "",
     technologies: [],
     imageUrl: "",
+    projectUrl: "",
     published: false,
     featured: false,
   });
@@ -62,77 +64,44 @@ export default function NewPortfolioPage() {
       return;
     }
 
-    // Check file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert("Soubor je příliš velký. Maximum je 10MB.");
-      return;
-    }
-
     setUploading(true);
-    console.log("🔵 Starting upload for:", file.name, "Size:", (file.size / 1024).toFixed(2), "KB");
 
     try {
-      // Try to compress image, fallback to original if compression fails
-      let fileToUpload = file;
-      try {
-        console.log("🔵 Compressing image...");
-        const options = {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 1920,
-          useWebWorker: true,
-        };
-        fileToUpload = await imageCompression(file, options);
-        console.log("✅ Compressed to:", (fileToUpload.size / 1024).toFixed(2), "KB");
-      } catch (compressionError) {
-        console.warn("⚠️ Image compression failed, using original:", compressionError);
-      }
+      // Compress image
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
 
       // Create preview
-      console.log("🔵 Creating preview...");
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
-        console.log("✅ Preview created");
       };
-      reader.readAsDataURL(fileToUpload);
+      reader.readAsDataURL(compressedFile);
 
-      // Upload to Firebase Storage
-      const timestamp = Date.now();
-      const fileName = `portfolio/${timestamp}_${file.name}`;
-      const storageRef = ref(storage, fileName);
+      // Upload to Vercel Blob via API
+      const formData = new FormData();
+      formData.append("file", compressedFile, file.name);
 
-      console.log("🔵 Uploading to Firebase Storage:", fileName);
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      // Add timeout to detect stuck uploads
-      const uploadPromise = uploadBytes(storageRef, fileToUpload);
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Upload timeout - Storage Rules možná nejsou nasazené")), 30000)
-      );
+      const result = await response.json();
 
-      await Promise.race([uploadPromise, timeoutPromise]);
-      console.log("✅ Upload complete");
-
-      console.log("🔵 Getting download URL...");
-      const downloadURL = await getDownloadURL(storageRef);
-      console.log("✅ Download URL:", downloadURL);
-
-      setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
-      alert("✅ Obrázek byl úspěšně nahrán!");
-    } catch (error: any) {
-      console.error("❌ Error uploading image:", error);
-      console.error("Error code:", error.code);
-      console.error("Error message:", error.message);
-
-      let errorMessage = "Chyba při nahrávání obrázku: " + error.message;
-
-      if (error.code === 'storage/unauthorized') {
-        errorMessage = "❌ Chyba: Storage Rules nejsou nasazené nebo nemáte oprávnění.\n\nNasaďte storage.rules v Firebase Console:\nStorage → Rules → Zkopírujte obsah z /storage.rules";
-      } else if (error.message.includes("timeout")) {
-        errorMessage = "❌ Upload se zasekl (timeout).\n\nPravděpodobná příčina: Storage Rules nejsou nasazené v Firebase Console.";
+      if (!result.success) {
+        throw new Error(result.error || "Upload failed");
       }
 
-      alert(errorMessage);
-      setImagePreview("");
+      setFormData((prev) => ({ ...prev, imageUrl: result.url }));
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Chyba při nahrávání obrázku");
     } finally {
       setUploading(false);
     }
@@ -348,6 +317,26 @@ export default function NewPortfolioPage() {
                   rows={5}
                   required
                 />
+              </div>
+
+              {/* Project URL */}
+              <div className="space-y-2">
+                <Label htmlFor="projectUrl">
+                  <LinkIcon className="inline h-4 w-4 mr-1" />
+                  URL projektu (živá stránka)
+                </Label>
+                <Input
+                  id="projectUrl"
+                  type="url"
+                  placeholder="https://priklad-webu.cz"
+                  value={formData.projectUrl || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, projectUrl: e.target.value }))
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pokud má projekt živou URL adresu, zadejte ji zde. Zobrazí se jako odkaz "Navštívit web".
+                </p>
               </div>
 
               {/* Technologies */}

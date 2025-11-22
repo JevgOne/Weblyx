@@ -7,6 +7,7 @@ export interface PortfolioProject {
   description: string;
   technologies: string[];
   imageUrl: string;
+  projectUrl?: string; // URL of the live project
   published: boolean;
   featured: boolean;
   order: number;
@@ -20,6 +21,7 @@ export interface PortfolioFormData {
   description: string;
   technologies: string[];
   imageUrl: string;
+  projectUrl?: string; // URL of the live project
   published: boolean;
   featured: boolean;
 }

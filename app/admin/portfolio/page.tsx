@@ -68,6 +68,7 @@ export default function AdminPortfolioPage() {
           description: data.description || "",
           technologies: data.technologies || [],
           imageUrl: data.imageUrl || "",
+          projectUrl: data.projectUrl || "",
           published: data.published || false,
           featured: data.featured || false,
           order: data.order || 0,

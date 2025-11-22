@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { auth, db, storage, ref, uploadBytes, getDownloadURL } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
@@ -21,6 +21,7 @@ import {
   Loader2,
   Trash2,
   Image as ImageIcon,
+  Link as LinkIcon,
 } from "lucide-react";
 import { PortfolioFormData } from "@/types/portfolio";
 
@@ -41,6 +42,7 @@ export default function EditPortfolioPage() {
     description: "",
     technologies: [],
     imageUrl: "",
+    projectUrl: "",
     published: false,
     featured: false,
   });
@@ -70,6 +72,7 @@ export default function EditPortfolioPage() {
           description: data.description || "",
           technologies: data.technologies || [],
           imageUrl: data.imageUrl || "",
+          projectUrl: data.projectUrl || "",
           published: data.published || false,
           featured: data.featured || false,
         };
@@ -119,15 +122,22 @@ export default function EditPortfolioPage() {
       };
       reader.readAsDataURL(compressedFile);
 
-      // Upload to Firebase Storage
-      const timestamp = Date.now();
-      const fileName = `portfolio/${timestamp}_${file.name}`;
-      const storageRef = ref(storage, fileName);
+      // Upload to Vercel Blob via API
+      const formData = new FormData();
+      formData.append("file", compressedFile, file.name);
 
-      await uploadBytes(storageRef, compressedFile);
-      const downloadURL = await getDownloadURL(storageRef);
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      setFormData((prev) => ({ ...prev, imageUrl: result.url }));
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Chyba při nahrávání obrázku");
@@ -373,6 +383,26 @@ export default function EditPortfolioPage() {
                   rows={5}
                   required
                 />
+              </div>
+
+              {/* Project URL */}
+              <div className="space-y-2">
+                <Label htmlFor="projectUrl">
+                  <LinkIcon className="inline h-4 w-4 mr-1" />
+                  URL projektu (živá stránka)
+                </Label>
+                <Input
+                  id="projectUrl"
+                  type="url"
+                  placeholder="https://priklad-webu.cz"
+                  value={formData.projectUrl || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, projectUrl: e.target.value }))
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pokud má projekt živou URL adresu, zadejte ji zde. Zobrazí se jako odkaz "Navštívit web".
+                </p>
               </div>
 
               {/* Technologies */}
