@@ -21,7 +21,8 @@ import {
   Images,
   FileEdit,
   Tag,
-  Globe
+  Globe,
+  MessageSquareQuote
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -312,6 +313,25 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full" onClick={() => router.push("/admin/blog")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <MessageSquareQuote className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Recenze</CardTitle>
+                    <CardDescription>Zákaznické hodnocení</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/reviews")}>
                   Otevřít
                 </Button>
               </CardContent>
