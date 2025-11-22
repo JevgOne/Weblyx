@@ -1,0 +1,23 @@
+# robots.txt for weblyx.cz
+# Allow all crawlers to index everything
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://weblyx.cz/sitemap.xml
+
+# Crawl-delay (optional, helps prevent server overload)
+# Crawl-delay: 1
+
+# Disallow admin areas (if any)
+Disallow: /admin/
+Disallow: /api/
+
+# Allow important pages for SEO
+Allow: /sluzby
+Allow: /portfolio
+Allow: /blog
+Allow: /kontakt
+Allow: /o-nas
+Allow: /poptavka
