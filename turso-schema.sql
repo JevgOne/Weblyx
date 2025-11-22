@@ -335,12 +335,35 @@ CREATE TABLE IF NOT EXISTS portfolio (
     technologies TEXT, -- JSON array
     category TEXT,
     featured BOOLEAN DEFAULT 0,
+    published BOOLEAN DEFAULT 1,
     "order" INTEGER DEFAULT 0,
     created_at INTEGER NOT NULL DEFAULT (unixepoch()),
     updated_at INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
 CREATE INDEX IF NOT EXISTS idx_portfolio_featured ON portfolio(featured, "order");
+CREATE INDEX IF NOT EXISTS idx_portfolio_published ON portfolio(published);
+
+-- Reviews
+CREATE TABLE IF NOT EXISTS reviews (
+    id TEXT PRIMARY KEY,
+    author_name TEXT NOT NULL,
+    author_image TEXT,
+    author_role TEXT,
+    rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+    text TEXT NOT NULL,
+    date INTEGER NOT NULL,
+    source TEXT DEFAULT 'manual', -- manual, google
+    source_url TEXT,
+    published BOOLEAN DEFAULT 0,
+    featured BOOLEAN DEFAULT 0,
+    "order" INTEGER DEFAULT 0,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
+CREATE INDEX IF NOT EXISTS idx_reviews_published ON reviews(published, "order");
+CREATE INDEX IF NOT EXISTS idx_reviews_featured ON reviews(featured);
 
 -- Media Library (for Vercel Blob integration)
 CREATE TABLE IF NOT EXISTS media (

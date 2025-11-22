@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, getDocs } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -159,27 +158,21 @@ export default function NewPortfolioPage() {
     setSaving(true);
 
     try {
-      // Get all projects to find max order (simpler, no index needed)
-      const querySnapshot = await getDocs(collection(db, "portfolio"));
-      let maxOrder = 0;
+      console.log("Creating portfolio project via API...");
 
-      querySnapshot.forEach((doc) => {
-        const order = doc.data().order || 0;
-        if (order > maxOrder) {
-          maxOrder = order;
-        }
+      const response = await fetch("/api/portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
-      console.log("Creating portfolio project with order:", maxOrder + 1);
+      const result = await response.json();
 
-      await addDoc(collection(db, "portfolio"), {
-        ...formData,
-        order: maxOrder + 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create portfolio project");
+      }
 
-      console.log("Portfolio project created successfully");
+      console.log("Portfolio project created successfully:", result.data.id);
       router.push("/admin/portfolio");
     } catch (error: any) {
       console.error("Error creating project:", error);

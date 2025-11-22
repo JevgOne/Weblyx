@@ -8,12 +8,16 @@ export interface PortfolioProject {
   technologies: string[];
   imageUrl: string;
   projectUrl?: string; // URL of the live project
+  clientName?: string; // Optional client name
   published: boolean;
   featured: boolean;
   order: number;
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Alias for consistency with Turso DAL
+export type PortfolioItem = PortfolioProject;
 
 export interface PortfolioFormData {
   title: string;

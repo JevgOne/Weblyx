@@ -24,6 +24,8 @@ let mockAdmins: any[] = [
 let mockLeads: any[] = [];
 let mockProjects: any[] = [];
 let mockBlogs: any[] = [];
+let mockPortfolio: any[] = [];
+let mockReviews: any[] = [];
 
 // Mock Auth Service
 export const mockAuth = {
@@ -122,6 +124,20 @@ export const mockFirestore = {
             } else {
               mockBlogs.push({ ...data, id: docId });
             }
+          } else if (collectionName === 'portfolio') {
+            const existingIndex = mockPortfolio.findIndex(p => p.id === docId);
+            if (existingIndex >= 0) {
+              mockPortfolio[existingIndex] = { ...data, id: docId };
+            } else {
+              mockPortfolio.push({ ...data, id: docId });
+            }
+          } else if (collectionName === 'reviews') {
+            const existingIndex = mockReviews.findIndex(r => r.id === docId);
+            if (existingIndex >= 0) {
+              mockReviews[existingIndex] = { ...data, id: docId };
+            } else {
+              mockReviews.push({ ...data, id: docId });
+            }
           }
         },
 
@@ -139,6 +155,10 @@ export const mockFirestore = {
             mockProjects = mockProjects.filter(p => p.id !== docId);
           } else if (collectionName === 'blog') {
             mockBlogs = mockBlogs.filter(b => b.id !== docId);
+          } else if (collectionName === 'portfolio') {
+            mockPortfolio = mockPortfolio.filter(p => p.id !== docId);
+          } else if (collectionName === 'reviews') {
+            mockReviews = mockReviews.filter(r => r.id !== docId);
           }
         }
       }),
@@ -154,6 +174,10 @@ export const mockFirestore = {
           mockProjects.push({ ...data, id });
         } else if (collectionName === 'blog') {
           mockBlogs.push({ ...data, id });
+        } else if (collectionName === 'portfolio') {
+          mockPortfolio.push({ ...data, id });
+        } else if (collectionName === 'reviews') {
+          mockReviews.push({ ...data, id });
         }
 
         return { id };
@@ -172,6 +196,10 @@ export const mockFirestore = {
           docs = mockAdmins;
         } else if (collectionName === 'blog') {
           docs = mockBlogs;
+        } else if (collectionName === 'portfolio') {
+          docs = mockPortfolio;
+        } else if (collectionName === 'reviews') {
+          docs = mockReviews;
         }
 
         return {
