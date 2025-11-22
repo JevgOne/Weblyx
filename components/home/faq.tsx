@@ -38,8 +38,8 @@ async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQIte
 export async function FAQ() {
   const { section, items: faqData } = await getFAQData();
 
-  // Filter only enabled FAQs
-  const faqs = faqData.filter((faq) => faq.enabled);
+  // Filter only enabled FAQs and limit to top 5 for homepage
+  const faqs = faqData.filter((faq) => faq.enabled).slice(0, 5);
 
   if (!section || !section.enabled || faqs.length === 0) {
     return null;
@@ -73,6 +73,16 @@ export async function FAQ() {
             </AccordionItem>
           ))}
         </Accordion>
+
+        {/* Link to full FAQ page */}
+        <div className="text-center mt-8">
+          <a
+            href="/faq"
+            className="inline-flex items-center text-primary hover:underline font-medium"
+          >
+            Zobrazit všechny otázky →
+          </a>
+        </div>
       </div>
     </section>
   );

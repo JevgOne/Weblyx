@@ -12,6 +12,7 @@ export function Header() {
     { name: "Služby", href: "/sluzby" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Blog", href: "/blog" },
+    { name: "FAQ", href: "/faq" },
     { name: "O nás", href: "/o-nas" },
     { name: "Kontakt", href: "/kontakt" },
   ];
