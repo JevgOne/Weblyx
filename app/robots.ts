@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/admin/*',          // Block admin panel
           '/api/*',            // Block API routes
+          '/t/*',              // Block tracking links (lead generation)
           '/poptavka/dekujeme', // Block thank you page (no indexing needed)
         ],
       },
