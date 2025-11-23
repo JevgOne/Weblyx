@@ -1,7 +1,8 @@
 // Google Maps Lead Scraper
 // ⚠️ WARNING: This may violate Google's Terms of Service. Use at your own risk.
 
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { createLead } from './turso/lead-generation';
 
 export interface ScraperOptions {
@@ -28,16 +29,34 @@ export async function scrapeGoogleMaps(options: ScraperOptions): Promise<Scraped
   console.log(`🤖 Starting Google Maps scraper for: "${searchQuery}"`);
   console.log(`📊 Target: ${maxResults} results`);
 
-  const browser = await puppeteer.launch({
-    headless,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--disable-gpu',
-    ],
-  });
+  // Detect environment
+  const isProduction = process.env.VERCEL_ENV === 'production';
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  let browser;
+
+  if (isProduction) {
+    // Use Chromium for Vercel production
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+  } else {
+    // Use local Puppeteer for development
+    const puppeteerLocal = await import('puppeteer');
+    browser = await puppeteerLocal.default.launch({
+      headless,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',
+      ],
+    });
+  }
 
   const page = await browser.newPage();
 
