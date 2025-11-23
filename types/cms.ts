@@ -303,6 +303,13 @@ export interface WebAnalysisResult {
   contactName?: string;
   businessName?: string;
 
+  // Screenshots (base64)
+  screenshots?: {
+    desktop: string;
+    tablet: string;
+    mobile: string;
+  };
+
   // Admin notes
   notes?: string;
   status: 'analyzed' | 'email_sent' | 'responded' | 'converted' | 'rejected';
