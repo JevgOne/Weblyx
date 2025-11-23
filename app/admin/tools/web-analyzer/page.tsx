@@ -39,6 +39,7 @@ export default function WebAnalyzerPage() {
   const [error, setError] = useState<string | null>(null);
   const [showEmail, setShowEmail] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('auto'); // 'auto', 'general', 'slowWeb', etc.
 
   const handleAnalyze = async () => {
     if (!url) {
@@ -481,21 +482,129 @@ export default function WebAnalyzerPage() {
                 </Button>
               </div>
 
-              {/* Email Preview */}
+              {/* Email Preview with Template Selection */}
               {showEmail && (analysis as any).proposalEmail && (
-                <div className="mt-6 p-4 bg-muted rounded-lg">
+                <div className="mt-6 p-4 bg-muted rounded-lg space-y-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      Vygenerovaný email s nabídkou
+                      Email templates s nabídkou
                     </h4>
                   </div>
+
+                  {/* Template Selector */}
+                  {(analysis as any).emailTemplates && (
+                    <div className="space-y-3">
+                      <Label>Vyberte template:</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <Button
+                          variant={selectedTemplate === 'auto' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('auto')}
+                          className="justify-start"
+                        >
+                          ✨ Automatický
+                          {(analysis as any).primaryIssue && selectedTemplate === 'auto' && (
+                            <Badge className="ml-2 bg-primary-foreground text-primary">
+                              {(analysis as any).primaryIssue}
+                            </Badge>
+                          )}
+                        </Button>
+                        <Button
+                          variant={selectedTemplate === 'general' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('general')}
+                          className="justify-start"
+                        >
+                          📄 Obecný
+                        </Button>
+                        <Button
+                          variant={selectedTemplate === 'slowWeb' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('slowWeb')}
+                          className="justify-start"
+                        >
+                          🐌 Pomalý web
+                        </Button>
+                        <Button
+                          variant={selectedTemplate === 'badSEO' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('badSEO')}
+                          className="justify-start"
+                        >
+                          🔍 Špatné SEO
+                        </Button>
+                        <Button
+                          variant={selectedTemplate === 'mobileIssues' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('mobileIssues')}
+                          className="justify-start"
+                        >
+                          📱 Mobilní problémy
+                        </Button>
+                        <Button
+                          variant={selectedTemplate === 'outdatedDesign' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('outdatedDesign')}
+                          className="justify-start"
+                        >
+                          🎨 Zastaralý design
+                        </Button>
+                        <Button
+                          variant={selectedTemplate === 'followUp' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedTemplate('followUp')}
+                          className="justify-start"
+                        >
+                          📧 Follow-up
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Copy Button for Selected Template */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const emailContent = selectedTemplate === 'auto'
+                        ? (analysis as any).proposalEmail
+                        : (analysis as any).emailTemplates?.[selectedTemplate];
+
+                      if (!emailContent) {
+                        alert("Email template není dostupný");
+                        return;
+                      }
+                      navigator.clipboard.writeText(emailContent);
+                      setEmailCopied(true);
+                      setTimeout(() => setEmailCopied(false), 2000);
+                    }}
+                    className="w-full"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    {emailCopied ? "✓ Zkopírováno!" : "Zkopírovat vybraný template"}
+                  </Button>
+
+                  {/* Email Content */}
                   <pre className="whitespace-pre-wrap text-sm font-mono bg-background p-4 rounded border overflow-auto max-h-96">
-                    {(analysis as any).proposalEmail}
+                    {selectedTemplate === 'auto'
+                      ? (analysis as any).proposalEmail
+                      : (analysis as any).emailTemplates?.[selectedTemplate] || 'Template není dostupný'}
                   </pre>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    💡 Tip: Zkopírujte tento email a upravte ho podle potřeby před odesláním klientovi
-                  </p>
+
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground">
+                      💡 <strong>Automatický template:</strong> Vybírá se podle hlavního problému webu
+                    </p>
+                    {(analysis as any).primaryIssue && (
+                      <p className="text-xs text-primary font-medium">
+                        ✨ Pro tento web byl automaticky vybrán: <strong>{(analysis as any).primaryIssue}</strong>
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      📝 Tip: Vyberte jiný template nebo zkopírujte a upravte podle potřeby
+                    </p>
+                  </div>
                 </div>
               )}
             </CardContent>

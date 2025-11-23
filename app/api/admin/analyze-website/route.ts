@@ -2,7 +2,55 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeWebsite } from '@/lib/web-analyzer';
 import { adminDbInstance } from '@/lib/firebase-admin';
 
-function generateProposalEmail(analysis: any): string {
+// Email template types
+type EmailTemplate = 'general' | 'slow-web' | 'bad-seo' | 'mobile-issues' | 'outdated-design' | 'follow-up';
+
+function detectPrimaryIssue(analysis: any): EmailTemplate {
+  const { performance, seo, accessibility } = analysis;
+  const perfScore = performance?.score || 0;
+  const seoScore = seo?.score || 0;
+  const accessScore = accessibility?.score || 0;
+
+  // Find the worst metric
+  if (perfScore < 50 && perfScore < seoScore && perfScore < accessScore) {
+    return 'slow-web';
+  }
+  if (seoScore < 50 && seoScore < perfScore && seoScore < accessScore) {
+    return 'bad-seo';
+  }
+  if (accessScore < 50 && accessScore < perfScore && accessScore < seoScore) {
+    return 'mobile-issues';
+  }
+
+  const avgScore = Math.round((perfScore + seoScore + accessScore) / 3);
+  if (avgScore < 50) {
+    return 'outdated-design';
+  }
+
+  return 'general';
+}
+
+function generateProposalEmail(analysis: any, templateType?: EmailTemplate): string {
+  const template = templateType || detectPrimaryIssue(analysis);
+
+  switch (template) {
+    case 'slow-web':
+      return generateSlowWebEmail(analysis);
+    case 'bad-seo':
+      return generateBadSEOEmail(analysis);
+    case 'mobile-issues':
+      return generateMobileIssuesEmail(analysis);
+    case 'outdated-design':
+      return generateOutdatedDesignEmail(analysis);
+    case 'follow-up':
+      return generateFollowUpEmail(analysis);
+    default:
+      return generateGeneralEmail(analysis);
+  }
+}
+
+// Original general template
+function generateGeneralEmail(analysis: any): string {
   const { url, contactName, businessName, performance, seo, accessibility, issues } = analysis;
 
   const name = contactName || 'vážený zákazníku';
@@ -98,6 +146,263 @@ function generateProposalEmail(analysis: any): string {
   return greeting + summary + offer + why + cta;
 }
 
+// Template 1: Slow Web (Performance < 50)
+function generateSlowWebEmail(analysis: any): string {
+  const { url, contactName, businessName, performance } = analysis;
+  const name = contactName || 'vážený zákazníku';
+  const company = businessName || 'vaší společnosti';
+  const perfScore = performance?.score || 0;
+
+  let email = `Dobrý den ${name},\n\n`;
+  email += `zjistili jsme, že web ${company} (${url}) má **vážné problémy s rychlostí**.\n\n`;
+
+  email += `⚠️ KRITICKÝ PROBLÉM\n`;
+  email += `─────────────────────\n`;
+  email += `Váš web má skóre rychlosti pouze ${perfScore}/100\n\n`;
+  email += `To znamená:\n`;
+  email += `❌ Návštěvníci odcházejí, než se web načte\n`;
+  email += `❌ Google vás penalizuje v žebříčku\n`;
+  email += `❌ Ztrácíte zákazníky každý den\n`;
+  email += `❌ Mobilní uživatelé mají ještě horší zkušenost\n\n`;
+
+  email += `💡 ŘEŠENÍ: ULTRA-RYCHLÝ WEB\n`;
+  email += `─────────────────────\n`;
+  email += `Přebudujeme váš web v Next.js 15 místo pomalého WordPressu:\n\n`;
+  email += `✓ Načítání **pod 2 sekundy** (místo současných 8+ sekund)\n`;
+  email += `✓ Google Core Web Vitals 95+ bodů\n`;
+  email += `✓ Lepší pozice ve vyhledávání\n`;
+  email += `✓ Až 300% vyšší konverze\n`;
+  email += `✓ Moderní design zdarma\n\n`;
+
+  email += `💰 Cena: Od 15 000 Kč (redesign + optimalizace)\n`;
+  email += `⏱️ Termín: 7-10 pracovních dní\n`;
+  email += `🎁 BONUS: První měsíc údržby ZDARMA\n\n`;
+
+  email += `📊 SROVNÁNÍ\n`;
+  email += `─────────────────────\n`;
+  email += `Současný stav: ${perfScore}/100 bodů\n`;
+  email += `Po optimalizaci: 95+/100 bodů\n`;
+  email += `Úspora času: 6+ sekund na načtení\n\n`;
+
+  email += `📞 KONTAKT\n`;
+  email += `─────────────────────\n`;
+  email += `Zavolejte: +420 702 110 166\n`;
+  email += `Email: info@weblyx.cz\n`;
+  email += `WhatsApp: wa.me/420702110166\n\n`;
+  email += `Každý den prodlení = ztracení zákazníci!\n\n`;
+  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+
+  return email;
+}
+
+// Template 2: Bad SEO (SEO < 50)
+function generateBadSEOEmail(analysis: any): string {
+  const { url, contactName, businessName, seo } = analysis;
+  const name = contactName || 'vážený zákazníku';
+  const company = businessName || 'vaší společnosti';
+  const seoScore = seo?.score || 0;
+
+  let email = `Dobrý den ${name},\n\n`;
+  email += `analýza webu ${company} (${url}) odhalila **kritické SEO problémy**.\n\n`;
+
+  email += `🔍 PROBLÉM: NEVIDITELNOST V GOOGLE\n`;
+  email += `─────────────────────\n`;
+  email += `SEO skóre: ${seoScore}/100 - **Velmi špatné**\n\n`;
+  email += `Co to znamená:\n`;
+  email += `❌ Google vás nenajde\n`;
+  email += `❌ Konkurence vás předběhla\n`;
+  email += `❌ Chybějící meta tagy a popisky\n`;
+  email += `❌ Žádná strukturovaná data (schema.org)\n`;
+  email += `❌ Nulový organický traffic\n\n`;
+
+  email += `💡 ŘEŠENÍ: PROFESIONÁLNÍ SEO\n`;
+  email += `─────────────────────\n`;
+  email += `Kompletní SEO optimalizace za 8 000 Kč:\n\n`;
+  email += `✓ Keyword research pro vaše odvětví\n`;
+  email += `✓ Optimalizace všech meta tagů\n`;
+  email += `✓ Schema.org strukturovaná data\n`;
+  email += `✓ Sitemap a robots.txt\n`;
+  email += `✓ Open Graph pro sociální sítě\n`;
+  email += `✓ Core Web Vitals optimalizace\n`;
+  email += `✓ Měsíční monitoring a reporty\n\n`;
+
+  email += `💰 Cena: Od 8 000 Kč\n`;
+  email += `⏱️ Termín: 3-5 pracovních dní\n`;
+  email += `📈 Výsledky viditelné za 14-30 dní\n\n`;
+
+  email += `🎯 CO ZÍSKÁTE\n`;
+  email += `─────────────────────\n`;
+  email += `• 200-500% nárůst organického trafficu\n`;
+  email += `• Top 10 pozice pro klíčová slova\n`;
+  email += `• Více poptávek bez reklamy\n`;
+  email += `• Dlouhodobý růst návštěvnosti\n\n`;
+
+  email += `📞 KONTAKT\n`;
+  email += `─────────────────────\n`;
+  email += `Zavolejte: +420 702 110 166\n`;
+  email += `Email: info@weblyx.cz\n\n`;
+  email += `Každý měsíc bez SEO = ztracené příležitosti!\n\n`;
+  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+
+  return email;
+}
+
+// Template 3: Mobile Issues (Accessibility < 50)
+function generateMobileIssuesEmail(analysis: any): string {
+  const { url, contactName, businessName, accessibility } = analysis;
+  const name = contactName || 'vážený zákazníku';
+  const company = businessName || 'vaší společnosti';
+  const accessScore = accessibility?.score || 0;
+
+  let email = `Dobrý den ${name},\n\n`;
+  email += `web ${company} (${url}) má **vážné problémy na mobilních zařízeních**.\n\n`;
+
+  email += `📱 KRITICKÝ PROBLÉM\n`;
+  email += `─────────────────────\n`;
+  email += `Přístupnost/Mobilní: ${accessScore}/100\n\n`;
+  email += `Víte, že:\n`;
+  email += `📊 70% návštěvníků používá mobil\n`;
+  email += `❌ Váš web na mobilu nefunguje správně\n`;
+  email += `❌ Google penalizuje non-mobile weby\n`;
+  email += `❌ Ztrácíte 7 z 10 potenciálních zákazníků\n\n`;
+
+  email += `💡 ŘEŠENÍ: MOBILE-FIRST DESIGN\n`;
+  email += `─────────────────────\n`;
+  email += `Přebudujeme váš web s důrazem na mobil:\n\n`;
+  email += `✓ 100% responzivní design\n`;
+  email += `✓ Touch-friendly tlačítka a menu\n`;
+  email += `✓ Rychlé načítání na 3G/4G\n`;
+  email += `✓ Optimalizované obrázky pro mobil\n`;
+  email += `✓ Přístupnost pro všechna zařízení\n`;
+  email += `✓ Google Mobile-Friendly test: PASS\n\n`;
+
+  email += `💰 Cena: Od 12 000 Kč\n`;
+  email += `⏱️ Termín: 5-7 pracovních dní\n`;
+  email += `🎁 BONUS: Mobilní app vzhled zdarma\n\n`;
+
+  email += `📊 DOPAD NA BYZNYS\n`;
+  email += `─────────────────────\n`;
+  email += `Po mobilní optimalizaci:\n`;
+  email += `• +150% konverze z mobilu\n`;
+  email += `• +200% času stráveného na webu\n`;
+  email += `• +80% návratnost návštěvníků\n`;
+  email += `• Lepší pozice v Google\n\n`;
+
+  email += `📞 KONTAKT\n`;
+  email += `─────────────────────\n`;
+  email += `Zavolejte: +420 702 110 166\n`;
+  email += `Email: info@weblyx.cz\n\n`;
+  email += `Mobilní web = základ úspěchu v roce 2025!\n\n`;
+  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+
+  return email;
+}
+
+// Template 4: Outdated Design (avgScore < 50)
+function generateOutdatedDesignEmail(analysis: any): string {
+  const { url, contactName, businessName } = analysis;
+  const name = contactName || 'vážený zákazníku';
+  const company = businessName || 'vaší společnosti';
+
+  let email = `Dobrý den ${name},\n\n`;
+  email += `vaš web ${company} (${url}) působí **zastarale a neprofesionálně**.\n\n`;
+
+  email += `🎨 PROBLÉM: ZASTARALÝ DESIGN\n`;
+  email += `─────────────────────\n`;
+  email += `Váš web vypadá jako z roku 2010:\n\n`;
+  email += `❌ Zastaralý vzhled odrazuje zákazníky\n`;
+  email += `❌ Nízká důvěryhodnost\n`;
+  email += `❌ Konkurence vypadá lépe\n`;
+  email += `❌ Vysoký bounce rate (90%+)\n\n`;
+
+  email += `💡 ŘEŠENÍ: MODERNÍ REDESIGN 2025\n`;
+  email += `─────────────────────\n`;
+  email += `Kompletní redesign za 15 000 Kč:\n\n`;
+  email += `✓ Moderní minimalistický design\n`;
+  email += `✓ Profesionální UI/UX\n`;
+  email += `✓ Trendy 2025 (glassmorphism, gradients)\n`;
+  email += `✓ Animace a smooth scrolling\n`;
+  email += `✓ Optimalizace konverzí (CTA, formuláře)\n`;
+  email += `✓ Brand identity refresh\n`;
+  email += `✓ Next.js místo WordPressu\n\n`;
+
+  email += `💰 Cena: Od 15 000 Kč\n`;
+  email += `⏱️ Termín: 7-10 pracovních dní\n`;
+  email += `🎁 AKCE: Logo refresh ZDARMA (v ceně)\n\n`;
+
+  email += `📊 REFERENCE\n`;
+  email += `─────────────────────\n`;
+  email += `Podívejte se na naše portfolio:\n`;
+  email += `https://weblyx.cz/portfolio\n\n`;
+  email += `Náš redesign typicky přinese:\n`;
+  email += `• +300% konverze\n`;
+  email += `• -70% bounce rate\n`;
+  email += `• +200% času na webu\n\n`;
+
+  email += `📞 KONTAKT\n`;
+  email += `─────────────────────\n`;
+  email += `Zavolejte: +420 702 110 166\n`;
+  email += `Email: info@weblyx.cz\n`;
+  email += `WhatsApp: wa.me/420702110166\n\n`;
+  email += `První dojem rozhoduje - získejte zákazníky na první pohled!\n\n`;
+  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+
+  return email;
+}
+
+// Template 5: Follow-up Email (po 7 dnech)
+function generateFollowUpEmail(analysis: any): string {
+  const { url, contactName, businessName } = analysis;
+  const name = contactName || 'vážený zákazníku';
+  const company = businessName || 'vaší společnosti';
+
+  let email = `Dobrý den ${name},\n\n`;
+  email += `před týdnem jsme vám zaslali analýzu webu ${company} (${url}).\n\n`;
+
+  email += `❓ STÁLE VÁHÁTE?\n`;
+  email += `─────────────────────\n`;
+  email += `Rozumíme, že rozhodnutí o redesignu webu chce rozvahu.\n\n`;
+  email += `Můžeme vám nabídnout:\n\n`;
+
+  email += `💡 ZDARMA PRO VÁS\n`;
+  email += `─────────────────────\n`;
+  email += `✓ 30min konzultace zdarma\n`;
+  email += `✓ Konkrétní návrhy řešení\n`;
+  email += `✓ Ukázka před/po z našeho portfolia\n`;
+  email += `✓ Detailní cenová kalkulace\n`;
+  email += `✓ Časový plán projektu\n\n`;
+
+  email += `🎁 SPECIÁLNÍ NABÍDKA\n`;
+  email += `─────────────────────\n`;
+  email += `Pokud se rozhodnete do konce měsíce:\n\n`;
+  email += `• -15% sleva na celý projekt\n`;
+  email += `• První 2 měsíce údržby ZDARMA\n`;
+  email += `• Prioritní termín (start do 3 dní)\n`;
+  email += `• Logo/grafika zdarma (v ceně)\n\n`;
+
+  email += `📊 ZATÍM ZTRÁCÍTE\n`;
+  email += `─────────────────────\n`;
+  email += `Každý týden bez optimalizace:\n`;
+  email += `• Průměrně 50-100 ztracených návštěvníků\n`;
+  email += `• 10-20 ztracených poptávek\n`;
+  email += `• Konkurence vás předbíhá\n`;
+  email += `• Google vás penalizuje\n\n`;
+
+  email += `📞 MÁTE OTÁZKY?\n`;
+  email += `─────────────────────\n`;
+  email += `Rádi zodpovíme cokoliv:\n\n`;
+  email += `Zavolejte: +420 702 110 166\n`;
+  email += `Email: info@weblyx.cz\n`;
+  email += `WhatsApp: wa.me/420702110166\n\n`;
+  email += `Nebo si rovnou domluvte nezávaznou schůzku:\n`;
+  email += `https://weblyx.cz/kontakt\n\n`;
+
+  email += `⏰ ZBÝVÁ POUZE ${30 - 7} DNÍ NA SLEVU!\n\n`;
+  email += `Těšíme se na spolupráci,\nTým Weblyx\nhttps://weblyx.cz`;
+
+  return email;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { url, contactEmail, contactName, businessName } = await request.json();
@@ -127,7 +432,20 @@ export async function POST(request: NextRequest) {
     if (contactName) analysis.contactName = contactName;
     if (businessName) analysis.businessName = businessName;
 
-    // Generate proposal email
+    // Detect primary issue for template selection
+    const primaryIssue = detectPrimaryIssue(analysis);
+
+    // Generate all email templates
+    const emailTemplates = {
+      general: generateGeneralEmail(analysis),
+      slowWeb: generateSlowWebEmail(analysis),
+      badSEO: generateBadSEOEmail(analysis),
+      mobileIssues: generateMobileIssuesEmail(analysis),
+      outdatedDesign: generateOutdatedDesignEmail(analysis),
+      followUp: generateFollowUpEmail(analysis),
+    };
+
+    // Primary email (automatically selected based on issues)
     const proposalEmail = generateProposalEmail(analysis);
 
     // Save to database
@@ -136,7 +454,9 @@ export async function POST(request: NextRequest) {
     if (adminDbInstance) {
       const result = await adminDbInstance.collection('web_analyses').add({
         ...analysis,
-        proposalEmail, // Save generated email
+        primaryIssue, // Store which template was auto-selected
+        proposalEmail, // Primary email
+        emailTemplates, // All available templates
         analyzedAt: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -149,7 +469,9 @@ export async function POST(request: NextRequest) {
       data: {
         ...analysis,
         id: analysisId,
-        proposalEmail, // Include email in response
+        primaryIssue, // Which template was selected
+        proposalEmail, // Primary email
+        emailTemplates, // All templates available for manual selection
       },
     });
   } catch (error: any) {
