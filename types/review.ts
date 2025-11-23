@@ -8,8 +8,8 @@ export interface Review {
   rating: number; // 1-5
   text: string;
   date: Date;
-  source: 'manual' | 'google'; // odkud pochází recenze
-  sourceUrl?: string; // odkaz na originální recenzi (pro Google)
+  source: string; // 'manual' | 'Google' | 'Firmy.cz' | 'Facebook' | 'Seznam'
+  sourceUrl?: string; // odkaz na originální recenzi
   published: boolean;
   featured: boolean; // zvýrazněná recenze
   order: number;
@@ -24,7 +24,7 @@ export interface ReviewFormData {
   rating: number;
   text: string;
   date: Date;
-  source: 'manual' | 'google';
+  source: string;
   sourceUrl?: string;
   published: boolean;
   featured: boolean;

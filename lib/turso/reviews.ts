@@ -29,7 +29,7 @@ function rowToReview(row: ReviewRow): Review {
     rating: row.rating,
     text: row.text,
     date: unixToDate(row.date) || new Date(),
-    source: (row.source as 'manual' | 'google') || 'manual',
+    source: row.source || 'manual',
     sourceUrl: row.source_url || undefined,
     published: Boolean(row.published),
     featured: Boolean(row.featured),
@@ -77,7 +77,7 @@ export async function createReview(data: {
   rating: number;
   text: string;
   date: Date;
-  source: 'manual' | 'google';
+  source: string;
   sourceUrl?: string;
   published?: boolean;
   featured?: boolean;
@@ -129,7 +129,7 @@ export async function updateReview(
     rating: number;
     text: string;
     date: Date;
-    source: 'manual' | 'google';
+    source: string;
     sourceUrl: string;
     published: boolean;
     featured: boolean;
