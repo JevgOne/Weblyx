@@ -1,11 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDbInstance } from "@/lib/firebase-admin";
 import { Lead } from "@/types/cms";
+import { validateHoneypot, validateSubmissionTime } from "@/lib/security/honeypot";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, projectType, budget, message } = body;
+    const { name, email, phone, projectType, budget, message, __form_timestamp } = body;
+
+    // 🤖 BOT DETECTION: Honeypot validation
+    if (!validateHoneypot(body)) {
+      console.log('🚫 Bot detected in contact form (honeypot)');
+      // Return success to bot to avoid detection
+      return NextResponse.json(
+        { success: true, message: "Děkujeme za vaši zprávu!" },
+        { status: 200 }
+      );
+    }
+
+    // 🤖 BOT DETECTION: Time-based validation
+    if (__form_timestamp && !validateSubmissionTime(__form_timestamp, 3)) {
+      console.log('🚫 Bot detected in contact form (too fast)');
+      // Return success to bot to avoid detection
+      return NextResponse.json(
+        { success: true, message: "Děkujeme za vaši zprávu!" },
+        { status: 200 }
+      );
+    }
 
     // Validation
     if (!name || !email || !message) {

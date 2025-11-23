@@ -39,9 +39,8 @@ export async function scrapeGoogleMaps(options: ScraperOptions): Promise<Scraped
     // Use Chromium for Vercel production
     browser = await puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: true,
     });
   } else {
     // Use local Puppeteer for development

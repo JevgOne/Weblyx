@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, MapPin, Send, Phone } from "lucide-react";
+import { HoneypotInput } from "@/components/security/HoneypotInput";
 
 interface ContactProps {
   isMainPage?: boolean; // If true, use H1 instead of H2
@@ -161,6 +162,9 @@ export function Contact({ isMainPage = false }: ContactProps) {
             <Card>
               <CardContent className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* 🤖 Anti-bot protection */}
+                  <HoneypotInput />
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label htmlFor="name" className="text-sm font-medium">
