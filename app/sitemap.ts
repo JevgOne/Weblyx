@@ -52,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 0.7,
+      priority: 0.9, // High priority - blog is important for SEO
     },
     {
       url: `${baseUrl}/faq`,
@@ -99,7 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/blog/${post.slug}`,
       lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.createdAt),
       changeFrequency: 'weekly' as const,
-      priority: 0.7,
+      priority: 0.8, // High priority - blog articles are important for SEO
     }));
   } catch (error) {
     console.error('Error fetching blog posts for sitemap:', error);

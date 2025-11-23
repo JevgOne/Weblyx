@@ -25,28 +25,47 @@ export async function generateMetadata({
     }
 
     return {
-      title: `${post.title} | Weblyx Blog`,
-      description: post.excerpt || post.title,
+      title: post.metaTitle || `${post.title} | Weblyx Blog`,
+      description: post.metaDescription || post.excerpt || post.title,
       keywords: post.tags || [],
       authors: post.authorName ? [{ name: post.authorName }] : undefined,
       openGraph: {
-        title: post.title,
-        description: post.excerpt || '',
+        title: post.metaTitle || post.title,
+        description: post.metaDescription || post.excerpt || '',
         type: "article",
         publishedTime: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined,
         modifiedTime: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
         authors: post.authorName ? [post.authorName] : undefined,
-        images: post.featuredImage ? [{ url: post.featuredImage }] : [],
+        images: post.featuredImage ? [{
+          url: post.featuredImage,
+          width: 1200,
+          height: 630,
+          alt: post.title
+        }] : [],
         url: `https://weblyx.cz/blog/${slug}`,
+        siteName: "Weblyx",
+        locale: "cs_CZ",
       },
       twitter: {
         card: "summary_large_image",
-        title: post.title,
-        description: post.excerpt || '',
+        title: post.metaTitle || post.title,
+        description: post.metaDescription || post.excerpt || '',
         images: post.featuredImage ? [post.featuredImage] : [],
+        creator: "@weblyx",
       },
       alternates: {
         canonical: `https://weblyx.cz/blog/${slug}`,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
       },
     };
   } catch (error) {
@@ -110,23 +129,36 @@ export default async function BlogPostPage({
     const wordCount = post.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
 
+    // Strip HTML tags for plain text content
+    const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const plainTextContent = stripHtml(post.content);
+
     // Generate Article schema
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.excerpt || '',
-      "image": post.featuredImage || '',
+      "image": post.featuredImage ? {
+        "@type": "ImageObject",
+        "url": post.featuredImage,
+        "width": 1200,
+        "height": 630
+      } : undefined,
       "author": {
         "@type": "Person",
         "name": post.authorName || "Weblyx",
+        "url": "https://weblyx.cz/o-nas"
       },
       "publisher": {
         "@type": "Organization",
         "name": "Weblyx",
+        "url": "https://weblyx.cz",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://weblyx.cz/logo.png"
+          "url": "https://weblyx.cz/logo.png",
+          "width": 200,
+          "height": 60
         }
       },
       "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date(post.createdAt).toISOString(),
@@ -136,6 +168,10 @@ export default async function BlogPostPage({
         "@id": `https://weblyx.cz/blog/${slug}`
       },
       "keywords": post.tags?.join(', ') || '',
+      "articleBody": plainTextContent,
+      "wordCount": wordCount,
+      "inLanguage": "cs-CZ",
+      "timeRequired": `PT${readTime}M`,
     };
 
     // Generate Breadcrumbs schema
