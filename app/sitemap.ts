@@ -60,13 +60,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8, // High priority - FAQ is great for SEO
     },
-    // TODO: Create /recenze page
-    // {
-    //   url: `${baseUrl}/recenze`,
-    //   lastModified: new Date(),
-    //   changeFrequency: 'weekly',
-    //   priority: 0.8,
-    // },
+    {
+      url: `${baseUrl}/napiste-recenzi`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
     {
       url: `${baseUrl}/ochrana-udaju`,
       lastModified: new Date(),
