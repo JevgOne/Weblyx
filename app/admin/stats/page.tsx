@@ -2,41 +2,37 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  FolderKanban,
   Mail,
   Image,
   TrendingUp,
-  Users,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  ArrowLeft
+  ArrowLeft,
+  FileText,
+  Star,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface Stats {
-  projects: {
-    total: number;
-    active: number;
-    completed: number;
-    pending: number;
-  };
-  leads: {
-    total: number;
-    new: number;
-    contacted: number;
-    converted: number;
-  };
   portfolio: {
     total: number;
     published: number;
+  };
+  blog: {
+    total: number;
+    published: number;
+  };
+  reviews: {
+    total: number;
+    published: number;
     featured: number;
+  };
+  leads: {
+    total: number;
   };
 }
 
@@ -45,52 +41,46 @@ export default function StatsPage() {
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<Stats>({
-    projects: { total: 0, active: 0, completed: 0, pending: 0 },
-    leads: { total: 0, new: 0, contacted: 0, converted: 0 },
-    portfolio: { total: 0, published: 0, featured: 0 },
+    portfolio: { total: 0, published: 0 },
+    blog: { total: 0, published: 0 },
+    reviews: { total: 0, published: 0, featured: 0 },
+    leads: { total: 0 },
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Fetch basic counts from API
-        const response = await fetch('/api/admin/stats');
-        const result = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || 'Failed to fetch stats');
-        }
-
-        // Fetch detailed data for status breakdowns
-        const { collection, getDocs } = await import('firebase/firestore');
-        const [projectsSnap, leadsSnap, portfolioResponse] = await Promise.all([
-          getDocs(collection(db, "projects")),
-          getDocs(collection(db, "leads")),
-          fetch('/api/portfolio')
+        // Fetch all data in parallel from Turso-based APIs
+        const [portfolioRes, blogRes, reviewsRes, leadsRes] = await Promise.all([
+          fetch('/api/portfolio'),
+          fetch('/api/blog'),
+          fetch('/api/admin/reviews'),
+          fetch('/api/leads')
         ]);
 
-        const projects = projectsSnap.docs.map(doc => doc.data());
-        const leads = leadsSnap.docs.map(doc => doc.data());
-        const portfolioResult = await portfolioResponse.json();
-        const portfolio = portfolioResult.success ? portfolioResult.data : [];
+        const [portfolio, blog, reviews, leads] = await Promise.all([
+          portfolioRes.json(),
+          blogRes.json(),
+          reviewsRes.json(),
+          leadsRes.json()
+        ]);
 
         setStats({
-          projects: {
-            total: result.data.projects,
-            active: projects.filter((p: any) => p.status === 'in_progress').length,
-            completed: projects.filter((p: any) => p.status === 'completed').length,
-            pending: projects.filter((p: any) => p.status === 'pending').length,
+          portfolio: {
+            total: portfolio.success ? portfolio.data.length : 0,
+            published: portfolio.success ? portfolio.data.filter((p: any) => p.published).length : 0,
+          },
+          blog: {
+            total: blog.success ? blog.data.length : 0,
+            published: blog.success ? blog.data.filter((p: any) => p.published).length : 0,
+          },
+          reviews: {
+            total: reviews.success ? reviews.data.length : 0,
+            published: reviews.success ? reviews.data.filter((r: any) => r.published).length : 0,
+            featured: reviews.success ? reviews.data.filter((r: any) => r.featured).length : 0,
           },
           leads: {
-            total: result.data.leads,
-            new: leads.filter((l: any) => l.status === 'new').length,
-            contacted: leads.filter((l: any) => l.status === 'contacted').length,
-            converted: leads.filter((l: any) => l.status === 'converted').length,
-          },
-          portfolio: {
-            total: result.data.portfolio,
-            published: portfolio.filter((p: any) => p.published).length,
-            featured: portfolio.filter((p: any) => p.featured).length,
+            total: leads.success ? leads.data.length : 0,
           },
         });
       } catch (error) {
@@ -145,135 +135,13 @@ export default function StatsPage() {
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="space-y-8">
-          {/* Projects Stats */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <FolderKanban className="h-5 w-5 text-primary" />
-              Projekty
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Celkem projektů</CardDescription>
-                  <CardTitle className="text-3xl">{stats.projects.total}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <TrendingUp className="h-4 w-4 mr-1 text-primary" />
-                    Všechny projekty
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Aktivní projekty</CardDescription>
-                  <CardTitle className="text-3xl text-blue-600">{stats.projects.active}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4 mr-1 text-blue-500" />
-                    Probíhající vývoj
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Dokončené</CardDescription>
-                  <CardTitle className="text-3xl text-primary">{stats.projects.completed}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 mr-1 text-primary" />
-                    Úspěšně dokončeno
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Čekající</CardDescription>
-                  <CardTitle className="text-3xl text-yellow-600">{stats.projects.pending}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <AlertCircle className="h-4 w-4 mr-1 text-yellow-500" />
-                    Čeká na zahájení
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Leads Stats */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Mail className="h-5 w-5 text-primary" />
-              Poptávky
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Celkem poptávek</CardDescription>
-                  <CardTitle className="text-3xl">{stats.leads.total}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="h-4 w-4 mr-1 text-primary" />
-                    Všechny poptávky
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Nové</CardDescription>
-                  <CardTitle className="text-3xl text-blue-600">{stats.leads.new}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Mail className="h-4 w-4 mr-1 text-blue-500" />
-                    Nepřečtené
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Kontaktované</CardDescription>
-                  <CardTitle className="text-3xl text-yellow-600">{stats.leads.contacted}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 mr-1 text-yellow-500" />
-                    Probíhá komunikace
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Konvertované</CardDescription>
-                  <CardTitle className="text-3xl text-primary">{stats.leads.converted}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <TrendingUp className="h-4 w-4 mr-1 text-primary" />
-                    Staly se projekty
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
           {/* Portfolio Stats */}
           <div>
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <Image className="h-5 w-5 text-primary" />
               Portfolio
             </h2>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Celkem projektů</CardDescription>
@@ -294,7 +162,77 @@ export default function StatsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 mr-1 text-primary" />
+                    <Eye className="h-4 w-4 mr-1 text-primary" />
+                    Veřejně viditelné
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Blog Stats */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Blog
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription>Celkem článků</CardDescription>
+                  <CardTitle className="text-3xl">{stats.blog.total}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <FileText className="h-4 w-4 mr-1 text-primary" />
+                    Všechny články
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription>Publikované</CardDescription>
+                  <CardTitle className="text-3xl text-primary">{stats.blog.published}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Eye className="h-4 w-4 mr-1 text-primary" />
+                    Veřejně viditelné
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Reviews Stats */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Star className="h-5 w-5 text-primary" />
+              Recenze
+            </h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription>Celkem recenzí</CardDescription>
+                  <CardTitle className="text-3xl">{stats.reviews.total}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Star className="h-4 w-4 mr-1 text-primary" />
+                    Všechny recenze
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription>Publikované</CardDescription>
+                  <CardTitle className="text-3xl text-primary">{stats.reviews.published}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Eye className="h-4 w-4 mr-1 text-primary" />
                     Veřejně viditelné
                   </div>
                 </CardContent>
@@ -302,13 +240,35 @@ export default function StatsPage() {
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardDescription>Featured</CardDescription>
-                  <CardTitle className="text-3xl text-yellow-600">{stats.portfolio.featured}</CardTitle>
+                  <CardDescription>Zvýrazněné</CardDescription>
+                  <CardTitle className="text-3xl text-yellow-600">{stats.reviews.featured}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground">
                     <TrendingUp className="h-4 w-4 mr-1 text-yellow-500" />
-                    Zvýrazněné projekty
+                    Featured recenze
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Leads Stats */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              Poptávky
+            </h2>
+            <div className="grid gap-4 md:grid-cols-1">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription>Celkem poptávek</CardDescription>
+                  <CardTitle className="text-3xl">{stats.leads.total}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4 mr-1 text-primary" />
+                    Všechny poptávky
                   </div>
                 </CardContent>
               </Card>
@@ -323,21 +283,27 @@ export default function StatsPage() {
             </CardHeader>
             <CardContent className="flex flex-wrap gap-4">
               <Button asChild>
-                <Link href="/admin/projects">
-                  <FolderKanban className="h-4 w-4 mr-2" />
-                  Spravovat projekty
+                <Link href="/admin/portfolio">
+                  <Image className="h-4 w-4 mr-2" />
+                  Spravovat portfolio
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/blog">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Spravovat blog
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/reviews">
+                  <Star className="h-4 w-4 mr-2" />
+                  Spravovat recenze
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/admin/leads">
                   <Mail className="h-4 w-4 mr-2" />
                   Spravovat poptávky
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/admin/portfolio">
-                  <Image className="h-4 w-4 mr-2" />
-                  Spravovat portfolio
                 </Link>
               </Button>
             </CardContent>
