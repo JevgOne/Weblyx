@@ -170,70 +170,102 @@ export default async function BlogPostPage({
         <JsonLd data={articleSchema} />
         <JsonLd data={breadcrumbSchema} />
 
-        <main className="min-h-screen">
-          <article className="py-20 px-4">
+        <main className="min-h-screen relative">
+          {/* Background gradients */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/5 -z-10"></div>
+
+          <article className="py-12 md:py-20 px-4">
             <div className="container mx-auto max-w-4xl">
-              <Link href="/blog">
-                <Button variant="ghost" className="mb-8 gap-2">
+              {/* Back button with better styling */}
+              <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
+                <div className="p-2 rounded-full bg-muted group-hover:bg-primary/10 transition-colors">
                   <ArrowLeft className="h-4 w-4" />
-                  Zpět na blog
-                </Button>
+                </div>
+                <span>Zpět na blog</span>
               </Link>
 
-              {post.featuredImage && (
-                <div className="aspect-video bg-cover bg-center rounded-lg mb-8 overflow-hidden">
+              {/* Featured Image with better styling */}
+              {post.featuredImage ? (
+                <div className="aspect-video bg-cover bg-center rounded-2xl mb-12 overflow-hidden shadow-2xl border-2 border-primary/10">
                   <img
                     src={post.featuredImage}
                     alt={post.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
+              ) : (
+                <div className="aspect-video relative overflow-hidden rounded-2xl mb-12 bg-gradient-to-br from-primary/20 via-primary/10 to-background border-2 border-primary/10 shadow-2xl">
+                  {/* Animated gradient orbs */}
+                  <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+                  <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-primary/15 rounded-full blur-2xl animate-pulse delay-1000"></div>
+
+                  {/* Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full"></div>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-primary/40 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               )}
 
-              <header className="mb-12 space-y-4">
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
+              {/* Header with enhanced styling */}
+              <header className="mb-16 space-y-6">
+                {/* Meta information with pills */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20">
                     <Calendar className="h-4 w-4" />
-                    {publishedDate}
+                    <span className="text-sm font-medium">{publishedDate}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border">
                     <Clock className="h-4 w-4" />
-                    {readTime} min čtení
+                    <span className="text-sm font-medium">{readTime} min čtení</span>
                   </div>
                   {post.authorName && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border">
                       <User className="h-4 w-4" />
-                      {post.authorName}
+                      <span className="text-sm font-medium">{post.authorName}</span>
                     </div>
                   )}
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold">
-                  {post.title}
-                </h1>
+                {/* Title with gradient accent */}
+                <div className="relative">
+                  <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/50 to-transparent rounded-full"></div>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                    {post.title}
+                  </h1>
+                </div>
 
+                {/* Excerpt with better styling */}
                 {post.excerpt && (
-                  <p className="text-xl text-muted-foreground">
+                  <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed border-l-4 border-primary/20 pl-6 py-2">
                     {post.excerpt}
                   </p>
                 )}
               </header>
 
-              <div
-                className="prose prose-lg max-w-none dark:prose-invert
-                  prose-headings:font-bold prose-headings:text-foreground
-                  prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
-                  prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                  prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-6
-                  prose-ul:my-6 prose-ul:text-muted-foreground
-                  prose-ol:my-6 prose-ol:text-muted-foreground
-                  prose-li:my-2
-                  prose-strong:text-foreground prose-strong:font-semibold
-                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                  prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:rounded
-                  prose-pre:bg-muted prose-pre:border"
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
+              {/* Content with enhanced prose styling */}
+              <div className="relative">
+                <div
+                  className="prose prose-lg max-w-none dark:prose-invert
+                    prose-headings:font-bold prose-headings:text-foreground prose-headings:scroll-mt-20
+                    prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-3 prose-h2:border-b prose-h2:border-primary/20
+                    prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-4 prose-h3:text-primary
+                    prose-p:text-muted-foreground prose-p:leading-loose prose-p:mb-6 prose-p:text-[17px]
+                    prose-ul:my-8 prose-ul:text-muted-foreground prose-ul:space-y-2
+                    prose-ol:my-8 prose-ol:text-muted-foreground prose-ol:space-y-2
+                    prose-li:my-2 prose-li:pl-2
+                    prose-strong:text-foreground prose-strong:font-bold
+                    prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:transition-all
+                    prose-code:text-primary prose-code:bg-primary/10 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:font-mono prose-code:text-sm
+                    prose-pre:bg-muted prose-pre:border prose-pre:border-primary/10 prose-pre:rounded-xl prose-pre:shadow-lg
+                    prose-img:rounded-xl prose-img:shadow-2xl prose-img:border prose-img:border-primary/10"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              </div>
 
               {/* Share Buttons */}
               <div className="mt-12 pt-8 border-t">
@@ -244,18 +276,26 @@ export default async function BlogPostPage({
                 />
               </div>
 
+              {/* Tags with better design */}
               {post.tags && post.tags.length > 0 && (
-                <div className="mt-12 pt-8 border-t">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-3">
-                    Štítky:
-                  </h3>
+                <div className="mt-16 pt-8 border-t border-primary/10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold">
+                      Štítky
+                    </h3>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag: string, index: number) => (
                       <span
                         key={index}
-                        className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm"
+                        className="px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-medium hover:bg-primary/20 transition-colors cursor-pointer"
                       >
-                        {tag}
+                        #{tag}
                       </span>
                     ))}
                   </div>
@@ -264,37 +304,64 @@ export default async function BlogPostPage({
             </div>
           </article>
 
-          {/* Related Posts Section */}
+          {/* Related Posts Section with enhanced design */}
           {relatedPosts.length > 0 && (
-            <section className="py-12 px-4">
-              <div className="container mx-auto max-w-4xl">
-                <h2 className="text-2xl md:text-3xl font-bold mb-8">
-                  Další články
-                </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+            <section className="py-16 md:py-20 px-4 bg-muted/30">
+              <div className="container mx-auto max-w-6xl">
+                <div className="text-center mb-12">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                    </svg>
+                    <span className="text-sm font-medium text-primary">Pokračujte ve čtení</span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                    Další články z blogu
+                  </h2>
+                  <p className="text-muted-foreground max-w-2xl mx-auto">
+                    Objevte více užitečných tipů a návodů
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-8">
                   {relatedPosts.map((relatedPost) => (
-                    <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`}>
-                      <Card className="h-full hover:shadow-elegant transition-all">
+                    <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`} className="group">
+                      <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/20">
                         {relatedPost.featuredImage ? (
                           <div
-                            className="aspect-video bg-cover bg-center rounded-t-lg"
+                            className="aspect-video bg-cover bg-center relative overflow-hidden"
                             style={{ backgroundImage: `url(${relatedPost.featuredImage})` }}
-                          />
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          </div>
                         ) : (
-                          <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center rounded-t-lg">
-                            <span className="text-4xl">📝</span>
+                          <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/15 via-primary/8 to-background">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/15 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                            <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700 delay-100"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
                           </div>
                         )}
-                        <CardContent className="p-4 space-y-2">
-                          <h3 className="font-semibold hover:text-primary transition-colors line-clamp-2">
+                        <CardContent className="p-6 space-y-3">
+                          <h3 className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                             {relatedPost.title}
                           </h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2">
+                          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                             {relatedPost.excerpt}
                           </p>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground pt-2">
-                            <Calendar className="h-3 w-3" />
-                            {relatedPost.publishedAt}
+                          <div className="flex items-center justify-between pt-3 border-t">
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Calendar className="h-3 w-3" />
+                              {relatedPost.publishedAt}
+                            </div>
+                            <div className="text-primary opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
