@@ -13,6 +13,10 @@ import {
   Mail,
   MousePointerClick,
   Target,
+  Upload,
+  Download,
+  Bot,
+  List,
 } from "lucide-react";
 import Link from "next/link";
 import { LeadGenerationStats } from "@/types/lead-generation";
@@ -66,21 +70,30 @@ export default function StatsPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/lead-generation">
+        <div className="flex items-center gap-4">          <Link href="/admin/lead-generation">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Zpt
+            Zpět
           </Link>
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Statistiky Lead Generation</h1>
           <p className="text-muted-foreground">
-            PYehled vkonnosti a metrik kampan
+            Přehled výkonnosti a metrik kampaní
           </p>
         </div>
       </div>
+        </div>
 
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/admin/lead-generation">
+              <List className="h-4 w-4 mr-2" />
+              Seznam leadů
+            </Link>
+          </Button>
+        </div>
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>

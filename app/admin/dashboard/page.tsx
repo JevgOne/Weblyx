@@ -22,7 +22,9 @@ import {
   FileEdit,
   Tag,
   Globe,
-  MessageSquareQuote
+  MessageSquareQuote,
+  Target,
+  Bot
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -375,6 +377,34 @@ export default function AdminDashboard() {
                   </Button>
                   <Button variant="default" className="flex-1" onClick={() => router.push("/admin/web-leads")}>
                     Leady
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-200">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
+                    <Target className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      Lead Generation 🤖
+                    </CardTitle>
+                    <CardDescription>AI scraping & email generování</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  <Button variant="default" className="flex-1 bg-teal-600 hover:bg-teal-700" onClick={() => router.push("/admin/lead-generation")}>
+                    <Bot className="h-4 w-4 mr-1" />
+                    Otevřít
+                  </Button>
+                  <Button variant="outline" className="flex-1 border-teal-300" onClick={() => router.push("/admin/lead-generation/stats")}>
+                    <BarChart className="h-4 w-4 mr-1" />
+                    Stats
                   </Button>
                 </div>
               </CardContent>
