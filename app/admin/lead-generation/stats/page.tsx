@@ -71,19 +71,19 @@ export default function StatsPage() {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" asChild>
-        <div className="flex items-center gap-4">          <Link href="/admin/lead-generation">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Zpět
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">Statistiky Lead Generation</h1>
-          <p className="text-muted-foreground">
-            Přehled výkonnosti a metrik kampaní
-          </p>
-        </div>
-      </div>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/admin/lead-generation">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Zpět
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Statistiky Lead Generation</h1>
+            <p className="text-muted-foreground">
+              Přehled výkonnosti a metrik kampaní
+            </p>
+          </div>
         </div>
 
         <div className="flex gap-2">
@@ -93,7 +93,15 @@ export default function StatsPage() {
               Seznam leadů
             </Link>
           </Button>
+          <Button variant="default" size="sm" asChild>
+            <Link href="/admin/dashboard">
+              <Bot className="h-4 w-4 mr-2" />
+              Dashboard
+            </Link>
+          </Button>
         </div>
+      </div>
+
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
