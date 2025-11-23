@@ -23,7 +23,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
       title: heroSection?.headline || 'Tvorba webových stránek od 10 000 Kč | Web za týden',
       titleHighlight: '',
-      subtitle: heroSection?.subheadline || 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
+      subtitle: heroSection?.subheadline || 'Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Levné weby pro živnostníky a firmy.',
       ctaPrimary: {
         text: heroSection?.ctaText || 'Nezávazná konzultace zdarma',
         href: heroSection?.ctaLink || '/poptavka'
@@ -44,7 +44,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
         title: 'Tvorba webových stránek od 10 000 Kč | Web za týden',
         titleHighlight: '',
-        subtitle: 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
+        subtitle: 'Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Levné weby pro živnostníky a firmy.',
         ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
         ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
         stats: [
