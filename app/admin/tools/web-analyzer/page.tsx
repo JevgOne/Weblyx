@@ -22,7 +22,9 @@ import {
   Image as ImageIcon,
   Link as LinkIcon,
   FileText,
-  Loader2
+  Loader2,
+  Mail,
+  Copy
 } from "lucide-react";
 import { WebAnalysisResult } from "@/types/cms";
 
@@ -35,6 +37,8 @@ export default function WebAnalyzerPage() {
   const [businessName, setBusinessName] = useState("");
   const [analysis, setAnalysis] = useState<WebAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showEmail, setShowEmail] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
 
   const handleAnalyze = async () => {
     if (!url) {
@@ -412,6 +416,28 @@ export default function WebAnalyzerPage() {
               <div className="flex flex-wrap gap-3">
                 <Button
                   variant="default"
+                  onClick={() => setShowEmail(!showEmail)}
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  {showEmail ? "Skrýt email" : "Zobrazit email s nabídkou"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (!(analysis as any).proposalEmail) {
+                      alert("Email nebyl vygenerován");
+                      return;
+                    }
+                    navigator.clipboard.writeText((analysis as any).proposalEmail);
+                    setEmailCopied(true);
+                    setTimeout(() => setEmailCopied(false), 2000);
+                  }}
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  {emailCopied ? "Zkopírováno!" : "Zkopírovat email"}
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={async () => {
                     if (!analysis.id) return;
                     try {
@@ -448,21 +474,30 @@ export default function WebAnalyzerPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    alert("Email funkce bude přidána v další verzi s Resend.com integrací");
-                  }}
-                >
-                  <Globe className="h-4 w-4 mr-2" />
-                  Odeslat cold email
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
                     window.open("/admin/promo-codes", "_blank");
                   }}
                 >
                   Vytvořit promo kód
                 </Button>
               </div>
+
+              {/* Email Preview */}
+              {showEmail && (analysis as any).proposalEmail && (
+                <div className="mt-6 p-4 bg-muted rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Vygenerovaný email s nabídkou
+                    </h4>
+                  </div>
+                  <pre className="whitespace-pre-wrap text-sm font-mono bg-background p-4 rounded border overflow-auto max-h-96">
+                    {(analysis as any).proposalEmail}
+                  </pre>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    💡 Tip: Zkopírujte tento email a upravte ho podle potřeby před odesláním klientovi
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
