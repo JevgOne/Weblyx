@@ -67,7 +67,7 @@ export default function ContactPage() {
       <JsonLd data={webpageSchema} />
 
       <main className="min-h-screen pt-16">
-        <Contact />
+        <Contact isMainPage={true} />
       </main>
     </>
   );

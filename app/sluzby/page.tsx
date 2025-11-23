@@ -316,7 +316,7 @@ export default async function ServicesPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-semibold">Pro koho je vhodné:</h3>
+                  <h4 className="font-semibold">Pro koho je vhodné:</h4>
                   <div className="flex flex-wrap gap-2">
                     {service.ideal.map((tag: string, i: number) => (
                       <Badge key={i} variant="outline">

@@ -14,7 +14,11 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, MapPin, Send, Phone } from "lucide-react";
 
-export function Contact() {
+interface ContactProps {
+  isMainPage?: boolean; // If true, use H1 instead of H2
+}
+
+export function Contact({ isMainPage = false }: ContactProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -80,9 +84,15 @@ export function Contact() {
     <section id="contact" className="py-16 md:py-24 px-4 bg-muted/50">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            Napište nám
-          </h2>
+          {isMainPage ? (
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+              Napište nám
+            </h1>
+          ) : (
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+              Napište nám
+            </h2>
+          )}
           <p className="text-lg text-muted-foreground">
             Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme
           </p>
@@ -98,7 +108,7 @@ export function Contact() {
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Email</h3>
+                    <h3 className="font-semibold mb-1 text-lg">Email</h3>
                     <a
                       href="mailto:info@weblyx.cz"
                       className="text-muted-foreground hover:text-primary transition-colors"
@@ -113,7 +123,7 @@ export function Contact() {
                     <Phone className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Telefon</h3>
+                    <h3 className="font-semibold mb-1 text-lg">Telefon</h3>
                     <a
                       href="tel:+420702110166"
                       className="text-muted-foreground hover:text-primary transition-colors"
@@ -128,7 +138,7 @@ export function Contact() {
                     <MapPin className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Adresa</h3>
+                    <h3 className="font-semibold mb-1 text-lg">Adresa</h3>
                     <p className="text-muted-foreground">
                       Praha, Česká republika
                     </p>
@@ -138,7 +148,7 @@ export function Contact() {
             </Card>
 
             <div className="space-y-2">
-              <h3 className="font-semibold">Otevírací doba</h3>
+              <h3 className="font-semibold text-lg">Otevírací doba</h3>
               <div className="text-sm text-muted-foreground space-y-1">
                 <p>Po - Pá: 9:00 - 18:00</p>
                 <p>So - Ne: Zavřeno</p>
