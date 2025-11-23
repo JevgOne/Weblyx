@@ -49,9 +49,10 @@ const BLOCKED_USER_AGENTS = [
 // Required keywords that MUST be present in legitimate browsers
 const REQUIRED_BROWSER_KEYWORDS = ['mozilla', 'chrome', 'safari', 'firefox', 'edge', 'opera'];
 
-// Suspicious query patterns
+// Suspicious query patterns (WordPress & malicious paths)
+// NOTE: 'admin' removed because we use /admin for our admin panel
 const SUSPICIOUS_QUERIES = [
-  'admin', 'wp-admin', 'wp-login', 'wp-content', 'wordpress',
+  'wp-admin', 'wp-login', 'wp-content', 'wordpress',
   '.env', '.git', 'config', 'backup', 'database', 'dump', 'sql',
   'phpmyadmin', 'mysql', 'api-docs', 'swagger',
 ];
