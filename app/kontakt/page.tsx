@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Contact } from "@/components/home/contact";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateContactPageSchema, generateLocalBusinessSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Kontakt – nezávazná konzultace zdarma",
@@ -67,6 +68,12 @@ export default function ContactPage() {
       <JsonLd data={webpageSchema} />
 
       <main className="min-h-screen pt-16">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Kontakt", href: "/kontakt" }
+          ]}
+        />
         <Contact isMainPage={true} />
       </main>
     </>

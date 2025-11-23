@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Clock, Calendar } from "lucide-react";
 import { getPublishedBlogPosts } from "@/lib/turso/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Blog – tipy a trendy ze světa webu a online marketingu",
@@ -91,6 +92,12 @@ export default async function BlogPage() {
       />
 
       <main className="min-h-screen">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Blog", href: "/blog" }
+          ]}
+        />
         {/* Hero Section with Gradient */}
         <section className="relative py-24 md:py-32 px-4 overflow-hidden">
           {/* Animated gradient background */}

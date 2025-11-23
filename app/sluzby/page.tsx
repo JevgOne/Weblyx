@@ -17,6 +17,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 import { Service as ServiceType } from "@/types/cms";
 import { Pricing } from "@/components/home/pricing";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
@@ -263,6 +264,12 @@ export default async function ServicesPage() {
       ))}
 
       <main className="min-h-screen">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Služby", href: "/sluzby" }
+          ]}
+        />
         {/* Hero Section */}
       <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">

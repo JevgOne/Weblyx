@@ -3,6 +3,7 @@ import { Portfolio } from "@/components/home/portfolio";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generatePortfolioSchema, BreadcrumbItem, generateWebPageSchema, PortfolioItem } from "@/lib/schema-org";
 import { getAllPortfolio } from "@/lib/turso/portfolio";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
@@ -91,6 +92,12 @@ export default async function PortfolioPage() {
       {portfolioSchema && <JsonLd data={portfolioSchema} />}
 
       <main className="min-h-screen">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Portfolio", href: "/portfolio" }
+          ]}
+        />
         <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
           <div className="container mx-auto max-w-4xl text-center space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
