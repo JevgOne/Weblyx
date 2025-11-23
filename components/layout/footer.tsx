@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-import { Instagram, Facebook, MessageCircle } from "lucide-react";
+import { Instagram, Facebook, MessageCircle, MapPin } from "lucide-react";
 
 export function Footer() {
   const footerLinks = {
@@ -46,7 +46,7 @@ export function Footer() {
             {/* Social Media Links */}
             <div className="flex gap-3">
               <a
-                href="https://instagram.com/weblyx.cz"
+                href="https://www.instagram.com/weblyx.cz/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -55,7 +55,7 @@ export function Footer() {
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://facebook.com/weblyx.cz"
+                href="https://www.facebook.com/profile.php?id=61583944536147"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -71,6 +71,16 @@ export function Footer() {
                 aria-label="WhatsApp"
               >
                 <MessageCircle className="h-5 w-5" />
+              </a>
+              <a
+                href="https://share.google/cZIQkYTq2bVmkRAAP"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label="Google Business Profile"
+                title="Najděte nás na Google Maps"
+              >
+                <MapPin className="h-5 w-5" />
               </a>
             </div>
           </div>

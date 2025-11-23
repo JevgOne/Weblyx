@@ -31,7 +31,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     logo = `${BASE_URL}/logo.png`,
     description = 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek a e-shopů s využitím AI technologií',
     email = 'info@weblyx.cz',
-    phone = '',
+    phone = '+420702110166',
     addressLocality = 'Praha',
     addressCountry = 'CZ',
     foundingDate = '2024-02',
@@ -64,6 +64,11 @@ export function generateOrganizationSchema(data?: OrganizationData) {
       '@type': 'Country',
       name: 'Czech Republic',
     },
+    sameAs: [
+      'https://www.instagram.com/weblyx.cz/',
+      'https://www.facebook.com/profile.php?id=61583944536147',
+      'https://share.google/cZIQkYTq2bVmkRAAP',
+    ],
   };
 }
 
