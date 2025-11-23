@@ -23,6 +23,7 @@ import {
   generateWebSiteSchema,
   generateFAQSchema,
   generateOffersSchema,
+  generateLocalBusinessSchema,
 } from "@/lib/schema-org";
 import { getAllFAQItems } from "@/lib/turso/cms";
 import { getAllPricingTiers } from "@/lib/turso/cms";
@@ -61,6 +62,10 @@ export default async function HomePage() {
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
+  const localBusinessSchema = generateLocalBusinessSchema({
+    priceRange: "10000 Kč - 50000 Kč",
+    openingHours: ["Mo-Fr 09:00-18:00"],
+  });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;
 
@@ -69,6 +74,7 @@ export default async function HomePage() {
       {/* Schema.org JSON-LD */}
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
+      <JsonLd data={localBusinessSchema} />
       {faqSchema && <JsonLd data={faqSchema} />}
       {offersSchema && offersSchema.map((offer, index) => (
         <JsonLd key={index} data={offer} />

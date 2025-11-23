@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
-import { adminDbInstance } from '@/lib/firebase-admin';
 import { getAllPortfolio } from '@/lib/turso/portfolio';
+import { getPublishedBlogPosts } from '@/lib/turso/blog';
 
 /**
  * Dynamic sitemap generation for better SEO
@@ -55,6 +55,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/faq`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8, // High priority - FAQ is great for SEO
+    },
+    {
       url: `${baseUrl}/ochrana-udaju`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -84,25 +90,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching portfolio for sitemap:', error);
   }
 
-  // Fetch dynamic blog posts
+  // Fetch dynamic blog posts from Turso
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
-    if (adminDbInstance) {
-      const blogSnapshot = await adminDbInstance
-        .collection('blog')
-        .where('published', '==', true)
-        .get();
+    const publishedPosts = await getPublishedBlogPosts();
 
-      blogRoutes = blogSnapshot.docs.map((doc: any) => {
-        const data = doc.data();
-        return {
-          url: `${baseUrl}/blog/${data.slug || doc.id}`,
-          lastModified: data.updatedAt?.toDate() || new Date(),
-          changeFrequency: 'weekly' as const,
-          priority: 0.7,
-        };
-      });
-    }
+    blogRoutes = publishedPosts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.createdAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
   } catch (error) {
     console.error('Error fetching blog posts for sitemap:', error);
   }

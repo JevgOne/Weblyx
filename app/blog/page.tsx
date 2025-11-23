@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Clock, Calendar } from "lucide-react";
-import { adminDbInstance } from "@/lib/firebase-admin";
+import { getPublishedBlogPosts } from "@/lib/turso/blog";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "Blog – tipy a trendy ze světa webu a online marketingu",
@@ -35,58 +36,62 @@ export const metadata: Metadata = {
   }
 };
 
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content?: string;
-  author?: string;
-  category: string;
-  tags?: string[];
-  published: boolean;
-  featured?: boolean;
-  coverImage?: string;
-  readTime?: string;
-  createdAt: any;
-  updatedAt?: any;
-}
-
 export default async function BlogPage() {
-  let posts: BlogPost[] = [];
+  let posts: any[] = [];
 
   try {
-    if (adminDbInstance) {
-      const snapshot = await adminDbInstance
-        .collection('blog')
-        .where('published', '==', true)
-        .orderBy('createdAt', 'desc')
-        .get();
+    const blogPosts = await getPublishedBlogPosts();
 
-      posts = snapshot.docs.map((doc: any) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          // Format date for display
-          date: data.createdAt ? new Date(data.createdAt.toDate ? data.createdAt.toDate() : data.createdAt).toLocaleDateString('cs-CZ', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric'
-          }) : '',
-          readTime: data.readTime || '5 min',
-        };
-      });
-    }
+    posts = blogPosts.map((post) => ({
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt || '',
+      category: '', // Blog schema doesn't have category
+      tags: post.tags || [],
+      coverImage: post.featuredImage,
+      readTime: '5 min', // Could calculate from content length later
+      date: post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('cs-CZ', {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+      }) : new Date(post.createdAt).toLocaleDateString('cs-CZ', {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+      }),
+    }));
   } catch (error) {
     console.error('Error fetching blog posts:', error);
-    // Fallback to empty array on error
     posts = [];
   }
 
   return (
-    <main className="min-h-screen">
-      <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
+    <>
+      {/* Breadcrumb Schema */}
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Domů",
+              item: "https://weblyx.cz",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Blog",
+              item: "https://weblyx.cz/blog",
+            },
+          ],
+        }}
+      />
+
+      <main className="min-h-screen">
+        <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
             <span className="text-primary">Blog</span>
@@ -142,5 +147,6 @@ export default async function BlogPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

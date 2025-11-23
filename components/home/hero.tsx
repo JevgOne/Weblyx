@@ -21,7 +21,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
     // Convert Turso HeroSection to legacy HeroData format
     const data: HeroData = {
       badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
-      title: heroSection?.headline || 'Tvorba webových stránek za týden',
+      title: heroSection?.headline || 'Tvorba webových stránek od 10 000 Kč | Web za týden',
       titleHighlight: '',
       subtitle: heroSection?.subheadline || 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
       ctaPrimary: {
@@ -42,7 +42,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
     return {
       data: {
         badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
-        title: 'Tvorba webových stránek za týden',
+        title: 'Tvorba webových stránek od 10 000 Kč | Web za týden',
         titleHighlight: '',
         subtitle: 'Rychlá tvorba webových stránek na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>. Levné webové stránky pro živnostníky a firmy.',
         ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
