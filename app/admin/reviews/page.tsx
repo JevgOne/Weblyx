@@ -2,18 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-  writeBatch,
-  query,
-  orderBy,
-} from "firebase/firestore";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -91,8 +80,16 @@ export default function AdminReviewsPage() {
     if (!confirm("Opravdu chcete smazat tuto recenzi?")) return;
 
     try {
-      await deleteDoc(doc(db, "reviews", id));
-      setReviews(reviews.filter((r) => r.id !== id));
+      const response = await fetch(`/api/admin/reviews?id=${id}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setReviews(reviews.filter((r) => r.id !== id));
+      } else {
+        alert("Chyba při mazání recenze: " + result.error);
+      }
     } catch (error) {
       console.error("Error deleting review:", error);
       alert("Chyba při mazání recenze");
@@ -101,15 +98,25 @@ export default function AdminReviewsPage() {
 
   const togglePublished = async (id: string, currentState: boolean) => {
     try {
-      await updateDoc(doc(db, "reviews", id), {
-        published: !currentState,
-        updatedAt: new Date(),
+      const response = await fetch('/api/admin/reviews', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          published: !currentState,
+        }),
       });
-      setReviews(
-        reviews.map((r) =>
-          r.id === id ? { ...r, published: !currentState } : r
-        )
-      );
+      const result = await response.json();
+
+      if (result.success) {
+        setReviews(
+          reviews.map((r) =>
+            r.id === id ? { ...r, published: !currentState } : r
+          )
+        );
+      } else {
+        alert("Chyba při změně stavu publikace: " + result.error);
+      }
     } catch (error) {
       console.error("Error toggling published:", error);
       alert("Chyba při změně stavu publikace");
@@ -118,15 +125,25 @@ export default function AdminReviewsPage() {
 
   const toggleFeatured = async (id: string, currentState: boolean) => {
     try {
-      await updateDoc(doc(db, "reviews", id), {
-        featured: !currentState,
-        updatedAt: new Date(),
+      const response = await fetch('/api/admin/reviews', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          featured: !currentState,
+        }),
       });
-      setReviews(
-        reviews.map((r) =>
-          r.id === id ? { ...r, featured: !currentState } : r
-        )
-      );
+      const result = await response.json();
+
+      if (result.success) {
+        setReviews(
+          reviews.map((r) =>
+            r.id === id ? { ...r, featured: !currentState } : r
+          )
+        );
+      } else {
+        alert("Chyba při změně featured stavu: " + result.error);
+      }
     } catch (error) {
       console.error("Error toggling featured:", error);
       alert("Chyba při změně featured stavu");
@@ -149,12 +166,20 @@ export default function AdminReviewsPage() {
 
     setSavingOrder(true);
     try {
-      const batch = writeBatch(db);
-      updatedItems.forEach((item) => {
-        const docRef = doc(db, "reviews", item.id);
-        batch.update(docRef, { order: item.order, updatedAt: new Date() });
+      const response = await fetch('/api/admin/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reorder',
+          items: updatedItems.map(item => ({ id: item.id, order: item.order })),
+        }),
       });
-      await batch.commit();
+      const result = await response.json();
+
+      if (!result.success) {
+        alert("Chyba při ukládání pořadí: " + result.error);
+        loadReviews();
+      }
     } catch (error) {
       console.error("Error saving order:", error);
       alert("Chyba při ukládání pořadí");
@@ -278,7 +303,7 @@ export default function AdminReviewsPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Z Google
+                Zvýrazněné
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -286,7 +311,7 @@ export default function AdminReviewsPage() {
                 <Skeleton className="h-8 w-12" />
               ) : (
                 <div className="text-2xl font-bold">
-                  {reviews.filter((r) => r.source === "google").length}
+                  {reviews.filter((r) => r.featured).length}
                 </div>
               )}
             </CardContent>
@@ -390,8 +415,11 @@ export default function AdminReviewsPage() {
                                   <div className="max-w-md truncate">{review.text}</div>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge variant={review.source === "google" ? "default" : "secondary"}>
-                                    {review.source === "google" ? "Google" : "Manuální"}
+                                  <Badge variant={review.source === "manual" ? "secondary" : "default"}>
+                                    {review.source === "Google" ? "Google" :
+                                     review.source === "Firmy.cz" ? "Firmy.cz" :
+                                     review.source === "Facebook" ? "Facebook" :
+                                     review.source === "Seznam" ? "Seznam" : "Manuální"}
                                   </Badge>
                                 </TableCell>
                                 <TableCell>

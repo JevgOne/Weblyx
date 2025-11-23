@@ -61,6 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8, // High priority - FAQ is great for SEO
     },
     {
+      url: `${baseUrl}/recenze`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8, // High priority - reviews are great for SEO
+    },
+    {
       url: `${baseUrl}/ochrana-udaju`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
