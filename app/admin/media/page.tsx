@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Upload, Trash2, Copy, Check, Image as ImageIcon, Sparkles } from "lucide-react";
+import { Upload, Trash2, Copy, Check, Image as ImageIcon, Sparkles, ArrowLeft } from "lucide-react";
 import imageCompression from "browser-image-compression";
+import Link from "next/link";
 
 interface MediaFile {
   url: string;
@@ -159,11 +160,19 @@ export default function MediaLibraryPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">📸 Knihovna médií</h1>
-        <p className="text-muted-foreground">
-          Nahraj obrázky hromadně (Vercel Blob Storage), AI vygeneruje ALT texty
-        </p>
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/admin">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Zpět
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">📸 Knihovna médií</h1>
+          <p className="text-muted-foreground">
+            Nahraj obrázky hromadně (Vercel Blob Storage), AI vygeneruje ALT texty
+          </p>
+        </div>
       </div>
 
       {/* Upload */}

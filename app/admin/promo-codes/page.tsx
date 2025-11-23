@@ -11,8 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Tag, Calendar, TrendingUp, Percent, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash2, Tag, Calendar, TrendingUp, Percent, DollarSign, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 export default function PromoCodesPage() {
   const { user } = useAdminAuth();
@@ -174,9 +175,17 @@ export default function PromoCodesPage() {
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Promo kódy</h1>
-          <p className="text-muted-foreground">Správa slev a promo kódů</p>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/admin">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Zpět
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Promo kódy</h1>
+            <p className="text-muted-foreground">Správa slev a promo kódů</p>
+          </div>
         </div>
         <Button onClick={() => setShowForm(!showForm)}>
           <Plus className="h-4 w-4 mr-2" />
