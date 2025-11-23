@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         <p>
           V případě dotazů ohledně ochrany osobních údajů nás můžete kontaktovat na:
           <br />
-          Email: <a href="mailto:weblyxinfo@gmail.com" className="text-primary hover:underline">weblyxinfo@gmail.com</a>
+          Email: <a href="mailto:info@weblyx.cz" className="text-primary hover:underline">info@weblyx.cz</a>
           <br />
           Telefon: <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a>
         </p>

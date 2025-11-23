@@ -100,10 +100,10 @@ export function Contact() {
                   <div>
                     <h3 className="font-semibold mb-1">Email</h3>
                     <a
-                      href="mailto:weblyxinfo@gmail.com"
+                      href="mailto:info@weblyx.cz"
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      weblyxinfo@gmail.com
+                      info@weblyx.cz
                     </a>
                   </div>
                 </div>

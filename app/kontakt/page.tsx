@@ -39,7 +39,7 @@ export default function ContactPage() {
     name: 'Weblyx',
     url: 'https://weblyx.cz',
     description: 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
-    email: 'weblyxinfo@gmail.com',
+    email: 'info@weblyx.cz',
     addressLocality: 'Praha',
     addressCountry: 'CZ',
     priceRange: '10000-150000 CZK',

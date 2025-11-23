@@ -159,7 +159,7 @@ export default function CookiesPage() {
               Pokud máte jakékoli dotazy ohledně našich zásad cookies, neváhejte nás kontaktovat:
             </p>
             <div className="bg-muted/50 rounded-lg p-6 space-y-2">
-              <p><strong>Email:</strong> <a href="mailto:weblyxinfo@gmail.com" className="text-primary hover:underline">weblyxinfo@gmail.com</a></p>
+              <p><strong>Email:</strong> <a href="mailto:info@weblyx.cz" className="text-primary hover:underline">info@weblyx.cz</a></p>
               <p><strong>Telefon:</strong> <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a></p>
             </div>
           </section>

@@ -125,10 +125,10 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="mailto:weblyxinfo@gmail.com"
+                  href="mailto:info@weblyx.cz"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  weblyxinfo@gmail.com
+                  info@weblyx.cz
                 </a>
               </li>
               <li>
