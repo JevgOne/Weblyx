@@ -408,6 +408,75 @@ export default function WebAnalyzerPage() {
             </Card>
           )}
 
+          {/* Screenshots */}
+          {(analysis as any).screenshots && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Screenshots webu</CardTitle>
+                <CardDescription>
+                  Automaticky pořízené screenshoty na různých zařízeních
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6">
+                  {/* Desktop Screenshot */}
+                  {(analysis as any).screenshots.desktop && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-primary" />
+                        <h4 className="font-semibold">Desktop (1920x1080)</h4>
+                      </div>
+                      <div className="border rounded-lg overflow-hidden bg-muted/50">
+                        <img
+                          src={`data:image/png;base64,${(analysis as any).screenshots.desktop}`}
+                          alt="Desktop screenshot"
+                          className="w-full h-auto"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tablet and Mobile in Grid */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Tablet Screenshot */}
+                    {(analysis as any).screenshots.tablet && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-primary" />
+                          <h4 className="font-semibold">Tablet (768x1024)</h4>
+                        </div>
+                        <div className="border rounded-lg overflow-hidden bg-muted/50">
+                          <img
+                            src={`data:image/png;base64,${(analysis as any).screenshots.tablet}`}
+                            alt="Tablet screenshot"
+                            className="w-full h-auto"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Mobile Screenshot */}
+                    {(analysis as any).screenshots.mobile && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="h-4 w-4 text-primary" />
+                          <h4 className="font-semibold">Mobile (375x667)</h4>
+                        </div>
+                        <div className="border rounded-lg overflow-hidden bg-muted/50">
+                          <img
+                            src={`data:image/png;base64,${(analysis as any).screenshots.mobile}`}
+                            alt="Mobile screenshot"
+                            className="w-full h-auto"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Actions */}
           <Card>
             <CardHeader>

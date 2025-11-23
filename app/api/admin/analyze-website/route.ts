@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeWebsite } from '@/lib/web-analyzer';
 import { adminDbInstance } from '@/lib/firebase-admin';
+import { captureMultipleScreenshots } from '@/lib/screenshot';
 
 // Email template types
 type EmailTemplate = 'general' | 'slow-web' | 'bad-seo' | 'mobile-issues' | 'outdated-design' | 'follow-up';
@@ -424,13 +425,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Run analysis
-    const analysis = await analyzeWebsite(url);
+    // Run analysis and capture screenshots in parallel
+    const normalizedUrl = url.startsWith('http') ? url : `https://${url}`;
+
+    const [analysis, screenshots] = await Promise.all([
+      analyzeWebsite(url),
+      captureMultipleScreenshots(normalizedUrl).catch(err => {
+        console.error('Screenshot error:', err);
+        return null; // Don't fail entire analysis if screenshots fail
+      }),
+    ]);
 
     // Add contact info if provided
     if (contactEmail) analysis.contactEmail = contactEmail;
     if (contactName) analysis.contactName = contactName;
     if (businessName) analysis.businessName = businessName;
+
+    // Add screenshots (as base64) if available
+    if (screenshots) {
+      analysis.screenshots = {
+        desktop: screenshots.desktop.toString('base64'),
+        tablet: screenshots.tablet.toString('base64'),
+        mobile: screenshots.mobile.toString('base64'),
+      };
+    }
 
     // Detect primary issue for template selection
     const primaryIssue = detectPrimaryIssue(analysis);
