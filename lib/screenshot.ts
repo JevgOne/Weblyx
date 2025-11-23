@@ -54,7 +54,7 @@ export async function captureScreenshot(options: ScreenshotOptions): Promise<Buf
     });
 
     // Wait a bit for animations/fonts to load
-    await page.waitForTimeout(2000);
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Take screenshot
     const screenshotOptions: any = {
