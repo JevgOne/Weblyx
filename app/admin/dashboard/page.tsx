@@ -369,9 +369,14 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/tools/web-analyzer")}>
-                  Otevřít
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1" onClick={() => router.push("/admin/tools/web-analyzer")}>
+                    Analyzovat
+                  </Button>
+                  <Button variant="default" className="flex-1" onClick={() => router.push("/admin/web-leads")}>
+                    Leady
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
