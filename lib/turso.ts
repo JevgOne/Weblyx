@@ -63,12 +63,12 @@ export function unixToDate(timestamp: number | null | undefined): Date | null {
 }
 
 // Helper to parse JSON fields
-export function parseJSON<T = any>(value: string | null | undefined): T | null {
-  if (!value) return null;
+export function parseJSON<T = any>(value: string | null | undefined): T | undefined {
+  if (!value) return undefined;
   try {
     return JSON.parse(value) as T;
   } catch {
-    return null;
+    return undefined;
   }
 }
 

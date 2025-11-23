@@ -19,6 +19,10 @@ import { Service as ServiceType } from "@/types/cms";
 import { Pricing } from "@/components/home/pricing";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
+// Force dynamic rendering to avoid build timeout
+export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export const metadata: Metadata = {
   title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
   description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč), e-shopy na míru, SEO optimalizace. Web do týdne (5-7 dní), Next.js místo WordPressu. Kolik stojí web? Od 10K!",
