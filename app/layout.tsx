@@ -52,20 +52,11 @@ export const metadata: Metadata = {
     title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
     description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne, nejrychlejší načítání pod 2 sekundy, SEO zdarma.",
     siteName: "Weblyx",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Weblyx - Tvorba webových stránek od 8 990 Kč",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
     description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne, nejrychlejší načítání pod 2 sekundy.",
-    images: ["/og-image.jpg"],
     creator: "@weblyx",
   },
   robots: {
