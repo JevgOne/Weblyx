@@ -247,24 +247,31 @@ export default async function BlogPostPage({
                 )}
               </header>
 
-              {/* Content with enhanced prose styling */}
+              {/* Content with premium typography */}
               <div className="relative">
-                <div
-                  className="prose prose-lg max-w-none dark:prose-invert
-                    prose-headings:font-bold prose-headings:text-foreground prose-headings:scroll-mt-20
-                    prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-3 prose-h2:border-b prose-h2:border-primary/20
-                    prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-4 prose-h3:text-primary
-                    prose-p:text-muted-foreground prose-p:leading-loose prose-p:mb-6 prose-p:text-[17px]
-                    prose-ul:my-8 prose-ul:text-muted-foreground prose-ul:space-y-2
-                    prose-ol:my-8 prose-ol:text-muted-foreground prose-ol:space-y-2
-                    prose-li:my-2 prose-li:pl-2
-                    prose-strong:text-foreground prose-strong:font-bold
-                    prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:transition-all
-                    prose-code:text-primary prose-code:bg-primary/10 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:font-mono prose-code:text-sm
-                    prose-pre:bg-muted prose-pre:border prose-pre:border-primary/10 prose-pre:rounded-xl prose-pre:shadow-lg
-                    prose-img:rounded-xl prose-img:shadow-2xl prose-img:border prose-img:border-primary/10"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                {/* Subtle gradient background for content area */}
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] via-transparent to-primary/[0.02] rounded-3xl -z-10"></div>
+
+                <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-primary/5 shadow-sm">
+                  <div
+                    className="prose prose-xl max-w-none dark:prose-invert
+                      prose-headings:font-extrabold prose-headings:text-foreground prose-headings:tracking-tight prose-headings:scroll-mt-20
+                      prose-h2:text-4xl prose-h2:mt-20 prose-h2:mb-8 prose-h2:pb-4 prose-h2:border-b-2 prose-h2:border-primary/20 prose-h2:bg-gradient-to-r prose-h2:from-primary/10 prose-h2:to-transparent prose-h2:pl-6 prose-h2:pr-6 prose-h2:-mx-6 prose-h2:rounded-lg
+                      prose-h3:text-2xl prose-h3:mt-14 prose-h3:mb-6 prose-h3:text-primary prose-h3:font-bold
+                      prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:mb-8 prose-p:text-[18px] prose-p:font-normal
+                      prose-ul:my-10 prose-ul:text-foreground/90 prose-ul:space-y-3 prose-ul:text-[17px]
+                      prose-ol:my-10 prose-ol:text-foreground/90 prose-ol:space-y-3 prose-ol:text-[17px]
+                      prose-li:my-3 prose-li:pl-2 prose-li:leading-relaxed
+                      prose-li:marker:text-primary prose-li:marker:font-bold
+                      prose-strong:text-foreground prose-strong:font-bold prose-strong:bg-primary/5 prose-strong:px-1 prose-strong:rounded
+                      prose-a:text-primary prose-a:no-underline prose-a:font-semibold prose-a:underline-offset-4 hover:prose-a:underline prose-a:transition-all prose-a:decoration-2 prose-a:decoration-primary/50
+                      prose-code:text-primary prose-code:bg-primary/10 prose-code:px-3 prose-code:py-1.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[15px] prose-code:font-semibold prose-code:border prose-code:border-primary/20
+                      prose-pre:bg-muted prose-pre:border-2 prose-pre:border-primary/10 prose-pre:rounded-2xl prose-pre:shadow-2xl prose-pre:p-6
+                      prose-img:rounded-2xl prose-img:shadow-2xl prose-img:border-2 prose-img:border-primary/10 prose-img:my-12
+                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:my-10 prose-blockquote:font-medium prose-blockquote:text-foreground/90 prose-blockquote:italic"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
+                </div>
               </div>
 
               {/* Share Buttons */}
