@@ -51,7 +51,14 @@ export default function BlogPage() {
         const result = await response.json();
 
         if (result.success) {
-          setPosts(result.data);
+          // Convert ISO strings back to Date objects
+          const postsWithDates = result.data.map((post: any) => ({
+            ...post,
+            createdAt: new Date(post.createdAt),
+            updatedAt: new Date(post.updatedAt),
+            publishedAt: post.publishedAt ? new Date(post.publishedAt) : undefined,
+          }));
+          setPosts(postsWithDates);
         } else {
           console.error("Error fetching blog posts:", result.error);
           setPosts([]);

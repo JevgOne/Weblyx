@@ -32,9 +32,9 @@ export async function GET(request: NextRequest) {
       category: '', // Blog schema doesn't have category field
       tags: post.tags || [],
       imageUrl: post.featuredImage,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-      publishedAt: post.publishedAt,
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+      publishedAt: post.publishedAt?.toISOString(),
       views: post.views,
       metaTitle: post.metaTitle,
       metaDescription: post.metaDescription,
