@@ -7,7 +7,7 @@ export function WhatsAppChat() {
   const [isOpen, setIsOpen] = useState(false);
 
   // WhatsApp number - replace with your actual number (format: country code + number without +)
-  const phoneNumber = '420777123456'; // Example: Czech number
+  const phoneNumber = '420702110166';
   const defaultMessage = 'Ahoj! Mám zájem o tvorbu webu. Můžete mi poradit?';
 
   const handleWhatsAppClick = () => {
