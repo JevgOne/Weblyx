@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     default: "Tvorba webových stránek od 10 000 Kč | Web za týden | Weblyx",
     template: "%s | Weblyx",
   },
-  description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne (5–7 dní), nejrychlejší načítání pod 2 sekundy, SEO zdarma. Kolik stojí webové stránky? Od 10K! Nezávazná konzultace zdarma.",
+  description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma. Nezávazná konzultace zdarma.",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
@@ -50,13 +50,13 @@ export const metadata: Metadata = {
     locale: "cs_CZ",
     url: "https://weblyx.cz",
     title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
-    description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne, nejrychlejší načítání pod 2 sekundy, SEO zdarma.",
+    description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma.",
     siteName: "Weblyx",
   },
   twitter: {
     card: "summary_large_image",
     title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
-    description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne, nejrychlejší načítání pod 2 sekundy.",
+    description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma.",
     creator: "@weblyx",
   },
   robots: {
