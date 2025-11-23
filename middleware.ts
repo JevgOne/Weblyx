@@ -4,19 +4,64 @@ import type { NextRequest } from 'next/server';
 // Rate limiting: Simple in-memory store (for production use Redis/Vercel KV)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
 
-// Rate limit configuration
+// MAXIMUM SECURITY: Aggressive rate limiting
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 60; // 60 requests per minute
-const RATE_LIMIT_MAX_REQUESTS_API = 20; // 20 requests per minute for API routes
+const RATE_LIMIT_MAX_REQUESTS = 30; // 30 requests per minute (down from 60)
+const RATE_LIMIT_MAX_REQUESTS_API = 10; // 10 requests per minute for API routes (down from 20)
 
-// Suspicious patterns (common bot signatures)
-const SUSPICIOUS_USER_AGENTS = [
-  'bot', 'crawler', 'spider', 'scraper', 'curl', 'wget', 'python-requests',
-  'scrapy', 'selenium', 'headless', 'phantom', 'puppeteer', 'playwright',
+// Burst protection: Max requests per 10 seconds
+const BURST_WINDOW = 10 * 1000; // 10 seconds
+const BURST_MAX_REQUESTS = 5; // Max 5 requests in 10 seconds
+
+// Track burst requests separately
+const burstLimit = new Map<string, { count: number; resetTime: number }>();
+
+// MAXIMUM SECURITY: Block ALL bots and automated tools
+const BLOCKED_USER_AGENTS = [
+  // Scrapers & Crawlers
+  'bot', 'crawler', 'spider', 'scraper', 'scrape', 'crawl',
+
+  // Download tools
+  'curl', 'wget', 'aria2', 'axel', 'download', 'fetch',
+
+  // HTTP libraries
+  'python-requests', 'python-urllib', 'urllib', 'httpie', 'http-client',
+  'axios', 'got', 'node-fetch', 'superagent', 'request',
+
+  // Automation tools
+  'selenium', 'webdriver', 'headless', 'phantom', 'puppeteer', 'playwright',
+  'mechanize', 'beautifulsoup', 'scrapy', 'jsdom', 'cheerio',
+
+  // AI/LLM bots (already in robots.txt but add extra layer)
+  'gpt', 'chatgpt', 'claude', 'anthropic', 'openai', 'bard', 'gemini',
+
+  // Archive/snapshot tools
+  'archive', 'wayback', 'snapshot', 'mirror', 'httrack', 'teleport',
+
+  // Monitoring/testing tools
+  'pingdom', 'uptime', 'monitor', 'check', 'test', 'benchmark',
+  'lighthouse', 'pagespeed', 'gtmetrix',
+
+  // Generic patterns
+  'auto', 'script', 'program', 'library', 'framework',
 ];
 
+// Required keywords that MUST be present in legitimate browsers
+const REQUIRED_BROWSER_KEYWORDS = ['mozilla', 'chrome', 'safari', 'firefox', 'edge', 'opera'];
+
 // Suspicious query patterns
-const SUSPICIOUS_QUERIES = ['admin', 'wp-admin', '.env', 'config', 'backup', 'database'];
+const SUSPICIOUS_QUERIES = [
+  'admin', 'wp-admin', 'wp-login', 'wp-content', 'wordpress',
+  '.env', '.git', 'config', 'backup', 'database', 'dump', 'sql',
+  'phpmyadmin', 'mysql', 'api-docs', 'swagger',
+];
+
+// Suspicious file extensions (trying to download source code)
+const BLOCKED_EXTENSIONS = [
+  '.git', '.env', '.config', '.yml', '.yaml', '.json',
+  '.sql', '.db', '.sqlite', '.backup', '.bak',
+  '.zip', '.tar', '.gz', '.rar', '.7z',
+];
 
 function isRateLimited(ip: string, maxRequests: number): boolean {
   const now = Date.now();
@@ -35,14 +80,79 @@ function isRateLimited(ip: string, maxRequests: number): boolean {
   return false;
 }
 
+function isBurstLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = burstLimit.get(ip);
+
+  if (!record || now > record.resetTime) {
+    burstLimit.set(ip, { count: 1, resetTime: now + BURST_WINDOW });
+    return false;
+  }
+
+  if (record.count >= BURST_MAX_REQUESTS) {
+    return true;
+  }
+
+  record.count++;
+  return false;
+}
+
 function isSuspiciousUserAgent(userAgent: string): boolean {
+  if (!userAgent || userAgent.length < 10) {
+    // Empty or too short user agent = bot
+    return true;
+  }
+
   const ua = userAgent.toLowerCase();
-  return SUSPICIOUS_USER_AGENTS.some(pattern => ua.includes(pattern));
+
+  // Check if blocked pattern exists
+  if (BLOCKED_USER_AGENTS.some(pattern => ua.includes(pattern))) {
+    return true;
+  }
+
+  // Check if it looks like a legitimate browser
+  const hasRequiredKeyword = REQUIRED_BROWSER_KEYWORDS.some(keyword => ua.includes(keyword));
+  if (!hasRequiredKeyword) {
+    // Doesn't look like a real browser = block
+    return true;
+  }
+
+  return false;
 }
 
 function isSuspiciousQuery(pathname: string): boolean {
   const path = pathname.toLowerCase();
-  return SUSPICIOUS_QUERIES.some(pattern => path.includes(pattern));
+
+  // Check suspicious queries
+  if (SUSPICIOUS_QUERIES.some(pattern => path.includes(pattern))) {
+    return true;
+  }
+
+  // Check blocked file extensions
+  if (BLOCKED_EXTENSIONS.some(ext => path.endsWith(ext))) {
+    return true;
+  }
+
+  return false;
+}
+
+function hasValidHeaders(request: NextRequest): boolean {
+  // Real browsers send these headers
+  const acceptHeader = request.headers.get('accept');
+  const acceptLanguage = request.headers.get('accept-language');
+  const acceptEncoding = request.headers.get('accept-encoding');
+
+  // If missing basic headers = likely bot
+  if (!acceptHeader || !acceptLanguage) {
+    return false;
+  }
+
+  // Real browsers accept HTML
+  if (!acceptHeader.includes('text/html')) {
+    return false;
+  }
+
+  return true;
 }
 
 export function middleware(request: NextRequest) {
@@ -50,24 +160,50 @@ export function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || '';
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
-  // 1. Block suspicious user agents (except for admin routes if needed)
-  if (!pathname.startsWith('/admin') && isSuspiciousUserAgent(userAgent)) {
-    console.log(`🚫 Blocked suspicious user agent: ${userAgent} from IP: ${ip}`);
+  // SKIP security checks for static assets (already in matcher, but double-check)
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/static/') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|webp|css|js)$/)
+  ) {
+    return NextResponse.next();
+  }
+
+  // 1. MAXIMUM SECURITY: Block suspicious user agents
+  if (isSuspiciousUserAgent(userAgent)) {
+    console.log(`🚫 [BOT BLOCKED] User-Agent: ${userAgent.substring(0, 100)} | IP: ${ip} | Path: ${pathname}`);
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // 2. Block suspicious query patterns
+  // 2. MAXIMUM SECURITY: Validate browser headers
+  if (!pathname.startsWith('/api') && !hasValidHeaders(request)) {
+    console.log(`🚫 [INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
+    return new NextResponse('Forbidden', { status: 403 });
+  }
+
+  // 3. Block suspicious query patterns
   if (isSuspiciousQuery(pathname)) {
-    console.log(`🚫 Blocked suspicious query: ${pathname} from IP: ${ip}`);
+    console.log(`🚫 [SUSPICIOUS PATH] Blocked: ${pathname} | IP: ${ip}`);
     return new NextResponse('Not Found', { status: 404 });
   }
 
-  // 3. Rate limiting
+  // 4. BURST PROTECTION: Block rapid-fire requests (scraper pattern)
+  if (isBurstLimited(ip)) {
+    console.log(`🚫 [BURST LIMIT] IP: ${ip} | Too many requests in 10s | Path: ${pathname}`);
+    return new NextResponse('Too Many Requests', {
+      status: 429,
+      headers: {
+        'Retry-After': '10',
+      },
+    });
+  }
+
+  // 5. RATE LIMITING: Standard rate limit
   const isApiRoute = pathname.startsWith('/api');
   const maxRequests = isApiRoute ? RATE_LIMIT_MAX_REQUESTS_API : RATE_LIMIT_MAX_REQUESTS;
 
   if (isRateLimited(ip, maxRequests)) {
-    console.log(`🚫 Rate limit exceeded for IP: ${ip} on ${pathname}`);
+    console.log(`🚫 [RATE LIMIT] IP: ${ip} | Exceeded ${maxRequests} req/min | Path: ${pathname}`);
     return new NextResponse('Too Many Requests', {
       status: 429,
       headers: {
@@ -99,11 +235,28 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // 6. Add security headers to response
+  // 6. Add MAXIMUM SECURITY headers to response
   const response = NextResponse.next();
 
   // Anti-scraping headers
-  response.headers.set('X-Robots-Tag', 'noarchive, nosnippet');
+  response.headers.set('X-Robots-Tag', 'noarchive, nosnippet, noimageindex, nofollow');
+
+  // Prevent content download/caching
+  response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate, max-age=0');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
+
+  // Disable client-side caching
+  response.headers.set('Clear-Site-Data', '"cache"');
+
+  // Content protection
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Download-Options', 'noopen');
+
+  // Prevent right-click save (additional layer, JS still needed for full protection)
+  if (!pathname.startsWith('/api')) {
+    response.headers.set('Content-Disposition', 'inline');
+  }
 
   return response;
 }
