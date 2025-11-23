@@ -16,6 +16,7 @@ import {
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 import { Service as ServiceType } from "@/types/cms";
+import { Pricing } from "@/components/home/pricing";
 
 export const metadata: Metadata = {
   title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
@@ -274,6 +275,9 @@ export default async function ServicesPage() {
           </p>
         </div>
       </section>
+
+      {/* Pricing Packages */}
+      <Pricing />
 
       {/* Services Detail */}
       <section className="py-16 md:py-24 px-4">
