@@ -24,8 +24,10 @@ import {
   FileText,
   Loader2,
   Mail,
-  Copy
+  Copy,
+  ArrowLeft
 } from "lucide-react";
+import Link from "next/link";
 import { WebAnalysisResult } from "@/types/cms";
 
 export default function WebAnalyzerPage() {
@@ -97,14 +99,22 @@ export default function WebAnalyzerPage() {
   return (
     <div className="p-8 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-3">
-          <Globe className="h-8 w-8" />
-          Web Analyzer
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Analyzujte konkurenční weby a identifikujte příležitosti pro cold outreach
-        </p>
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/admin">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Zpět
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <Globe className="h-8 w-8" />
+            Web Analyzer
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Analyzujte konkurenční weby a identifikujte příležitosti pro cold outreach
+          </p>
+        </div>
       </div>
 
       {/* Input Form */}
