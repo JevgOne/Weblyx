@@ -60,7 +60,7 @@ export default function AboutPage() {
   ];
 
   const stats = [
-    { value: "2025", label: "Rok založení" },
+    { value: "Únor 2024", label: "Rok založení" },
     { value: "10+", label: "Projektů dokončeno" },
     { value: "100%", label: "Spokojenost klientů" },
     { value: "< 2s", label: "Průměrná rychlost" },
@@ -69,7 +69,7 @@ export default function AboutPage() {
   // Generate schemas
   const aboutPageSchema = generateAboutPageSchema();
   const organizationSchema = generateOrganizationSchema({
-    foundingDate: '2025',
+    foundingDate: '2024-02',
   });
 
   // Generate breadcrumb
@@ -132,7 +132,7 @@ export default function AboutPage() {
               <h2 className="text-3xl md:text-4xl font-bold">Náš příběh</h2>
               <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
                 <p>
-                  Myšlenka na Weblyx se zrodila na začátku roku 2025. Potřebovali jsme vlastní web – moderní, rychlý a přizpůsobený tomu, kdo jsme a jak chceme působit. Obcházeli jsme studia, freelancery i „levné weby" a všude slyšeli to samé: šablonové WordPress řešení, dlouhé dodací lhůty a spoustu kompromisů.
+                  Myšlenka na Weblyx se zrodila v únoru 2024. Potřebovali jsme vlastní web – moderní, rychlý a přizpůsobený tomu, kdo jsme a jak chceme působit. Obcházeli jsme studia, freelancery i „levné weby" a všude slyšeli to samé: šablonové WordPress řešení, dlouhé dodací lhůty a spoustu kompromisů.
                 </p>
                 <p>
                   V jednu chvíli nám došla trpělivost a řekli jsme si jednoduché: „OK, tak si to radši uděláme sami." Začaly večery a noci strávené u tutoriálů, kurzů a kódu – Next.js, React, SEO, rychlost načítání, UX, AI nástroje. První web jsme postavili pro sebe. Nebyl dokonalý, ale byl náš. Rychlý, moderní a přesně takový, jaký jsme chtěli od začátku.

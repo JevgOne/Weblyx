@@ -34,7 +34,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     phone = '',
     addressLocality = 'Praha',
     addressCountry = 'CZ',
-    foundingDate = '2025',
+    foundingDate = '2024-02',
   } = data || {};
 
   return {

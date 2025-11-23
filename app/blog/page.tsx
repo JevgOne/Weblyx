@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "Blog – tipy a trendy ze světa webu a online marketingu",
-  description: "Sdílíme know-how z oblasti tvorby webu, SEO, rychlosti webu a online marketingu. Články píšeme tak, aby byly srozumitelné a praktické – od \"kolik stojí web v roce 2025\" po srovnání WordPress vs. Next.js.",
+  description: "Sdílíme know-how z oblasti tvorby webu, SEO, rychlosti webu a online marketingu. Články píšeme tak, aby byly srozumitelné a praktické – od \"kolik stojí web v roce 2024\" po srovnání WordPress vs. Next.js.",
   keywords: [
     "blog tvorba webů",
     "SEO tipy",
