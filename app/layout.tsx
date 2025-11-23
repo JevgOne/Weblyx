@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { WhatsAppChat } from "@/components/whatsapp-chat";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -115,6 +116,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <CookieConsent />
+        <WhatsAppChat />
       </body>
     </html>
   );
