@@ -27,6 +27,7 @@ export default function LeadGenerationPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const [isScraping, setIsScraping] = useState(false);
+  const isProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -240,11 +241,12 @@ export default function LeadGenerationPage() {
           <Button
             variant="default"
             onClick={handleScrapeLeads}
-            disabled={isScraping}
+            disabled={isScraping || isProduction}
             className="bg-gradient-to-r from-primary to-primary/90"
+            title={isProduction ? 'Scraping je dostupný pouze lokálně. Použijte CSV import.' : ''}
           >
             <Bot className="h-4 w-4 mr-2" />
-            {isScraping ? 'Scrapuji...' : '🤖 Scrape Leads'}
+            {isScraping ? 'Scrapuji...' : isProduction ? '🤖 Scrape (pouze lokálně)' : '🤖 Scrape Leads'}
           </Button>
           <Button asChild variant="outline">
             <Link href="/admin/lead-generation/stats">

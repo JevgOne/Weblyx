@@ -14,6 +14,19 @@ import { scrapeAndImportLeads } from '@/lib/lead-scraper';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Check if running on Vercel production
+    const isProduction = process.env.VERCEL_ENV === 'production';
+
+    if (isProduction) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Scraping není dostupný na produkci kvůli Vercel limitům. Použijte CSV import nebo lokální scraping.',
+        },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const { searchQuery, maxResults = 20 } = body;
 
