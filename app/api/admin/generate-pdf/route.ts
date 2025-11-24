@@ -75,30 +75,63 @@ export async function POST(request: NextRequest) {
       businessName || analysis.businessName
     );
 
-    // Generate PDF using Puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    let pdfBuffer: Buffer;
 
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    try {
+      // Try Puppeteer first (works locally)
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--disable-gpu',
+        ],
+      });
 
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-      },
-    });
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    await browser.close();
+      const buffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+        },
+      });
+
+      await browser.close();
+      pdfBuffer = Buffer.from(buffer);
+
+    } catch (puppeteerError) {
+      console.error('Puppeteer failed, falling back to react-pdf:', puppeteerError);
+
+      // Fallback to react-pdf for Vercel production
+      const { renderToStream } = await import('@react-pdf/renderer');
+      const { WebAnalysisReport } = await import('@/lib/pdf-generator');
+
+      const pdfElement = WebAnalysisReport({
+        analysis,
+        promoCode,
+        businessName: businessName || analysis.businessName,
+      });
+
+      const stream = await renderToStream(pdfElement as any);
+
+      // Convert stream to buffer
+      const chunks: Buffer[] = [];
+      for await (const chunk of stream) {
+        chunks.push(Buffer.from(chunk));
+      }
+      pdfBuffer = Buffer.concat(chunks);
+    }
 
     // Return PDF
-    return new NextResponse(Buffer.from(pdfBuffer), {
+    return new NextResponse(pdfBuffer as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
