@@ -19,6 +19,7 @@ const burstLimit = new Map<string, { count: number; resetTime: number }>();
 // WHITELIST: Legitimate search engine bots (NEVER block these!)
 const WHITELISTED_BOTS = [
   'googlebot',      // Google Search
+  'google-inspectiontool', // Google Search Console URL Inspection
   'bingbot',        // Bing Search
   'slurp',          // Yahoo Search
   'duckduckbot',    // DuckDuckGo
