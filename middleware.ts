@@ -185,6 +185,9 @@ export function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || '';
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
+  // Check if this is a whitelisted bot (used in multiple places)
+  const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
+
   // SKIP security checks for static assets (already in matcher, but double-check)
   if (
     pathname.startsWith('/_next/') ||
@@ -201,7 +204,6 @@ export function middleware(request: NextRequest) {
   }
 
   // 2. MAXIMUM SECURITY: Validate browser headers (skip for whitelisted bots)
-  const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
   if (!pathname.startsWith('/api') && !isWhitelistedBot && !hasValidHeaders(request)) {
     console.log(`🚫 [INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
     return new NextResponse('Forbidden', { status: 403 });
@@ -264,6 +266,11 @@ export function middleware(request: NextRequest) {
 
   // 6. Add MAXIMUM SECURITY headers to response
   const response = NextResponse.next();
+
+  // DEBUG: Add header to show bot was allowed
+  if (isWhitelistedBot) {
+    response.headers.set('X-Bot-Status', 'whitelisted');
+  }
 
   // Anti-scraping headers
   response.headers.set('X-Robots-Tag', 'noarchive, nosnippet, noimageindex, nofollow');
