@@ -356,6 +356,218 @@ export default function WebAnalyzerPage() {
             </CardContent>
           </Card>
 
+          {/* NEW: Content Analysis */}
+          {(analysis as any).content && (
+            <Card>
+              <CardHeader>
+                <CardTitle>📝 Analýza obsahu</CardTitle>
+                <CardDescription>Readability score a textové metriky</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Word Count</p>
+                      <p className="text-2xl font-bold">{(analysis as any).content.wordCount}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Readability</p>
+                      <p className={`text-2xl font-bold ${
+                        (analysis as any).content.readabilityScore >= 60 ? 'text-primary' :
+                        (analysis as any).content.readabilityScore >= 40 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {(analysis as any).content.readabilityScore}/100
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Věty</p>
+                      <p className="text-2xl font-bold">{(analysis as any).content.sentenceCount}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Odstavce</p>
+                      <p className="text-2xl font-bold">{(analysis as any).content.paragraphCount}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">
+                      {(analysis as any).content.readabilityLevel === 'very-easy' && '✅ Velmi snadné'}
+                      {(analysis as any).content.readabilityLevel === 'easy' && '✅ Snadné'}
+                      {(analysis as any).content.readabilityLevel === 'moderate' && '⚠️ Střední'}
+                      {(analysis as any).content.readabilityLevel === 'difficult' && '❌ Těžké'}
+                      {(analysis as any).content.readabilityLevel === 'very-difficult' && '❌ Velmi těžké'}
+                    </Badge>
+                    <p className="text-sm text-muted-foreground">
+                      Průměr: {(analysis as any).content.averageWordsPerSentence} slov/věta
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* NEW: Technology Stack */}
+          {(analysis as any).technology && (
+            <Card>
+              <CardHeader>
+                <CardTitle>🛠️ Detekované technologie</CardTitle>
+                <CardDescription>Platforma, framework, knihovny a analytics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {(analysis as any).technology.platform && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Platform/CMS</p>
+                        <Badge variant="default" className="text-sm">
+                          {(analysis as any).technology.platform}
+                        </Badge>
+                      </div>
+                    )}
+
+                    {(analysis as any).technology.framework && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Framework</p>
+                        <Badge variant="secondary" className="text-sm">
+                          {(analysis as any).technology.framework}
+                        </Badge>
+                      </div>
+                    )}
+
+                    {(analysis as any).technology.server && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Server</p>
+                        <Badge variant="outline" className="text-sm">
+                          {(analysis as any).technology.server}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+
+                  {(analysis as any).technology.libraries.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium mb-2">Knihovny</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(analysis as any).technology.libraries.map((lib: string, idx: number) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {lib}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(analysis as any).technology.analytics.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium mb-2">Analytics & Marketing</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(analysis as any).technology.analytics.map((tool: string, idx: number) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {tool}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(analysis as any).technology.fonts.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium mb-2">Fonty</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(analysis as any).technology.fonts.map((font: string, idx: number) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {font}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* NEW: Security & Performance */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Security */}
+            {(analysis as any).security && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>🔒 Bezpečnost</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">Security Score</p>
+                      <div className={`text-4xl font-bold ${
+                        (analysis as any).security.securityScore >= 80 ? 'text-primary' :
+                        (analysis as any).security.securityScore >= 50 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {(analysis as any).security.securityScore}/100
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Security Headers:</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center gap-1">
+                          {(analysis as any).security.headers.strictTransportSecurity ? '✅' : '❌'} HSTS
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {(analysis as any).security.headers.contentSecurityPolicy ? '✅' : '❌'} CSP
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {(analysis as any).security.headers.xFrameOptions ? '✅' : '❌'} X-Frame
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {(analysis as any).security.headers.xContentTypeOptions ? '✅' : '❌'} X-Content-Type
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Performance */}
+            {(analysis as any).performance && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>⚡ Performance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">Performance Score</p>
+                      <div className={`text-4xl font-bold ${
+                        (analysis as any).performance.estimatedScore >= 75 ? 'text-primary' :
+                        (analysis as any).performance.estimatedScore >= 50 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {(analysis as any).performance.estimatedScore}/100
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Total Resources:</span>
+                        <span className="font-medium">{(analysis as any).performance.totalResources}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Est. Size:</span>
+                        <span className="font-medium">{Math.round((analysis as any).performance.totalResourcesSize / 1024)} MB</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Compression:</span>
+                        <span>{(analysis as any).performance.hasCompression ? '✅ Ano' : '❌ Ne'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Caching:</span>
+                        <span>{(analysis as any).performance.hasCaching ? '✅ Ano' : '❌ Ne'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
           {/* Issues List */}
           {analysis.issues.length > 0 && (
             <Card>
@@ -570,6 +782,18 @@ export default function WebAnalyzerPage() {
                       Email templates s nabídkou
                     </h4>
                   </div>
+
+                  {/* Email Subject Display */}
+                  {(analysis as any).proposalSubject && (
+                    <div className="p-3 bg-background rounded border">
+                      <p className="text-xs text-muted-foreground mb-1">Předmět emailu:</p>
+                      <p className="font-semibold text-sm">
+                        {selectedTemplate === 'auto'
+                          ? (analysis as any).proposalSubject
+                          : (analysis as any).emailSubjects?.[selectedTemplate]}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Template Selector */}
                   {(analysis as any).emailTemplates && (

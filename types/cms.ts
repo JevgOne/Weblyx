@@ -225,6 +225,7 @@ export interface Lead {
 
 // Web Analyzer Types
 export interface WebAnalysisTechnical {
+  // SEO Basics
   title?: string;
   description?: string;
   keywords?: string[];
@@ -238,16 +239,72 @@ export interface WebAnalysisTechnical {
     h5: number;
     h6: number;
   };
+
+  // Images & Links
   imagesWithoutAlt: number;
   totalImages: number;
   internalLinks: number;
   externalLinks: number;
+
+  // Technical
   hasSitemap: boolean;
   hasRobotsTxt: boolean;
   loadTime: number;
   mobileResponsive: boolean;
   hasSSL: boolean;
   schemaMarkup: boolean;
+}
+
+export interface WebAnalysisContent {
+  wordCount: number;
+  paragraphCount: number;
+  sentenceCount: number;
+  readabilityScore: number; // Flesch Reading Ease (0-100)
+  readabilityLevel: 'very-easy' | 'easy' | 'moderate' | 'difficult' | 'very-difficult';
+  averageWordsPerSentence: number;
+  language?: string;
+}
+
+export interface WebAnalysisTechnology {
+  // CMS/Platform
+  platform?: string; // WordPress, Shopify, Wix, Next.js, Custom
+  platformVersion?: string;
+
+  // Frontend
+  framework?: string; // React, Vue, Angular, etc.
+  libraries: string[]; // jQuery, Bootstrap, Tailwind, etc.
+
+  // Analytics & Marketing
+  analytics: string[]; // Google Analytics, GTM, Facebook Pixel
+
+  // Server
+  server?: string; // nginx, Apache, Cloudflare
+
+  // Other
+  fonts: string[]; // Google Fonts, etc.
+  cdns: string[]; // Cloudflare, jsDelivr, etc.
+}
+
+export interface WebAnalysisSecurity {
+  securityScore: number; // 0-100
+  headers: {
+    strictTransportSecurity: boolean;
+    contentSecurityPolicy: boolean;
+    xFrameOptions: boolean;
+    xContentTypeOptions: boolean;
+    referrerPolicy: boolean;
+  };
+  mixedContent: boolean;
+  httpsRedirect: boolean;
+}
+
+export interface WebAnalysisPerformance {
+  estimatedScore: number; // 0-100 based on simple metrics
+  totalResourcesSize: number; // KB
+  totalResources: number;
+  hasCompression: boolean;
+  hasCaching: boolean;
+  largeImages: number; // count of images > 100KB
 }
 
 export interface WebAnalysisIssue {
@@ -273,6 +330,12 @@ export interface WebAnalysisResult {
 
   // Technical analysis
   technical: WebAnalysisTechnical;
+
+  // NEW: Extended analysis
+  content?: WebAnalysisContent;
+  technology?: WebAnalysisTechnology;
+  security?: WebAnalysisSecurity;
+  performance?: WebAnalysisPerformance;
 
   // Identified issues
   issues: WebAnalysisIssue[];

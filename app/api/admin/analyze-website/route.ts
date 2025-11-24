@@ -6,6 +6,25 @@ import { captureMultipleScreenshots } from '@/lib/screenshot';
 // Email template types
 type EmailTemplate = 'general' | 'slow-web' | 'bad-seo' | 'mobile-issues' | 'outdated-design' | 'follow-up';
 
+function generateEmailSubject(analysis: any, template: EmailTemplate): string {
+  const company = analysis.businessName || 'vaší společnosti';
+
+  switch (template) {
+    case 'slow-web':
+      return `${company} - Pomalý web snižuje vaše tržby`;
+    case 'bad-seo':
+      return `${company} - Váš web není vidět v Google`;
+    case 'mobile-issues':
+      return `${company} - Ztrácíte 70% zákazníků kvůli mobilu`;
+    case 'outdated-design':
+      return `${company} - Zastaralý web odrazuje zákazníky`;
+    case 'follow-up':
+      return `${company} - Speciální nabídka platná do konce měsíce`;
+    default:
+      return `${company} - Analýza webu a nabídka optimalizace`;
+  }
+}
+
 function detectPrimaryIssue(analysis: any): EmailTemplate {
   const { performance, seo, accessibility } = analysis;
   const perfScore = performance?.score || 0;
@@ -331,14 +350,13 @@ function generateOutdatedDesignEmail(analysis: any): string {
   email += `⏱️ Termín: 7-10 pracovních dní\n`;
   email += `🎁 AKCE: Logo refresh ZDARMA (v ceně)\n\n`;
 
-  email += `📊 REFERENCE\n`;
+  email += `📊 VÝSLEDKY NAŠICH KLIENTŮ\n`;
   email += `─────────────────────\n`;
-  email += `Podívejte se na naše portfolio:\n`;
-  email += `https://weblyx.cz/portfolio\n\n`;
   email += `Náš redesign typicky přinese:\n`;
   email += `• +300% konverze\n`;
   email += `• -70% bounce rate\n`;
-  email += `• +200% času na webu\n\n`;
+  email += `• +200% času na webu\n`;
+  email += `• Lepší pozice v Google\n\n`;
 
   email += `📞 KONTAKT\n`;
   email += `─────────────────────\n`;
@@ -463,8 +481,19 @@ export async function POST(request: NextRequest) {
       followUp: generateFollowUpEmail(analysis),
     };
 
+    // Generate email subjects for all templates
+    const emailSubjects = {
+      general: generateEmailSubject(analysis, 'general'),
+      slowWeb: generateEmailSubject(analysis, 'slow-web'),
+      badSEO: generateEmailSubject(analysis, 'bad-seo'),
+      mobileIssues: generateEmailSubject(analysis, 'mobile-issues'),
+      outdatedDesign: generateEmailSubject(analysis, 'outdated-design'),
+      followUp: generateEmailSubject(analysis, 'follow-up'),
+    };
+
     // Primary email (automatically selected based on issues)
     const proposalEmail = generateProposalEmail(analysis);
+    const proposalSubject = generateEmailSubject(analysis, primaryIssue);
 
     // Save to database
     let analysisId: string | undefined;
@@ -474,7 +503,9 @@ export async function POST(request: NextRequest) {
         ...analysis,
         primaryIssue, // Store which template was auto-selected
         proposalEmail, // Primary email
+        proposalSubject, // Primary email subject
         emailTemplates, // All available templates
+        emailSubjects, // All email subjects
         analyzedAt: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -489,7 +520,9 @@ export async function POST(request: NextRequest) {
         id: analysisId,
         primaryIssue, // Which template was selected
         proposalEmail, // Primary email
+        proposalSubject, // Primary email subject
         emailTemplates, // All templates available for manual selection
+        emailSubjects, // All subjects for manual selection
       },
     });
   } catch (error: any) {
