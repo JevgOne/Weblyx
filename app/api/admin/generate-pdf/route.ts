@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { renderToStream } from '@react-pdf/renderer';
-import { WebAnalysisReport } from '@/lib/pdf-generator';
 import { adminDbInstance } from '@/lib/firebase-admin';
 import { WebAnalysisResult, PromoCode } from '@/types/cms';
+import { generatePDFHTML } from '@/lib/pdf-template';
+import puppeteer from 'puppeteer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -68,24 +68,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate PDF
-    const pdfElement = WebAnalysisReport({
+    // Generate HTML
+    const html = generatePDFHTML(
       analysis,
       promoCode,
-      businessName: businessName || analysis.businessName,
+      businessName || analysis.businessName
+    );
+
+    // Generate PDF using Puppeteer
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    const stream = await renderToStream(pdfElement as any);
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    // Convert stream to buffer
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-      chunks.push(Buffer.from(chunk));
-    }
-    const buffer = Buffer.concat(chunks);
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      },
+    });
+
+    await browser.close();
 
     // Return PDF
-    return new NextResponse(buffer, {
+    return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
