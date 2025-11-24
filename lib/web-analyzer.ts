@@ -64,8 +64,8 @@ export class WebAnalyzer {
     const $ = this.$;
 
     // Meta tags
-    const title = $('title').text() || undefined;
-    const description = $('meta[name="description"]').attr('content') || undefined;
+    const title = $('title').text() || null;
+    const description = $('meta[name="description"]').attr('content') || null;
     const keywordsContent = $('meta[name="keywords"]').attr('content');
     const keywords = keywordsContent
       ? keywordsContent.split(',').map(k => k.trim()).filter(Boolean)
@@ -554,9 +554,9 @@ export class WebAnalyzer {
     const fonts: string[] = [];
     const cdns: string[] = [];
 
-    let platform: string | undefined;
-    let framework: string | undefined;
-    let server: string | undefined;
+    let platform: string | null = null;
+    let framework: string | null = null;
+    let server: string | null = null;
 
     // CMS/Platform Detection
     if (htmlLower.includes('wp-content') || htmlLower.includes('wordpress')) {

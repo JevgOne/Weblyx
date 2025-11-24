@@ -6,6 +6,24 @@ import { captureMultipleScreenshots } from '@/lib/screenshot';
 // Email template types
 type EmailTemplate = 'general' | 'slow-web' | 'bad-seo' | 'mobile-issues' | 'outdated-design' | 'follow-up';
 
+// Helper function to sanitize data for Firestore (removes undefined values, converts Dates to ISO strings)
+function sanitizeForFirestore(obj: any): any {
+  if (obj === null || obj === undefined) return null;
+  if (obj instanceof Date) return obj.toISOString();
+  if (Array.isArray(obj)) return obj.map(sanitizeForFirestore);
+  if (typeof obj === 'object') {
+    const sanitized: any = {};
+    for (const key in obj) {
+      const value = obj[key];
+      if (value !== undefined) {
+        sanitized[key] = sanitizeForFirestore(value);
+      }
+    }
+    return sanitized;
+  }
+  return obj;
+}
+
 function generateEmailSubject(analysis: any, template: EmailTemplate): string {
   const company = analysis.businessName || 'vaší společnosti';
 
@@ -499,7 +517,8 @@ export async function POST(request: NextRequest) {
     let analysisId: string | undefined;
 
     if (adminDbInstance) {
-      const result = await adminDbInstance.collection('web_analyses').add({
+      // Sanitize all data before saving to Firestore
+      const dataToSave = sanitizeForFirestore({
         ...analysis,
         primaryIssue, // Store which template was auto-selected
         proposalEmail, // Primary email
@@ -510,6 +529,8 @@ export async function POST(request: NextRequest) {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+
+      const result = await adminDbInstance.collection('web_analyses').add(dataToSave);
       analysisId = result.id;
     }
 

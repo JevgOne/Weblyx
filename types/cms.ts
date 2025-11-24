@@ -226,8 +226,8 @@ export interface Lead {
 // Web Analyzer Types
 export interface WebAnalysisTechnical {
   // SEO Basics
-  title?: string;
-  description?: string;
+  title?: string | null;
+  description?: string | null;
   keywords?: string[];
   hasH1: boolean;
   h1Count: number;
@@ -267,18 +267,18 @@ export interface WebAnalysisContent {
 
 export interface WebAnalysisTechnology {
   // CMS/Platform
-  platform?: string; // WordPress, Shopify, Wix, Next.js, Custom
-  platformVersion?: string;
+  platform?: string | null; // WordPress, Shopify, Wix, Next.js, Custom
+  platformVersion?: string | null;
 
   // Frontend
-  framework?: string; // React, Vue, Angular, etc.
+  framework?: string | null; // React, Vue, Angular, etc.
   libraries: string[]; // jQuery, Bootstrap, Tailwind, etc.
 
   // Analytics & Marketing
   analytics: string[]; // Google Analytics, GTM, Facebook Pixel
 
   // Server
-  server?: string; // nginx, Apache, Cloudflare
+  server?: string | null; // nginx, Apache, Cloudflare
 
   // Other
   fonts: string[]; // Google Fonts, etc.
