@@ -200,8 +200,9 @@ export function middleware(request: NextRequest) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // 2. MAXIMUM SECURITY: Validate browser headers
-  if (!pathname.startsWith('/api') && !hasValidHeaders(request)) {
+  // 2. MAXIMUM SECURITY: Validate browser headers (skip for whitelisted bots)
+  const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
+  if (!pathname.startsWith('/api') && !isWhitelistedBot && !hasValidHeaders(request)) {
     console.log(`🚫 [INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
     return new NextResponse('Forbidden', { status: 403 });
   }
