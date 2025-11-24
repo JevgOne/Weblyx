@@ -63,6 +63,48 @@ const mustHaveFeatures = [
   "Vícejazyčnost",
 ];
 
+// NEW: Project purposes
+const projectPurposes = [
+  { id: "portfolio", label: "Portfolio", desc: "Ukázka prací a referencí" },
+  { id: "corporate", label: "Firemní prezentace", desc: "Prezentace firmy a služeb" },
+  { id: "eshop", label: "E-shop", desc: "Prodej produktů online" },
+  { id: "blog", label: "Blog / Magazín", desc: "Publikování článků a obsahu" },
+  { id: "landing", label: "Landing page", desc: "Jedna stránka pro kampaň/produkt" },
+  { id: "webapp", label: "Webová aplikace", desc: "Interaktivní aplikace" },
+  { id: "booking", label: "Rezervační systém", desc: "Online objednávky a rezervace" },
+  { id: "other", label: "Jiné", desc: "Vlastní typ projektu" },
+];
+
+// NEW: Main user actions
+const mainActions = [
+  "Číst informace",
+  "Kontaktovat nás",
+  "Objednat službu",
+  "Koupit produkt",
+  "Rezervovat termín",
+  "Registrovat se / Přihlásit se",
+  "Stáhnout soubory",
+  "Zanechat recenzi",
+  "Sledovat novinky",
+  "Používat kalkulačku/nástroj",
+];
+
+// NEW: Common website sections
+const commonSections = [
+  "Domů / Homepage",
+  "O nás / O mně",
+  "Služby / Co nabízíme",
+  "Portfolio / Reference",
+  "Ceník",
+  "Blog / Aktuality",
+  "FAQ / Často kladené otázky",
+  "Kontakt",
+  "Galerie",
+  "Tým / Kdo jsme",
+  "Kariéra / Pracujte s námi",
+  "Podmínky užití",
+];
+
 export default function QuotePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -71,6 +113,15 @@ export default function QuotePage() {
     projectTypeOther: "",
     companyName: "",
     businessDescription: "",
+    // NEW: Extended project details
+    projectDetails: {
+      purpose: "", // portfolio, firemní prezentace, e-shop, blog, landing page, aplikace
+      targetAudience: "", // Pro koho je web určený
+      mainActions: [] as string[], // Co návštěvníci budou dělat
+      sections: [] as string[], // Jaké sekce/stránky
+      hasContent: "", // yes/no/partial - Má připravené texty/fotky
+      contentNotes: "", // Poznámky k obsahu
+    },
     features: [] as string[],
     designPreferences: {
       colors: {
@@ -91,7 +142,7 @@ export default function QuotePage() {
     phone: "",
   });
 
-  const totalSteps = 5; // Extended to include design step
+  const totalSteps = 6; // Extended to include project details step
 
   const handleNext = () => {
     if (step < totalSteps) setStep(step + 1);
@@ -137,11 +188,18 @@ export default function QuotePage() {
       case 2:
         return formData.companyName !== "" && formData.businessDescription !== "";
       case 3:
+        // NEW: Project details - purpose and target audience required
+        return (
+          formData.projectDetails.purpose !== "" &&
+          formData.projectDetails.targetAudience !== "" &&
+          formData.projectDetails.mainActions.length > 0
+        );
+      case 4:
         // Design step - style is required
         return formData.designPreferences.style !== "";
-      case 4:
-        return formData.budget !== "" && formData.timeline !== "";
       case 5:
+        return formData.budget !== "" && formData.timeline !== "";
+      case 6:
         return formData.name !== "" && formData.email !== "";
       default:
         return false;
@@ -170,16 +228,18 @@ export default function QuotePage() {
             <CardTitle className="text-2xl">
               {step === 1 && "Co potřebujete vytvořit?"}
               {step === 2 && "O vašem byznysu"}
-              {step === 3 && "Design & Preference"}
-              {step === 4 && "Časový rámec & Rozpočet"}
-              {step === 5 && "Kontaktní údaje"}
+              {step === 3 && "Účel a cílová skupina"}
+              {step === 4 && "Design & Preference"}
+              {step === 5 && "Časový rámec & Rozpočet"}
+              {step === 6 && "Kontaktní údaje"}
             </CardTitle>
             <CardDescription>
               {step === 1 && "Vyberte typ projektu, který potřebujete"}
               {step === 2 && "Řekněte nám více o vašem podnikání"}
-              {step === 3 && "Jak by měl váš web vypadat a co by měl umět?"}
-              {step === 4 && "Kdy potřebujete web a jaký je váš rozpočet"}
-              {step === 5 && "Jak se s vámi můžeme spojit"}
+              {step === 3 && "Pro koho je web a co budou návštěvníci dělat?"}
+              {step === 4 && "Jak by měl váš web vypadat a co by měl umět?"}
+              {step === 5 && "Kdy potřebujete web a jaký je váš rozpočet"}
+              {step === 6 && "Jak se s vámi můžeme spojit"}
             </CardDescription>
           </CardHeader>
 
@@ -266,8 +326,193 @@ export default function QuotePage() {
               </div>
             )}
 
-            {/* Step 3: Design & Preferences */}
+            {/* Step 3: NEW - Project Details (Purpose, Target Audience, Sections) */}
             {step === 3 && (
+              <div className="space-y-6">
+                {/* Purpose */}
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">Jaký je hlavní účel webu? *</Label>
+                  <RadioGroup
+                    value={formData.projectDetails.purpose}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        projectDetails: { ...formData.projectDetails, purpose: value },
+                      })
+                    }
+                  >
+                    <div className="grid gap-3">
+                      {projectPurposes.map((purpose) => (
+                        <Label
+                          key={purpose.id}
+                          htmlFor={`purpose-${purpose.id}`}
+                          className="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer hover:border-primary transition-colors"
+                        >
+                          <RadioGroupItem value={purpose.id} id={`purpose-${purpose.id}`} className="mt-1" />
+                          <div className="flex-1">
+                            <div className="font-medium">{purpose.label}</div>
+                            <div className="text-sm text-muted-foreground">{purpose.desc}</div>
+                          </div>
+                        </Label>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                {/* Target Audience */}
+                <div className="space-y-2">
+                  <Label htmlFor="targetAudience" className="text-base font-semibold">
+                    Pro koho je web určený? (Cílová skupina) *
+                  </Label>
+                  <Textarea
+                    id="targetAudience"
+                    value={formData.projectDetails.targetAudience}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        projectDetails: { ...formData.projectDetails, targetAudience: e.target.value },
+                      })
+                    }
+                    placeholder="Např. mladí profesionálové 25-35 let, firmy v Praze, rodiče s dětmi..."
+                    rows={3}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Popište věk, zájmy, potřeby vaší cílové skupiny
+                  </p>
+                </div>
+
+                {/* Main Actions */}
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">
+                    Co budou návštěvníci na webu dělat? (vyberte min. 1) *
+                  </Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {mainActions.map((action) => (
+                      <Label
+                        key={action}
+                        className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
+                      >
+                        <Checkbox
+                          checked={formData.projectDetails.mainActions.includes(action)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({
+                                ...formData,
+                                projectDetails: {
+                                  ...formData.projectDetails,
+                                  mainActions: [...formData.projectDetails.mainActions, action],
+                                },
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                projectDetails: {
+                                  ...formData.projectDetails,
+                                  mainActions: formData.projectDetails.mainActions.filter(
+                                    (a) => a !== action
+                                  ),
+                                },
+                              });
+                            }
+                          }}
+                        />
+                        <span className="text-sm">{action}</span>
+                      </Label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sections */}
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">
+                    Jaké sekce/stránky by měl web obsahovat?
+                  </Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {commonSections.map((section) => (
+                      <Label
+                        key={section}
+                        className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
+                      >
+                        <Checkbox
+                          checked={formData.projectDetails.sections.includes(section)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({
+                                ...formData,
+                                projectDetails: {
+                                  ...formData.projectDetails,
+                                  sections: [...formData.projectDetails.sections, section],
+                                },
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                projectDetails: {
+                                  ...formData.projectDetails,
+                                  sections: formData.projectDetails.sections.filter(
+                                    (s) => s !== section
+                                  ),
+                                },
+                              });
+                            }
+                          }}
+                        />
+                        <span className="text-sm">{section}</span>
+                      </Label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Content Availability */}
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">Máte připravené texty a fotky?</Label>
+                  <RadioGroup
+                    value={formData.projectDetails.hasContent}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        projectDetails: { ...formData.projectDetails, hasContent: value },
+                      })
+                    }
+                  >
+                    <Label className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer">
+                      <RadioGroupItem value="yes" />
+                      <span>Ano, mám vše připravené</span>
+                    </Label>
+                    <Label className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer">
+                      <RadioGroupItem value="partial" />
+                      <span>Částečně (některé texty/fotky)</span>
+                    </Label>
+                    <Label className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer">
+                      <RadioGroupItem value="no" />
+                      <span>Ne, potřebuji pomoc s obsahem</span>
+                    </Label>
+                  </RadioGroup>
+                </div>
+
+                {/* Content Notes */}
+                <div className="space-y-2">
+                  <Label htmlFor="contentNotes" className="text-base font-semibold">
+                    Poznámky k obsahu (volitelné)
+                  </Label>
+                  <Textarea
+                    id="contentNotes"
+                    value={formData.projectDetails.contentNotes}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        projectDetails: { ...formData.projectDetails, contentNotes: e.target.value },
+                      })
+                    }
+                    placeholder="Např. potřebuji copywriting, mám fotky ale ne profesionální..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Design & Preferences */}
+            {step === 4 && (
               <div className="space-y-6">
                 {/* Color Preferences */}
                 <div className="space-y-4">
@@ -569,8 +814,8 @@ export default function QuotePage() {
               </div>
             )}
 
-            {/* Step 4: Timeline & Budget */}
-            {step === 4 && (
+            {/* Step 5: Timeline & Budget */}
+            {step === 5 && (
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Kdy potřebujete web spustit? *</Label>
@@ -628,8 +873,8 @@ export default function QuotePage() {
               </div>
             )}
 
-            {/* Step 5: Contact Info */}
-            {step === 5 && (
+            {/* Step 6: Contact Info */}
+            {step === 6 && (
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Jméno a příjmení *</Label>
