@@ -16,10 +16,27 @@ const BURST_MAX_REQUESTS = 5; // Max 5 requests in 10 seconds
 // Track burst requests separately
 const burstLimit = new Map<string, { count: number; resetTime: number }>();
 
-// MAXIMUM SECURITY: Block ALL bots and automated tools
+// WHITELIST: Legitimate search engine bots (NEVER block these!)
+const WHITELISTED_BOTS = [
+  'googlebot',      // Google Search
+  'bingbot',        // Bing Search
+  'slurp',          // Yahoo Search
+  'duckduckbot',    // DuckDuckGo
+  'baiduspider',    // Baidu Search
+  'yandexbot',      // Yandex Search
+  'facebot',        // Facebook crawler
+  'twitterbot',     // Twitter crawler
+  'linkedinbot',    // LinkedIn crawler
+  'discordbot',     // Discord link previews
+  'slackbot',       // Slack link previews
+  'telegrambot',    // Telegram link previews
+  'whatsapp',       // WhatsApp link previews
+];
+
+// MAXIMUM SECURITY: Block ALL bots and automated tools EXCEPT whitelisted
 const BLOCKED_USER_AGENTS = [
-  // Scrapers & Crawlers
-  'bot', 'crawler', 'spider', 'scraper', 'scrape', 'crawl',
+  // Scrapers & Crawlers (but NOT legitimate search engines)
+  'spider', 'scraper', 'scrape', 'crawl',
 
   // Download tools
   'curl', 'wget', 'aria2', 'axel', 'download', 'fetch',
@@ -106,7 +123,14 @@ function isSuspiciousUserAgent(userAgent: string): boolean {
 
   const ua = userAgent.toLowerCase();
 
-  // Check if blocked pattern exists
+  // ✅ FIRST: Check if it's a whitelisted bot (search engines, social crawlers)
+  const isWhitelistedBot = WHITELISTED_BOTS.some(bot => ua.includes(bot));
+  if (isWhitelistedBot) {
+    console.log(`✅ [WHITELISTED BOT] Allowing: ${userAgent.substring(0, 100)}`);
+    return false; // Allow whitelisted bots
+  }
+
+  // ❌ THEN: Check if blocked pattern exists
   if (BLOCKED_USER_AGENTS.some(pattern => ua.includes(pattern))) {
     return true;
   }
