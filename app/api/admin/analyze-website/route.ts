@@ -171,15 +171,8 @@ function generateGeneralEmail(analysis: any): string {
   // CTA
   let cta = `📞 DALŠÍ KROKY\n`;
   cta += `─────────────────────\n`;
-  cta += `Rádi s vámi probereme podrobnosti!\n\n`;
-  cta += `• Zavolejte: +420 702 110 166\n`;
-  cta += `• Email: info@weblyx.cz\n`;
-  cta += `• WhatsApp: wa.me/420702110166\n`;
-  cta += `• Web: https://weblyx.cz\n\n`;
-  cta += `Těšíme se na spolupráci!\n\n`;
-  cta += `S pozdravem,\n`;
-  cta += `Tým Weblyx\n`;
-  cta += `https://weblyx.cz`;
+  cta += `Rádi s vámi probereme podrobnosti a zodpovíme všechny vaše otázky!\n\n`;
+  cta += `Těšíme se na spolupráci!`;
 
   return greeting + summary + offer + why + cta;
 }
@@ -222,13 +215,7 @@ function generateSlowWebEmail(analysis: any): string {
   email += `Po optimalizaci: 95+/100 bodů\n`;
   email += `Úspora času: 6+ sekund na načtení\n\n`;
 
-  email += `📞 KONTAKT\n`;
-  email += `─────────────────────\n`;
-  email += `Zavolejte: +420 702 110 166\n`;
-  email += `Email: info@weblyx.cz\n`;
-  email += `WhatsApp: wa.me/420702110166\n\n`;
-  email += `Každý den prodlení = ztracení zákazníci!\n\n`;
-  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+  email += `Každý den prodlení = ztracení zákazníci!\nTěšíme se na spolupráci.`;
 
   return email;
 }
@@ -275,12 +262,7 @@ function generateBadSEOEmail(analysis: any): string {
   email += `• Více poptávek bez reklamy\n`;
   email += `• Dlouhodobý růst návštěvnosti\n\n`;
 
-  email += `📞 KONTAKT\n`;
-  email += `─────────────────────\n`;
-  email += `Zavolejte: +420 702 110 166\n`;
-  email += `Email: info@weblyx.cz\n\n`;
-  email += `Každý měsíc bez SEO = ztracené příležitosti!\n\n`;
-  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+  email += `Každý měsíc bez SEO = ztracené příležitosti!\nTěšíme se na spolupráci.`;
 
   return email;
 }
@@ -326,12 +308,7 @@ function generateMobileIssuesEmail(analysis: any): string {
   email += `• +80% návratnost návštěvníků\n`;
   email += `• Lepší pozice v Google\n\n`;
 
-  email += `📞 KONTAKT\n`;
-  email += `─────────────────────\n`;
-  email += `Zavolejte: +420 702 110 166\n`;
-  email += `Email: info@weblyx.cz\n\n`;
-  email += `Mobilní web = základ úspěchu v roce 2025!\n\n`;
-  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+  email += `Mobilní web = základ úspěchu v roce 2025!\nTěšíme se na spolupráci.`;
 
   return email;
 }
@@ -376,13 +353,7 @@ function generateOutdatedDesignEmail(analysis: any): string {
   email += `• +200% času na webu\n`;
   email += `• Lepší pozice v Google\n\n`;
 
-  email += `📞 KONTAKT\n`;
-  email += `─────────────────────\n`;
-  email += `Zavolejte: +420 702 110 166\n`;
-  email += `Email: info@weblyx.cz\n`;
-  email += `WhatsApp: wa.me/420702110166\n\n`;
-  email += `První dojem rozhoduje - získejte zákazníky na první pohled!\n\n`;
-  email += `S pozdravem,\nTým Weblyx\nhttps://weblyx.cz`;
+  email += `První dojem rozhoduje - získejte zákazníky na první pohled!\nTěšíme se na spolupráci.`;
 
   return email;
 }
@@ -425,17 +396,8 @@ function generateFollowUpEmail(analysis: any): string {
   email += `• Konkurence vás předbíhá\n`;
   email += `• Google vás penalizuje\n\n`;
 
-  email += `📞 MÁTE OTÁZKY?\n`;
-  email += `─────────────────────\n`;
-  email += `Rádi zodpovíme cokoliv:\n\n`;
-  email += `Zavolejte: +420 702 110 166\n`;
-  email += `Email: info@weblyx.cz\n`;
-  email += `WhatsApp: wa.me/420702110166\n\n`;
-  email += `Nebo si rovnou domluvte nezávaznou schůzku:\n`;
-  email += `https://weblyx.cz/kontakt\n\n`;
-
   email += `⏰ ZBÝVÁ POUZE ${30 - 7} DNÍ NA SLEVU!\n\n`;
-  email += `Těšíme se na spolupráci,\nTým Weblyx\nhttps://weblyx.cz`;
+  email += `Těšíme se na spolupráci!`;
 
   return email;
 }
