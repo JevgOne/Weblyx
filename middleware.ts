@@ -214,7 +214,8 @@ export function middleware(request: NextRequest) {
   }
 
   // 4. BURST PROTECTION: Block rapid-fire requests (scraper pattern)
-  if (isBurstLimited(ip)) {
+  // Skip rate limiting for whitelisted bots (search engines need to crawl freely)
+  if (!isWhitelistedBot && isBurstLimited(ip)) {
     console.log(`🚫 [BURST LIMIT] IP: ${ip} | Too many requests in 10s | Path: ${pathname}`);
     return new NextResponse('Too Many Requests', {
       status: 429,
@@ -224,11 +225,11 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  // 5. RATE LIMITING: Standard rate limit
+  // 5. RATE LIMITING: Standard rate limit (skip for whitelisted bots)
   const isApiRoute = pathname.startsWith('/api');
   const maxRequests = isApiRoute ? RATE_LIMIT_MAX_REQUESTS_API : RATE_LIMIT_MAX_REQUESTS;
 
-  if (isRateLimited(ip, maxRequests)) {
+  if (!isWhitelistedBot && isRateLimited(ip, maxRequests)) {
     console.log(`🚫 [RATE LIMIT] IP: ${ip} | Exceeded ${maxRequests} req/min | Path: ${pathname}`);
     return new NextResponse('Too Many Requests', {
       status: 429,
