@@ -783,18 +783,6 @@ export default function WebAnalyzerPage() {
                     </h4>
                   </div>
 
-                  {/* Email Subject Display */}
-                  {(analysis as any).proposalSubject && (
-                    <div className="p-3 bg-background rounded border">
-                      <p className="text-xs text-muted-foreground mb-1">Předmět emailu:</p>
-                      <p className="font-semibold text-sm">
-                        {selectedTemplate === 'auto'
-                          ? (analysis as any).proposalSubject
-                          : (analysis as any).emailSubjects?.[selectedTemplate]}
-                      </p>
-                    </div>
-                  )}
-
                   {/* Template Selector */}
                   {(analysis as any).emailTemplates && (
                     <div className="space-y-3">
@@ -860,6 +848,41 @@ export default function WebAnalyzerPage() {
                           className="justify-start"
                         >
                           📧 Follow-up
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Email Subject with Copy Button */}
+                  {(analysis as any).proposalSubject && (
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">Předmět emailu:</Label>
+                      <div className="flex gap-2">
+                        <div className="flex-1 p-3 bg-background rounded border">
+                          <p className="font-semibold text-sm">
+                            {selectedTemplate === 'auto'
+                              ? (analysis as any).proposalSubject
+                              : (analysis as any).emailSubjects?.[selectedTemplate]}
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const subject = selectedTemplate === 'auto'
+                              ? (analysis as any).proposalSubject
+                              : (analysis as any).emailSubjects?.[selectedTemplate];
+
+                            if (!subject) {
+                              alert("Předmět není dostupný");
+                              return;
+                            }
+                            navigator.clipboard.writeText(subject);
+                            setEmailCopied(true);
+                            setTimeout(() => setEmailCopied(false), 2000);
+                          }}
+                        >
+                          <Copy className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
