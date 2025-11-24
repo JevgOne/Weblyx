@@ -1,6 +1,11 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import { WebAnalysisResult, PromoCode } from '@/types/cms';
+
+// Weblyx Brand Colors
+const BRAND_COLOR = '#14B8A6'; // Teal primary
+const BRAND_SECONDARY = '#06B6D4'; // Cyan secondary
+const BRAND_DARK = '#0F172A'; // Dark text
 
 // Define styles
 const styles = StyleSheet.create({
@@ -11,18 +16,30 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 30,
-    borderBottom: '3px solid #667eea',
+    borderBottom: `3px solid ${BRAND_COLOR}`,
     paddingBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logo: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#667eea',
-    marginBottom: 5,
+    color: BRAND_DARK,
+  },
+  logoAccent: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: BRAND_COLOR,
   },
   headerSubtitle: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#6b7280',
+    marginTop: 4,
   },
   title: {
     fontSize: 24,
@@ -196,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   ctaBox: {
-    backgroundColor: '#667eea',
+    backgroundColor: BRAND_COLOR,
     padding: 20,
     borderRadius: 8,
     marginTop: 20,
@@ -210,7 +227,17 @@ const styles = StyleSheet.create({
   },
   ctaSubtext: {
     fontSize: 10,
-    color: '#e9d5ff',
+    color: '#f0fdfa',
+  },
+  contactInfo: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  contactItem: {
+    fontSize: 9,
+    color: '#ffffff',
   },
 });
 
@@ -233,8 +260,23 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
       {/* Page 1 - Cover & Summary */}
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.logo}>WEBLYX</Text>
-          <Text style={styles.headerSubtitle}>Analýza webu</Text>
+          <View style={styles.logoContainer}>
+            <View>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={styles.logo}>Web</Text>
+                <Text style={styles.logoAccent}>lyx</Text>
+              </View>
+              <Text style={styles.headerSubtitle}>Moderní weby s důrazem na SEO</Text>
+            </View>
+          </View>
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text style={{ fontSize: 10, color: BRAND_COLOR, fontWeight: 'bold' }}>
+              ANALÝZA WEBU
+            </Text>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 2 }}>
+              {new Date(analysis.analyzedAt).toLocaleDateString('cs-CZ')}
+            </Text>
+          </View>
         </View>
 
         <View style={{ marginTop: 40 }}>
@@ -309,11 +351,24 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           </View>
         )}
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Weblyx s.r.o. | weblyx.cz | info@weblyx.cz</Text>
-          <Text style={styles.footerText}>
-            Moderní webové stránky s důrazem na SEO a výkon
+        {/* CTA Box */}
+        <View style={styles.ctaBox}>
+          <Text style={styles.ctaText}>📞 Ozvěte se nám!</Text>
+          <Text style={styles.ctaSubtext}>
+            Rádi s vámi probereme výsledky analýzy a navrhneme řešení na míru
           </Text>
+          <View style={{ marginTop: 15, alignItems: 'center' }}>
+            <Text style={[styles.contactItem, { marginBottom: 5 }]}>
+              📧 info@weblyx.cz  |  📞 +420 702 110 166
+            </Text>
+            <Text style={styles.contactItem}>
+              🌐 www.weblyx.cz
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Weblyx © {new Date().getFullYear()} | Moderní weby s důrazem na SEO a výkon</Text>
         </View>
       </Page>
 
@@ -321,8 +376,15 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
       {analysis.issues.filter(i => i.category === 'critical').length > 0 && (
         <Page size="A4" style={styles.page}>
           <View style={styles.header}>
-            <Text style={styles.logo}>WEBLYX</Text>
-            <Text style={styles.headerSubtitle}>Analýza webu</Text>
+            <View style={styles.logoContainer}>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={styles.logo}>Web</Text>
+                <Text style={styles.logoAccent}>lyx</Text>
+              </View>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={{ fontSize: 10, color: BRAND_COLOR }}>Analýza webu</Text>
+            </View>
           </View>
 
           <View style={styles.section}>

@@ -854,15 +854,15 @@ export default function WebAnalyzerPage() {
                   )}
 
                   {/* Email Subject with Copy Button */}
-                  {(analysis as any).proposalSubject && (
+                  {((analysis as any).proposalSubject || (analysis as any).emailSubjects) && (
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">Předmět emailu:</Label>
+                      <Label className="text-xs text-muted-foreground">AI návrh - Předmět emailu:</Label>
                       <div className="flex gap-2">
                         <div className="flex-1 p-3 bg-background rounded border">
                           <p className="font-semibold text-sm">
                             {selectedTemplate === 'auto'
                               ? (analysis as any).proposalSubject
-                              : (analysis as any).emailSubjects?.[selectedTemplate]}
+                              : (analysis as any).emailSubjects?.[selectedTemplate] || (analysis as any).proposalSubject}
                           </p>
                         </div>
                         <Button
@@ -871,7 +871,7 @@ export default function WebAnalyzerPage() {
                           onClick={() => {
                             const subject = selectedTemplate === 'auto'
                               ? (analysis as any).proposalSubject
-                              : (analysis as any).emailSubjects?.[selectedTemplate];
+                              : (analysis as any).emailSubjects?.[selectedTemplate] || (analysis as any).proposalSubject;
 
                             if (!subject) {
                               alert("Předmět není dostupný");
