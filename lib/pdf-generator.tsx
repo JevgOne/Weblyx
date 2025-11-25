@@ -33,14 +33,14 @@ const BRAND_DARK = '#0F172A'; // Dark text
 // Define styles
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 32,
     backgroundColor: '#ffffff',
     fontFamily: 'Roboto',
   },
   header: {
-    marginBottom: 30,
-    borderBottom: `3px solid ${BRAND_COLOR}`,
-    paddingBottom: 20,
+    marginBottom: 20,
+    borderBottom: `2px solid ${BRAND_COLOR}`,
+    paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   section: {
-    marginBottom: 25,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 16,
@@ -88,18 +88,18 @@ const styles = StyleSheet.create({
   },
   scoreContainer: {
     backgroundColor: '#E0F2FE',
-    padding: 30,
-    borderRadius: 16,
-    marginBottom: 20,
+    padding: 24,
+    borderRadius: 14,
+    marginBottom: 16,
     alignItems: 'center',
     borderWidth: 2,
     borderColor: BRAND_COLOR,
     borderStyle: 'solid',
   },
   scoreNumber: {
-    fontSize: 80,
+    fontSize: 64,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   scoreLabel: {
     fontSize: 14,
@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
   },
   recommendationBox: {
     backgroundColor: '#ECFDF5',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 15,
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
     borderWidth: 2,
     borderColor: '#10B981',
     borderStyle: 'solid',
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 14,
   },
   statBox: {
     flex: 1,
