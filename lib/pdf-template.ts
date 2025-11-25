@@ -672,7 +672,7 @@ export function generatePDFHTML(
 
     ${analysis.recommendation ? `
     <div class="recommendation-box">
-      <div class="recommendation-title">💡 Doporučený balíček: ${fixCzechChars(analysis.recommendation.packageName)}</div>
+      <div class="recommendation-title">Doporučený balíček: ${fixCzechChars(analysis.recommendation.packageName)}</div>
       <div class="recommendation-text">${fixCzechChars(analysis.recommendation.reasoning)}</div>
       <ul class="recommendation-list">
         ${analysis.recommendation.matchedNeeds?.map(need => `<li>${fixCzechChars(need)}</li>`).join('') || ''}
@@ -680,83 +680,23 @@ export function generatePDFHTML(
     </div>
     ` : ''}
 
-    ${promoCode ? `
-    <div class="promo-box">
-      <div class="promo-title">🎁 Speciální nabídka pro vás</div>
-      <div class="promo-description">${promoCode.description || 'Využijte našeho speciálního promo kódu'}</div>
-      <div class="promo-code">${promoCode.code}</div>
-      <div class="promo-details">
-        ${promoCode.discountType === 'percentage' ? `Sleva ${promoCode.discountValue}%` : `Sleva ${promoCode.discountValue} Kč`}
-        · Platnost do ${new Date(promoCode.validUntil).toLocaleDateString('cs-CZ')}
-      </div>
-    </div>
-    ` : ''}
-
-    <div class="cta-box">
-      <div class="cta-title">📞 Ozvěte se nám!</div>
-      <div class="cta-text">Rádi s vámi probereme výsledky analýzy a navrhneme řešení na míru</div>
-      <div class="cta-contacts">
-        <div class="cta-contact">📧 info@weblyx.cz</div>
-        <div class="cta-contact">📞 +420 702 110 166</div>
-        <div class="cta-contact">🌐 www.weblyx.cz</div>
-      </div>
-    </div>
-
-    <div class="footer">
-      <div class="footer-text">Weblyx © ${new Date().getFullYear()} | Moderní weby s důrazem na SEO a výkon</div>
-    </div>
-  </div>
-
-  <!-- Page 2: Critical Issues -->
-  ${criticalIssues.length > 0 ? `
-  <div class="page">
-    <div class="header">
-      <div class="logo">
-        <div class="logo-text">
-          <span class="brand">Web</span><span class="accent">lyx</span>
-        </div>
-      </div>
-      <div class="header-info">
-        <div class="header-title">Analýza Webu</div>
-      </div>
-    </div>
-
-    <div class="issues-section">
-      <div class="section-title">🚨 Kritické problémy</div>
-      ${criticalIssues.map(issue => `
+    ${criticalIssues.length > 0 ? `
+    <div class="issues-section" style="margin: 40px 0;">
+      <div class="section-title">🚨 Hlavní problémy k řešení</div>
+      ${criticalIssues.slice(0, 2).map(issue => `
         <div class="issue-card critical">
           <div class="issue-title">${fixCzechChars(issue.title)}</div>
           <div class="issue-description">${fixCzechChars(issue.description)}</div>
-          ${issue.impact ? `<div class="issue-detail"><strong>Dopad:</strong> ${fixCzechChars(issue.impact)}</div>` : ''}
           ${issue.recommendation ? `<div class="issue-detail"><strong>Řešení:</strong> ${fixCzechChars(issue.recommendation)}</div>` : ''}
         </div>
       `).join('')}
     </div>
-
-    <div class="footer">
-      <div class="footer-text">Weblyx © ${new Date().getFullYear()} | www.weblyx.cz | info@weblyx.cz</div>
-    </div>
-  </div>
-  ` : ''}
-
-  <!-- Page 3: Warnings & Info -->
-  ${warningIssues.length > 0 || infoIssues.length > 0 ? `
-  <div class="page">
-    <div class="header">
-      <div class="logo">
-        <div class="logo-text">
-          <span class="brand">Web</span><span class="accent">lyx</span>
-        </div>
-      </div>
-      <div class="header-info">
-        <div class="header-title">Analýza Webu</div>
-      </div>
-    </div>
+    ` : ''}
 
     ${warningIssues.length > 0 ? `
-    <div class="issues-section">
-      <div class="section-title">⚠️ Varování</div>
-      ${warningIssues.slice(0, 5).map(issue => `
+    <div class="issues-section" style="margin: 32px 0;">
+      <div class="section-title" style="font-size: 18px;">⚠️ Další doporučení</div>
+      ${warningIssues.slice(0, 2).map(issue => `
         <div class="issue-card warning">
           <div class="issue-title">${fixCzechChars(issue.title)}</div>
           <div class="issue-description">${fixCzechChars(issue.description)}</div>
@@ -766,36 +706,24 @@ export function generatePDFHTML(
     </div>
     ` : ''}
 
-    ${infoIssues.length > 0 ? `
-    <div class="issues-section">
-      <div class="section-title">ℹ️ Informace & Tipy</div>
-      ${infoIssues.slice(0, 5).map(issue => `
-        <div class="issue-card info">
-          <div class="issue-title">${fixCzechChars(issue.title)}</div>
-          <div class="issue-description">${fixCzechChars(issue.description)}</div>
-        </div>
-      `).join('')}
-    </div>
-    ` : ''}
-
-    <div class="issues-section">
-      <div class="section-title">📊 Technické detaily</div>
+    <div class="issues-section" style="margin: 32px 0;">
+      <div class="section-title" style="font-size: 18px;">📊 Technické detaily</div>
       <div class="technical-grid">
         <div class="technical-row">
           <span class="technical-label">SSL/HTTPS:</span>
-          <span class="technical-value">${analysis.technical?.hasSSL ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.hasSSL ? 'Ano' : 'Ne'}</span>
         </div>
         <div class="technical-row">
           <span class="technical-label">Mobilní optimalizace:</span>
-          <span class="technical-value">${analysis.technical?.mobileResponsive ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.mobileResponsive ? 'Ano' : 'Ne'}</span>
         </div>
         <div class="technical-row">
           <span class="technical-label">Title tag:</span>
-          <span class="technical-value">${analysis.technical?.title ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.title ? 'Ano' : 'Ne'}</span>
         </div>
         <div class="technical-row">
           <span class="technical-label">Meta description:</span>
-          <span class="technical-value">${analysis.technical?.description ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.description ? 'Ano' : 'Ne'}</span>
         </div>
         <div class="technical-row">
           <span class="technical-label">H1 nadpis:</span>
@@ -815,11 +743,11 @@ export function generatePDFHTML(
         </div>
         <div class="technical-row">
           <span class="technical-label">Sitemap.xml:</span>
-          <span class="technical-value">${analysis.technical?.hasSitemap ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.hasSitemap ? 'Ano' : 'Ne'}</span>
         </div>
         <div class="technical-row">
           <span class="technical-label">Robots.txt:</span>
-          <span class="technical-value">${analysis.technical?.hasRobotsTxt ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.hasRobotsTxt ? 'Ano' : 'Ne'}</span>
         </div>
         <div class="technical-row">
           <span class="technical-label">Čas načtení:</span>
@@ -827,17 +755,40 @@ export function generatePDFHTML(
         </div>
         <div class="technical-row">
           <span class="technical-label">Schema markup:</span>
-          <span class="technical-value">${analysis.technical?.schemaMarkup ? '✓ Ano' : '✗ Ne'}</span>
+          <span class="technical-value">${analysis.technical?.schemaMarkup ? 'Ano' : 'Ne'}</span>
         </div>
       </div>
     </div>
 
+    ${promoCode ? `
+    <div class="promo-box">
+      <div class="promo-title">🎁 Speciální nabídka pro vás</div>
+      <div class="promo-description">${promoCode.description || 'Využijte našeho speciálního promo kódu'}</div>
+      <div class="promo-code">${promoCode.code}</div>
+      <div class="promo-details">
+        ${promoCode.discountType === 'percentage' ? `Sleva ${promoCode.discountValue}%` : `Sleva ${promoCode.discountValue} Kč`}
+        · Platnost do ${new Date(promoCode.validUntil).toLocaleDateString('cs-CZ')}
+      </div>
+    </div>
+    ` : ''}
+
+    <div class="cta-box">
+      <div class="cta-title">Nezávazná konzultace zdarma</div>
+      <div class="cta-text">Rádi s vámi probereme výsledky analýzy a navrhneme řešení na míru</div>
+      <div class="cta-contacts">
+        <div class="cta-contact">📧 info@weblyx.cz</div>
+        <div class="cta-contact">📞 +420 702 110 166</div>
+        <div class="cta-contact">🌐 www.weblyx.cz</div>
+      </div>
+    </div>
+
     <div class="footer">
-      <div class="footer-text">Weblyx © ${new Date().getFullYear()} | www.weblyx.cz | info@weblyx.cz</div>
+      <div class="footer-text">Weblyx © ${new Date().getFullYear()} | Moderní weby s důrazem na SEO a výkon</div>
     </div>
   </div>
-  ` : ''}
+
+  <!-- All content now on single page -->
 </body>
 </html>
-  `.trim();
+  `;
 }
