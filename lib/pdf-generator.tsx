@@ -2,6 +2,29 @@ import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import { WebAnalysisResult, PromoCode } from '@/types/cms';
 
+// Register fonts with UTF-8 support for Czech characters
+Font.register({
+  family: 'Roboto',
+  fonts: [
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf',
+      fontWeight: 300,
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf',
+      fontWeight: 400,
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf',
+      fontWeight: 500,
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+      fontWeight: 700,
+    },
+  ],
+});
+
 // Weblyx Brand Colors
 const BRAND_COLOR = '#14B8A6'; // Teal primary
 const BRAND_SECONDARY = '#06B6D4'; // Cyan secondary
@@ -12,7 +35,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 40,
     backgroundColor: '#ffffff',
-    fontFamily: 'Helvetica',
+    fontFamily: 'Roboto',
   },
   header: {
     marginBottom: 30,
@@ -161,7 +184,7 @@ const styles = StyleSheet.create({
     color: '#f59e0b',
     letterSpacing: 3,
     marginVertical: 10,
-    fontFamily: 'Courier',
+    fontFamily: 'Roboto',
   },
   promoDetails: {
     fontSize: 10,
