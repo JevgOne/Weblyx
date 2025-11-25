@@ -64,14 +64,17 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   scoreContainer: {
-    backgroundColor: '#f3f4f6',
-    padding: 20,
-    borderRadius: 8,
+    backgroundColor: '#E0F2FE',
+    padding: 30,
+    borderRadius: 16,
     marginBottom: 20,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: BRAND_COLOR,
+    borderStyle: 'solid',
   },
   scoreNumber: {
-    fontSize: 64,
+    fontSize: 80,
     fontWeight: 'bold',
     marginBottom: 5,
   },
@@ -112,26 +115,29 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
   recommendationBox: {
-    backgroundColor: '#ede9fe',
+    backgroundColor: '#ECFDF5',
     padding: 20,
-    borderRadius: 8,
-    marginBottom: 20,
+    borderRadius: 12,
+    marginBottom: 15,
+    borderWidth: 2,
+    borderColor: '#10B981',
+    borderStyle: 'solid',
   },
   recommendationTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#5b21b6',
+    color: '#059669',
     marginBottom: 8,
   },
   recommendationText: {
-    fontSize: 11,
-    color: '#4c1d95',
-    marginBottom: 12,
+    fontSize: 10,
+    color: '#047857',
+    marginBottom: 10,
     lineHeight: 1.5,
   },
   bulletPoint: {
     fontSize: 10,
-    color: '#4c1d95',
+    color: '#047857',
     marginBottom: 5,
     marginLeft: 15,
   },
@@ -215,8 +221,8 @@ const styles = StyleSheet.create({
   ctaBox: {
     backgroundColor: BRAND_COLOR,
     padding: 20,
-    borderRadius: 8,
-    marginTop: 20,
+    borderRadius: 12,
+    marginTop: 15,
     alignItems: 'center',
   },
   ctaText: {
@@ -392,17 +398,162 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           </View>
         )}
 
+        {/* Hlavní problémy - inline na Page 1 */}
+        {analysis.issues.filter(i => i.category === 'critical').length > 0 && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { fontSize: 14, marginBottom: 10 }]}>
+              🚨 Hlavní problémy k řešení
+            </Text>
+            {analysis.issues
+              .filter(i => i.category === 'critical')
+              .slice(0, 2)
+              .map((issue, idx) => (
+                <View key={idx} style={[styles.issueCard, { padding: 12, marginBottom: 10 }]}>
+                  <Text style={[styles.issueTitle, { color: '#991b1b', fontSize: 11 }]}>
+                    {fixCzechChars(issue.title)}
+                  </Text>
+                  <Text style={[styles.issueText, { fontSize: 9 }]}>
+                    {fixCzechChars(issue.description)}
+                  </Text>
+                  {issue.recommendation && (
+                    <Text style={[styles.issueText, { marginTop: 4, fontSize: 9 }]}>
+                      <Text style={{ fontWeight: 'bold' }}>Řešení: </Text>
+                      {fixCzechChars(issue.recommendation)}
+                    </Text>
+                  )}
+                </View>
+              ))}
+          </View>
+        )}
+
+        {/* Další doporučení - warnings inline */}
+        {analysis.issues.filter(i => i.category === 'warning').length > 0 && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { fontSize: 13, marginBottom: 10 }]}>
+              ⚠️ Další doporučení
+            </Text>
+            {analysis.issues
+              .filter(i => i.category === 'warning')
+              .slice(0, 2)
+              .map((issue, idx) => (
+                <View key={idx} style={[styles.warningCard, { padding: 10, marginBottom: 8 }]}>
+                  <Text style={[styles.issueTitle, { color: '#92400e', fontSize: 10 }]}>
+                    {fixCzechChars(issue.title)}
+                  </Text>
+                  <Text style={[styles.issueText, { fontSize: 8 }]}>
+                    {fixCzechChars(issue.description)}
+                  </Text>
+                  {issue.recommendation && (
+                    <Text style={[styles.issueText, { marginTop: 3, fontSize: 8 }]}>
+                      <Text style={{ fontWeight: 'bold' }}>Řešení: </Text>
+                      {fixCzechChars(issue.recommendation)}
+                    </Text>
+                  )}
+                </View>
+              ))}
+          </View>
+        )}
+
+        {/* Technické detaily - inline */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { fontSize: 13, marginBottom: 8 }]}>
+            📊 Technické detaily
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>SSL/HTTPS:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.hasSSL ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Mobilní:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.mobileResponsive ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Title tag:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.title ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Meta desc:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.description ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>H1 nadpis:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.h1Count} ks
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Obrázky:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.totalImages} ({analysis.technical.imagesWithoutAlt} bez ALT)
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Sitemap:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.hasSitemap ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Robots.txt:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.hasRobotsTxt ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Načtení:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.loadTime}ms
+                </Text>
+              </View>
+            </View>
+            <View style={{ width: '48%', marginBottom: 6 }}>
+              <View style={styles.technicalRow}>
+                <Text style={[styles.technicalLabel, { fontSize: 8 }]}>Schema:</Text>
+                <Text style={[styles.technicalValue, { fontSize: 8 }]}>
+                  {analysis.technical.schemaMarkup ? 'Ano' : 'Ne'}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
         {/* CTA Box */}
         <View style={styles.ctaBox}>
           <Text style={styles.ctaText}>Ozvěte se nám!</Text>
           <Text style={styles.ctaSubtext}>
             Rádi s vámi probereme výsledky analýzy a navrhneme řešení na míru
           </Text>
-          <View style={{ marginTop: 15, alignItems: 'center' }}>
-            <Text style={[styles.contactItem, { marginBottom: 5 }]}>
+          <View style={{ marginTop: 10, alignItems: 'center' }}>
+            <Text style={[styles.contactItem, { marginBottom: 3, fontSize: 8 }]}>
               info@weblyx.cz  |  +420 702 110 166
             </Text>
-            <Text style={styles.contactItem}>
+            <Text style={[styles.contactItem, { fontSize: 8 }]}>
               www.weblyx.cz
             </Text>
           </View>
@@ -410,168 +561,6 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Weblyx © {new Date().getFullYear()} | Moderní weby s důrazem na SEO a výkon</Text>
-        </View>
-      </Page>
-
-      {/* Page 2 - Critical Issues */}
-      {analysis.issues.filter(i => i.category === 'critical').length > 0 && (
-        <Page size="A4" style={styles.page}>
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={styles.logo}>Web</Text>
-                <Text style={styles.logoAccent}>lyx</Text>
-              </View>
-            </View>
-            <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ fontSize: 10, color: BRAND_COLOR }}>Analýza webu</Text>
-            </View>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Kritické problémy</Text>
-            {analysis.issues
-              .filter(i => i.category === 'critical')
-              .map((issue, idx) => (
-                <View key={idx} style={styles.issueCard}>
-                  <Text style={[styles.issueTitle, { color: '#991b1b' }]}>
-                    {fixCzechChars(issue.title)}
-                  </Text>
-                  <Text style={styles.issueText}>
-                    {fixCzechChars(issue.description)}
-                  </Text>
-                  <Text style={[styles.issueText, { marginTop: 5 }]}>
-                    <Text style={{ fontWeight: 'bold' }}>Dopad: </Text>
-                    {fixCzechChars(issue.impact)}
-                  </Text>
-                  <Text style={[styles.issueText, { marginTop: 3 }]}>
-                    <Text style={{ fontWeight: 'bold' }}>Řešení: </Text>
-                    {fixCzechChars(issue.recommendation)}
-                  </Text>
-                </View>
-              ))}
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Strana 2</Text>
-          </View>
-        </Page>
-      )}
-
-      {/* Page 3 - Warnings & Technical Details */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.logo}>WEBLYX</Text>
-          <Text style={styles.headerSubtitle}>Analýza webu</Text>
-        </View>
-
-        {analysis.issues.filter(i => i.category === 'warning').length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Varování</Text>
-            {analysis.issues
-              .filter(i => i.category === 'warning')
-              .slice(0, 5)
-              .map((issue, idx) => (
-                <View key={idx} style={styles.warningCard}>
-                  <Text style={[styles.issueTitle, { color: '#92400e' }]}>
-                    {fixCzechChars(issue.title)}
-                  </Text>
-                  <Text style={styles.issueText}>
-                    {fixCzechChars(issue.description)}
-                  </Text>
-                  <Text style={[styles.issueText, { marginTop: 3 }]}>
-                    <Text style={{ fontWeight: 'bold' }}>Řešení: </Text>
-                    {fixCzechChars(issue.recommendation)}
-                  </Text>
-                </View>
-              ))}
-          </View>
-        )}
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Technické detaily</Text>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>SSL/HTTPS:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.hasSSL ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Mobilní optimalizace:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.mobileResponsive ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Title tag:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.title ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Meta description:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.description ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>H1 nadpis:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.h1Count} ks
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Celkem obrázků:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.totalImages} ({analysis.technical.imagesWithoutAlt} bez ALT)
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Interní odkazy:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.internalLinks}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Externí odkazy:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.externalLinks}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Sitemap.xml:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.hasSitemap ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Robots.txt:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.hasRobotsTxt ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Čas načtení:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.loadTime}ms
-            </Text>
-          </View>
-          <View style={styles.technicalRow}>
-            <Text style={styles.technicalLabel}>Schema markup:</Text>
-            <Text style={styles.technicalValue}>
-              {analysis.technical.schemaMarkup ? 'Ano' : 'Ne'}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.ctaBox}>
-          <Text style={styles.ctaText}>Nezávazná konzultace zdarma</Text>
-          <Text style={styles.ctaSubtext}>weblyx.cz/kontakt</Text>
-          <Text style={[styles.ctaSubtext, { marginTop: 5 }]}>+420 702 110 166</Text>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Strana 3</Text>
         </View>
       </Page>
     </Document>
