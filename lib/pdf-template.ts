@@ -6,6 +6,47 @@ const BRAND_GRADIENT = 'linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%)';
 const DARK_TEXT = '#0F172A';
 const GRAY_TEXT = '#64748B';
 
+// Fix broken Czech characters from database encoding issues
+function fixCzechChars(text: string): string {
+  if (!text) return text;
+
+  const fixes: Record<string, string> = {
+    'dorazem': 'důrazem',
+    'Dorazem': 'Důrazem',
+    'tYeba': 'třeba',
+    'TYeba': 'Třeba',
+    'vyYešit': 'vyřešit',
+    'VyYešit': 'Vyřešit',
+    'vyYeší': 'vyřeší',
+    'VyYeší': 'Vyřeší',
+    'Xešení': 'Řešení',
+    'xešení': 'řešení',
+    'PYidat': 'Přidat',
+    'pYidat': 'přidat',
+    'PYepsat': 'Přepsat',
+    'pYepsat': 'přepsat',
+    'naítá': 'načítá',
+    'Naítá': 'Načítá',
+    'natení': 'načtení',
+    'Natení': 'Načtení',
+    'natením': 'načtením',
+    'Natením': 'Načtením',
+    'nkolik': 'několik',
+    'Nkolik': 'Několik',
+    'pYed': 'před',
+    'PYed': 'Před',
+    'Doporuený': 'Doporučený',
+    'doporuený': 'doporučený',
+  };
+
+  let fixed = text;
+  for (const [broken, correct] of Object.entries(fixes)) {
+    fixed = fixed.replace(new RegExp(broken, 'g'), correct);
+  }
+
+  return fixed;
+}
+
 export function generatePDFHTML(
   analysis: WebAnalysisResult,
   promoCode?: PromoCode,
@@ -504,10 +545,10 @@ export function generatePDFHTML(
 
     ${analysis.recommendation ? `
     <div class="recommendation-box">
-      <div class="recommendation-title">💡 Doporučený balíček: ${analysis.recommendation.packageName}</div>
-      <div class="recommendation-text">${analysis.recommendation.reasoning}</div>
+      <div class="recommendation-title">💡 Doporučený balíček: ${fixCzechChars(analysis.recommendation.packageName)}</div>
+      <div class="recommendation-text">${fixCzechChars(analysis.recommendation.reasoning)}</div>
       <ul class="recommendation-list">
-        ${analysis.recommendation.matchedNeeds?.map(need => `<li>${need}</li>`).join('') || ''}
+        ${analysis.recommendation.matchedNeeds?.map(need => `<li>${fixCzechChars(need)}</li>`).join('') || ''}
       </ul>
     </div>
     ` : ''}
@@ -557,10 +598,10 @@ export function generatePDFHTML(
       <div class="section-title">🚨 Kritické problémy</div>
       ${criticalIssues.map(issue => `
         <div class="issue-card critical">
-          <div class="issue-title">${issue.title}</div>
-          <div class="issue-description">${issue.description}</div>
-          ${issue.impact ? `<div class="issue-detail"><strong>Dopad:</strong> ${issue.impact}</div>` : ''}
-          ${issue.recommendation ? `<div class="issue-detail"><strong>Řešení:</strong> ${issue.recommendation}</div>` : ''}
+          <div class="issue-title">${fixCzechChars(issue.title)}</div>
+          <div class="issue-description">${fixCzechChars(issue.description)}</div>
+          ${issue.impact ? `<div class="issue-detail"><strong>Dopad:</strong> ${fixCzechChars(issue.impact)}</div>` : ''}
+          ${issue.recommendation ? `<div class="issue-detail"><strong>Řešení:</strong> ${fixCzechChars(issue.recommendation)}</div>` : ''}
         </div>
       `).join('')}
     </div>
@@ -590,9 +631,9 @@ export function generatePDFHTML(
       <div class="section-title">⚠️ Varování</div>
       ${warningIssues.slice(0, 5).map(issue => `
         <div class="issue-card warning">
-          <div class="issue-title">${issue.title}</div>
-          <div class="issue-description">${issue.description}</div>
-          ${issue.recommendation ? `<div class="issue-detail"><strong>Řešení:</strong> ${issue.recommendation}</div>` : ''}
+          <div class="issue-title">${fixCzechChars(issue.title)}</div>
+          <div class="issue-description">${fixCzechChars(issue.description)}</div>
+          ${issue.recommendation ? `<div class="issue-detail"><strong>Řešení:</strong> ${fixCzechChars(issue.recommendation)}</div>` : ''}
         </div>
       `).join('')}
     </div>
@@ -603,8 +644,8 @@ export function generatePDFHTML(
       <div class="section-title">ℹ️ Informace & Tipy</div>
       ${infoIssues.slice(0, 5).map(issue => `
         <div class="issue-card info">
-          <div class="issue-title">${issue.title}</div>
-          <div class="issue-description">${issue.description}</div>
+          <div class="issue-title">${fixCzechChars(issue.title)}</div>
+          <div class="issue-description">${fixCzechChars(issue.description)}</div>
         </div>
       `).join('')}
     </div>

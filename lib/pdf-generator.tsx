@@ -247,6 +247,47 @@ interface PDFReportProps {
   businessName?: string;
 }
 
+// Fix broken Czech characters from database encoding issues
+function fixCzechChars(text: string): string {
+  if (!text) return text;
+
+  const fixes: Record<string, string> = {
+    'dorazem': 'důrazem',
+    'Dorazem': 'Důrazem',
+    'tYeba': 'třeba',
+    'TYeba': 'Třeba',
+    'vyYešit': 'vyřešit',
+    'VyYešit': 'Vyřešit',
+    'vyYeší': 'vyřeší',
+    'VyYeší': 'Vyřeší',
+    'Xešení': 'Řešení',
+    'xešení': 'řešení',
+    'PYidat': 'Přidat',
+    'pYidat': 'přidat',
+    'PYepsat': 'Přepsat',
+    'pYepsat': 'přepsat',
+    'naítá': 'načítá',
+    'Naítá': 'Načítá',
+    'natení': 'načtení',
+    'Natení': 'Načtení',
+    'natením': 'načtením',
+    'Natením': 'Načtením',
+    'nkolik': 'několik',
+    'Nkolik': 'Několik',
+    'pYed': 'před',
+    'PYed': 'Před',
+    'Doporuený': 'Doporučený',
+    'doporuený': 'doporučený',
+  };
+
+  let fixed = text;
+  for (const [broken, correct] of Object.entries(fixes)) {
+    fixed = fixed.replace(new RegExp(broken, 'g'), correct);
+  }
+
+  return fixed;
+}
+
 export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCode, businessName }) => {
   const getScoreColor = (score: number) => {
     if (score >= 80) return '#10b981';
@@ -319,17 +360,17 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
         <View style={styles.recommendationBox}>
           <Text style={styles.recommendationTitle}>
-            Doporučený balíček: {analysis.recommendation.packageName}
+            Doporučený balíček: {fixCzechChars(analysis.recommendation.packageName)}
           </Text>
           <Text style={styles.recommendationText}>
-            {analysis.recommendation.reasoning}
+            {fixCzechChars(analysis.recommendation.reasoning)}
           </Text>
           <Text style={[styles.issueTitle, { color: '#5b21b6', marginBottom: 8 }]}>
             Co tento balíček vyřeší:
           </Text>
           {analysis.recommendation.matchedNeeds.map((need, idx) => (
             <Text key={idx} style={styles.bulletPoint}>
-              • {need}
+              • {fixCzechChars(need)}
             </Text>
           ))}
         </View>
@@ -394,18 +435,18 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
               .map((issue, idx) => (
                 <View key={idx} style={styles.issueCard}>
                   <Text style={[styles.issueTitle, { color: '#991b1b' }]}>
-                    {issue.title}
+                    {fixCzechChars(issue.title)}
                   </Text>
                   <Text style={styles.issueText}>
-                    {issue.description}
+                    {fixCzechChars(issue.description)}
                   </Text>
                   <Text style={[styles.issueText, { marginTop: 5 }]}>
                     <Text style={{ fontWeight: 'bold' }}>Dopad: </Text>
-                    {issue.impact}
+                    {fixCzechChars(issue.impact)}
                   </Text>
                   <Text style={[styles.issueText, { marginTop: 3 }]}>
                     <Text style={{ fontWeight: 'bold' }}>Řešení: </Text>
-                    {issue.recommendation}
+                    {fixCzechChars(issue.recommendation)}
                   </Text>
                 </View>
               ))}
@@ -433,14 +474,14 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
               .map((issue, idx) => (
                 <View key={idx} style={styles.warningCard}>
                   <Text style={[styles.issueTitle, { color: '#92400e' }]}>
-                    {issue.title}
+                    {fixCzechChars(issue.title)}
                   </Text>
                   <Text style={styles.issueText}>
-                    {issue.description}
+                    {fixCzechChars(issue.description)}
                   </Text>
                   <Text style={[styles.issueText, { marginTop: 3 }]}>
                     <Text style={{ fontWeight: 'bold' }}>Řešení: </Text>
-                    {issue.recommendation}
+                    {fixCzechChars(issue.recommendation)}
                   </Text>
                 </View>
               ))}
