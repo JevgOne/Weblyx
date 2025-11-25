@@ -289,12 +289,10 @@ function fixCzechChars(text: string): string {
     'balí ek': 'balíček',
     'Balí ek': 'Balíček',
     'balí ekStandard': 'balíček Standard',
-    'vyYeší': 'vyřeší',
     ' bezpe': 'bezpeč',
     'nostní': 'ečnostní',
     'Ozvte se': 'Ozvěte se',
     'ozvte se': 'ozvěte se',
-    'Natení': 'Načtení',
   };
 
   let fixed = text;
