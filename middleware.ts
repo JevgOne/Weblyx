@@ -4,14 +4,14 @@ import type { NextRequest } from 'next/server';
 // Rate limiting: Simple in-memory store (for production use Redis/Vercel KV)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
 
-// MAXIMUM SECURITY: Aggressive rate limiting
+// Rate limiting (balanced for real users + security)
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 30; // 30 requests per minute (down from 60)
-const RATE_LIMIT_MAX_REQUESTS_API = 10; // 10 requests per minute for API routes (down from 20)
+const RATE_LIMIT_MAX_REQUESTS = 120; // 120 requests per minute (reasonable for real users)
+const RATE_LIMIT_MAX_REQUESTS_API = 40; // 40 requests per minute for API routes
 
 // Burst protection: Max requests per 10 seconds
 const BURST_WINDOW = 10 * 1000; // 10 seconds
-const BURST_MAX_REQUESTS = 5; // Max 5 requests in 10 seconds
+const BURST_MAX_REQUESTS = 20; // Max 20 requests in 10 seconds (page load with assets)
 
 // Track burst requests separately
 const burstLimit = new Map<string, { count: number; resetTime: number }>();
