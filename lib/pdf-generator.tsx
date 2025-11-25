@@ -319,7 +319,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
         <View style={styles.recommendationBox}>
           <Text style={styles.recommendationTitle}>
-            💡 Doporučený balíček: {analysis.recommendation.packageName}
+            Doporučený balíček: {analysis.recommendation.packageName}
           </Text>
           <Text style={styles.recommendationText}>
             {analysis.recommendation.reasoning}
@@ -329,14 +329,14 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           </Text>
           {analysis.recommendation.matchedNeeds.map((need, idx) => (
             <Text key={idx} style={styles.bulletPoint}>
-              ✓ {need}
+              • {need}
             </Text>
           ))}
         </View>
 
         {promoCode && (
           <View style={styles.promoBox}>
-            <Text style={styles.promoTitle}>🎁 Speciální nabídka pro vás</Text>
+            <Text style={styles.promoTitle}>Speciální nabídka pro vás</Text>
             <Text style={{ fontSize: 10, color: '#78350f', marginBottom: 10 }}>
               {promoCode.description}
             </Text>
@@ -353,16 +353,16 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
         {/* CTA Box */}
         <View style={styles.ctaBox}>
-          <Text style={styles.ctaText}>📞 Ozvěte se nám!</Text>
+          <Text style={styles.ctaText}>Ozvěte se nám!</Text>
           <Text style={styles.ctaSubtext}>
             Rádi s vámi probereme výsledky analýzy a navrhneme řešení na míru
           </Text>
           <View style={{ marginTop: 15, alignItems: 'center' }}>
             <Text style={[styles.contactItem, { marginBottom: 5 }]}>
-              📧 info@weblyx.cz  |  📞 +420 702 110 166
+              info@weblyx.cz  |  +420 702 110 166
             </Text>
             <Text style={styles.contactItem}>
-              🌐 www.weblyx.cz
+              www.weblyx.cz
             </Text>
           </View>
         </View>
@@ -388,7 +388,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🚨 Kritické problémy</Text>
+            <Text style={styles.sectionTitle}>Kritické problémy</Text>
             {analysis.issues
               .filter(i => i.category === 'critical')
               .map((issue, idx) => (
@@ -426,7 +426,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
         {analysis.issues.filter(i => i.category === 'warning').length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>⚠️ Varování</Text>
+            <Text style={styles.sectionTitle}>Varování</Text>
             {analysis.issues
               .filter(i => i.category === 'warning')
               .slice(0, 5)
@@ -448,29 +448,29 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📊 Technické detaily</Text>
+          <Text style={styles.sectionTitle}>Technické detaily</Text>
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>SSL/HTTPS:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.hasSSL ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.hasSSL ? 'Ano' : 'Ne'}
             </Text>
           </View>
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>Mobilní optimalizace:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.mobileResponsive ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.mobileResponsive ? 'Ano' : 'Ne'}
             </Text>
           </View>
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>Title tag:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.title ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.title ? 'Ano' : 'Ne'}
             </Text>
           </View>
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>Meta description:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.description ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.description ? 'Ano' : 'Ne'}
             </Text>
           </View>
           <View style={styles.technicalRow}>
@@ -500,13 +500,13 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>Sitemap.xml:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.hasSitemap ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.hasSitemap ? 'Ano' : 'Ne'}
             </Text>
           </View>
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>Robots.txt:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.hasRobotsTxt ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.hasRobotsTxt ? 'Ano' : 'Ne'}
             </Text>
           </View>
           <View style={styles.technicalRow}>
@@ -518,15 +518,15 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           <View style={styles.technicalRow}>
             <Text style={styles.technicalLabel}>Schema markup:</Text>
             <Text style={styles.technicalValue}>
-              {analysis.technical.schemaMarkup ? '✓ Ano' : '✗ Ne'}
+              {analysis.technical.schemaMarkup ? 'Ano' : 'Ne'}
             </Text>
           </View>
         </View>
 
         <View style={styles.ctaBox}>
-          <Text style={styles.ctaText}>📞 Nezávazná konzultace zdarma</Text>
+          <Text style={styles.ctaText}>Nezávazná konzultace zdarma</Text>
           <Text style={styles.ctaSubtext}>weblyx.cz/kontakt</Text>
-          <Text style={[styles.ctaSubtext, { marginTop: 5 }]}>+420 XXX XXX XXX</Text>
+          <Text style={[styles.ctaSubtext, { marginTop: 5 }]}>+420 702 110 166</Text>
         </View>
 
         <View style={styles.footer}>
