@@ -34,10 +34,12 @@ export function generatePDFHTML(
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analýza webu - ${businessName || analysis.url}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 
     * {
       margin: 0;
@@ -46,7 +48,7 @@ export function generatePDFHTML(
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
       color: ${DARK_TEXT};
       background: white;
       line-height: 1.6;
@@ -399,12 +401,9 @@ export function generatePDFHTML(
 
     /* Footer */
     .footer {
-      position: absolute;
-      bottom: 15mm;
-      left: 20mm;
-      right: 20mm;
       text-align: center;
       padding-top: 20px;
+      margin-top: 40px;
       border-top: 1px solid #E2E8F0;
     }
 
@@ -610,6 +609,60 @@ export function generatePDFHTML(
       `).join('')}
     </div>
     ` : ''}
+
+    <div class="issues-section">
+      <div class="section-title">📊 Technické detaily</div>
+      <div class="technical-grid">
+        <div class="technical-row">
+          <span class="technical-label">SSL/HTTPS:</span>
+          <span class="technical-value">${analysis.technical?.hasSSL ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Mobilní optimalizace:</span>
+          <span class="technical-value">${analysis.technical?.mobileResponsive ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Title tag:</span>
+          <span class="technical-value">${analysis.technical?.title ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Meta description:</span>
+          <span class="technical-value">${analysis.technical?.description ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">H1 nadpis:</span>
+          <span class="technical-value">${analysis.technical?.h1Count || 0} ks</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Celkem obrázků:</span>
+          <span class="technical-value">${analysis.technical?.totalImages || 0} (${analysis.technical?.imagesWithoutAlt || 0} bez ALT)</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Interní odkazy:</span>
+          <span class="technical-value">${analysis.technical?.internalLinks || 0}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Externí odkazy:</span>
+          <span class="technical-value">${analysis.technical?.externalLinks || 0}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Sitemap.xml:</span>
+          <span class="technical-value">${analysis.technical?.hasSitemap ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Robots.txt:</span>
+          <span class="technical-value">${analysis.technical?.hasRobotsTxt ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Čas načtení:</span>
+          <span class="technical-value">${analysis.technical?.loadTime || 0}ms</span>
+        </div>
+        <div class="technical-row">
+          <span class="technical-label">Schema markup:</span>
+          <span class="technical-value">${analysis.technical?.schemaMarkup ? '✓ Ano' : '✗ Ne'}</span>
+        </div>
+      </div>
+    </div>
 
     <div class="footer">
       <div class="footer-text">Weblyx © ${new Date().getFullYear()} | www.weblyx.cz | info@weblyx.cz</div>

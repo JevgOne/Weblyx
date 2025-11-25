@@ -10,7 +10,7 @@
 - **Path:** `/Users/zen/weblyx`
 - **GitHub:** `https://github.com/JevgOne/Weblyx`
 - **Branch:** `main`
-- **Vercel:** `https://vercel.com/jevg-ones-projects/weblyx`
+- **Vercel:** weblyx (ověř na vercel.com)
 
 ---
 
@@ -139,39 +139,6 @@ cd /Users/zen/weblyx
 vercel link  # Link to existing project "weblyx"
 vercel env pull  # Pull environment variables
 vercel --prod  # Deploy to production
-```
-
----
-
-## ⚙️ Weblyx Setup & Commands
-
-### Initial Setup
-```bash
-cd /Users/zen/weblyx
-npm install                    # Install dependencies
-vercel link                    # Link to Vercel project
-vercel env pull                # Pull environment variables to .env.local
-chmod +x scripts/*.ts          # Make scripts executable
-```
-
-### Development
-```bash
-npm run dev                    # Start dev server (http://localhost:3000)
-npm run build                  # Build for production
-npm run lint                   # Run ESLint
-```
-
-### Database (Turso)
-```bash
-# View/manage database
-turso db shell [database-name]         # Open database shell
-turso db show [database-name]          # Show database info
-```
-
-### Deployment
-```bash
-vercel --prod                  # Deploy to production
-vercel --prod --yes            # Deploy without confirmation
 ```
 
 ---

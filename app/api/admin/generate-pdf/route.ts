@@ -87,11 +87,17 @@ export async function POST(request: NextRequest) {
           '--disable-dev-shm-usage',
           '--disable-accelerated-2d-canvas',
           '--disable-gpu',
+          '--font-render-hinting=none',
+          '--force-color-profile=srgb',
         ],
       });
 
       const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+
+      // Set content with proper UTF-8 encoding
+      await page.setContent(html, {
+        waitUntil: 'networkidle0'
+      });
 
       const buffer = await page.pdf({
         format: 'A4',
