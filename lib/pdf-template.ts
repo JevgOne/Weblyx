@@ -109,26 +109,27 @@ export function generatePDFHTML(
       page-break-after: auto;
     }
 
-    /* Header */
+    /* Header - Modern Minimal */
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      padding-bottom: 20px;
-      border-bottom: 4px solid ${BRAND_COLOR};
-      margin-bottom: 40px;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 48px;
+      border-bottom: 1px solid #E2E8F0;
     }
 
     .logo {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
     }
 
     .logo-text {
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1;
     }
 
     .logo-text .brand {
@@ -136,34 +137,40 @@ export function generatePDFHTML(
     }
 
     .logo-text .accent {
-      background: ${BRAND_GRADIENT};
+      background: linear-gradient(135deg, #06B6D4 0%, #14B8A6 50%, #10B981 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .logo-tagline {
-      font-size: 11px;
+      font-size: 10px;
       color: ${GRAY_TEXT};
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     .header-info {
       text-align: right;
+      background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+      padding: 12px 20px;
+      border-radius: 12px;
     }
 
     .header-title {
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 800;
       color: ${BRAND_COLOR};
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
     }
 
     .header-date {
-      font-size: 11px;
+      font-size: 10px;
       color: ${GRAY_TEXT};
       margin-top: 4px;
+      font-weight: 500;
     }
 
     /* Cover Page */
@@ -187,115 +194,186 @@ export function generatePDFHTML(
       color: ${GRAY_TEXT};
     }
 
-    /* Score Card */
+    /* Score Card - Modern Glass Effect */
     .score-card {
-      background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
-      border-radius: 16px;
-      padding: 40px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.05) 0%, rgba(20, 184, 166, 0.08) 100%);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 56px 40px;
       text-align: center;
-      margin: 40px 0;
-      border: 2px solid #E2E8F0;
+      margin: 48px 0;
+      border: 2px solid rgba(20, 184, 166, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-card:before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(20, 184, 166, 0.1) 0%, transparent 70%);
+      opacity: 0.5;
     }
 
     .score-number {
-      font-size: 96px;
-      font-weight: 800;
-      line-height: 1;
-      margin-bottom: 12px;
+      font-size: 112px;
+      font-weight: 900;
+      line-height: 0.9;
+      margin-bottom: 16px;
+      letter-spacing: -3px;
+      position: relative;
+      z-index: 1;
     }
 
     .score-label {
-      font-size: 14px;
+      font-size: 13px;
       color: ${GRAY_TEXT};
-      font-weight: 500;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 1;
     }
 
     .score-badge {
       display: inline-block;
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 12px;
+      padding: 10px 28px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-top: 16px;
       color: white;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 1;
     }
 
-    /* Stats Grid */
+    /* Stats Grid - Modern Cards */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin: 40px 0;
+      gap: 16px;
+      margin: 48px 0;
     }
 
     .stat-box {
       background: white;
-      border: 2px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 24px;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 28px 20px;
       text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-box:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: currentColor;
+      opacity: 0.6;
     }
 
     .stat-number {
-      font-size: 48px;
-      font-weight: 800;
+      font-size: 56px;
+      font-weight: 900;
       line-height: 1;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
     }
 
     .stat-label {
-      font-size: 12px;
+      font-size: 11px;
       color: ${GRAY_TEXT};
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
-    /* Recommendation Box */
+    /* Recommendation Box - Modern Premium */
     .recommendation-box {
-      background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
-      border: 2px solid ${BRAND_COLOR};
-      border-radius: 16px;
-      padding: 32px;
-      margin: 40px 0;
+      background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+      border: 2px solid #10B981;
+      border-radius: 20px;
+      padding: 36px 40px;
+      margin: 48px 0;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .recommendation-box:before {
+      content: '💡';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 120px;
+      opacity: 0.08;
+      transform: rotate(15deg);
     }
 
     .recommendation-title {
-      font-size: 24px;
-      font-weight: 800;
-      color: ${DARK_TEXT};
+      font-size: 22px;
+      font-weight: 900;
+      color: #065F46;
       margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
     }
 
     .recommendation-text {
       font-size: 14px;
-      color: #0F766E;
-      margin-bottom: 20px;
-      line-height: 1.7;
+      color: #047857;
+      margin-bottom: 24px;
+      line-height: 1.8;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
     }
 
     .recommendation-list {
       list-style: none;
       padding: 0;
+      position: relative;
+      z-index: 1;
     }
 
     .recommendation-list li {
       font-size: 13px;
-      color: #0F766E;
-      padding: 8px 0;
-      padding-left: 28px;
+      color: #047857;
+      padding: 10px 0;
+      padding-left: 32px;
       position: relative;
+      font-weight: 500;
     }
 
     .recommendation-list li:before {
       content: '✓';
       position: absolute;
       left: 0;
-      color: ${BRAND_COLOR};
-      font-weight: 700;
-      font-size: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #10B981;
+      font-weight: 900;
+      font-size: 18px;
+      background: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
     }
 
     /* Issue Cards */
@@ -313,52 +391,74 @@ export function generatePDFHTML(
     }
 
     .issue-card {
-      border-left: 4px solid;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 16px;
+      border-left: 5px solid;
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
       background: white;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .issue-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.03;
+      background: linear-gradient(135deg, currentColor 0%, transparent 100%);
+      pointer-events: none;
     }
 
     .issue-card.critical {
       border-color: #EF4444;
-      background: #FEF2F2;
+      background: linear-gradient(135deg, #FFFAFA 0%, #FEF2F2 100%);
     }
 
     .issue-card.warning {
       border-color: #F59E0B;
-      background: #FFFBEB;
+      background: linear-gradient(135deg, #FFFEFA 0%, #FFFBEB 100%);
     }
 
     .issue-card.info {
       border-color: #3B82F6;
-      background: #EFF6FF;
+      background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
     }
 
     .issue-title {
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       color: ${DARK_TEXT};
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
 
     .issue-description {
       font-size: 13px;
       color: #475569;
-      margin-bottom: 12px;
-      line-height: 1.6;
+      margin-bottom: 14px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
     }
 
     .issue-detail {
       font-size: 12px;
       color: #64748B;
-      margin: 6px 0;
-      line-height: 1.5;
+      margin: 8px 0;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
     }
 
     .issue-detail strong {
       color: ${DARK_TEXT};
-      font-weight: 600;
+      font-weight: 700;
     }
 
     /* Promo Box */
@@ -403,41 +503,68 @@ export function generatePDFHTML(
       margin-top: 16px;
     }
 
-    /* CTA Box */
+    /* CTA Box - Modern Vibrant */
     .cta-box {
-      background: ${BRAND_GRADIENT};
-      border-radius: 16px;
-      padding: 40px;
+      background: linear-gradient(135deg, #06B6D4 0%, #14B8A6 50%, #10B981 100%);
+      border-radius: 24px;
+      padding: 48px 40px;
       text-align: center;
       color: white;
-      margin: 40px 0;
+      margin: 48px 0;
+      box-shadow: 0 12px 40px rgba(6, 182, 212, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+      pointer-events: none;
     }
 
     .cta-title {
-      font-size: 24px;
-      font-weight: 800;
+      font-size: 26px;
+      font-weight: 900;
       margin-bottom: 12px;
+      letter-spacing: -0.5px;
+      position: relative;
+      z-index: 1;
     }
 
     .cta-text {
-      font-size: 14px;
-      margin-bottom: 24px;
-      opacity: 0.95;
+      font-size: 15px;
+      margin-bottom: 28px;
+      opacity: 0.98;
+      font-weight: 500;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
     }
 
     .cta-contacts {
       display: flex;
       justify-content: center;
-      gap: 32px;
+      gap: 28px;
       flex-wrap: wrap;
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
     }
 
     .cta-contact {
       display: flex;
       align-items: center;
       gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px 18px;
+      border-radius: 100px;
+      backdrop-filter: blur(10px);
     }
 
     /* Footer */
