@@ -142,8 +142,8 @@ export async function Hero() {
                         <IconComponent className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xl font-bold mb-1">{stat.value}</div>
-                        <div className="text-xs text-muted-foreground line-clamp-2">
+                        <div className="text-xl font-bold mb-2">{stat.value}</div>
+                        <div className="text-sm text-foreground/70 line-clamp-3 leading-relaxed">
                           {stat.label}
                         </div>
                       </div>
