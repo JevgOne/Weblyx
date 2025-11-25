@@ -135,7 +135,7 @@ export async function Hero() {
                 return (
                   <div
                     key={index}
-                    className="group relative p-4 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                    className="group relative p-4 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col"
                   >
                     <div className="flex items-start gap-3">
                       <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
