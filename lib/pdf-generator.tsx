@@ -312,8 +312,8 @@ function fixCzechChars(text: string): string {
     'balí ek': 'balíček',
     'Balí ek': 'Balíček',
     'balí ekStandard': 'balíček Standard',
-    ' bezpe': 'bezpeč',
-    'nostní': 'ečnostní',
+    'bezpe nostní': 'bezpečnostní',
+    'Bezpe nostní': 'Bezpečnostní',
     'Ozvte se': 'Ozvěte se',
     'ozvte se': 'ozvěte se',
   };
