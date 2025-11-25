@@ -90,11 +90,11 @@ export default function LeadGenerationPage() {
       if (data.success) {
         alert(` Email vygenerov�n!\n\nPYedmt: ${data.email.subject}\n\nTracking link: https://weblyx.cz/t/${data.email.trackingCode}`);
       } else {
-        alert(`L Chyba: ${data.error}`);
+        alert(`❌ Chyba: ${data.error}`);
       }
     } catch (error) {
       console.error('Failed to generate email:', error);
-      alert('L Chyba pYi generov�n� emailu');
+      alert('❌ Chyba při generování emailu');
     }
   };
 
@@ -133,11 +133,11 @@ export default function LeadGenerationPage() {
             setLeads(refreshData.leads);
           }
         } else {
-          alert(`L Chyba pYi importu:\n${data.errors.join('\n')}`);
+          alert(`❌ Chyba při importu:\n${data.errors.join('\n')}`);
         }
       } catch (error) {
         console.error('Failed to import CSV:', error);
-        alert('L Chyba pYi importu CSV');
+        alert('❌ Chyba při importu CSV');
       } finally {
         setIsImporting(false);
       }

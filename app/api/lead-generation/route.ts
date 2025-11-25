@@ -8,10 +8,18 @@ import { CreateLeadData } from '@/types/lead-generation';
 /**
  * GET /api/lead-generation
  * Get all leads from lead generation system
+ * Query params:
+ *  - limit: number (optional) - limit number of results
+ *  - includeAnalysis: boolean (optional) - include full analysis results (default: false for performance)
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const leads = await getAllLeads();
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
+    const includeAnalysis = searchParams.get('includeAnalysis') === 'true';
+
+    // Default: limit 100 leads, exclude analysis_result for performance
+    const leads = await getAllLeads(limit || 100, includeAnalysis);
 
     return NextResponse.json({
       success: true,

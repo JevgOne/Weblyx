@@ -31,10 +31,23 @@ function generateTrackingCode(): string {
 
 // ===== LEADS CRUD =====
 
-export async function getAllLeads(): Promise<Lead[]> {
+export async function getAllLeads(limit?: number, includeAnalysisResult: boolean = true): Promise<Lead[]> {
   try {
+    // Select only necessary columns for list view (exclude large analysis_result)
+    const columns = includeAnalysisResult
+      ? '*'
+      : `id, company_name, email, website, industry, phone, contact_person,
+         analysis_score, analyzed_at, lead_score, lead_status, email_sent,
+         email_sent_at, email_opened, email_opened_at, link_clicked,
+         link_clicked_at, notes, created_at, updated_at`;
+
+    const sql = limit
+      ? `SELECT ${columns} FROM leads ORDER BY created_at DESC LIMIT ?`
+      : `SELECT ${columns} FROM leads ORDER BY created_at DESC`;
+
     const results = await executeQuery<any>(
-      'SELECT * FROM leads ORDER BY created_at DESC'
+      sql,
+      limit ? [limit] : undefined
     );
 
     return results.map(row => ({
@@ -46,7 +59,7 @@ export async function getAllLeads(): Promise<Lead[]> {
       phone: row.phone || undefined,
       contactPerson: row.contact_person || undefined,
       analysisScore: row.analysis_score || 0,
-      analysisResult: row.analysis_result ? parseJSON(row.analysis_result) : undefined,
+      analysisResult: (includeAnalysisResult && row.analysis_result) ? parseJSON(row.analysis_result) : undefined,
       analyzedAt: unixToDate(row.analyzed_at) || undefined,
       leadScore: row.lead_score || 0,
       leadStatus: (row.lead_status as LeadStatus) || 'new',
