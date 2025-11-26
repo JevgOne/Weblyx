@@ -32,7 +32,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       stats: [
         { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu' },
         { icon: 'Zap', value: 'Pod 2s', label: 'Bleskové načítání' },
-        { icon: 'TrendingUp', value: 'Od 10 000 Kč', label: 'Férové ceny' },
+        { icon: 'TrendingUp', value: '10 000 Kč', label: 'Startovací cena' },
       ],
     };
 
@@ -50,7 +50,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         stats: [
           { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu' },
           { icon: 'Zap', value: 'Pod 2s', label: 'Bleskové načítání' },
-          { icon: 'TrendingUp', value: 'Od 10 000 Kč', label: 'Férové ceny' },
+          { icon: 'TrendingUp', value: '10 000 Kč', label: 'Startovací cena' },
         ],
       },
       heroSection: null,
