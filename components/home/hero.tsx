@@ -32,7 +32,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       stats: [
         { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
         { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
-        { icon: 'TrendingUp', value: '💰 Od 10\u00A0000 Kč', label: 'Férové ceny bez skrytých poplatků. Akční sleva: web za 7\u00A0990 Kč místo 10\u00A0000 Kč.' },
+        { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Férové ceny bez skrytých poplatků – levný web za týden bez kompromisů.' },
       ],
     };
 
@@ -50,7 +50,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         stats: [
           { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
           { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
-          { icon: 'TrendingUp', value: '💰 Od 10\u00A0000 Kč', label: 'Férové ceny bez skrytých poplatků. Akční sleva: web za 7\u00A0990 Kč místo 10\u00A0000 Kč.' },
+          { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Férové ceny bez skrytých poplatků – levný web za týden bez kompromisů.' },
         ],
       },
       heroSection: null,
