@@ -30,9 +30,9 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       },
       ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
       stats: [
-        { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
-        { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
-        { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Férové ceny bez skrytých poplatků – levný web za týden bez kompromisů.' },
+        { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu' },
+        { icon: 'Zap', value: 'Pod 2s', label: 'Bleskové načítání' },
+        { icon: 'TrendingUp', value: 'Od 10 000 Kč', label: 'Férové ceny' },
       ],
     };
 
@@ -48,9 +48,9 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
         ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
         stats: [
-          { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Web do týdne – zatímco konkurence pracuje 3–6 týdnů, my dodáme za týden.' },
-          { icon: 'Zap', value: '🚀 Pod 2s', label: 'Nejrychlejší weby v ČR – Next.js místo WordPressu = načítání pod 2 sekundy.' },
-          { icon: 'TrendingUp', value: '💰 Od 10 000 Kč', label: 'Férové ceny bez skrytých poplatků – levný web za týden bez kompromisů.' },
+          { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu' },
+          { icon: 'Zap', value: 'Pod 2s', label: 'Bleskové načítání' },
+          { icon: 'TrendingUp', value: 'Od 10 000 Kč', label: 'Férové ceny' },
         ],
       },
       heroSection: null,
