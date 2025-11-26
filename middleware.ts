@@ -6,12 +6,12 @@ const rateLimit = new Map<string, { count: number; resetTime: number }>();
 
 // Rate limiting (balanced for real users + security)
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 120; // 120 requests per minute (reasonable for real users)
-const RATE_LIMIT_MAX_REQUESTS_API = 40; // 40 requests per minute for API routes
+const RATE_LIMIT_MAX_REQUESTS = 300; // 300 requests per minute (5 req/s - allows multiple page loads)
+const RATE_LIMIT_MAX_REQUESTS_API = 100; // 100 requests per minute for API routes
 
 // Burst protection: Max requests per 10 seconds
 const BURST_WINDOW = 10 * 1000; // 10 seconds
-const BURST_MAX_REQUESTS = 20; // Max 20 requests in 10 seconds (page load with assets)
+const BURST_MAX_REQUESTS = 50; // Max 50 requests in 10 seconds (page load with all assets)
 
 // Track burst requests separately
 const burstLimit = new Map<string, { count: number; resetTime: number }>();

@@ -30,9 +30,9 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       },
       ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
       stats: [
-        { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu' },
-        { icon: 'Zap', value: 'Pod 2s', label: 'Bleskové načítání' },
-        { icon: 'TrendingUp', value: '10 000 Kč', label: 'Startovací cena' },
+        { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Rychlá tvorba webu' },
+        { icon: 'Zap', value: '🚀 Pod 2s', label: 'Bleskové načítání' },
+        { icon: 'TrendingUp', value: '💰 10 000 Kč', label: 'Startovací cena' },
       ],
     };
 
@@ -48,9 +48,9 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
         ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
         stats: [
-          { icon: 'Clock', value: '5–7 dní', label: 'Rychlá tvorba webu' },
-          { icon: 'Zap', value: 'Pod 2s', label: 'Bleskové načítání' },
-          { icon: 'TrendingUp', value: '10 000 Kč', label: 'Startovací cena' },
+          { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Rychlá tvorba webu' },
+          { icon: 'Zap', value: '🚀 Pod 2s', label: 'Bleskové načítání' },
+          { icon: 'TrendingUp', value: '💰 10 000 Kč', label: 'Startovací cena' },
         ],
       },
       heroSection: null,
