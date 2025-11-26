@@ -33,14 +33,14 @@ const BRAND_DARK = '#0F172A'; // Dark text
 // Define styles
 const styles = StyleSheet.create({
   page: {
-    padding: 32,
+    padding: 28,
     backgroundColor: '#ffffff',
     fontFamily: 'Roboto',
   },
   header: {
-    marginBottom: 20,
+    marginBottom: 16,
     borderBottom: `2px solid ${BRAND_COLOR}`,
-    paddingBottom: 12,
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
   },
   scoreContainer: {
     backgroundColor: '#E0F2FE',
-    padding: 24,
-    borderRadius: 14,
-    marginBottom: 16,
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 12,
     alignItems: 'center',
     borderWidth: 2,
     borderColor: BRAND_COLOR,
     borderStyle: 'solid',
   },
   scoreNumber: {
-    fontSize: 64,
+    fontSize: 56,
     fontWeight: 'bold',
     marginBottom: 4,
   },
@@ -358,7 +358,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
           </View>
         </View>
 
-        <View style={{ marginTop: 40 }}>
+        <View style={{ marginTop: 24 }}>
           <Text style={styles.title}>
             {businessName ? `Analýza webu ${businessName}` : 'Analýza webu'}
           </Text>
@@ -434,7 +434,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
         {analysis.issues.filter(i => i.category === 'critical').length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { fontSize: 14, marginBottom: 10 }]}>
-              🚨 Hlavní problémy k řešení
+              Hlavní problémy k řešení
             </Text>
             {analysis.issues
               .filter(i => i.category === 'critical')
@@ -489,7 +489,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
         {/* Technické detaily - inline */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontSize: 13, marginBottom: 8 }]}>
-            📊 Technické detaily
+            Technické detaily
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
             <View style={{ width: '48%', marginBottom: 6 }}>
