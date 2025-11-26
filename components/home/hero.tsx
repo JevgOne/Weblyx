@@ -129,23 +129,21 @@ export async function Hero() {
             </div>
 
             {/* Stats - Compact Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
               {data.stats.map((stat, index) => {
                 const IconComponent = iconMap[stat.icon] || Zap;
                 return (
                   <div
                     key={index}
-                    className="group relative p-5 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col"
+                    className="group relative p-6 rounded-2xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                   >
-                    <div className="flex items-start gap-3 flex-1">
-                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors flex-shrink-0">
-                        <IconComponent className="h-5 w-5 text-primary" />
+                    <div className="flex flex-col items-center text-center space-y-3">
+                      <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <IconComponent className="h-6 w-6 text-primary" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xl font-bold mb-2">{stat.value}</div>
-                        <div className="text-sm text-foreground/80 leading-relaxed">
-                          {stat.label}
-                        </div>
+                      <div className="text-2xl font-bold">{stat.value}</div>
+                      <div className="text-sm text-foreground/70 leading-relaxed">
+                        {stat.label}
                       </div>
                     </div>
                   </div>
