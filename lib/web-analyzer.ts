@@ -391,68 +391,146 @@ export class WebAnalyzer {
   ): PackageRecommendation {
     const criticalCount = issues.filter(i => i.category === 'critical').length;
     const warningCount = issues.filter(i => i.category === 'warning').length;
+    const infoCount = issues.filter(i => i.category === 'info').length;
 
+    // Analyze specific problems
     const needsSEO = !technical.title || !technical.description || !technical.hasH1;
     const needsRedesign = !technical.mobileResponsive || criticalCount > 2;
-    const hasBasicSite = technical.hasSSL && technical.hasH1;
+    const hasPerformanceIssues = issues.some(i => i.title.includes('načítání') || i.title.includes('Performance'));
+    const hasSecurityIssues = issues.some(i => i.title.includes('bezpečnost') || i.title.includes('Security'));
+    const hasSEOIssues = issues.some(i => i.title.includes('SEO') || i.category === 'critical');
 
-    // Enterprise - velké weby s velkými problémy nebo potřebou full redesignu
-    if (criticalCount >= 4 || (criticalCount >= 2 && warningCount >= 3)) {
+    // Score ranges:
+    // 90-100: Excellent (minor improvements)
+    // 75-89: Good (needs optimization)
+    // 50-74: Poor (needs major work)
+    // 0-49: Critical (needs complete rebuild)
+
+    // KRITICKÝ STAV (0-49 bodů) - Potřebuje kompletní rebuild
+    if (score < 50 || criticalCount >= 4) {
       return {
-        packageId: 'premium',
-        packageName: 'Premium Web',
+        packageId: 'tier-3',
+        packageName: 'Standardní Web',
+        confidence: 95,
+        reasoning: `Váš web má kritické problémy (skóre ${score}/100). Doporučujeme kompletní redesign s důrazem na SEO, výkon a bezpečnost.`,
+        matchedNeeds: [
+          'Kompletní SEO optimalizace',
+          'Moderní responzivní design',
+          'Technická excelence',
+          'Bezpečnostní standardy',
+          'CMS pro snadnou správu'
+        ]
+      };
+    }
+
+    // VÁŽNÉ PROBLÉMY (50-64 bodů) - Potřebuje velké úpravy
+    if (score < 65 || (criticalCount >= 2 && warningCount >= 2)) {
+      if (hasSecurityIssues && hasPerformanceIssues) {
+        return {
+          packageId: 'tier-3',
+          packageName: 'Standardní Web',
+          confidence: 90,
+          reasoning: `Váš web má vážné problémy s bezpečností a výkonem (skóre ${score}/100). Standardní balíček zajistí moderní, rychlý a bezpečný web.`,
+          matchedNeeds: [
+            'Bezpečnostní optimalizace',
+            'Výkonnostní tuning',
+            'SEO optimalizace',
+            'Responzivní design',
+            'Pokročilé funkce'
+          ]
+        };
+      }
+      return {
+        packageId: 'tier-2',
+        packageName: 'Základní Web',
         confidence: 85,
-        reasoning: 'Váš web má vážné technické problémy a potřebuje komplexní redesign s důrazem na SEO a moderní technologie.',
-        matchedNeeds: [
-          'Oprava kritických SEO problémů',
-          'Komplexní redesign',
-          'Mobilní optimalizace',
-          'Profesionální SEO setup'
-        ]
-      };
-    }
-
-    // Standard - střední weby se SEO problémy
-    if (criticalCount >= 2 || (criticalCount >= 1 && warningCount >= 2)) {
-      return {
-        packageId: 'standard',
-        packageName: 'Standard Web',
-        confidence: 80,
-        reasoning: 'Váš web má několik SEO a technických problémů, které je třeba vyřešit pro lepší výkon ve vyhledávačích.',
+        reasoning: `Váš web potřebuje zásadní vylepšení (skóre ${score}/100). Základní balíček vyřeší hlavní problémy a zlepší SEO.`,
         matchedNeeds: [
           'SEO optimalizace',
+          'Moderní design',
           'Oprava technických chyb',
-          'Responzivní design',
-          'Základní schema markup'
+          'Blog s CMS editorem',
+          'Responzivita'
         ]
       };
     }
 
-    // Start - základní weby nebo menší úpravy
-    if (hasBasicSite && criticalCount <= 1) {
+    // STŘEDNÍ PROBLÉMY (65-74 bodů) - Potřebuje optimalizaci
+    if (score < 75 || (criticalCount >= 1 && warningCount >= 2)) {
+      if (hasSEOIssues && !technical.mobileResponsive) {
+        return {
+          packageId: 'tier-2',
+          packageName: 'Základní Web',
+          confidence: 80,
+          reasoning: `Váš web má problémy se SEO a chybí mu mobilní optimalizace (skóre ${score}/100). Základní balíček to vyřeší.`,
+          matchedNeeds: [
+            'Pokročilé SEO',
+            'Mobilní optimalizace',
+            'Blog s CMS',
+            'Sociální sítě',
+            'Podpora 2 měsíce'
+          ]
+        };
+      }
       return {
-        packageId: 'start',
-        packageName: 'Start Web',
+        packageId: 'tier-1',
+        packageName: 'Landing Page',
         confidence: 75,
-        reasoning: 'Váš web má solidní základy, ale potřebuje drobné SEO úpravy a optimalizaci pro lepší výsledky.',
+        reasoning: `Váš web má drobné problémy (skóre ${score}/100). Landing Page balíček vyřeší základy a nastartuje váš růst.`,
         matchedNeeds: [
-          'SEO optimalizace',
-          'Technické úpravy',
-          'Optimalizace rychlosti'
+          'SEO základy',
+          'Responzivní design',
+          'Kontaktní formulář',
+          'Google Analytics',
+          'Rychlé dodání (3-5 dní)'
         ]
       };
     }
 
-    // Default fallback
+    // DROBNÉ PROBLÉMY (75-89 bodů) - Potřebuje vylepšení
+    if (score < 90) {
+      if (warningCount >= 2 || infoCount >= 3) {
+        return {
+          packageId: 'tier-1',
+          packageName: 'Landing Page',
+          confidence: 70,
+          reasoning: `Váš web je slušný (skóre ${score}/100), ale má rezervy. Landing Page balíček doplní chybějící prvky.`,
+          matchedNeeds: [
+            'SEO optimalizace',
+            'Responzivní design',
+            'Analytika',
+            'Formuláře',
+            'Rychlá podpora'
+          ]
+        };
+      }
+      return {
+        packageId: 'tier-2',
+        packageName: 'Základní Web',
+        confidence: 75,
+        reasoning: `Váš web funguje dobře (skóre ${score}/100), ale má prostor pro růst. Základní balíček ho posune na další level.`,
+        matchedNeeds: [
+          'Rozšíření o blog',
+          'Pokročilé SEO',
+          'CMS editor',
+          'Sociální sítě',
+          'Profesionální design'
+        ]
+      };
+    }
+
+    // VÝBORNÝ STAV (90-100 bodů) - Minimální problémy
     return {
-      packageId: 'standard',
-      packageName: 'Standard Web',
-      confidence: 70,
-      reasoning: 'Doporučujeme standardní balíček, který vyřeší vaše SEO problémy a zlepší celkový výkon webu.',
+      packageId: 'tier-1',
+      packageName: 'Landing Page',
+      confidence: 60,
+      reasoning: `Váš web je ve skvělém stavu (skóre ${score}/100)! Potřebujete jen drobné vylepšení nebo novou landing page pro kampaň.`,
       matchedNeeds: [
-        'SEO optimalizace',
-        'Technické vylepšení',
-        'Moderní design'
+        'Optimalizace pro kampaně',
+        'A/B testování',
+        'Konverzní prvky',
+        'Analytika',
+        'Podpora'
       ]
     };
   }
