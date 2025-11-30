@@ -169,12 +169,12 @@ function hasValidHeaders(request: NextRequest): boolean {
   const acceptEncoding = request.headers.get('accept-encoding');
 
   // If missing basic headers = likely bot
-  if (!acceptHeader || !acceptLanguage) {
+  if (!acceptHeader) {
     return false;
   }
 
-  // Real browsers accept HTML
-  if (!acceptHeader.includes('text/html')) {
+  // Real browsers accept HTML, but also check for wildcard (mobile browsers sometimes use */*)
+  if (!acceptHeader.includes('text/html') && !acceptHeader.includes('*/*')) {
     return false;
   }
 
