@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
-// import { PWAProvider } from "@/components/pwa/PWAProvider"; // TEMP DISABLED for debugging
+import { PWAProvider } from "@/components/pwa/PWAProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
       { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
     ],
   },
-  // manifest: "/manifest.json", // TEMP DISABLED
+  manifest: "/manifest.json",
   alternates: {
     canonical: "https://weblyx.cz",
   },
@@ -112,16 +112,15 @@ export default function RootLayout({
         <meta name="theme-color" content="#14B8A6" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      {/* <GoogleAnalytics /> TEMP DISABLED */}
+      <GoogleAnalytics />
       <body className={`${inter.variable} font-sans antialiased`}>
-        {/* ALL COMPONENTS DISABLED FOR DEBUGGING */}
-        {/* <PWAProvider> TEMP DISABLED */}
-          {/* <Header /> */}
+        <PWAProvider>
+          <Header />
           {children}
-          {/* <Footer /> */}
-          {/* <CookieConsent /> */}
-          {/* <WhatsAppChat /> TEMP DISABLED */}
-        {/* </PWAProvider> */}
+          <Footer />
+          <CookieConsent />
+          <WhatsAppChat />
+        </PWAProvider>
       </body>
     </html>
   );

@@ -7,6 +7,12 @@ export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
+        // Skip in production for now due to issues
+        if (window.location.hostname === 'weblyx.cz' || window.location.hostname === 'www.weblyx.cz') {
+          console.log('⚠️ Service Worker disabled in production');
+          return;
+        }
+
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
         });
