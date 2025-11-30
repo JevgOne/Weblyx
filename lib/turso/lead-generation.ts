@@ -42,8 +42,8 @@ export async function getAllLeads(limit?: number, includeAnalysisResult: boolean
          link_clicked_at, notes, created_at, updated_at`;
 
     const sql = limit
-      ? `SELECT ${columns} FROM leads ORDER BY created_at DESC LIMIT ?`
-      : `SELECT ${columns} FROM leads ORDER BY created_at DESC`;
+      ? `SELECT ${columns} FROM lead_generation_leads ORDER BY created_at DESC LIMIT ?`
+      : `SELECT ${columns} FROM lead_generation_leads ORDER BY created_at DESC`;
 
     const results = await executeQuery<any>(
       sql,
@@ -82,7 +82,7 @@ export async function getAllLeads(limit?: number, includeAnalysisResult: boolean
 export async function getLead(id: string): Promise<Lead | null> {
   try {
     const result = await executeOne<any>(
-      'SELECT * FROM leads WHERE id = ?',
+      'SELECT * FROM lead_generation_leads WHERE id = ?',
       [id]
     );
 
@@ -123,7 +123,7 @@ export async function createLead(data: CreateLeadData): Promise<Lead> {
     const now = Math.floor(Date.now() / 1000);
 
     await executeQuery(
-      `INSERT INTO leads (
+      `INSERT INTO lead_generation_leads (
         id, company_name, email, website, industry, phone, contact_person,
         analysis_score, lead_score, lead_status, email_sent, email_opened,
         link_clicked, notes, created_at, updated_at
@@ -242,7 +242,7 @@ export async function updateLead(id: string, data: UpdateLeadData): Promise<void
 
     if (updates.length > 1) {
       await executeQuery(
-        `UPDATE leads SET ${updates.join(', ')} WHERE id = ?`,
+        `UPDATE lead_generation_leads SET ${updates.join(', ')} WHERE id = ?`,
         params
       );
     }
@@ -254,7 +254,7 @@ export async function updateLead(id: string, data: UpdateLeadData): Promise<void
 
 export async function deleteLead(id: string): Promise<void> {
   try {
-    await executeQuery('DELETE FROM leads WHERE id = ?', [id]);
+    await executeQuery('DELETE FROM lead_generation_leads WHERE id = ?', [id]);
   } catch (error) {
     console.error('Error deleting lead:', error);
     throw error;
