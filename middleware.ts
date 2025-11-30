@@ -205,10 +205,11 @@ export function middleware(request: NextRequest) {
   }
 
   // 2. MAXIMUM SECURITY: Validate browser headers (skip for whitelisted bots)
-  if (!pathname.startsWith('/api') && !isWhitelistedBot && !hasValidHeaders(request)) {
-    console.log(`🚫 [INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
-    return new NextResponse('Forbidden', { status: 403 });
-  }
+  // TEMPORARILY DISABLED for debugging
+  // if (!pathname.startsWith('/api') && !isWhitelistedBot && !hasValidHeaders(request)) {
+  //   console.log(`🚫 [INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
+  //   return new NextResponse('Forbidden', { status: 403 });
+  // }
 
   // 3. Block suspicious query patterns
   if (isSuspiciousQuery(pathname)) {
