@@ -2,11 +2,14 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { User } from "firebase/auth";
+
+interface AdminUser {
+  email: string;
+  name: string;
+}
 
 interface AdminAuthContextType {
-  user: User | null;
+  user: AdminUser | null;
   loading: boolean;
 }
 
@@ -23,24 +26,45 @@ interface AdminAuthProviderProps {
 
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const router = useRouter();
-  // Start with cached user immediately if available
-  const [user, setUser] = useState<User | null>(auth.currentUser);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<AdminUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        setUser(currentUser);
-      }
-      setLoading(false);
-    });
+    // Check auth status via API
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
 
-    return () => unsubscribe();
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // Not authenticated, redirect to login
+          router.push("/admin/login");
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push("/admin/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
   }, [router]);
 
-  // Don't block rendering - let pages handle their own loading states
+  // Show loading state briefly
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Načítání...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AdminAuthContext.Provider value={{ user, loading }}>
       {children}

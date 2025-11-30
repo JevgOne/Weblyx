@@ -21,7 +21,7 @@ export default function AdminLayout({
     <QueryProvider>
       <AdminAuthProvider>
         {children}
-        <PWAInstallPrompt />
+        {/* <PWAInstallPrompt /> TEMP DISABLED */}
       </AdminAuthProvider>
     </QueryProvider>
   );
