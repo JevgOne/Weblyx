@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +35,7 @@ import { Project, ProjectStatus, ProjectPriority, ProjectType, HostingProvider, 
 export default function ProjectDetailPage() {
   const router = useRouter();
   const params = useParams();
+  const { user } = useAdminAuth();
   const projectId = params.id as string;
 
   const [loading, setLoading] = useState(true);
@@ -48,26 +47,19 @@ export default function ProjectDetailPage() {
   const [formData, setFormData] = useState<Partial<Project>>({});
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        fetchProject();
-      }
-    });
-
-    return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
+    if (user) {
+      fetchProject();
+    }
+  }, [user, projectId]);
 
   const fetchProject = async () => {
     try {
       setLoading(true);
-      const projectRef = doc(db, "projects", projectId);
-      const projectSnap = await getDoc(projectRef);
+      const response = await fetch(`/api/projects/${projectId}`);
+      const result = await response.json();
 
-      if (projectSnap.exists()) {
-        const data = projectSnap.data() as Project;
+      if (result.success) {
+        const data = result.data;
         setProject(data);
         setFormData(data);
       } else {
@@ -123,22 +115,26 @@ export default function ProjectDetailPage() {
       setSaving(true);
       setMessage(null);
 
-      const projectRef = doc(db, "projects", projectId);
-      const updateData = {
-        ...formData,
-        updatedAt: new Date().toISOString(),
-      };
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      await updateDoc(projectRef, updateData);
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update project");
+      }
 
       setMessage({ type: "success", text: "Projekt byl úspěšně uložen" });
-      setProject({ ...project, ...updateData } as Project);
+      setProject(result.data);
 
       // Clear success message after 3 seconds
       setTimeout(() => setMessage(null), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving project:", error);
-      setMessage({ type: "error", text: "Chyba při ukládání projektu" });
+      setMessage({ type: "error", text: `Chyba při ukládání projektu: ${error.message || error}` });
     } finally {
       setSaving(false);
     }

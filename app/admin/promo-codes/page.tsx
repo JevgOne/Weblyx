@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import { db } from "@/lib/firebase";
 import { PromoCode } from "@/types/cms";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,15 +43,14 @@ export default function PromoCodesPage() {
   const fetchPromoCodes = async () => {
     setLoading(true);
     try {
-      // Real Firebase only
-      const { collection, getDocs, query, orderBy } = await import('firebase/firestore');
-      const q = query(collection(db, "promo_codes"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
-      const codes: PromoCode[] = [];
-      snapshot.forEach((doc) => {
-        codes.push({ id: doc.id, ...doc.data() } as PromoCode);
-      });
-      setPromoCodes(codes);
+      const response = await fetch('/api/promo-codes');
+      const result = await response.json();
+
+      if (result.success) {
+        setPromoCodes(result.data);
+      } else {
+        console.error("Error fetching promo codes:", result.error);
+      }
     } catch (error) {
       console.error("Error fetching promo codes:", error);
     } finally {
@@ -71,26 +69,37 @@ export default function PromoCodesPage() {
       minOrderValue: formData.minOrderValue || undefined,
       maxDiscount: formData.maxDiscount || undefined,
       usageLimit: formData.usageLimit || undefined,
-      usageCount: 0,
+      usageCount: editingCode ? editingCode.usageCount : 0,
       validFrom: new Date(formData.validFrom),
       validUntil: new Date(formData.validUntil),
       enabled: formData.enabled,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     try {
       if (editingCode && editingCode.id) {
-        // Update existing - Real Firebase only
-        const { doc, updateDoc } = await import('firebase/firestore');
-        await updateDoc(doc(db, "promo_codes", editingCode.id), {
-          ...promoData,
-          createdAt: editingCode.createdAt,
+        // Update existing
+        const response = await fetch(`/api/promo-codes/${editingCode.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(promoData),
         });
+
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.error || "Failed to update promo code");
+        }
       } else {
-        // Create new - Real Firebase only
-        const { collection, addDoc } = await import('firebase/firestore');
-        await addDoc(collection(db, "promo_codes"), promoData);
+        // Create new
+        const response = await fetch('/api/promo-codes', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(promoData),
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.error || "Failed to create promo code");
+        }
       }
 
       await fetchPromoCodes();
@@ -99,6 +108,7 @@ export default function PromoCodesPage() {
       resetForm();
     } catch (error) {
       console.error("Error saving promo code:", error);
+      alert(`Chyba při ukládání promo kódu: ${error}`);
     }
   };
 
@@ -123,12 +133,19 @@ export default function PromoCodesPage() {
     if (!confirm("Opravdu chcete smazat tento promo kód?")) return;
 
     try {
-      // Real Firebase only
-      const { doc, deleteDoc } = await import('firebase/firestore');
-      await deleteDoc(doc(db, "promo_codes", id));
+      const response = await fetch(`/api/promo-codes/${id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete promo code");
+      }
+
       await fetchPromoCodes();
     } catch (error) {
       console.error("Error deleting promo code:", error);
+      alert(`Chyba při mazání promo kódu: ${error}`);
     }
   };
 

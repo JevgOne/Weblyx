@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ import { PortfolioFormData } from "@/types/portfolio";
 
 export default function NewPortfolioPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user } = useAdminAuth();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -43,18 +42,6 @@ export default function NewPortfolioPage() {
     published: false,
     featured: false,
   });
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -180,14 +167,6 @@ export default function NewPortfolioPage() {
       setSaving(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">

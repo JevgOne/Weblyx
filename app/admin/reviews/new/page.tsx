@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +27,7 @@ import { ReviewFormData } from "@/types/review";
 
 export default function NewReviewPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user } = useAdminAuth();
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<ReviewFormData>({
     authorName: "",
@@ -43,18 +41,6 @@ export default function NewReviewPage() {
     published: false,
     featured: false,
   });
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,26 +58,22 @@ export default function NewReviewPage() {
     setSaving(true);
 
     try {
-      // Get the highest order number to add new review at the end
-      const q = query(collection(db, "reviews"), orderBy("order", "desc"), limit(1));
-      const querySnapshot = await getDocs(q);
-      let maxOrder = 0;
-
-      if (!querySnapshot.empty) {
-        maxOrder = querySnapshot.docs[0].data().order || 0;
-      }
-
-      await addDoc(collection(db, "reviews"), {
-        ...formData,
-        order: maxOrder + 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create review");
+      }
+
       router.push("/admin/reviews");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating review:", error);
-      alert("Chyba při vytváření recenze");
+      alert(`Chyba při vytváření recenze: ${error.message || error}`);
       setSaving(false);
     }
   };
@@ -118,14 +100,6 @@ export default function NewReviewPage() {
       </div>
     );
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +21,7 @@ import { ReviewFormData } from "@/types/review";
 export default function EditReviewPage() {
   const router = useRouter();
   const params = useParams();
+  const { user } = useAdminAuth();
   const reviewId = params.id as string;
 
   const [loading, setLoading] = useState(true);
@@ -41,31 +40,25 @@ export default function EditReviewPage() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
-        router.push("/admin/login");
-      } else {
-        await loadReview();
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router, reviewId]);
+    if (user) {
+      loadReview();
+    }
+  }, [user, reviewId]);
 
   const loadReview = async () => {
     try {
-      const docRef = doc(db, "reviews", reviewId);
-      const docSnap = await getDoc(docRef);
+      const response = await fetch(`/api/reviews/${reviewId}`);
+      const result = await response.json();
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      if (result.success) {
+        const data = result.data;
         setFormData({
           authorName: data.authorName || "",
           authorImage: data.authorImage || "",
           authorRole: data.authorRole || "",
           rating: data.rating || 5,
           text: data.text || "",
-          date: data.date?.toDate?.() || new Date(),
+          date: data.date ? new Date(data.date) : new Date(),
           source: data.source || "manual",
           sourceUrl: data.sourceUrl || "",
           published: data.published || false,
@@ -99,15 +92,22 @@ export default function EditReviewPage() {
     setSaving(true);
 
     try {
-      await updateDoc(doc(db, "reviews", reviewId), {
-        ...formData,
-        updatedAt: new Date(),
+      const response = await fetch(`/api/reviews/${reviewId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update review");
+      }
+
       router.push("/admin/reviews");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating review:", error);
-      alert("Chyba při aktualizaci recenze");
+      alert(`Chyba při aktualizaci recenze: ${error.message || error}`);
       setSaving(false);
     }
   };

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,7 +60,7 @@ export default function AdminDashboard() {
   }, []);
 
   const handleLogout = async () => {
-    await auth.signOut();
+    await fetch('/api/auth/logout', { method: 'POST' });
     router.push("/admin/login");
   };
 
