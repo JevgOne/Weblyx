@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
-import { PWAProvider } from "@/components/pwa/PWAProvider";
+// import { PWAProvider } from "@/components/pwa/PWAProvider"; // TEMP DISABLED for debugging
 
 const inter = Inter({
   subsets: ["latin"],
@@ -114,13 +114,13 @@ export default function RootLayout({
       </head>
       <GoogleAnalytics />
       <body className={`${inter.variable} font-sans antialiased`}>
-        <PWAProvider>
+        {/* <PWAProvider> TEMP DISABLED */}
           <Header />
           {children}
           <Footer />
           <CookieConsent />
           <WhatsAppChat />
-        </PWAProvider>
+        {/* </PWAProvider> */}
       </body>
     </html>
   );
