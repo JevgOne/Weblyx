@@ -2,19 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { turso } from "@/lib/turso";
 
-// Configure web-push with VAPID keys
-webpush.setVapidDetails(
-  'mailto:info@weblyx.cz',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
-  process.env.VAPID_PRIVATE_KEY || ''
-);
-
 /**
  * POST /api/push/send
  * Send Web Push notification to all admin subscriptions
  */
 export async function POST(request: NextRequest) {
   try {
+    // Configure web-push with VAPID keys (lazy initialization)
+    if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      webpush.setVapidDetails(
+        'mailto:info@weblyx.cz',
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+      );
+    } else {
+      return NextResponse.json(
+        { error: 'VAPID keys not configured' },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { notification } = body;
 
