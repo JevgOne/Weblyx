@@ -112,14 +112,15 @@ export default function RootLayout({
         <meta name="theme-color" content="#14B8A6" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <GoogleAnalytics />
+      {/* <GoogleAnalytics /> TEMP DISABLED */}
       <body className={`${inter.variable} font-sans antialiased`}>
+        {/* ALL COMPONENTS DISABLED FOR DEBUGGING */}
         {/* <PWAProvider> TEMP DISABLED */}
-          <Header />
+          {/* <Header /> */}
           {children}
-          <Footer />
-          <CookieConsent />
-          <WhatsAppChat />
+          {/* <Footer /> */}
+          {/* <CookieConsent /> */}
+          {/* <WhatsAppChat /> TEMP DISABLED */}
         {/* </PWAProvider> */}
       </body>
     </html>
