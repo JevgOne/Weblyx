@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
+import { PWAProvider } from "@/components/pwa/PWAProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -85,7 +86,7 @@ export const metadata: Metadata = {
       { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
     ],
   },
-  manifest: "/site.webmanifest",
+  manifest: "/manifest.json",
   alternates: {
     canonical: "https://weblyx.cz",
   },
@@ -101,13 +102,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="cs" suppressHydrationWarning>
+      <head>
+        {/* PWA Meta Tags */}
+        <meta name="application-name" content="Weblyx Admin" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Weblyx" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#14B8A6" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <GoogleAnalytics />
       <body className={`${inter.variable} font-sans antialiased`}>
-        <Header />
-        {children}
-        <Footer />
-        <CookieConsent />
-        <WhatsAppChat />
+        <PWAProvider>
+          <Header />
+          {children}
+          <Footer />
+          <CookieConsent />
+          <WhatsAppChat />
+        </PWAProvider>
       </body>
     </html>
   );

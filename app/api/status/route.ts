@@ -1,22 +1,19 @@
 import { NextResponse } from 'next/server';
-import { adminDbInstance } from '@/lib/firebase-admin';
+import { turso } from '@/lib/turso';
 
 export async function GET() {
   try {
     // Check environment
     const nodeEnv = process.env.NODE_ENV;
-    const hasBase64 = !!process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
-    const base64Length = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64?.length || 0;
+    const hasTursoUrl = !!process.env.TURSO_DATABASE_URL;
+    const hasTursoToken = !!process.env.TURSO_AUTH_TOKEN;
 
-    // Check if adminDbInstance is mock or real
-    const isMock = !adminDbInstance || adminDbInstance.constructor.name === 'MockFirestoreAdmin';
-
-    // Try to get leads count
+    // Try to get leads count from Turso
     let leadsCount = 0;
     let leadsError = null;
     try {
-      const snapshot = await adminDbInstance.collection('leads').get();
-      leadsCount = snapshot.docs.length;
+      const result = await turso.execute('SELECT COUNT(*) as count FROM leads');
+      leadsCount = Number(result.rows[0].count) || 0;
     } catch (error: any) {
       leadsError = error.message;
     }
@@ -24,16 +21,17 @@ export async function GET() {
     return NextResponse.json({
       environment: {
         NODE_ENV: nodeEnv,
-        hasFirebaseBase64: hasBase64,
-        base64Length: base64Length,
-      },
-      firebase: {
-        isMock: isMock,
-        instanceType: adminDbInstance?.constructor?.name || 'null',
+        hasTursoUrl,
+        hasTursoToken,
       },
       database: {
-        leadsCount: leadsCount,
+        type: 'Turso (SQLite)',
+        leadsCount,
         error: leadsError,
+      },
+      migration: {
+        status: 'Firebase removed, using Turso only',
+        guide: '/TURSO_ONLY_MIGRATION.md',
       },
     });
   } catch (error: any) {

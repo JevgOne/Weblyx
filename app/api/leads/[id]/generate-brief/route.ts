@@ -186,7 +186,7 @@ export async function POST(
 
     // Initialize Gemini
     const genAI = new GoogleGenerativeAI(
-      process.env.GOOGLE_GEMINI_API_KEY || ""
+      process.env.GEMINI_API_KEY || ""
     );
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -217,6 +217,23 @@ export async function POST(
       briefGeneratedAt: new Date(),
       updatedAt: new Date(),
     });
+
+    // 📧 Trigger client proposal email in background (don't await)
+    // This sends the email with AI design + brief to the client
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl?.origin || 'http://localhost:3000';
+    fetch(`${siteUrl}/api/leads/${id}/send-proposal`, {
+      method: "POST",
+    })
+      .then((res) => {
+        if (res.ok) {
+          console.log("✅ Client proposal email triggered");
+        } else {
+          console.warn("⚠️ Client proposal email failed:", res.statusText);
+        }
+      })
+      .catch((err) => {
+        console.warn("⚠️ Client proposal email error:", err);
+      });
 
     return NextResponse.json({
       success: true,

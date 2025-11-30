@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { DesignPreference, AIGeneratedDesigns, AIDesignVariant } from '@/types/cms';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate 3 unique design variants using Claude
+    // Generate 3 unique design variants using Gemini AI
     const prompt = `You are an expert web designer. Based on the following client requirements, generate 3 completely different website design concepts.
 
 Client Requirements:
@@ -72,22 +70,10 @@ Return ONLY valid JSON in this exact format:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 4000,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
-    });
-
-    const content = message.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Unexpected response type from Claude');
-    }
-
-    // Parse Claude's response
-    const responseText = content.text;
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const responseText = response.text();
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('No valid JSON found in response');

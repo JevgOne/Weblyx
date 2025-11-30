@@ -1,25 +1,13 @@
-import { adminDbInstance } from '../lib/firebase-admin';
+/**
+ * Firebase portfolio check script (STUB)
+ * Firebase removed - this script no longer functional
+ * TODO: Create Turso version if needed
+ */
 
 async function checkFirebasePortfolio() {
-  if (!adminDbInstance) {
-    console.log('Firebase Admin not initialized (using mock)');
-    return;
-  }
-
-  const snapshot = await adminDbInstance.collection('portfolio').get();
-  console.log(`Found ${snapshot.size} portfolio items in Firebase`);
-
-  if (snapshot.size > 0) {
-    console.log('\n=== Portfolio Items ===');
-    snapshot.docs.forEach((doc: any) => {
-      const data = doc.data();
-      console.log(`\n- ${data.title || 'Untitled'}`);
-      console.log(`  ID: ${doc.id}`);
-      console.log(`  Published: ${data.published || false}`);
-      console.log(`  Featured: ${data.featured || false}`);
-      console.log(`  Has image: ${!!data.imageUrl}`);
-    });
-  }
+  console.log('❌ This script is deprecated - Firebase has been removed from the project');
+  console.log('✅ All portfolio data is now in Turso database');
+  console.log('💡 Use Turso CLI to check portfolio: turso db shell weblyx "SELECT * FROM portfolio"');
 }
 
 checkFirebasePortfolio().catch(console.error);

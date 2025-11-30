@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminDbInstance } from "@/lib/firebase-admin";
+import { turso } from "@/lib/turso";
 import { Lead } from "@/types/cms";
 import { validateHoneypot, validateSubmissionTime } from "@/lib/security/honeypot";
+import { nanoid } from "nanoid";
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,24 +46,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save lead to Firestore
-    const leadData: Omit<Lead, 'id'> = {
-      name,
-      email,
-      phone: phone || '',
-      projectType: projectType || '',
-      budget: budget || '',
-      message,
-      status: 'new',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    // Save lead to Turso
+    const leadId = nanoid();
 
-    if (adminDbInstance) {
-      await adminDbInstance.collection('leads').add(leadData);
-    }
+    await turso.execute({
+      sql: `
+        INSERT INTO leads (
+          id, name, email, phone, project_type, budget_range,
+          status, source, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
+      `,
+      args: [
+        leadId,
+        name,
+        email,
+        phone || null,
+        projectType || null,
+        budget || null,
+        'new',
+        'contact_form',
+      ],
+    });
 
-    console.log("New lead created:", { name, email, projectType });
+    console.log("✅ New lead created in Turso:", { leadId, name, email, projectType });
 
     // TODO: Send email notification
     // Example with Resend:

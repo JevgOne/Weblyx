@@ -1,51 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDbInstance } from '@/lib/firebase-admin';
+import { turso } from '@/lib/turso';
 
 // GET - Retrieve all leads
 export async function GET(request: NextRequest) {
   try {
-    if (!adminDbInstance) {
-      return NextResponse.json(
-        { success: false, error: 'Database not available' },
-        { status: 500 }
-      );
-    }
+    const result = await turso.execute(
+      'SELECT * FROM leads ORDER BY created_at DESC'
+    );
 
-    const leadsSnapshot = await adminDbInstance.collection('leads').get();
-    const leads: any[] = [];
-
-    leadsSnapshot.docs.forEach((doc: any) => {
-      const data = doc.data();
-
-      // Convert Firestore timestamps to ISO strings for client
-      const convertTimestamp = (timestamp: any) => {
-        if (!timestamp) return new Date().toISOString();
-        if (timestamp._seconds) {
-          return new Date(timestamp._seconds * 1000).toISOString();
+    const leads = result.rows.map((row: any) => {
+      // Parse JSON fields
+      const parseJSON = (field: any) => {
+        if (!field) return null;
+        try {
+          return typeof field === 'string' ? JSON.parse(field) : field;
+        } catch {
+          return field;
         }
-        if (timestamp.toDate) {
-          return timestamp.toDate().toISOString();
-        }
-        return new Date(timestamp).toISOString();
       };
 
-      leads.push({
-        id: doc.id,
-        ...data,
-        created: convertTimestamp(data.createdAt),
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      });
+      return {
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        phone: row.phone,
+        company: row.company,
+        projectType: row.project_type,
+        projectTypeOther: row.project_type_other,
+        businessDescription: row.business_description,
+        projectDetails: parseJSON(row.project_details),
+        features: parseJSON(row.features),
+        designPreferences: parseJSON(row.design_preferences),
+        budgetRange: row.budget_range,
+        timeline: row.timeline,
+        status: row.status,
+        source: row.source,
+        aiDesignSuggestion: parseJSON(row.ai_design_suggestion),
+        aiBrief: parseJSON(row.ai_brief),
+        aiGeneratedAt: row.ai_generated_at,
+        briefGeneratedAt: row.brief_generated_at,
+        proposalEmailSent: row.proposal_email_sent === 1,
+        proposalEmailSentAt: row.proposal_email_sent_at,
+        createdAt: new Date(row.created_at * 1000).toISOString(),
+        updatedAt: new Date(row.updated_at * 1000).toISOString(),
+        created: new Date(row.created_at * 1000).toISOString(),
+      };
     });
 
-    // Sort by createdAt descending (newest first)
-    leads.sort((a, b) => {
-      const aDate = a.createdAt ? new Date(a.createdAt) : new Date(0);
-      const bDate = b.createdAt ? new Date(b.createdAt) : new Date(0);
-      return bDate.getTime() - aDate.getTime();
-    });
-
-    console.log(`✅ Retrieved ${leads.length} leads from database`);
+    console.log(`✅ Retrieved ${leads.length} leads from Turso`);
 
     return NextResponse.json({
       success: true,
@@ -75,19 +77,32 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    if (!adminDbInstance) {
-      return NextResponse.json(
-        { success: false, error: 'Database not available' },
-        { status: 500 }
-      );
+    // Build UPDATE query dynamically based on updates provided
+    const setClauses: string[] = [];
+    const args: any[] = [];
+
+    for (const [key, value] of Object.entries(updates)) {
+      // Convert camelCase to snake_case for database columns
+      const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+      setClauses.push(`${dbKey} = ?`);
+
+      // Stringify objects/arrays for JSON fields
+      if (typeof value === 'object' && value !== null) {
+        args.push(JSON.stringify(value));
+      } else {
+        args.push(value);
+      }
     }
 
-    await adminDbInstance.collection('leads').doc(leadId).update({
-      ...updates,
-      updatedAt: new Date(),
-    });
+    // Always update updated_at
+    setClauses.push('updated_at = unixepoch()');
 
-    console.log(`✅ Updated lead ${leadId}`);
+    const sql = `UPDATE leads SET ${setClauses.join(', ')} WHERE id = ?`;
+    args.push(leadId);
+
+    await turso.execute({ sql, args });
+
+    console.log(`✅ Updated lead ${leadId} in Turso`);
 
     return NextResponse.json({
       success: true,
@@ -118,16 +133,12 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    if (!adminDbInstance) {
-      return NextResponse.json(
-        { success: false, error: 'Database not available' },
-        { status: 500 }
-      );
-    }
+    await turso.execute({
+      sql: 'DELETE FROM leads WHERE id = ?',
+      args: [leadId],
+    });
 
-    await adminDbInstance.collection('leads').doc(leadId).delete();
-
-    console.log(`✅ Deleted lead ${leadId}`);
+    console.log(`✅ Deleted lead ${leadId} from Turso`);
 
     return NextResponse.json({
       success: true,

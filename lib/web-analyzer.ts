@@ -409,7 +409,7 @@ export class WebAnalyzer {
     // KRITICKÝ STAV (0-49 bodů) - Potřebuje kompletní rebuild
     if (score < 50 || criticalCount >= 4) {
       return {
-        packageId: 'tier-3',
+        packageId: 'premium',
         packageName: 'Standardní Web',
         confidence: 95,
         reasoning: `Váš web má kritické problémy (skóre ${score}/100). Doporučujeme kompletní redesign s důrazem na SEO, výkon a bezpečnost.`,
@@ -427,7 +427,7 @@ export class WebAnalyzer {
     if (score < 65 || (criticalCount >= 2 && warningCount >= 2)) {
       if (hasSecurityIssues && hasPerformanceIssues) {
         return {
-          packageId: 'tier-3',
+          packageId: 'premium',
           packageName: 'Standardní Web',
           confidence: 90,
           reasoning: `Váš web má vážné problémy s bezpečností a výkonem (skóre ${score}/100). Standardní balíček zajistí moderní, rychlý a bezpečný web.`,
@@ -441,7 +441,7 @@ export class WebAnalyzer {
         };
       }
       return {
-        packageId: 'tier-2',
+        packageId: 'standard',
         packageName: 'Základní Web',
         confidence: 85,
         reasoning: `Váš web potřebuje zásadní vylepšení (skóre ${score}/100). Základní balíček vyřeší hlavní problémy a zlepší SEO.`,
@@ -459,7 +459,7 @@ export class WebAnalyzer {
     if (score < 75 || (criticalCount >= 1 && warningCount >= 2)) {
       if (hasSEOIssues && !technical.mobileResponsive) {
         return {
-          packageId: 'tier-2',
+          packageId: 'standard',
           packageName: 'Základní Web',
           confidence: 80,
           reasoning: `Váš web má problémy se SEO a chybí mu mobilní optimalizace (skóre ${score}/100). Základní balíček to vyřeší.`,
@@ -473,7 +473,7 @@ export class WebAnalyzer {
         };
       }
       return {
-        packageId: 'tier-1',
+        packageId: 'start',
         packageName: 'Landing Page',
         confidence: 75,
         reasoning: `Váš web má drobné problémy (skóre ${score}/100). Landing Page balíček vyřeší základy a nastartuje váš růst.`,
@@ -491,7 +491,7 @@ export class WebAnalyzer {
     if (score < 90) {
       if (warningCount >= 2 || infoCount >= 3) {
         return {
-          packageId: 'tier-1',
+          packageId: 'start',
           packageName: 'Landing Page',
           confidence: 70,
           reasoning: `Váš web je slušný (skóre ${score}/100), ale má rezervy. Landing Page balíček doplní chybějící prvky.`,
@@ -505,7 +505,7 @@ export class WebAnalyzer {
         };
       }
       return {
-        packageId: 'tier-2',
+        packageId: 'standard',
         packageName: 'Základní Web',
         confidence: 75,
         reasoning: `Váš web funguje dobře (skóre ${score}/100), ale má prostor pro růst. Základní balíček ho posune na další level.`,
@@ -521,7 +521,7 @@ export class WebAnalyzer {
 
     // VÝBORNÝ STAV (90-100 bodů) - Minimální problémy
     return {
-      packageId: 'tier-1',
+      packageId: 'start',
       packageName: 'Landing Page',
       confidence: 60,
       reasoning: `Váš web je ve skvělém stavu (skóre ${score}/100)! Potřebujete jen drobné vylepšení nebo novou landing page pro kampaň.`,

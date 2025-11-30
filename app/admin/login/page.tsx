@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,22 +22,26 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // Real Firebase only - no mock
-      await signInWithEmailAndPassword(auth, email, password);
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Chyba při přihlašování');
+      }
+
+      // Success - redirect to dashboard
       router.push("/admin/dashboard");
+      router.refresh();
     } catch (err: any) {
       console.error("Login error:", err);
-
-      // User-friendly error messages
-      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password") {
-        setError("Nesprávný email nebo heslo");
-      } else if (err.code === "auth/user-not-found") {
-        setError("Uživatel nenalezen");
-      } else if (err.code === "auth/too-many-requests") {
-        setError("Příliš mnoho pokusů. Zkuste to později.");
-      } else {
-        setError("Chyba při přihlašování. Zkuste to znovu.");
-      }
+      setError(err.message || "Chyba při přihlašování. Zkuste to znovu.");
     } finally {
       setLoading(false);
     }

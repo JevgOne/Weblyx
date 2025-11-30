@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AdminAuthProvider } from "./_components/AdminAuthProvider";
 import { QueryProvider } from "./_components/QueryProvider";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
 export default function AdminLayout({
   children,
@@ -18,7 +19,10 @@ export default function AdminLayout({
 
   return (
     <QueryProvider>
-      <AdminAuthProvider>{children}</AdminAuthProvider>
+      <AdminAuthProvider>
+        {children}
+        <PWAInstallPrompt />
+      </AdminAuthProvider>
     </QueryProvider>
   );
 }

@@ -1,39 +1,31 @@
-// 🔥 Firebase Configuration - Production Only
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import {
-  getStorage,
-  FirebaseStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject
-} from 'firebase/storage';
+// 🔥 Firebase REMOVED - Stub file for backward compatibility
+// All auth moved to cookie-based auth (/api/auth)
+// All data moved to Turso database
 
-// Firebase production config
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
-};
+// Stub auth object
+export const auth = {
+  currentUser: null,
+  signOut: async () => {
+    // Redirect to logout API
+    await fetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = '/admin/login';
+  },
+} as any;
 
-// Initialize Firebase (singleton pattern)
-const app: FirebaseApp = !getApps().length
-  ? initializeApp(firebaseConfig)
-  : getApps()[0];
+// Stub db object
+export const db = {} as any;
 
-// Initialize services
-export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
-export const storage: FirebaseStorage = getStorage(app);
+// Stub storage
+export const storage = {} as any;
 
-// Re-export Storage functions
-export { ref, uploadBytes, getDownloadURL, deleteObject };
+// Stub functions
+export const ref: any = () => ({});
+export const uploadBytes: any = async () => ({});
+export const getDownloadURL: any = async () => '';
+export const deleteObject: any = async () => {};
 
-console.log('🔥 Firebase initialized - Production mode');
+console.log('⚠️ Firebase REMOVED - Using stubs for backward compatibility');
+console.log('✅ Auth: Cookie-based (/api/auth)');
+console.log('✅ Database: Turso');
 
-export default app;
+export default { auth, db, storage };

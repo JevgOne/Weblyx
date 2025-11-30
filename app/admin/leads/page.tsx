@@ -26,6 +26,7 @@ import {
 import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles } from "lucide-react";
 import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
 import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
+import { NotificationPermission } from "@/components/admin/NotificationPermission";
 
 // Mock data pro demo
 const mockLeads = [
@@ -155,7 +156,7 @@ export default function AdminLeadsPage() {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -171,6 +172,7 @@ export default function AdminLeadsPage() {
                 </p>
               </div>
             </div>
+            <NotificationPermission />
           </div>
         </div>
       </header>
