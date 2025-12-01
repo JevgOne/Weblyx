@@ -208,7 +208,7 @@ export async function POST(
 
     // Call Gemini API directly (same approach as email-generator)
     const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
     const prompt = buildBriefPrompt(leadData);
 

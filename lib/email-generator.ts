@@ -3,7 +3,7 @@ import { EmailGenerationPrompt, EmailGenerationResult } from '@/types/lead-gener
 import { WebAnalysisResult } from '@/types/cms';
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'AIzaSyAUKemEjooWExY-em3ygdg8JWq-BN82XQ4';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 /**
  * Generate personalized email using Google Gemini API

@@ -68,7 +68,7 @@ Return ONLY valid JSON without markdown formatting.`;
  */
 async function callGeminiAPI(prompt: string): Promise<string> {
   const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
   if (!API_KEY) {
     throw new Error("GEMINI_API_KEY or GOOGLE_API_KEY is not configured");
