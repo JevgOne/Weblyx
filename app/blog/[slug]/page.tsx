@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getBlogPostBySlug, getPublishedBlogPosts } from "@/lib/turso/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
+import { marked } from "marked";
 
 export async function generateMetadata({
   params
@@ -125,13 +126,19 @@ export default async function BlogPostPage({
           year: 'numeric'
         });
 
+    // Convert Markdown to HTML
+    const htmlContent = await marked.parse(post.content, {
+      gfm: true, // GitHub Flavored Markdown
+      breaks: true, // Convert \n to <br>
+    });
+
     // Calculate read time (rough estimate: 200 words per minute)
     const wordCount = post.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
 
     // Strip HTML tags for plain text content
     const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    const plainTextContent = stripHtml(post.content);
+    const plainTextContent = stripHtml(htmlContent);
 
     // Generate Article schema
     const articleSchema = {
@@ -305,7 +312,7 @@ export default async function BlogPostPage({
                       prose-pre:bg-muted prose-pre:border-2 prose-pre:border-primary/10 prose-pre:rounded-2xl prose-pre:shadow-2xl prose-pre:p-6
                       prose-img:rounded-2xl prose-img:shadow-2xl prose-img:border-2 prose-img:border-primary/10 prose-img:my-12
                       prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:my-10 prose-blockquote:font-medium prose-blockquote:text-foreground/90 prose-blockquote:italic"
-                    dangerouslySetInnerHTML={{ __html: post.content }}
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
                   />
                 </div>
               </div>
