@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -79,13 +78,11 @@ export function CookieConsent() {
   if (!isVisible) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6"
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 transition-all duration-300 ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
+        style={{ animation: 'slideUp 0.3s ease-out' }}
       >
         <div className="mx-auto max-w-7xl">
           <div className="relative rounded-2xl border border-border bg-background/95 backdrop-blur-lg shadow-2xl overflow-hidden">
@@ -234,7 +231,6 @@ export function CookieConsent() {
             </div>
           </div>
         </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
   );
 }

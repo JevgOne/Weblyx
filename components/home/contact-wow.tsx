@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -213,13 +212,11 @@ export function ContactWow() {
             </SelectContent>
           </Select>
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+            <p
               className="text-sm text-red-500"
             >
               {error}
-            </motion.p>
+            </p>
           )}
         </div>
       );
@@ -242,13 +239,11 @@ export function ContactWow() {
             className="border-2 focus:border-primary transition-all resize-none"
           />
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+            <p
               className="text-sm text-red-500"
             >
               {error}
-            </motion.p>
+            </p>
           )}
         </div>
       );
@@ -270,13 +265,11 @@ export function ContactWow() {
           className="h-14 border-2 focus:border-primary transition-all"
         />
         {error && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+          <p
             className="text-sm text-red-500"
           >
             {error}
-          </motion.p>
+          </p>
         )}
       </div>
     );
@@ -289,20 +282,14 @@ export function ContactWow() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/3 animate-gradient" />
 
         <div className="container mx-auto max-w-4xl relative z-10">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+          <div
             className="text-center space-y-6"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            <div
               className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-primary to-blue-600 shadow-2xl"
             >
               <Check className="w-12 h-12 text-white" />
-            </motion.div>
+            </div>
 
             <div>
               <h2 className="text-4xl font-bold mb-2">Děkujeme! 🎉</h2>
@@ -313,7 +300,7 @@ export function ContactWow() {
                 Ozveme se vám do 24 hodin
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     );
@@ -325,9 +312,7 @@ export function ContactWow() {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/3 animate-gradient" />
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="text-center space-y-4 mb-12"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
@@ -336,20 +321,16 @@ export function ContactWow() {
           <p className="text-lg text-muted-foreground">
             Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
+          <div
             className="space-y-6"
           >
             <Card className="backdrop-blur-sm bg-card/50 border-2">
               <div className="p-6 space-y-6">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
+                <div
                   className="flex items-start gap-4"
                 >
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -364,10 +345,9 @@ export function ContactWow() {
                       info@weblyx.cz
                     </a>
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
+                <div
                   className="flex items-start gap-4"
                 >
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -382,10 +362,9 @@ export function ContactWow() {
                       +420 702 110 166
                     </a>
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
+                <div
                   className="flex items-start gap-4"
                 >
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -397,7 +376,7 @@ export function ContactWow() {
                       Praha, Česká republika
                     </p>
                   </div>
-                </motion.div>
+                </div>
               </div>
             </Card>
 
@@ -411,14 +390,11 @@ export function ContactWow() {
               </div>
             </Card>
 
-          </motion.div>
+          </div>
 
           {/* Form */}
           <div className="lg:col-span-2">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
+            <div
             >
               <Card className="backdrop-blur-sm bg-card/50 border-2">
                 <div className="p-6 space-y-6">
@@ -429,27 +405,18 @@ export function ContactWow() {
                       <span className="text-muted-foreground">{Math.round(progress)}%</span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <motion.div
+                      <div
                         className="h-full bg-gradient-to-r from-primary to-secondary"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.3 }}
                       />
                     </div>
                   </div>
 
                   {/* Current Field */}
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentField}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {renderField(formFields[currentField])}
-                    </motion.div>
-                  </AnimatePresence>
+                  <div
+                    key={currentField}
+                  >
+                    {renderField(formFields[currentField])}
+                  </div>
 
                   {/* Navigation */}
                   <div className="flex justify-between pt-4">
@@ -496,7 +463,7 @@ export function ContactWow() {
                   </p>
                 </div>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
