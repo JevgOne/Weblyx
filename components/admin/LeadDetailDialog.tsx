@@ -33,23 +33,32 @@ const statusConfig = {
 export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDetailDialogProps) {
   const [generating, setGenerating] = useState(false);
   const [generatingBrief, setGeneratingBrief] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const generateDesign = async () => {
     setGenerating(true);
+    setError(null);
+    setSuccess(null);
     try {
       const response = await fetch(`/api/leads/${lead.id}/generate-design`, {
         method: "POST",
       });
 
+      const data = await response.json();
+
       if (response.ok) {
+        setSuccess("✅ AI návrh designu úspěšně vygenerován!");
         // Success - refresh lead data
         if (onRefresh) {
-          onRefresh();
+          await onRefresh();
         }
       } else {
-        console.error("Failed to generate design");
+        setError(data.error || "Generování selhalo. Zkuste to znovu.");
+        console.error("Failed to generate design:", data);
       }
-    } catch (error) {
+    } catch (error: any) {
+      setError("Chyba spojení. Zkuste to znovu.");
       console.error("Error generating design:", error);
     } finally {
       setGenerating(false);
@@ -58,20 +67,27 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
 
   const generateBrief = async () => {
     setGeneratingBrief(true);
+    setError(null);
+    setSuccess(null);
     try {
       const response = await fetch(`/api/leads/${lead.id}/generate-brief`, {
         method: "POST",
       });
 
+      const data = await response.json();
+
       if (response.ok) {
+        setSuccess("✅ AI Brief úspěšně vygenerován!");
         // Success - refresh lead data
         if (onRefresh) {
-          onRefresh();
+          await onRefresh();
         }
       } else {
-        console.error("Failed to generate brief");
+        setError(data.error || "Generování brief selhalo. Zkuste to znovu.");
+        console.error("Failed to generate brief:", data);
       }
-    } catch (error) {
+    } catch (error: any) {
+      setError("Chyba spojení. Zkuste to znovu.");
       console.error("Error generating brief:", error);
     } finally {
       setGeneratingBrief(false);
@@ -98,6 +114,18 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
             </Badge>
           </div>
         </DialogHeader>
+
+        {/* Success/Error Messages */}
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+            {success}
+          </div>
+        )}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
         <div className="space-y-6">
           {/* Basic Info */}
