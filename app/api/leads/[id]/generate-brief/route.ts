@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { turso } from "@/lib/turso";
 
 /**
@@ -206,37 +207,26 @@ export async function POST(
       timeline: row.timeline,
     };
 
-    // Call Gemini API directly (same approach as email-generator)
+    // Use GoogleGenerativeAI library (stable approach)
     const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
-    const prompt = buildBriefPrompt(leadData);
-
-    const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 8192,
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`Gemini API error: ${response.status} - ${errorData}`);
+    if (!API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
-    const data = await response.json();
-    const text = data.candidates[0].content.parts[0].text;
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+      }
+    });
+
+    const prompt = buildBriefPrompt(leadData);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
     // Extract JSON from response (remove markdown if present)
     let brief;

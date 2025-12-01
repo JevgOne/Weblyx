@@ -1,9 +1,9 @@
 // Email Generation using Google Gemini API
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { EmailGenerationPrompt, EmailGenerationResult } from '@/types/lead-generation';
 import { WebAnalysisResult } from '@/types/cms';
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'AIzaSyAUKemEjooWExY-em3ygdg8JWq-BN82XQ4';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || 'AIzaSyAUKemEjooWExY-em3ygdg8JWq-BN82XQ4';
 
 /**
  * Generate personalized email using Google Gemini API
@@ -58,38 +58,21 @@ Vrať odpověď POUZE ve formátu JSON:
 DŮLEŽITÉ: Nepoužívej markdown formátování. Prostý text pouze.`;
 
   try {
-    // Call Gemini API
-    const response = await fetch(`${GEMINI_API_URL}?key=${GOOGLE_API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: geminiPrompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 800,
-        },
-      }),
+    // Use GoogleGenerativeAI library
+    const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 800,
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Gemini API error: ${response.status} ${JSON.stringify(errorData)}`);
-    }
-
-    const data = await response.json();
+    const result = await model.generateContent(geminiPrompt);
+    const response = await result.response;
 
     // Extract generated text
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const generatedText = response.text();
 
     if (!generatedText) {
       throw new Error('No text generated from Gemini API');
