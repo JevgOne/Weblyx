@@ -280,13 +280,18 @@ export function middleware(request: NextRequest) {
   // Anti-scraping headers
   response.headers.set('X-Robots-Tag', 'noarchive, nosnippet, noimageindex, nofollow');
 
-  // Prevent content download/caching
-  response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate, max-age=0');
-  response.headers.set('Pragma', 'no-cache');
-  response.headers.set('Expires', '0');
-
-  // Disable client-side caching
-  response.headers.set('Clear-Site-Data', '"cache"');
+  // PERFORMANCE FIX: Only apply aggressive no-cache for admin/API routes
+  // Let Next.js ISR work normally for public pages
+  if (isAdminRoute || isApiRoute) {
+    // Prevent content download/caching for sensitive routes only
+    response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+  } else {
+    // Allow Next.js default caching for public pages (ISR, static generation)
+    // This dramatically improves performance for legitimate users
+    // Note: Next.js will set appropriate cache headers based on page type
+  }
 
   // Content protection
   response.headers.set('X-Content-Type-Options', 'nosniff');
