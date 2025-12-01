@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LeadButton } from "@/components/tracking/LeadButton";
 import { ArrowRight } from "lucide-react";
 import { CTASection as CTASectionType } from "@/types/cms";
 import { getCTASection } from "@/lib/turso/cms";
@@ -60,17 +61,15 @@ export async function CTASection() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button
-                asChild
+              {/* Primary CTA with Facebook Pixel Lead tracking */}
+              <LeadButton
+                href={section.primaryButtonLink}
                 size="lg"
                 variant="secondary"
                 className="text-base shadow-lg"
               >
-                <Link href={section.primaryButtonLink}>
-                  {section.primaryButtonText}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+                {section.primaryButtonText}
+              </LeadButton>
               <Button
                 asChild
                 size="lg"

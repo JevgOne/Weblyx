@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 
@@ -113,6 +114,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <GoogleAnalytics />
+      <FacebookPixel />
       <body className={`${inter.variable} font-sans antialiased`}>
         <PWAProvider>
           <Header />

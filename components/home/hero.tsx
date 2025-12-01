@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LeadButton } from "@/components/tracking/LeadButton";
 import { ArrowRight, Zap, Clock, TrendingUp } from "lucide-react";
 import { HeroSection } from "@/types/cms";
 import { HeroData } from "@/types/homepage";
@@ -108,16 +109,14 @@ export async function Hero() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <Button
-                asChild
+              {/* Primary CTA with Facebook Pixel Lead tracking */}
+              <LeadButton
+                href={data.ctaPrimary.href}
                 size="lg"
                 className="text-base px-8 py-6 shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-primary to-primary/90"
               >
-                <Link href={data.ctaPrimary.href} className="group">
-                  {data.ctaPrimary.text}
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
+                {data.ctaPrimary.text}
+              </LeadButton>
               <Button
                 asChild
                 variant="outline"
