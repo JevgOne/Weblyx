@@ -26,6 +26,16 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  // Exclude heavy packages from lambda bundle
+  serverComponentsExternalPackages: [
+    'puppeteer',
+    'puppeteer-core',
+    '@sparticuz/chromium',
+    '@react-pdf/renderer',
+    'canvas',
+    'sharp',
+  ],
+
   // Production optimizations
   ...(process.env.NODE_ENV === 'production' && {
     compiler: {
