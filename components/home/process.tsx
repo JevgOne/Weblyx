@@ -1,6 +1,6 @@
-import * as LucideIcons from "lucide-react";
 import { ProcessSection, ProcessStep } from "@/types/cms";
 import { getProcessSection, getAllProcessSteps } from "@/lib/turso/cms";
+import { getIcon } from "@/lib/icon-map";
 
 async function getProcessData(): Promise<{ section: ProcessSection | null; steps: ProcessStep[] }> {
   try {
@@ -28,12 +28,6 @@ export async function Process() {
   if (!section || !section.enabled || enabledSteps.length === 0) {
     return null;
   }
-
-  // Helper to get icon component
-  const getIcon = (iconName: string) => {
-    const Icon = (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
-    return Icon;
-  };
 
   return (
     <section className="relative py-20 md:py-32 px-4 overflow-hidden">

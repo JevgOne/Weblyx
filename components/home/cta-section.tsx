@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import { CTASection as CTASectionType } from "@/types/cms";
 import { getCTASection } from "@/lib/turso/cms";
+import { getIcon } from "@/lib/icon-map";
 
 async function getCTAData(): Promise<CTASectionType | null> {
   try {
@@ -21,12 +21,6 @@ export async function CTASection() {
   if (!section || !section.enabled) {
     return null;
   }
-
-  // Helper to get icon component
-  const getIcon = (iconName: string) => {
-    const Icon = (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
-    return Icon;
-  };
 
   return (
     <section className="py-16 md:py-24 px-4">
