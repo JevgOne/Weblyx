@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { turso } from "@/lib/turso";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
  * Generate AI-ready project brief from lead data
@@ -207,23 +206,37 @@ export async function POST(
       timeline: row.timeline,
     };
 
-    // Initialize Gemini
-    const genAI = new GoogleGenerativeAI(
-      process.env.GEMINI_API_KEY || ""
-    );
-    const model = genAI.getGenerativeModel({
-      model: "gemini-pro",
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-      }
+    // Call Gemini API directly (same approach as email-generator)
+    const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
+    const prompt = buildBriefPrompt(leadData);
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 8192,
+        }
+      })
     });
 
-    // Generate brief
-    const prompt = buildBriefPrompt(leadData);
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`Gemini API error: ${response.status} - ${errorData}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates[0].content.parts[0].text;
 
     // Extract JSON from response (remove markdown if present)
     let brief;

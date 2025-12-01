@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { turso } from "@/lib/turso";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AIDesignSuggestion } from "@/types/ai-design";
 
 /**
@@ -65,29 +64,41 @@ Return ONLY valid JSON without markdown formatting.`;
 }
 
 /**
- * Call Gemini API to generate design suggestions
+ * Call Gemini API directly to generate design suggestions
  */
 async function callGeminiAPI(prompt: string): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not configured");
+  if (!API_KEY) {
+    throw new Error("GEMINI_API_KEY or GOOGLE_API_KEY is not configured");
   }
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-
-  // Use Gemini Pro (stable version)
-  const model = genAI.getGenerativeModel({
-    model: "gemini-pro",
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 4096,
-    }
+  const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 4096,
+      }
+    })
   });
 
-  const result = await model.generateContent(prompt);
-  const response = result.response;
-  const text = response.text();
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(`Gemini API error: ${response.status} - ${errorData}`);
+  }
+
+  const data = await response.json();
+  const text = data.candidates[0].content.parts[0].text;
 
   if (!text) {
     throw new Error("Empty response from Gemini API");
