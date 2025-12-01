@@ -212,7 +212,7 @@ export async function POST(
       process.env.GEMINI_API_KEY || ""
     );
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro",
+      model: "gemini-pro",
       generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 8192,

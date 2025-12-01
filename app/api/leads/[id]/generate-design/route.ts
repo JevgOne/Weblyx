@@ -76,9 +76,9 @@ async function callGeminiAPI(prompt: string): Promise<string> {
 
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // Use Gemini 1.5 Pro for best results
+  // Use Gemini Pro (stable version)
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-pro",
+    model: "gemini-pro",
     generationConfig: {
       temperature: 0.7,
       maxOutputTokens: 4096,
