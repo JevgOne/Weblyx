@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
+import { turso } from "@/lib/turso";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
@@ -173,16 +173,39 @@ export async function POST(
       );
     }
 
-    // Get lead data from Firestore
-    const { doc: docRef, getDoc, updateDoc } = await import('firebase/firestore');
-    const leadDocRef = docRef(db, "leads", id);
-    const leadDoc = await getDoc(leadDocRef);
+    // Get lead data from Turso
+    const dbResult = await turso.execute({
+      sql: 'SELECT * FROM leads WHERE id = ?',
+      args: [id]
+    });
 
-    if (!leadDoc.exists()) {
+    if (dbResult.rows.length === 0) {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
 
-    const leadData = leadDoc.data();
+    const row = dbResult.rows[0] as any;
+
+    // Parse JSON fields
+    const parseJSON = (field: any) => {
+      if (!field) return null;
+      try {
+        return typeof field === 'string' ? JSON.parse(field) : field;
+      } catch {
+        return field;
+      }
+    };
+
+    const leadData = {
+      id: row.id,
+      projectType: row.project_type,
+      companyName: row.company,
+      businessDescription: row.business_description,
+      projectDetails: parseJSON(row.project_details),
+      features: parseJSON(row.features),
+      designPreferences: parseJSON(row.design_preferences),
+      budget: row.budget_range,
+      timeline: row.timeline,
+    };
 
     // Initialize Gemini
     const genAI = new GoogleGenerativeAI(
@@ -211,11 +234,14 @@ export async function POST(
       };
     }
 
-    // Save brief to lead document
-    await updateDoc(leadDocRef, {
-      aiBrief: brief,
-      briefGeneratedAt: new Date(),
-      updatedAt: new Date(),
+    // Save brief to Turso
+    await turso.execute({
+      sql: `UPDATE leads
+            SET ai_brief = ?,
+                brief_generated_at = unixepoch(),
+                updated_at = unixepoch()
+            WHERE id = ?`,
+      args: [JSON.stringify(brief), id]
     });
 
     // 📧 Trigger client proposal email in background (don't await)

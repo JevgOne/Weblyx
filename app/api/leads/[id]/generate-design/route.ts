@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
+import { turso } from "@/lib/turso";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AIDesignSuggestion } from "@/types/ai-design";
 
@@ -133,19 +133,43 @@ export async function POST(
 
     console.log(`🎨 Generating AI design for lead: ${leadId}`);
 
-    // 1. Fetch lead from Firestore
-    const { doc, getDoc } = await import('firebase/firestore');
-    const leadDocRef = doc(db, "leads", leadId);
-    const leadDoc = await getDoc(leadDocRef);
+    // 1. Fetch lead from Turso
+    const result = await turso.execute({
+      sql: 'SELECT * FROM leads WHERE id = ?',
+      args: [leadId]
+    });
 
-    if (!leadDoc.exists()) {
+    if (result.rows.length === 0) {
       return NextResponse.json(
         { error: "Lead not found" },
         { status: 404 }
       );
     }
 
-    const leadData = leadDoc.data();
+    const row = result.rows[0] as any;
+
+    // Parse JSON fields
+    const parseJSON = (field: any) => {
+      if (!field) return null;
+      try {
+        return typeof field === 'string' ? JSON.parse(field) : field;
+      } catch {
+        return field;
+      }
+    };
+
+    const leadData = {
+      id: row.id,
+      projectType: row.project_type,
+      companyName: row.company,
+      businessDescription: row.business_description,
+      projectDetails: parseJSON(row.project_details),
+      features: parseJSON(row.features),
+      designPreferences: parseJSON(row.design_preferences),
+      budget: row.budget_range,
+      timeline: row.timeline,
+      aiDesignSuggestion: parseJSON(row.ai_design_suggestion),
+    };
 
     // 2. Check if AI design already exists
     if (leadData.aiDesignSuggestion) {
@@ -190,12 +214,14 @@ export async function POST(
       );
     }
 
-    // 6. Save to Firestore
-    const { doc: docRef, updateDoc } = await import('firebase/firestore');
-    await updateDoc(docRef(db, "leads", leadId), {
-      aiDesignSuggestion: designSuggestion,
-      aiGeneratedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    // 6. Save to Turso
+    await turso.execute({
+      sql: `UPDATE leads
+            SET ai_design_suggestion = ?,
+                ai_generated_at = unixepoch(),
+                updated_at = unixepoch()
+            WHERE id = ?`,
+      args: [JSON.stringify(designSuggestion), leadId]
     });
 
     console.log(`✅ AI design generated and saved for lead ${leadId}`);

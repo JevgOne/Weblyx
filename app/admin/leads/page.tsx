@@ -313,7 +313,7 @@ export default function AdminLeadsPage() {
                     <TableCell>
                       <Badge variant="outline">{lead.projectType}</Badge>
                     </TableCell>
-                    <TableCell className="text-sm">{lead.budget}</TableCell>
+                    <TableCell className="text-sm">{lead.budgetRange || lead.budget || '-'}</TableCell>
                     <TableCell>
                       <Badge
                         className={`${statusConfig[lead.status as keyof typeof statusConfig].color} text-white`}

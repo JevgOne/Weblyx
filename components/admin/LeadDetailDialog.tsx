@@ -131,14 +131,14 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  Vytvořeno: {new Date(lead.created).toLocaleDateString("cs-CZ")}
+                  Vytvořeno: {new Date(lead.createdAt || lead.created).toLocaleDateString("cs-CZ")}
                 </span>
               </div>
 
-              {lead.budget && (
+              {lead.budgetRange && (
                 <div className="flex items-center gap-2 text-sm">
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span>Rozpočet: {lead.budget}</span>
+                  <span>Rozpočet: {lead.budgetRange}</span>
                 </div>
               )}
 
@@ -148,15 +148,64 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
                   <Badge variant="outline">{lead.projectType}</Badge>
                 </div>
               )}
+
+              {lead.timeline && (
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Termín: </span>
+                  <span>{lead.timeline}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Message */}
-          {lead.message && (
+          {/* Business Description */}
+          {lead.businessDescription && (
             <div className="space-y-2">
-              <h4 className="font-semibold">Zpráva od klienta</h4>
+              <h4 className="font-semibold">Popis byznysu</h4>
               <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm whitespace-pre-wrap">{lead.message}</p>
+                <p className="text-sm whitespace-pre-wrap">{lead.businessDescription}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Project Details */}
+          {lead.projectDetails && Object.keys(lead.projectDetails).length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Detaily projektu</h4>
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                {Object.entries(lead.projectDetails).map(([key, value]) => (
+                  <div key={key} className="text-sm">
+                    <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: </span>
+                    <span>{String(value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Features */}
+          {lead.features && Array.isArray(lead.features) && lead.features.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Požadované funkce</h4>
+              <div className="flex flex-wrap gap-2">
+                {lead.features.map((feature: string, idx: number) => (
+                  <Badge key={idx} variant="secondary">{feature}</Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Design Preferences */}
+          {lead.designPreferences && Object.keys(lead.designPreferences).length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Designové preference</h4>
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                {Object.entries(lead.designPreferences).map(([key, value]) => (
+                  <div key={key} className="text-sm">
+                    <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: </span>
+                    <span>{String(value)}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -261,7 +310,13 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
 
                 {lead.briefGeneratedAt && (
                   <p className="text-xs text-muted-foreground">
-                    Vygenerováno: {new Date(lead.briefGeneratedAt.seconds * 1000).toLocaleString('cs-CZ')}
+                    Vygenerováno: {new Date(
+                      typeof lead.briefGeneratedAt === 'number'
+                        ? lead.briefGeneratedAt * 1000
+                        : lead.briefGeneratedAt.seconds
+                        ? lead.briefGeneratedAt.seconds * 1000
+                        : lead.briefGeneratedAt
+                    ).toLocaleString('cs-CZ')}
                   </p>
                 )}
               </div>
