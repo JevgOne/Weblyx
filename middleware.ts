@@ -198,8 +198,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 1. MAXIMUM SECURITY: Block suspicious user agents
-  if (isSuspiciousUserAgent(userAgent)) {
+  // ALLOW admin panel access (auth is handled separately by AdminAuthProvider)
+  const isAdminRoute = pathname.startsWith('/admin');
+
+  // 1. MAXIMUM SECURITY: Block suspicious user agents (skip for admin - auth handled separately)
+  if (!isAdminRoute && isSuspiciousUserAgent(userAgent)) {
     console.log(`🚫 [BOT BLOCKED] User-Agent: ${userAgent.substring(0, 100)} | IP: ${ip} | Path: ${pathname}`);
     return new NextResponse('Forbidden', { status: 403 });
   }
@@ -218,8 +221,8 @@ export function middleware(request: NextRequest) {
   }
 
   // 4. BURST PROTECTION: Block rapid-fire requests (scraper pattern)
-  // Skip rate limiting for whitelisted bots (search engines need to crawl freely)
-  if (!isWhitelistedBot && isBurstLimited(ip)) {
+  // Skip rate limiting for whitelisted bots and admin routes
+  if (!isWhitelistedBot && !isAdminRoute && isBurstLimited(ip)) {
     console.log(`🚫 [BURST LIMIT] IP: ${ip} | Too many requests in 10s | Path: ${pathname}`);
     return new NextResponse('Too Many Requests', {
       status: 429,
@@ -229,11 +232,11 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  // 5. RATE LIMITING: Standard rate limit (skip for whitelisted bots)
+  // 5. RATE LIMITING: Standard rate limit (skip for whitelisted bots and admin)
   const isApiRoute = pathname.startsWith('/api');
   const maxRequests = isApiRoute ? RATE_LIMIT_MAX_REQUESTS_API : RATE_LIMIT_MAX_REQUESTS;
 
-  if (!isWhitelistedBot && isRateLimited(ip, maxRequests)) {
+  if (!isWhitelistedBot && !isAdminRoute && isRateLimited(ip, maxRequests)) {
     console.log(`🚫 [RATE LIMIT] IP: ${ip} | Exceeded ${maxRequests} req/min | Path: ${pathname}`);
     return new NextResponse('Too Many Requests', {
       status: 429,
