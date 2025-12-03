@@ -117,65 +117,110 @@ export async function POST(request: NextRequest) {
         amount: GoPay.halereToCzk(amountPaid),
       });
 
-      // Generate invoice automatically
+      // Generate invoice automatically via Fakturoid
       try {
-        console.log('📄 Auto-generating invoice for payment:', payment.id);
+        console.log('📄 Auto-generating Fakturoid invoice for payment:', payment.id);
 
-        // Prepare invoice data from payment
-        const invoiceData = {
-          payment_id: payment.id as string,
-          client_name: payment.payer_name as string || 'N/A',
-          client_email: payment.payer_email as string | undefined,
-          client_ico: payment.payer_ico as string | undefined,
-          client_dic: payment.payer_dic as string | undefined,
-          invoice_type: 'standard' as const,
-          items: [
-            {
-              description: payment.description as string,
-              quantity: 1,
-              unit_price: payment.amount as number,
-              vat_rate: 21, // Default VAT rate for Czech Republic
+        const { Fakturoid } = await import('@/lib/fakturoid');
+
+        if (!Fakturoid.isConfigured()) {
+          console.warn('⚠️ Fakturoid not configured, skipping invoice generation');
+        } else {
+          // Prepare invoice data
+          const invoiceData = {
+            subject: {
+              name: (payment.payer_name as string) || 'Klient',
+              email: payment.payer_email as string || undefined,
+              phone: payment.payer_phone as string || undefined,
+              registration_no: payment.payer_ico as string || undefined,
+              vat_no: payment.payer_dic as string || undefined,
             },
-          ],
-          payment_method: 'gopay' as const,
-          notes: `Platba provedena přes GoPay (ID: ${payment.gopay_id})`,
-        };
+            lines: [
+              {
+                name: payment.description as string,
+                quantity: 1,
+                unit_price: GoPay.halereToCzk(payment.amount as number),
+                vat_rate: 21, // Default VAT rate
+              },
+            ],
+            variable_symbol: payment.variable_symbol as string,
+            note: `Platba provedena přes GoPay (ID: ${payment.gopay_id})`,
+            payment_method: 'bank' as const,
+          };
 
-        // Call invoice generation API internally
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz';
-        const invoiceResponse = await fetch(`${siteUrl}/api/invoices/generate`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(invoiceData),
-        });
+          // Create invoice in Fakturoid
+          const fakturoidInvoice = await Fakturoid.createInvoice(invoiceData);
 
-        if (invoiceResponse.ok) {
-          const invoiceResult = await invoiceResponse.json();
-          console.log('✅ Invoice generated:', {
-            invoice_number: invoiceResult.invoice?.invoice_number,
-            pdf_url: invoiceResult.pdf_url,
+          console.log('✅ Fakturoid invoice created:', {
+            id: fakturoidInvoice.id,
+            number: fakturoidInvoice.number,
+            pdf_url: fakturoidInvoice.pdf_url,
           });
 
-          // Update payment with invoice_id
-          if (invoiceResult.invoice?.id) {
+          // Mark invoice as paid (since payment is already completed)
+          await Fakturoid.markAsPaid(fakturoidInvoice.id);
+
+          // Send invoice via email
+          if (payment.payer_email) {
+            await Fakturoid.sendEmail(fakturoidInvoice.id, payment.payer_email as string);
+            console.log('📧 Invoice sent to:', payment.payer_email);
+          }
+
+          // Store Fakturoid invoice ID in our database
+          await turso.execute({
+            sql: `INSERT INTO invoices (
+              invoice_number, variable_symbol, payment_id, lead_id,
+              invoice_type, client_name, client_email,
+              amount_without_vat, vat_rate, vat_amount, amount_with_vat, currency,
+              items, issue_date, due_date, paid_date,
+              payment_method, status, pdf_url,
+              notes
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            args: [
+              fakturoidInvoice.number,
+              fakturoidInvoice.variable_symbol,
+              payment.id,
+              payment.lead_id || null,
+              'standard',
+              fakturoidInvoice.subject.name,
+              fakturoidInvoice.subject.email || null,
+              fakturoidInvoice.subtotal * 100, // Convert to haléře
+              21,
+              (fakturoidInvoice.total - fakturoidInvoice.subtotal) * 100,
+              fakturoidInvoice.total * 100,
+              'CZK',
+              JSON.stringify(fakturoidInvoice.lines),
+              Math.floor(new Date(fakturoidInvoice.issued_on).getTime() / 1000),
+              Math.floor(new Date(fakturoidInvoice.due_on).getTime() / 1000),
+              Math.floor(Date.now() / 1000), // paid_date
+              'gopay',
+              'paid',
+              fakturoidInvoice.pdf_url,
+              `Fakturoid ID: ${fakturoidInvoice.id}`,
+            ],
+          });
+
+          // Get the invoice ID we just created
+          const invoiceResult = await turso.execute({
+            sql: 'SELECT id FROM invoices WHERE invoice_number = ?',
+            args: [fakturoidInvoice.number],
+          });
+
+          if (invoiceResult.rows.length > 0) {
+            // Update payment with invoice_id
             await turso.execute({
               sql: 'UPDATE payments SET invoice_id = ?, updated_at = unixepoch() WHERE id = ?',
-              args: [invoiceResult.invoice.id, payment.id],
+              args: [invoiceResult.rows[0].id, payment.id],
             });
           }
-        } else {
-          const error = await invoiceResponse.text();
-          console.error('⚠️ Failed to generate invoice:', error);
+
+          console.log('✅ Invoice saved to database and linked to payment');
         }
 
       } catch (error: any) {
-        console.error('⚠️ Invoice generation error:', error.message);
+        console.error('⚠️ Fakturoid invoice generation error:', error.message);
         // Don't fail the webhook if invoice generation fails
       }
-
-      // TODO: Send email notification (will be implemented later)
 
       // If payment is linked to a lead, update lead status
       if (payment.lead_id) {
