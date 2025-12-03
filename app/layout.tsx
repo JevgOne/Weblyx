@@ -113,9 +113,9 @@ export default function RootLayout({
         <meta name="theme-color" content="#14B8A6" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <GoogleAnalytics />
-      <FacebookPixel />
       <body className={`${inter.variable} font-sans antialiased`}>
+        <GoogleAnalytics />
+        <FacebookPixel />
         <PWAProvider>
           <Header />
           {children}
