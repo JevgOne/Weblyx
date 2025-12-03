@@ -23,7 +23,9 @@ import {
   Globe,
   MessageSquareQuote,
   Target,
-  Bot
+  Bot,
+  CreditCard,
+  Receipt
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -352,6 +354,44 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full" onClick={() => router.push("/admin/promo-codes")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                    <CreditCard className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Platby 💳</CardTitle>
+                    <CardDescription>GoPay platební brána</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="default" className="w-full bg-green-600 hover:bg-green-700" onClick={() => router.push("/admin/payments")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border-blue-200">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
+                    <Receipt className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Faktury 📄</CardTitle>
+                    <CardDescription>České daňové doklady</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="default" className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push("/admin/invoices")}>
                   Otevřít
                 </Button>
               </CardContent>
