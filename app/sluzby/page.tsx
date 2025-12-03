@@ -18,6 +18,7 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 import { Service as ServiceType } from "@/types/cms";
 import { Pricing } from "@/components/home/pricing";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 // Force dynamic rendering to avoid build timeout
 export const dynamic = 'force-dynamic';
@@ -337,12 +338,9 @@ export default async function ServicesPage() {
                   </div>
                 </div>
 
-                <Button asChild size="lg">
-                  <Link href="/poptavka">
-                    Nezávazná poptávka
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
+                <LeadButton href="/poptavka" size="lg" showArrow>
+                  Nezávazná poptávka
+                </LeadButton>
               </div>
 
               <Card className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>

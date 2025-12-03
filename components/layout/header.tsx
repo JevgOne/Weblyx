@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,9 +42,9 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button asChild className="shadow-elegant">
-              <Link href="/poptavka">Nezávazná poptávka</Link>
-            </Button>
+            <LeadButton href="/poptavka" className="shadow-elegant">
+              Nezávazná poptávka
+            </LeadButton>
           </div>
 
           {/* Mobile menu button */}
@@ -75,9 +76,9 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <Button asChild className="w-full">
-              <Link href="/poptavka">Nezávazná poptávka</Link>
-            </Button>
+            <LeadButton href="/poptavka" className="w-full">
+              Nezávazná poptávka
+            </LeadButton>
           </div>
         </div>
       )}

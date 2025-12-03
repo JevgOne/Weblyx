@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ interface LeadDetailDialogProps {
   onOpenChange: (open: boolean) => void;
   lead: any;
   onRefresh?: () => void;
+  onLeadUpdate?: (updatedLead: any) => void;
 }
 
 const statusConfig = {
@@ -30,18 +31,24 @@ const statusConfig = {
   paused: { label: "Pozastaveno", color: "bg-orange-500" },
 };
 
-export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDetailDialogProps) {
+export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUpdate }: LeadDetailDialogProps) {
+  const [currentLead, setCurrentLead] = useState(lead);
   const [generating, setGenerating] = useState(false);
   const [generatingBrief, setGeneratingBrief] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Update currentLead when lead prop changes
+  useEffect(() => {
+    setCurrentLead(lead);
+  }, [lead]);
 
   const generateDesign = async () => {
     setGenerating(true);
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch(`/api/leads/${lead.id}/generate-design`, {
+      const response = await fetch(`/api/leads/${currentLead.id}/generate-design`, {
         method: "POST",
       });
 
@@ -70,7 +77,7 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch(`/api/leads/${lead.id}/generate-brief`, {
+      const response = await fetch(`/api/leads/${currentLead.id}/generate-brief`, {
         method: "POST",
       });
 
@@ -78,7 +85,22 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
 
       if (response.ok) {
         setSuccess("✅ AI Brief úspěšně vygenerován!");
-        // Success - refresh lead data
+
+        // Fetch updated lead data immediately
+        const leadsResponse = await fetch('/api/admin/leads');
+        const leadsData = await leadsResponse.json();
+
+        if (leadsData.success) {
+          const updatedLead = leadsData.data.find((l: any) => l.id === currentLead.id);
+          if (updatedLead) {
+            setCurrentLead(updatedLead);
+            if (onLeadUpdate) {
+              onLeadUpdate(updatedLead);
+            }
+          }
+        }
+
+        // Also call parent refresh if provided
         if (onRefresh) {
           await onRefresh();
         }
@@ -104,13 +126,13 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div>
-              <DialogTitle className="text-2xl">{lead.name}</DialogTitle>
+              <DialogTitle className="text-2xl">{currentLead.name}</DialogTitle>
               <DialogDescription>Detail poptávky</DialogDescription>
             </div>
             <Badge
-              className={`${statusConfig[lead.status as keyof typeof statusConfig].color} text-white`}
+              className={`${statusConfig[currentLead.status as keyof typeof statusConfig].color} text-white`}
             >
-              {statusConfig[lead.status as keyof typeof statusConfig].label}
+              {statusConfig[currentLead.status as keyof typeof statusConfig].label}
             </Badge>
           </div>
         </DialogHeader>
@@ -133,24 +155,24 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <a href={`mailto:${lead.email}`} className="hover:text-primary">
-                  {lead.email}
+                <a href={`mailto:${currentLead.email}`} className="hover:text-primary">
+                  {currentLead.email}
                 </a>
               </div>
 
-              {lead.phone && (
+              {currentLead.phone && (
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <a href={`tel:${lead.phone}`} className="hover:text-primary">
-                    {lead.phone}
+                  <a href={`tel:${currentLead.phone}`} className="hover:text-primary">
+                    {currentLead.phone}
                   </a>
                 </div>
               )}
 
-              {lead.company && (
+              {currentLead.company && (
                 <div className="flex items-center gap-2 text-sm">
                   <Building2 className="h-4 w-4 text-muted-foreground" />
-                  <span>{lead.company}</span>
+                  <span>{currentLead.company}</span>
                 </div>
               )}
             </div>
@@ -159,49 +181,49 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  Vytvořeno: {new Date(lead.createdAt || lead.created).toLocaleDateString("cs-CZ")}
+                  Vytvořeno: {new Date(currentLead.createdAt || currentLead.created).toLocaleDateString("cs-CZ")}
                 </span>
               </div>
 
-              {lead.budgetRange && (
+              {currentLead.budgetRange && (
                 <div className="flex items-center gap-2 text-sm">
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span>Rozpočet: {lead.budgetRange}</span>
+                  <span>Rozpočet: {currentLead.budgetRange}</span>
                 </div>
               )}
 
-              {lead.projectType && (
+              {currentLead.projectType && (
                 <div className="text-sm">
                   <span className="text-muted-foreground">Typ projektu: </span>
-                  <Badge variant="outline">{lead.projectType}</Badge>
+                  <Badge variant="outline">{currentLead.projectType}</Badge>
                 </div>
               )}
 
-              {lead.timeline && (
+              {currentLead.timeline && (
                 <div className="text-sm">
                   <span className="text-muted-foreground">Termín: </span>
-                  <span>{lead.timeline}</span>
+                  <span>{currentLead.timeline}</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Business Description */}
-          {lead.businessDescription && (
+          {currentLead.businessDescription && (
             <div className="space-y-2">
               <h4 className="font-semibold">Popis byznysu</h4>
               <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm whitespace-pre-wrap">{lead.businessDescription}</p>
+                <p className="text-sm whitespace-pre-wrap">{currentLead.businessDescription}</p>
               </div>
             </div>
           )}
 
           {/* Project Details */}
-          {lead.projectDetails && Object.keys(lead.projectDetails).length > 0 && (
+          {currentLead.projectDetails && Object.keys(currentLead.projectDetails).length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold">Detaily projektu</h4>
               <div className="bg-muted p-4 rounded-lg space-y-2">
-                {Object.entries(lead.projectDetails).map(([key, value]) => (
+                {Object.entries(currentLead.projectDetails).map(([key, value]) => (
                   <div key={key} className="text-sm">
                     <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: </span>
                     <span>{String(value)}</span>
@@ -212,11 +234,11 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
           )}
 
           {/* Features */}
-          {lead.features && Array.isArray(lead.features) && lead.features.length > 0 && (
+          {currentLead.features && Array.isArray(currentLead.features) && currentLead.features.length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold">Požadované funkce</h4>
               <div className="flex flex-wrap gap-2">
-                {lead.features.map((feature: string, idx: number) => (
+                {currentLead.features.map((feature: string, idx: number) => (
                   <Badge key={idx} variant="secondary">{feature}</Badge>
                 ))}
               </div>
@@ -224,11 +246,11 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
           )}
 
           {/* Design Preferences */}
-          {lead.designPreferences && Object.keys(lead.designPreferences).length > 0 && (
+          {currentLead.designPreferences && Object.keys(currentLead.designPreferences).length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold">Designové preference</h4>
               <div className="bg-muted p-4 rounded-lg space-y-2">
-                {Object.entries(lead.designPreferences).map(([key, value]) => (
+                {Object.entries(currentLead.designPreferences).map(([key, value]) => (
                   <div key={key} className="text-sm">
                     <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: </span>
                     <span>{String(value)}</span>
@@ -239,10 +261,10 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
           )}
 
           {/* AI Design Suggestion */}
-          {lead.aiDesignSuggestion ? (
+          {currentLead.aiDesignSuggestion ? (
             <AIDesignSuggestionCard
-              suggestion={lead.aiDesignSuggestion}
-              leadId={lead.id}
+              suggestion={currentLead.aiDesignSuggestion}
+              leadId={currentLead.id}
               onRegenerate={handleRegenerate}
             />
           ) : (
@@ -275,19 +297,19 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
               AI Project Brief
             </h4>
 
-            {lead.aiBrief ? (
+            {currentLead.aiBrief ? (
               <div className="border rounded-lg p-6 space-y-4 bg-muted/30">
                 {/* Project Overview */}
-                {lead.aiBrief.projectOverview && (
+                {currentLead.aiBrief.projectOverview && (
                   <div>
                     <h5 className="font-semibold text-sm text-muted-foreground mb-2">PROJECT OVERVIEW</h5>
-                    <h6 className="font-bold text-lg mb-2">{lead.aiBrief.projectOverview.title}</h6>
-                    <p className="text-sm mb-3">{lead.aiBrief.projectOverview.summary}</p>
-                    {lead.aiBrief.projectOverview.businessGoals && (
+                    <h6 className="font-bold text-lg mb-2">{currentLead.aiBrief.projectOverview.title}</h6>
+                    <p className="text-sm mb-3">{currentLead.aiBrief.projectOverview.summary}</p>
+                    {currentLead.aiBrief.projectOverview.businessGoals && (
                       <div>
                         <p className="text-xs font-medium text-muted-foreground mb-1">Business Goals:</p>
                         <ul className="text-sm list-disc list-inside space-y-1">
-                          {lead.aiBrief.projectOverview.businessGoals.map((goal: string, idx: number) => (
+                          {currentLead.aiBrief.projectOverview.businessGoals.map((goal: string, idx: number) => (
                             <li key={idx}>{goal}</li>
                           ))}
                         </ul>
@@ -297,18 +319,18 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
                 )}
 
                 {/* AI Implementation Prompt */}
-                {lead.aiBrief.aiImplementationPrompt && (
+                {currentLead.aiBrief.aiImplementationPrompt && (
                   <div>
                     <h5 className="font-semibold text-sm text-muted-foreground mb-2">AI IMPLEMENTATION PROMPT</h5>
                     <div className="bg-background p-4 rounded border font-mono text-xs overflow-x-auto">
-                      <pre className="whitespace-pre-wrap">{lead.aiBrief.aiImplementationPrompt}</pre>
+                      <pre className="whitespace-pre-wrap">{currentLead.aiBrief.aiImplementationPrompt}</pre>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       className="mt-2"
                       onClick={() => {
-                        navigator.clipboard.writeText(lead.aiBrief.aiImplementationPrompt);
+                        navigator.clipboard.writeText(currentLead.aiBrief.aiImplementationPrompt);
                       }}
                     >
                       📋 Copy Prompt
@@ -336,14 +358,14 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh }: LeadDe
                   )}
                 </Button>
 
-                {lead.briefGeneratedAt && (
+                {currentLead.briefGeneratedAt && (
                   <p className="text-xs text-muted-foreground">
                     Vygenerováno: {new Date(
-                      typeof lead.briefGeneratedAt === 'number'
-                        ? lead.briefGeneratedAt * 1000
-                        : lead.briefGeneratedAt.seconds
-                        ? lead.briefGeneratedAt.seconds * 1000
-                        : lead.briefGeneratedAt
+                      typeof currentLead.briefGeneratedAt === 'number'
+                        ? currentLead.briefGeneratedAt * 1000
+                        : currentLead.briefGeneratedAt.seconds
+                        ? currentLead.briefGeneratedAt.seconds * 1000
+                        : currentLead.briefGeneratedAt
                     ).toLocaleString('cs-CZ')}
                   </p>
                 )}

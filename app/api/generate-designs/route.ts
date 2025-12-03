@@ -70,7 +70,7 @@ Return ONLY valid JSON in this exact format:
   ]
 }`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const responseText = response.text();

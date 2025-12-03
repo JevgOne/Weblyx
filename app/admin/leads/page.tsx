@@ -141,6 +141,13 @@ export default function AdminLeadsPage() {
 
       if (result.success) {
         setLeads(result.data);
+        // Also update selectedLead if it exists and matches
+        if (selectedLead) {
+          const updatedLead = result.data.find((l: any) => l.id === selectedLead.id);
+          if (updatedLead) {
+            setSelectedLead(updatedLead);
+          }
+        }
       } else {
         throw new Error(result.error);
       }
@@ -149,6 +156,14 @@ export default function AdminLeadsPage() {
       setLeads(mockLeads);
     }
     setLoading(false);
+  };
+
+  const handleLeadUpdate = (updatedLead: any) => {
+    setSelectedLead(updatedLead);
+    // Also update in leads array
+    setLeads(prevLeads =>
+      prevLeads.map(l => l.id === updatedLead.id ? updatedLead : l)
+    );
   };
 
   return (
@@ -358,6 +373,7 @@ export default function AdminLeadsPage() {
             onOpenChange={setDetailDialogOpen}
             lead={selectedLead}
             onRefresh={fetchLeads}
+            onLeadUpdate={handleLeadUpdate}
           />
         )}
 
