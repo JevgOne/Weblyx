@@ -409,14 +409,26 @@ export function generateCourseSchema(data: CourseSchemaData) {
 // UTILITY FUNCTION - Inject Schema into Page
 // ============================================================================
 
-export function injectSchema(schema: object) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
+/**
+ * To inject schema into your page, use this pattern in your .tsx file:
+ *
+ * <script
+ *   type="application/ld+json"
+ *   dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+ * />
+ *
+ * Example:
+ * const schema = generateHowToSchema({...});
+ * return (
+ *   <>
+ *     <script
+ *       type="application/ld+json"
+ *       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+ *     />
+ *     <main>...</main>
+ *   </>
+ * );
+ */
 
 // ============================================================================
 // EXAMPLE USAGE
@@ -456,8 +468,20 @@ const serviceSchema = generateServiceSchema({
   },
 });
 
-// Inject into page:
-{injectSchema(howToSchema)}
-{injectSchema(ratingSchema)}
-{injectSchema(serviceSchema)}
+// To inject schemas into your page, use this pattern in your .tsx file:
+//
+// <script
+//   type="application/ld+json"
+//   dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+// />
+// <script
+//   type="application/ld+json"
+//   dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
+// />
+// <script
+//   type="application/ld+json"
+//   dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+// />
+//
+// See QUICK_START_GUIDE.md for complete implementation examples.
 */
