@@ -211,43 +211,23 @@ export function getInitials(name: string): string {
 // EXAMPLE USAGE IN BLOG POST
 // ============================================================================
 
-/*
-// In /app/blog/[slug]/page.tsx:
-
-import { getAuthor, generateAuthorSchema } from '@/lib/authors';
-
-export default async function BlogPost({ params }) {
-  const post = await getPost(params.slug);
-  const author = getAuthor(post.author_id);
-
-  if (!author) {
-    throw new Error(`Author not found: ${post.author_id}`);
-  }
-
-  const authorSchema = generateAuthorSchema(author);
-
-  return (
-    <>
-      {injectSchema(authorSchema)}
-
-      <article>
-        <header>
-          <h1>{post.title}</h1>
-          <div className="author-meta">
-            <img src={author.image} alt={author.name} />
-            <div>
-              <span>{author.name}</span>
-              <span>{author.role}</span>
-            </div>
-          </div>
-        </header>
-
-        <main>{post.content}</main>
-
-        {/* Author card at the end */}
-        <AuthorCard author={author} />
-      </article>
-    </>
-  );
-}
-*/
+/**
+ * Usage example (see QUICK_START_GUIDE.md for implementation):
+ *
+ * 1. Import author functions in blog post page:
+ *    import { getAuthor, generateAuthorSchema } from '@/lib/authors';
+ *    import { AuthorCard, AuthorByline } from '@/components/blog/AuthorCard';
+ *
+ * 2. Get author data:
+ *    const author = getAuthor(post.author_id);
+ *
+ * 3. Generate schema:
+ *    const authorSchema = generateAuthorSchema(author);
+ *
+ * 4. Inject schema and render author card:
+ *    - Add <script type="application/ld+json"> with authorSchema
+ *    - Add <AuthorByline author={author} /> in header
+ *    - Add <AuthorCard author={author} /> at end of article
+ *
+ * See /docs/QUICK_START_GUIDE.md for complete implementation example.
+ */
