@@ -194,6 +194,12 @@ export interface ServiceSchemaData {
     price?: string;
     priceRange?: string; // e.g., "7990-14990"
   };
+  aggregateRating?: {
+    ratingValue: number;
+    reviewCount: number;
+    bestRating?: number;
+    worstRating?: number;
+  };
   image?: string;
 }
 
@@ -220,6 +226,15 @@ export function generateServiceSchema(data: ServiceSchemaData) {
         priceCurrency: data.offers.priceCurrency,
         ...(data.offers.price && { price: data.offers.price }),
         ...(data.offers.priceRange && { priceRange: data.offers.priceRange }),
+      },
+    }),
+    ...(data.aggregateRating && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: data.aggregateRating.ratingValue,
+        reviewCount: data.aggregateRating.reviewCount,
+        bestRating: data.aggregateRating.bestRating || 5,
+        worstRating: data.aggregateRating.worstRating || 1,
       },
     }),
   };

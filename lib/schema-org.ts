@@ -21,6 +21,7 @@ export interface OrganizationData {
   phone?: string;
   addressLocality?: string;
   addressCountry?: string;
+  streetAddress?: string;
   foundingDate?: string;
 }
 
@@ -34,6 +35,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     phone = '+420702110166',
     addressLocality = 'Praha',
     addressCountry = 'CZ',
+    streetAddress = 'Praha',
     foundingDate = '2024-02',
   } = data || {};
 
@@ -49,13 +51,14 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     description,
     address: {
       '@type': 'PostalAddress',
+      streetAddress,
       addressLocality,
       addressCountry,
     },
     contactPoint: {
       '@type': 'ContactPoint',
       email,
-      ...(phone && { telephone: phone }),
+      telephone: phone,
       contactType: 'customer service',
       availableLanguage: ['cs', 'Czech'],
     },
@@ -98,6 +101,7 @@ export function generateWebSiteSchema() {
 export interface LocalBusinessData extends OrganizationData {
   priceRange?: string;
   openingHours?: string[];
+  streetAddress?: string;
 }
 
 export function generateLocalBusinessSchema(data?: LocalBusinessData) {
@@ -106,25 +110,27 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
     url = BASE_URL,
     description = 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
     email = 'info@weblyx.cz',
-    phone = '',
+    phone = '+420702110166',
     addressLocality = 'Praha',
     addressCountry = 'CZ',
-    priceRange = '10000-150000 CZK',
+    streetAddress = 'Praha',
+    priceRange = '10000 Kč - 50000 Kč',
     openingHours = ['Mo-Fr 09:00-18:00'],
   } = data || {};
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
+    '@type': 'LocalBusiness',
     name,
     url,
     description,
     address: {
       '@type': 'PostalAddress',
+      streetAddress,
       addressLocality,
       addressCountry,
     },
-    ...(phone && { telephone: phone }),
+    telephone: phone,
     email,
     priceRange,
     openingHoursSpecification: openingHours.map((hours) => {
