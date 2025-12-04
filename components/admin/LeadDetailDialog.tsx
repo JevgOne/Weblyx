@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign } from "lucide-react";
+import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2 } from "lucide-react";
 import { AIDesignSuggestionCard } from "./AIDesignSuggestionCard";
 
 interface LeadDetailDialogProps {
@@ -35,6 +35,8 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
   const [currentLead, setCurrentLead] = useState(lead);
   const [generating, setGenerating] = useState(false);
   const [generatingBrief, setGeneratingBrief] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -118,6 +120,45 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
 
   const handleRegenerate = async () => {
     await generateDesign();
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+
+    setDeleting(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch(`/api/leads/${currentLead.id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("✅ Lead úspěšně smazán!");
+        // Close dialog after short delay
+        setTimeout(() => {
+          onOpenChange(false);
+          if (onRefresh) {
+            onRefresh();
+          }
+        }, 1500);
+      } else {
+        setError(data.error || "Mazání selhalo. Zkuste to znovu.");
+        console.error("Failed to delete lead:", data);
+      }
+    } catch (error: any) {
+      setError("Chyba spojení. Zkuste to znovu.");
+      console.error("Error deleting lead:", error);
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
   };
 
   return (
@@ -390,6 +431,49 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                     </>
                   )}
                 </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Delete Section */}
+          <div className="pt-6 border-t mt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-semibold text-destructive">Danger Zone</h4>
+                <p className="text-sm text-muted-foreground">
+                  Smazat tento lead trvale z databáze
+                </p>
+              </div>
+              <Button
+                variant={confirmDelete ? "destructive" : "outline"}
+                size="sm"
+                onClick={handleDelete}
+                disabled={deleting}
+                className={confirmDelete ? "" : "text-destructive hover:bg-destructive hover:text-destructive-foreground"}
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Mažu...
+                  </>
+                ) : confirmDelete ? (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Potvrdit smazání
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Smazat Lead
+                  </>
+                )}
+              </Button>
+            </div>
+            {confirmDelete && !deleting && (
+              <div className="mt-3 p-3 bg-destructive/10 border border-destructive rounded-lg">
+                <p className="text-sm text-destructive font-medium">
+                  ⚠️ Klikněte znovu pro potvrzení. Tato akce je nevratná!
+                </p>
               </div>
             )}
           </div>
