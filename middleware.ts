@@ -277,8 +277,9 @@ export function middleware(request: NextRequest) {
     response.headers.set('X-Bot-Status', 'whitelisted');
   }
 
-  // Anti-scraping headers
-  response.headers.set('X-Robots-Tag', 'noarchive, nosnippet, noimageindex, nofollow');
+  // Anti-scraping headers (ALLOW indexing, just prevent archiving/snippets for copyright)
+  // NOTE: Removed 'nofollow' to allow Google Search Console indexing!
+  response.headers.set('X-Robots-Tag', 'noarchive, noimageindex');
 
   // PERFORMANCE FIX: Only apply aggressive no-cache for admin/API routes
   // Let Next.js ISR work normally for public pages
