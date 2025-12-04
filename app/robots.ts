@@ -20,25 +20,12 @@ export default function robots(): MetadataRoute.Robots {
           '/poptavka/dekujeme', // Block thank you page (no indexing needed)
         ],
       },
+      // ALLOW AI crawlers to access public content for AI search visibility
+      // Research shows: ChatGPT = 87.4% of AI referrals, 25.11% of Google searches have AI Overview
       {
-        userAgent: 'GPTBot',   // Block OpenAI crawler
-        disallow: '/',
-      },
-      {
-        userAgent: 'ChatGPT-User', // Block ChatGPT user agent
-        disallow: '/',
-      },
-      {
-        userAgent: 'CCBot',    // Block Common Crawl
-        disallow: '/',
-      },
-      {
-        userAgent: 'anthropic-ai', // Block Claude AI crawler
-        disallow: '/',
-      },
-      {
-        userAgent: 'Claude-Web', // Block Claude web crawler
-        disallow: '/',
+        userAgent: ['GPTBot', 'ChatGPT-User', 'CCBot', 'PerplexityBot', 'anthropic-ai', 'Claude-Web'],
+        allow: ['/blog/*', '/sluzby/*', '/portfolio/*', '/o-nas*', '/cenik*', '/kontakt*', '/'],
+        disallow: ['/admin/*', '/api/*', '/t/*', '/poptavka/dekujeme'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
