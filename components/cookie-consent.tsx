@@ -6,6 +6,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Cookie, Settings, X } from "lucide-react";
 
+// Declare gtag for TypeScript
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -26,6 +33,8 @@ export function CookieConsent() {
       try {
         const saved = JSON.parse(consent);
         setPreferences(saved);
+        // Apply saved consent to Google Analytics
+        updateGoogleConsent(saved);
       } catch (e) {
         // Invalid JSON, show popup again
         setIsVisible(true);
@@ -60,19 +69,25 @@ export function CookieConsent() {
     setIsVisible(false);
   };
 
+  const updateGoogleConsent = (prefs: typeof preferences) => {
+    // Update Google Consent Mode v2
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('consent', 'update', {
+        'analytics_storage': prefs.analytics ? 'granted' : 'denied',
+        'ad_storage': prefs.marketing ? 'granted' : 'denied',
+        'ad_user_data': prefs.marketing ? 'granted' : 'denied',
+        'ad_personalization': prefs.marketing ? 'granted' : 'denied'
+      });
+      console.log('Google Consent updated:', prefs.analytics ? 'Analytics GRANTED' : 'Analytics DENIED');
+    }
+  };
+
   const saveCookies = (prefs: typeof preferences) => {
     // Save for 365 days
     Cookies.set("cookie-consent", JSON.stringify(prefs), { expires: 365 });
 
-    // Set analytics/marketing cookies based on preferences
-    if (prefs.analytics) {
-      // Enable Google Analytics or other analytics
-      console.log("Analytics enabled");
-    }
-    if (prefs.marketing) {
-      // Enable marketing cookies
-      console.log("Marketing enabled");
-    }
+    // Update Google Analytics consent
+    updateGoogleConsent(prefs);
   };
 
   if (!isVisible) return null;
