@@ -9,21 +9,11 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { marked } from "marked";
 
-// Allow dynamic params for new blog posts added after build
-export const dynamicParams = true;
+// Use ISR: Render on-demand and cache for 60 seconds
+export const revalidate = 60;
 
-// Generate static params for all published blog posts
-export async function generateStaticParams() {
-  try {
-    const posts = await getPublishedBlogPosts();
-    return posts.map((post) => ({
-      slug: post.slug,
-    }));
-  } catch (error) {
-    console.error('Error generating static params:', error);
-    return [];
-  }
-}
+// Allow all blog posts to be rendered dynamically
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params
