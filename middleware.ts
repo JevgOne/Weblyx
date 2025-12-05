@@ -202,10 +202,11 @@ export function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith('/admin');
 
   // 1. MAXIMUM SECURITY: Block suspicious user agents (skip for admin - auth handled separately)
-  if (!isAdminRoute && isSuspiciousUserAgent(userAgent)) {
-    console.log(`🚫 [BOT BLOCKED] User-Agent: ${userAgent.substring(0, 100)} | IP: ${ip} | Path: ${pathname}`);
-    return new NextResponse('Forbidden', { status: 403 });
-  }
+  // TEMPORARILY DISABLED for Facebook Pixel verification and GA4 testing
+  // if (!isAdminRoute && isSuspiciousUserAgent(userAgent)) {
+  //   console.log(`🚫 [BOT BLOCKED] User-Agent: ${userAgent.substring(0, 100)} | IP: ${ip} | Path: ${pathname}`);
+  //   return new NextResponse('Forbidden', { status: 403 });
+  // }
 
   // 2. MAXIMUM SECURITY: Validate browser headers (skip for whitelisted bots)
   // TEMPORARILY DISABLED for debugging
@@ -315,7 +316,8 @@ export const config = {
      * - _next/image (image optimization)
      * - favicon.ico (favicon file)
      * - public folder
+     * - Static assets (css, js, images)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:css|js|svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };

@@ -7,6 +7,7 @@ import { Process } from "@/components/home/process";
 import { Portfolio } from "@/components/home/portfolio";
 import { Reviews } from "@/components/home/reviews";
 import { Pricing } from "@/components/home/pricing";
+import { PricingCalculator } from "@/components/home/pricing-calculator";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
 
@@ -109,6 +110,7 @@ export default async function HomePage() {
         <Portfolio />
         <Reviews />
         <Pricing />
+        <PricingCalculator />
         <FAQ />
         <CTASection />
         <ContactWow />
