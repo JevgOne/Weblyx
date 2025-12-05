@@ -53,23 +53,6 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Redirects (www to non-www)
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.weblyx.cz',
-          },
-        ],
-        destination: 'https://weblyx.cz/:path*',
-        permanent: true, // 308 redirect
-      },
-    ];
-  },
-
   // Security headers
   async headers() {
     return [
