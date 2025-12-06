@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "services": "Leistungen",
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "faq": "FAQ",
+    "pricing": "Preise"
+  },
+  "hero": {
+    "title": "Webseiten erstellen, die wirklich verkaufen",
+    "subtitle": "Moderne, schnelle und SEO-optimierte Websites für Ihr Unternehmen",
+    "cta": "Unverbindliche Anfrage",
+    "ctaSecondary": "Portfolio ansehen"
+  },
+  "services": {
+    "title": "Unsere Leistungen",
+    "subtitle": "Komplettlösungen für Ihren Online-Erfolg",
+    "webDev": {
+      "title": "Webentwicklung",
+      "description": "Moderne responsive Websites mit neuesten Technologien"
+    },
+    "ecommerce": {
+      "title": "E-Commerce",
+      "description": "Professionelle Online-Shops, die Ihren Umsatz steigern"
+    },
+    "seo": {
+      "title": "SEO-Optimierung",
+      "description": "Wir sorgen dafür, dass Ihre Kunden Sie auf Google finden"
+    },
+    "maintenance": {
+      "title": "Wartung & Support",
+      "description": "Wir kümmern uns um Ihre Website, damit Sie sich auf Ihr Geschäft konzentrieren können"
+    },
+    "redesign": {
+      "title": "Website-Redesign",
+      "description": "Modernisierung bestehender Websites für bessere Ergebnisse"
+    },
+    "consulting": {
+      "title": "Beratung",
+      "description": "Beratung im Bereich digitales Marketing und Technologien"
+    }
+  },
+  "process": {
+    "title": "Wie es funktioniert",
+    "subtitle": "Einfacher Prozess vom Erstkontakt bis zum Launch",
+    "step1": {
+      "title": "Beratung",
+      "description": "Wir besprechen Ihre Anforderungen und Ziele"
+    },
+    "step2": {
+      "title": "Entwurf",
+      "description": "Wir erstellen ein Design genau nach Ihren Vorstellungen"
+    },
+    "step3": {
+      "title": "Entwicklung",
+      "description": "Wir programmieren Ihre Website mit Fokus auf Qualität"
+    },
+    "step4": {
+      "title": "Testing",
+      "description": "Wir testen alle Funktionen gründlich"
+    },
+    "step5": {
+      "title": "Launch",
+      "description": "Wir bringen Ihre Website live und sorgen für einen reibungslosen Start"
+    },
+    "step6": {
+      "title": "Support",
+      "description": "Wir sind auch nach dem Launch für Sie da"
+    }
+  },
+  "pricing": {
+    "title": "Preise",
+    "subtitle": "Transparente Preise ohne versteckte Gebühren",
+    "monthly": "Monatlich",
+    "oneTime": "Einmalig",
+    "cta": "Paket wählen",
+    "popular": "Beliebteste"
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles, was Sie wissen müssen"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie uns",
+    "subtitle": "Wir freuen uns auf Ihre Nachricht",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "message": "Nachricht",
+    "send": "Senden",
+    "sending": "Wird gesendet...",
+    "success": "Nachricht wurde gesendet!",
+    "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
+  },
+  "footer": {
+    "about": "Über uns",
+    "aboutText": "Seitelyx ist eine moderne Webagentur, die sich auf die Erstellung von Websites spezialisiert hat, die Ergebnisse liefern.",
+    "quickLinks": "Schnelllinks",
+    "legal": "Rechtliches",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "cookies": "Cookies",
+    "copyright": "© 2024 Seitelyx. Alle Rechte vorbehalten."
+  },
+  "cta": {
+    "title": "Bereit anzufangen?",
+    "subtitle": "Lassen Sie uns gemeinsam eine Website erstellen, die Ihr Geschäft voranbringt",
+    "button": "Unverbindliche Anfrage"
+  },
+  "common": {
+    "learnMore": "Mehr erfahren",
+    "readMore": "Weiterlesen",
+    "viewAll": "Alle anzeigen",
+    "loading": "Lädt...",
+    "error": "Fehler"
+  }
+}

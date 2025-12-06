@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 
 // Rate limiting: Simple in-memory store (for production use Redis/Vercel KV)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -181,10 +183,14 @@ function hasValidHeaders(request: NextRequest): boolean {
   return true;
 }
 
+// Create i18n middleware instance
+const intlMiddleware = createIntlMiddleware(routing);
+
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const userAgent = request.headers.get('user-agent') || '';
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const hostname = request.headers.get('host') || '';
 
   // Check if this is a whitelisted bot (used in multiple places)
   const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
@@ -270,8 +276,36 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // 6. Add MAXIMUM SECURITY headers to response
-  const response = NextResponse.next();
+  // 6. Domain-based locale detection (for i18n)
+  let locale = 'cs'; // Default to Czech
+  if (hostname.includes('seitelyx.de')) {
+    locale = 'de';
+  } else if (hostname.includes('weblyx.cz') || hostname.includes('localhost')) {
+    locale = 'cs';
+  }
+
+  // Store locale in request headers for i18n middleware
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-locale', locale);
+  requestHeaders.set('x-default-locale', locale);
+
+  // 7. Apply i18n middleware (only for non-API, non-admin routes)
+  let response: NextResponse;
+
+  if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
+    // Apply i18n middleware for public pages
+    const intlResponse = intlMiddleware(request);
+    response = intlResponse || NextResponse.next();
+  } else {
+    // Skip i18n for API/admin routes
+    response = NextResponse.next();
+  }
+
+  // 8. Add locale headers to response
+  response.headers.set('x-locale', locale);
+  response.headers.set('x-domain', hostname);
+
+  // 9. Add MAXIMUM SECURITY headers to response
 
   // DEBUG: Add header to show bot was allowed
   if (isWhitelistedBot) {

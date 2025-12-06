@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "home": "Domů",
+    "about": "O nás",
+    "services": "Služby",
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "faq": "FAQ",
+    "pricing": "Ceník"
+  },
+  "hero": {
+    "title": "Tvorba webů, které opravdu prodávají",
+    "subtitle": "Moderní, rychlé a SEO optimalizované weby pro váš byznys",
+    "cta": "Nezávazná poptávka",
+    "ctaSecondary": "Zobrazit portfolio"
+  },
+  "services": {
+    "title": "Naše služby",
+    "subtitle": "Kompletní řešení pro váš online úspěch",
+    "webDev": {
+      "title": "Tvorba webů",
+      "description": "Moderní responzivní weby postavené na nejnovějších technologiích"
+    },
+    "ecommerce": {
+      "title": "E-commerce",
+      "description": "Profesionální e-shopy, které zvyšují vaše prodeje"
+    },
+    "seo": {
+      "title": "SEO optimalizace",
+      "description": "Zajistíme, aby vás zákazníci našli na Google"
+    },
+    "maintenance": {
+      "title": "Údržba a podpora",
+      "description": "Starám se o váš web, abyste se vy mohli věnovat byznysu"
+    },
+    "redesign": {
+      "title": "Redesign webu",
+      "description": "Modernizace stávajících webů pro lepší výsledky"
+    },
+    "consulting": {
+      "title": "Konzultace",
+      "description": "Poradenství v oblasti digitálního marketingu a technologií"
+    }
+  },
+  "process": {
+    "title": "Jak to funguje",
+    "subtitle": "Jednoduchý proces od prvního kontaktu po spuštění",
+    "step1": {
+      "title": "Konzultace",
+      "description": "Probereme vaše požadavky a cíle"
+    },
+    "step2": {
+      "title": "Návrh",
+      "description": "Vytvoříme design přesně podle vašich představ"
+    },
+    "step3": {
+      "title": "Vývoj",
+      "description": "Naprogramujeme váš web s důrazem na kvalitu"
+    },
+    "step4": {
+      "title": "Testování",
+      "description": "Důkladně otestujeme všechny funkce"
+    },
+    "step5": {
+      "title": "Spuštění",
+      "description": "Zprovozníme váš web a zajistíme hladký start"
+    },
+    "step6": {
+      "title": "Podpora",
+      "description": "Budeme tu pro vás i po spuštění"
+    }
+  },
+  "pricing": {
+    "title": "Ceník",
+    "subtitle": "Transparentní ceny bez skrytých poplatků",
+    "monthly": "Měsíčně",
+    "oneTime": "Jednorázově",
+    "cta": "Vybrat balíček",
+    "popular": "Nejoblíbenější"
+  },
+  "faq": {
+    "title": "Často kladené otázky",
+    "subtitle": "Vše, co potřebujete vědět"
+  },
+  "contact": {
+    "title": "Kontaktujte nás",
+    "subtitle": "Rádi si s vámi promluvíme",
+    "name": "Jméno",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "message": "Zpráva",
+    "send": "Odeslat",
+    "sending": "Odesílání...",
+    "success": "Zpráva byla odeslána!",
+    "error": "Něco se pokazilo. Zkuste to prosím znovu."
+  },
+  "footer": {
+    "about": "O společnosti",
+    "aboutText": "Weblyx je moderní webová agentura specializující se na tvorbu webů, které přinášejí výsledky.",
+    "quickLinks": "Rychlé odkazy",
+    "legal": "Právní informace",
+    "privacy": "Ochrana údajů",
+    "terms": "Obchodní podmínky",
+    "cookies": "Cookies",
+    "copyright": "© 2024 Weblyx. Všechna práva vyhrazena."
+  },
+  "cta": {
+    "title": "Připraveni začít?",
+    "subtitle": "Pojďme společně vytvořit web, který posune váš byznys kupředu",
+    "button": "Nezávazná poptávka"
+  },
+  "common": {
+    "learnMore": "Zjistit více",
+    "readMore": "Číst více",
+    "viewAll": "Zobrazit vše",
+    "loading": "Načítání...",
+    "error": "Chyba"
+  }
+}
