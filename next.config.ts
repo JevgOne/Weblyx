@@ -97,11 +97,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://connect.facebook.net",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live",
+              "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live https://www.google-analytics.com https://www.facebook.com",
               "frame-src 'self' https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",
