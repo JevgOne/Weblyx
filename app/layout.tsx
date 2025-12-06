@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://weblyx.cz"),
+  metadataBase: new URL("https://www.weblyx.cz"),
   title: {
     default: "Tvorba webových stránek od 10 000 Kč | Web za týden | Weblyx",
     template: "%s | Weblyx",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     "SEO optimalizace",
     "webdesign",
   ],
-  authors: [{ name: "Weblyx", url: "https://weblyx.cz" }],
+  authors: [{ name: "Weblyx", url: "https://www.weblyx.cz" }],
   creator: "Weblyx",
   publisher: "Weblyx",
   formatDetection: {
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "cs_CZ",
-    url: "https://weblyx.cz",
+    url: "https://www.weblyx.cz",
     title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
     description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma.",
     siteName: "Weblyx",
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   alternates: {
-    canonical: "https://weblyx.cz",
+    canonical: "https://www.weblyx.cz",
   },
   verification: {
     google: "google-site-verification-code", // TODO: Add actual verification code

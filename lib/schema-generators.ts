@@ -121,7 +121,7 @@ export function generateAggregateRatingSchema(data: AggregateRatingSchemaData) {
     provider: {
       '@type': 'Organization',
       name: 'Weblyx',
-      url: 'https://weblyx.cz',
+      url: 'https://www.weblyx.cz',
     },
     aggregateRating: {
       '@type': 'AggregateRating',
@@ -160,7 +160,7 @@ export function generateReviewSchema(data: ReviewSchemaData) {
       provider: {
         '@type': 'Organization',
         name: 'Weblyx',
-        url: 'https://weblyx.cz',
+        url: 'https://www.weblyx.cz',
       },
     },
     author: {
@@ -214,7 +214,7 @@ export function generateServiceSchema(data: ServiceSchemaData) {
     provider: {
       '@type': 'LocalBusiness',
       name: data.provider || 'Weblyx',
-      url: 'https://weblyx.cz',
+      url: 'https://www.weblyx.cz',
     },
     areaServed: {
       '@type': 'Country',
@@ -363,7 +363,7 @@ export function generateEventSchema(data: EventSchemaData) {
     organizer: {
       '@type': 'Organization',
       name: 'Weblyx',
-      url: 'https://weblyx.cz',
+      url: 'https://www.weblyx.cz',
     },
     ...(data.offers && {
       offers: {
@@ -401,7 +401,7 @@ export function generateCourseSchema(data: CourseSchemaData) {
     provider: {
       '@type': 'Organization',
       name: data.provider,
-      url: 'https://weblyx.cz',
+      url: 'https://www.weblyx.cz',
     },
     ...(data.offers && {
       offers: {

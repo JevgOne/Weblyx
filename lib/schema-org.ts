@@ -6,7 +6,7 @@
 import { Service, FAQItem, PricingTier } from '@/types/cms';
 
 // Base URL for the website
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://weblyx.cz';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.weblyx.cz';
 
 // ============================================================================
 // ORGANIZATION SCHEMA

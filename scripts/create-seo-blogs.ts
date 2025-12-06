@@ -89,10 +89,54 @@ async function main() {
   console.log("🚀 Creating SEO-optimized blog posts...\n");
 
   try {
-    // Blog 1: Kolik stojí tvorba webu 2025
-    console.log("📝 Creating Blog 1: Kolik stojí tvorba webu 2025...");
-    const blog1Path = join(process.cwd(), "temp-blog-1.json");
-    const blog1Data = JSON.parse(readFileSync(blog1Path, "utf-8"));
+    // Blog 1: Next.js App Router best practices
+    console.log("📝 Creating Blog 1: Next.js App Router best practices...");
+    const blog1Data: BlogPostData = {
+      title: "Next.js 15 App Router: Best practices pro rok 2025",
+      slug: "nextjs-15-app-router-best-practices-2025",
+      excerpt:
+        "Chcete vědět, kolik skutečně stojí profesionální web v roce 2025? Detailní rozpis cen pro landing page, firemní web, e-shop a webové aplikace včetli skrytých nákladů.",
+      content: `# Kolik stojí tvorba webu v roce 2025? Kompletní ceník
+
+Plánujete nový web a chcete znát reálné ceny? V tomto průvodci najdete přesné cenové rozpětí pro různé typy webů včetně toho, co ovlivňuje finální cenu.
+
+## Rychlý přehled cen 2025
+
+| Typ webu | Cena | Doba realizace |
+|----------|------|----------------|
+| Landing page | 7 990 - 25 000 Kč | 3-7 dnů |
+| Firemní web | 9 990 - 150 000 Kč | 1-4 týdny |
+| E-shop | 49 990 - 500 000 Kč | 4-12 týdnů |
+| Webová aplikace | 100 000 - 2 000 000 Kč | 8-52 týdnů |
+
+## 1. Landing Page: 7 990 - 25 000 Kč
+
+**Co obsahuje:**
+- ✅ Jedna stránka s 3-5 sekcemi
+- ✅ Responzivní design
+- ✅ Kontaktní formulář
+- ✅ Základní SEO optimalizace
+
+**Příklady použití:**
+- Prezentace jednoho produktu/služby
+- Event promotion
+- Lead generation kampaň
+
+[Získat cenovou nabídku](https://weblyx.cz/poptavka)
+
+---
+
+**Autor:** Weblyx Team
+**Aktualizováno:** Prosinec 2025`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-15T10:00:00.000Z",
+      tags: ["ceník", "ceny", "tvorba webu", "2025", "landing page", "e-shop"],
+      metaTitle:
+        "Kolik stojí tvorba webu 2025? Kompletní ceník | Weblyx",
+      metaDescription:
+        "Detailní cenový přehled tvorby webu v roce 2025. Landing page od 7 990 Kč, firemní web od 9 990 Kč, e-shop od 49 990 Kč. Zjistěte, co ovlivňuje cenu.",
+    };
     await createBlogPost(blog1Data);
 
     // Blog 2: Next.js vs WordPress 2025
@@ -354,7 +398,7 @@ V roce 2025 doporučujeme Next.js pro většinu nových projektů, protože:
 **Čtení:** 10 minut`,
       author: "Weblyx Team",
       published: true,
-      publishedAt: "2025-12-01T11:00:00.000Z",
+      publishedAt: "2025-11-18T10:00:00.000Z",
       tags: [
         "next.js",
         "wordpress",
@@ -372,7 +416,591 @@ V roce 2025 doporučujeme Next.js pro většinu nových projektů, protože:
 
     await createBlogPost(blog2Data);
 
-    console.log("\n✅ All SEO blog posts created successfully!");
+    // Blog 3: Jak urychlit načítání webu
+    console.log("\n📝 Creating Blog 3: Jak urychlit načítání webu...");
+    const blog3Data: BlogPostData = {
+      title: "Jak urychlit načítání webu v roce 2025? 10 ověřených tipů",
+      slug: "jak-urychlit-nacitani-webu-2025",
+      excerpt:
+        "Pomalý web vás stojí zákazníky a Google ranking. Naučte se 10 technik, jak zrychlit načítání webu pod 2 sekundy a zvýšit konverze o 30%.",
+      content: `# Jak urychlit načítání webu v roce 2025? 10 ověřených tipů
+
+Rychlost načítání je v roce 2025 kritickým faktorem úspěchu. Google ji používá jako ranking faktor a uživatelé opouští weby, které se načítají déle než 3 sekundy.
+
+## Proč je rychlost webu důležitá?
+
+**Fakta:**
+- ⚡ 53% uživatelů opustí web, který se načítá déle než 3 sekundy
+- 📈 Každá sekunda zpoždění = -7% konverzí
+- 🎯 Google upřednostňuje rychlé weby v SEO
+
+## 10 technik pro rychlejší web
+
+### 1. Optimalizujte obrázky (úspora 40-60%)
+- Používejte WebP formát místo JPG/PNG
+- Lazy loading pro obrázky mimo viewport
+- Správná velikost (ne 4K obrázky pro 300px prostor)
+
+### 2. Implementujte caching
+- Browser caching
+- CDN distribuce
+- Server-side caching
+
+[Chcete rychlý web? Kontaktujte nás](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-20T10:00:00.000Z",
+      tags: ["výkon", "rychlost", "optimalizace", "core web vitals", "SEO"],
+      metaTitle: "Jak urychlit web v roce 2025? 10 ověřených tipů | Weblyx",
+      metaDescription:
+        "Zrychlte svůj web pod 2 sekundy s těmito 10 technikami. Optimalizace obrázků, caching, CDN a další metody pro maximální výkon v roce 2025.",
+    };
+    await createBlogPost(blog3Data);
+
+    // Blog 4: SEO pro malé firmy 2025
+    console.log("\n📝 Creating Blog 4: SEO pro malé firmy...");
+    const blog4Data: BlogPostData = {
+      title: "SEO pro malé firmy v roce 2025: Kompletní průvodce",
+      slug: "seo-pro-male-firmy-2025-pruvodce",
+      excerpt:
+        "Chcete být nalezeni na Googlu? Praktický návod, jak dělat SEO i s omezeným rozpočtem. Lokální SEO, klíčová slova a technická optimalizace.",
+      content: `# SEO pro malé firmy v roce 2025: Kompletní průvodce
+
+SEO není jen pro velké korporace. I malá firma může dosáhnout skvělých výsledků s omezeným rozpočtem.
+
+## Základy SEO pro malé firmy
+
+### 1. Lokální SEO (nejvyšší priorita)
+**Google My Business:**
+- ✅ Vyplňte kompletní profil
+- ✅ Pravidelné fotky
+- ✅ Odpovídejte na recenze
+- ✅ Aktualizujte otevírací dobu
+
+### 2. Keyword research
+**Zaměřte se na:**
+- Long-tail klíčová slova (menší konkurence)
+- Lokální vyhledávání ("webdesign Praha")
+- Question keywords ("kolik stojí...")
+
+[Potřebujete pomoc se SEO? Napište nám](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-22T10:00:00.000Z",
+      tags: ["SEO", "malé firmy", "google", "lokální SEO", "marketing"],
+      metaTitle: "SEO pro malé firmy 2025: Praktický průvodce | Weblyx",
+      metaDescription:
+        "Kompletní SEO návod pro malé firmy. Lokální SEO, keyword research, technická optimalizace. Buďte vidět na Googlu i s malým rozpočtem.",
+    };
+    await createBlogPost(blog4Data);
+
+    // Blog 5: E-shop vs marketplace
+    console.log("\n📝 Creating Blog 5: E-shop vs marketplace...");
+    const blog5Data: BlogPostData = {
+      title: "Vlastní e-shop nebo Marketplace (Shoptet, Eshop-rychle)? Co je lepší v 2025?",
+      slug: "vlastni-eshop-vs-marketplace-2025",
+      excerpt:
+        "Vlastní e-shop od základu nebo platforma jako Shoptet? Srovnání výhod, nevýhod, cen a vhodnosti pro různé typy byznysu v roce 2025.",
+      content: `# Vlastní e-shop vs Marketplace: Co zvolit v 2025?
+
+Rozhodujete mezi vlastním e-shopem a marketplace platformou? Každá varianta má své výhody a nevýhody.
+
+## Rychlé srovnání
+
+| Kritérium | Vlastní e-shop | Marketplace (Shoptet) |
+|-----------|----------------|----------------------|
+| **Cena startu** | 49 990+ Kč | 999 Kč/měsíc |
+| **Měsíční poplatky** | 0-5 000 Kč | 999-3 599 Kč/měsíc |
+| **Customizace** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Rychlost** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Setup doba** | 4-8 týdnů | 1-2 týdny |
+
+## Kdy zvolit vlastní e-shop?
+
+✅ **Vlastní e-shop je pro vás, pokud:**
+- Plánujete růst nad 1000 objednávek/měsíc
+- Chcete jedinečný design
+- Potřebujete custom funkce
+- Chcete minimální provozní náklady
+- Priorita: výkon a SEO
+
+[Zjistit cenu vlastního e-shopu](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-24T10:00:00.000Z",
+      tags: ["e-shop", "e-commerce", "shoptet", "srovnání", "marketplace"],
+      metaTitle: "Vlastní e-shop vs Shoptet 2025: Co je lepší? | Weblyx",
+      metaDescription:
+        "Objektivní srovnání vlastního e-shopu a marketplace platforem v 2025. Ceny, výhody, nevýhody. Zjistěte, která varianta je pro vás výhodnější.",
+    };
+    await createBlogPost(blog5Data);
+
+    // Blog 6: Responzivní design 2025
+    console.log("\n📝 Creating Blog 6: Responzivní design...");
+    const blog6Data: BlogPostData = {
+      title: "Responzivní design v roce 2025: Proč je důležitější než kdy dříve?",
+      slug: "responzivni-design-2025-dulezitost",
+      excerpt:
+        "Více než 70% návštěvníků přichází z mobilů. Zjistěte, proč responzivní design není volitelný, ale nutnost pro úspěch vašeho webu v roce 2025.",
+      content: `# Responzivní design v roce 2025: Proč je klíčový?
+
+V roce 2025 přichází 73% uživatelů z mobilních zařízení. Web bez responzivního designu znamená ztrátu zákazníků a horší Google ranking.
+
+## Co je responzivní design?
+
+Web, který se automaticky přizpůsobuje všem zařízením:
+- 📱 Mobily (375px - 428px)
+- 📲 Tablety (768px - 1024px)
+- 💻 Počítače (1280px+)
+- 🖥️ Velké monitory (2560px+)
+
+## Proč je to důležité?
+
+### 1. Google Mobile-First Indexing
+- Google primárně hodnotí mobilní verzi
+- Neresponzivní web = nižší ranking
+
+### 2. Uživatelská zkušenost
+- 57% uživatelů neoddoporučí firmu s špatným mobilním webem
+- 40% jde ke konkurenci
+
+[Chcete profesionální responzivní web?](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-26T10:00:00.000Z",
+      tags: ["responzivní design", "mobilní web", "UX", "design", "2025"],
+      metaTitle: "Responzivní design 2025: Proč je nezbytný? | Weblyx",
+      metaDescription:
+        "Zjistěte, proč responzivní design není volitelný v roce 2025. Mobile-first indexing, Google ranking a uživatelská zkušenost. Kompletní průvodce.",
+    };
+    await createBlogPost(blog6Data);
+
+    // Blog 7: GDPR a cookies na webu
+    console.log("\n📝 Creating Blog 7: GDPR a cookies...");
+    const blog7Data: BlogPostData = {
+      title: "GDPR a cookies na webu v roce 2025: Co musíte vědět",
+      slug: "gdpr-cookies-web-2025-pravidla",
+      excerpt:
+        "Pravidla GDPR se zpřísňují. Zjistěte, jak správně implementovat cookie lištu, Google Analytics a další tracking, abyste se vyhnuli pokutám až 20 milionů Kč.",
+      content: `# GDPR a cookies na webu v roce 2025: Kompletní průvodce
+
+GDPR není volitelné. Pokuty za nedodržení mohou dosáhnout až 20 milionů Kč nebo 4% obratu. Zjistěte, jak být v souladu.
+
+## Co je GDPR a proč je důležité?
+
+**General Data Protection Regulation:**
+- Ochrana osobních údajů uživatelů
+- Platí pro celou EU od 2018
+- V roce 2025 přísnější kontroly
+
+## Co musí mít váš web?
+
+### 1. Cookie lišta (consent management)
+**Povinné prvky:**
+- ✅ Možnost odmítnout vše kromě nezbytných
+- ✅ Granulární nastavení (analytické, marketingové)
+- ✅ Jasný popis účelu každé kategorie
+
+### 2. Zásady ochrany osobních údajů
+- Jaká data sbíráte
+- Proč je sbíráte
+- Jak dlouho je uchovávate
+- Komu je předáváte
+
+[Potřebujete GDPR-compliant web?](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-27T10:00:00.000Z",
+      tags: ["GDPR", "cookies", "ochrana údajů", "právní požadavky", "compliance"],
+      metaTitle: "GDPR a cookies 2025: Kompletní průvodce | Weblyx",
+      metaDescription:
+        "Jak správně implementovat GDPR a cookie lištu v roce 2025. Vyhnete se pokutám až 20 mil. Kč. Consent management, Google Analytics a další.",
+    };
+    await createBlogPost(blog7Data);
+
+    // Blog 8: Web design trendy 2025
+    console.log("\n📝 Creating Blog 8: Web design trendy...");
+    const blog8Data: BlogPostData = {
+      title: "Webdesign trendy 2025: 15 stylů, které ovládnou letošní rok",
+      slug: "webdesign-trendy-2025-styly",
+      excerpt:
+        "Minimalistický design, tmavý režim, AI generované grafiky. Zjistěte, jaké trendy ve webdesignu budou dominovat v roce 2025 a jak je využít pro váš web.",
+      content: `# Webdesign trendy 2025: Co bude in?
+
+Webdesign se rychle vyvíjí. Zde jsou trendy, které budou dominovat v roce 2025.
+
+## Top 15 trendů pro rok 2025
+
+### 1. 🌑 Dark Mode jako standard
+- Šetří baterii na OLED displejích
+- Snižuje únavu očí
+- Moderní vzhled
+
+### 2. ✨ Minimalistický design
+- Méně = více
+- Rychlejší načítání
+- Čistší uživatelská zkušenost
+
+### 3. 🎨 Bold typography
+- Velké, výrazné nadpisy
+- Custom fonty
+- Typografie jako designový prvek
+
+### 4. 🤖 AI generované grafiky
+- Midjourney, DALL-E integrace
+- Jedinečné vizuály
+- Nižší náklady na grafiku
+
+### 5. 🌊 Plynulé animace
+- Scroll-triggered animace
+- Micro-interactions
+- CSS animations místo JS
+
+[Chcete moderní design? Napište nám](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-28T10:00:00.000Z",
+      tags: ["webdesign", "trendy", "design", "2025", "UI/UX"],
+      metaTitle: "Webdesign trendy 2025: 15 stylů, které musíte znát | Weblyx",
+      metaDescription:
+        "Nejnovější trendy ve webdesignu pro rok 2025. Dark mode, minimalism, AI grafiky, bold typography a další. Inspirace pro váš nový web.",
+    };
+    await createBlogPost(blog8Data);
+
+    // Blog 9: Landing page optimalizace
+    console.log("\n📝 Creating Blog 9: Landing page optimalizace...");
+    const blog9Data: BlogPostData = {
+      title: "Jak vytvořit landing page s konverzí nad 10% v roce 2025?",
+      slug: "landing-page-konverze-10-procent-2025",
+      excerpt:
+        "Průměrná konverze landing page je 2-5%. Naučte se, jak dosáhnout konverze nad 10% pomocí osvědčených technik copywritingu, designu a A/B testování.",
+      content: `# Jak vytvořit landing page s konverzí nad 10%?
+
+Průměrná konverze landing page je pouze 2-5%. S těmito technikami dosáhnete 10%+.
+
+## Anatomie perfektní landing page
+
+### 1. Hero sekce (Above the fold)
+**Musí obsahovat:**
+- ✅ Jasný headline (benefit, ne feature)
+- ✅ Sub-headline (doplňující kontext)
+- ✅ CTA button (jasná akce)
+- ✅ Hero image/video (vizualizace produktu)
+
+**Příklad:**
+- ❌ Špatně: "Nejlepší CRM systém na trhu"
+- ✅ Dobře: "Ušetřete 10 hodin týdně automatizací prodeje"
+
+### 2. Social proof
+- Loga klientů
+- Testimonials (s fotkou a jménem)
+- Počet spokojených zákazníků
+- Hodnocení (4.8/5 ⭐)
+
+### 3. Výhody vs Features
+- Features: Co to dělá
+- Benefits: Co to pro mě znamená
+
+[Vytvořit konverzní landing page](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-29T10:00:00.000Z",
+      tags: ["landing page", "konverze", "CRO", "marketing", "optimalizace"],
+      metaTitle: "Landing page s konverzí 10%+ v roce 2025 | Weblyx",
+      metaDescription:
+        "Kompletní návod, jak vytvořit landing page s vysokou konverzí. Copywriting, design, CTA, social proof a A/B testování. Ověřené techniky.",
+    };
+    await createBlogPost(blog9Data);
+
+    // Blog 10: Google Analytics 4 průvodce
+    console.log("\n📝 Creating Blog 10: Google Analytics 4...");
+    const blog10Data: BlogPostData = {
+      title: "Google Analytics 4 (GA4) průvodce pro začátečníky 2025",
+      slug: "google-analytics-4-ga4-pruvodce-2025",
+      excerpt:
+        "Universal Analytics skončil. GA4 je nový standard. Naučte se základy: jak nastavit tracking, vytvářet reporty a měřit konverze v novém Google Analytics 4.",
+      content: `# Google Analytics 4 (GA4) průvodce pro začátečníky
+
+GA4 je úplně jiné než starší Universal Analytics. Tento průvodce vám pomůže začít.
+
+## Co je nového v GA4?
+
+### Hlavní změny:
+1. **Event-based tracking** (místo pageview-based)
+2. **Cookieless tracking** (připraveno na budoucnost)
+3. **AI-powered insights** (automatické náhledy)
+4. **Cross-platform tracking** (web + app)
+
+## Jak nastavit GA4?
+
+### Krok 1: Vytvoření účtu
+1. Přejděte na analytics.google.com
+2. Vytvořte nový Property (GA4)
+3. Získejte Measurement ID (G-XXXXXXXXXX)
+
+### Krok 2: Implementace
+**Next.js příklad:**
+\`\`\`javascript
+<Script
+  src={\`https://www.googletagmanager.com/gtag/js?id=\${GA_ID}\`}
+  strategy="afterInteractive"
+/>
+\`\`\`
+
+[Potřebujete pomoc s GA4 setupem?](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-11-30T10:00:00.000Z",
+      tags: ["Google Analytics", "GA4", "tracking", "analytika", "měření"],
+      metaTitle: "Google Analytics 4 (GA4) průvodce 2025 | Weblyx",
+      metaDescription:
+        "Kompletní návod na Google Analytics 4 pro začátečníky. Nastavení, tracking eventů, reporty a konverze. Přechod z Universal Analytics.",
+    };
+    await createBlogPost(blog10Data);
+
+    // Blog 11: Jak vybrat webdesignera
+    console.log("\n📝 Creating Blog 11: Jak vybrat webdesignera...");
+    const blog11Data: BlogPostData = {
+      title: "Jak vybrat správného webdesignera nebo agenturu v roce 2025?",
+      slug: "jak-vybrat-webdesignera-agenturu-2025",
+      excerpt:
+        "Špatná volba webdesignera může stát čas i peníze. Zjistěte, na co se ptát, jaké červené vlajky sledovat a jak rozpoznat profesionální agenturu.",
+      content: `# Jak vybrat správného webdesignera v 2025?
+
+Výběr webdesignera je důležité rozhodnutí. Špatná volba může znamenat ztrátu desetitisíců.
+
+## 10 otázek, které musíte položit
+
+### 1. "Můžete ukázat své portfolio?"
+- Sledujte kvalitu designu
+- Různorodost projektů
+- Reference od klientů
+
+### 2. "Jak dlouho trvá realizace?"
+- Realistický odhad: 2-8 týdnů (dle komplexity)
+- Milestones a kontrolní body
+
+### 3. "Co je zahrnuto v ceně?"
+- Design + vývoj
+- Hosting první rok
+- Základní SEO
+- Revize (kolik iterací)
+
+### 4. "Kdo bude vlastnit web?"
+- ✅ Vy musíte vlastnit zdrojový kód
+- ✅ Přístup k hostingu
+- ❌ Vendor lock-in
+
+[Nezávazná konzultace zdarma](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-12-01T10:00:00.000Z",
+      tags: ["výběr dodavatele", "webdesigner", "agentura", "portfolio", "reference"],
+      metaTitle: "Jak vybrat webdesignera 2025? 10 otázek | Weblyx",
+      metaDescription:
+        "Průvodce výběrem webdesignera nebo agentury. 10 klíčových otázek, červené vlajky, kontrola portfolia. Nenechte se nachytat.",
+    };
+    await createBlogPost(blog11Data);
+
+    // Blog 12: Core Web Vitals 2025
+    console.log("\n📝 Creating Blog 12: Core Web Vitals...");
+    const blog12Data: BlogPostData = {
+      title: "Core Web Vitals 2025: Nové INP metrika a jak ji optimalizovat",
+      slug: "core-web-vitals-inp-metrika-2025",
+      excerpt:
+        "Google nahradil FID novější metrikou INP (Interaction to Next Paint). Zjistěte, co to znamená pro vaše SEO a jak optimalizovat všechny Core Web Vitals.",
+      content: `# Core Web Vitals 2025: INP je tu!
+
+V roce 2024 Google nahradil FID metrikou INP. Co to znamená pro váš web?
+
+## Co jsou Core Web Vitals?
+
+**3 klíčové metriky:**
+1. **LCP** (Largest Contentful Paint) - rychlost načtení
+2. **INP** (Interaction to Next Paint) - responsivita (NOVÉ!)
+3. **CLS** (Cumulative Layout Shift) - vizuální stabilita
+
+## INP: Nová metrika interaktivity
+
+### Co měří INP?
+- Dobu od interakce uživatele (klik, tap) do vizuální odezvy
+- **Cíl: < 200ms** ✅
+- **Špatně: > 500ms** ❌
+
+### Jak zlepšit INP?
+1. **Redukce JavaScriptu**
+   - Code splitting
+   - Lazy loading komponent
+   - Odstranění nepoužívaného kódu
+
+2. **Web Workers**
+   - Těžké výpočty mimo main thread
+
+[Optimalizujeme vaše Core Web Vitals](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-12-02T10:00:00.000Z",
+      tags: ["Core Web Vitals", "INP", "LCP", "CLS", "SEO", "výkon"],
+      metaTitle: "Core Web Vitals 2025: INP metrika a optimalizace | Weblyx",
+      metaDescription:
+        "Nová INP metrika nahradila FID. Kompletní průvodce Core Web Vitals 2025: LCP, INP, CLS. Jak optimalizovat pro lepší Google ranking.",
+    };
+    await createBlogPost(blog12Data);
+
+    // Blog 13: Webové aplikace vs weby
+    console.log("\n📝 Creating Blog 13: Webové aplikace vs weby...");
+    const blog13Data: BlogPostData = {
+      title: "Webová aplikace vs klasický web: Co je rozdíl a co potřebujete?",
+      slug: "webova-aplikace-vs-web-rozdil-2025",
+      excerpt:
+        "Web nebo webová aplikace? Jaký je rozdíl a co je pro vás lepší? SPA, PWA, SSR - vysvětlíme všechny pojmy a pomůžeme vám rozhodnout.",
+      content: `# Webová aplikace vs klasický web: Jaký je rozdíl?
+
+Často slýcháme otázku: "Potřebuji web nebo webovou aplikaci?" Rozdíl je zásadní.
+
+## Klasický web (Website)
+
+**Co to je:**
+- Prezentační stránky
+- Primárně statický obsah
+- Jednostranná komunikace
+
+**Příklady:**
+- Firemní prezentace
+- Blog
+- Portfolio
+- Landing pages
+
+**Technologie:**
+- HTML/CSS/JavaScript
+- WordPress, Next.js (SSG)
+
+## Webová aplikace (Web App)
+
+**Co to je:**
+- Interaktivní funkcionalita
+- Uživatelské účty
+- Práce s daty
+- Oboustranná komunikace
+
+**Příklady:**
+- E-shop (košík, objednávky)
+- CRM systém
+- Rezervační systém
+- SaaS platforma
+
+[Nevíte, co potřebujete? Konzultace zdarma](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-12-03T10:00:00.000Z",
+      tags: ["webová aplikace", "web app", "SPA", "PWA", "rozdíl"],
+      metaTitle: "Webová aplikace vs Web: Rozdíl a co zvolit 2025 | Weblyx",
+      metaDescription:
+        "Jasné vysvětlení rozdílu mezi webem a webovou aplikací. SPA, PWA, SSR pojmy vysvětleny. Zjistěte, co skutečně potřebujete.",
+    };
+    await createBlogPost(blog13Data);
+
+    // Blog 14: SSL certifikát a HTTPS
+    console.log("\n📝 Creating Blog 14: SSL certifikát...");
+    const blog14Data: BlogPostData = {
+      title: "SSL certifikát a HTTPS v roce 2025: Proč je nezbytný pro každý web?",
+      slug: "ssl-certifikat-https-2025-dulezitost",
+      excerpt:
+        "Web bez HTTPS je v roce 2025 nepřijatelný. Google vás penalizuje, prohlížeče varují uživatele. Zjistěte, jak získat SSL certifikát zdarma a proč je to důležité.",
+      content: `# SSL certifikát a HTTPS: Proč je nezbytný?
+
+V roce 2025 je HTTPS základní standard. Web bez SSL certifikátu ztrácí důvěru i Google ranking.
+
+## Co je SSL certifikát?
+
+**SSL (Secure Sockets Layer):**
+- Šifrování komunikace mezi uživatelem a serverem
+- Ochrana osobních údajů
+- Ověření identity webu
+
+**Rozpoznání:**
+- 🔒 Zámek v adresním řádku
+- https:// (místo http://)
+
+## Proč je HTTPS důležité?
+
+### 1. Google SEO faktor
+- HTTPS weby mají prioritu v rankingu
+- HTTP weby označeny jako "Not Secure"
+
+### 2. Bezpečnost
+- Ochrana před man-in-the-middle útoky
+- Šifrování přihlašovacích údajů
+- Ochrana platebních údajů
+
+### 3. Důvěra uživatelů
+- 85% uživatelů nenavštíví web bez HTTPS
+- Povinné pro e-commerce
+
+[Potřebujete SSL setup? Kontaktujte nás](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-12-04T10:00:00.000Z",
+      tags: ["SSL", "HTTPS", "bezpečnost", "certifikát", "šifrování"],
+      metaTitle: "SSL certifikát a HTTPS 2025: Proč je nezbytný? | Weblyx",
+      metaDescription:
+        "Kompletní průvodce SSL certifikáty a HTTPS v roce 2025. Jak získat zdarma, proč je důležité pro SEO a bezpečnost. Let's Encrypt návod.",
+    };
+    await createBlogPost(blog14Data);
+
+    // Blog 15: Accessibility (A11y)
+    console.log("\n📝 Creating Blog 15: Web accessibility...");
+    const blog15Data: BlogPostData = {
+      title: "Web accessibility (přístupnost) v roce 2025: Právní povinnost i byznysová příležitost",
+      slug: "web-accessibility-pristupnost-2025",
+      excerpt:
+        "15% populace má nějaké postižení. Přístupný web není jen etické, ale i právní a byznysové. Naučte se základy WCAG 2.1 a jak testovat přístupnost.",
+      content: `# Web accessibility (přístupnost): Proč je důležitá?
+
+Přístupnost není volitelná - je to právní povinnost podle evropské legislativy.
+
+## Co je web accessibility?
+
+**Zajištění, že web mohou používat všichni:**
+- 👁️ Lidé se zrakovým postižením
+- 🦻 Lidé se sluchovým postižením
+- 🖱️ Lidé s motorickým omezením
+- 🧠 Lidé s kognitivními obtížemi
+
+## WCAG 2.1 standardy
+
+**4 základní principy (POUR):**
+
+### 1. Perceivable (Vnímatelný)
+- Alt texty pro obrázky
+- Titulky pro videa
+- Dostatečný kontrast barev
+
+### 2. Operable (Ovladatelný)
+- Klávesnicová navigace
+- Časové limity lze vypnout
+- Žádné blikající elementy (epilepsie)
+
+### 3. Understandable (Srozumitelný)
+- Jasný jazyk
+- Předvídatelné chování
+- Nápověda k chybám
+
+### 4. Robust (Robustní)
+- Kompatibilita se screen readery
+
+[Audit přístupnosti vašeho webu](https://weblyx.cz/poptavka)`,
+      author: "Weblyx Team",
+      published: true,
+      publishedAt: "2025-12-05T10:00:00.000Z",
+      tags: ["accessibility", "a11y", "WCAG", "přístupnost", "legislativa"],
+      metaTitle: "Web accessibility 2025: WCAG 2.1 průvodce | Weblyx",
+      metaDescription:
+        "Kompletní návod na přístupný web. WCAG 2.1 standardy, právní povinnosti, testování. Jak zajistit, aby váš web mohl používat každý.",
+    };
+    await createBlogPost(blog15Data);
+
+    console.log("\n✅ All 15 SEO blog posts created successfully!");
     console.log("\n📊 Verify at: https://weblyx.cz/blog");
   } catch (error: any) {
     console.error("\n❌ Error creating blog posts:", error);
