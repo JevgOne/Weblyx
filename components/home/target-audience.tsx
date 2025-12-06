@@ -6,17 +6,17 @@ export function TargetAudience() {
     {
       icon: Users,
       title: "Web pro živnostníky",
-      description: "Jednoduché, ale profesionální prezentační weby – ideální pro služby, osobní brand nebo lokální podnikání.",
+      description: "Kadeřnictví, autoservisy, fotografové, účetní. Rychlý web s kontaktem, ceníkem a galerií prací – bez měsíčních poplatků za WordPress.",
     },
     {
       icon: Briefcase,
-      title: "Web pro malé a střední firmy",
-      description: "Firemní webové stránky, které prezentují tým, služby i reference a generují poptávky.",
+      title: "Web pro malé firmy",
+      description: "Stavební firmy, poradenství, výroba. Web s referencemi, týmem a poptávkovým formulářem, který generuje zákazníky 24/7.",
     },
     {
       icon: Rocket,
-      title: "Start-upy a projekty v růstu",
-      description: "Moderní web na míru, který zvládne růst návštěvnosti, integrace i budoucí e-shop.",
+      title: "E-shopy a start-upy",
+      description: "Růst z 100 na 10 000 návštěv měsíčně? Náš web to zvládne. Rychlost, SEO a škálovatelnost – bez drahých redesignů.",
     },
   ];
 
