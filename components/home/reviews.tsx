@@ -86,8 +86,8 @@ export async function Reviews() {
                         {review.authorRole}
                       </p>
                     )}
-                    {review.source && review.source.toLowerCase() !== "manual" && (
-                      <p className="text-xs text-primary">{review.source} recenze</p>
+                    {review.source && review.source.toLowerCase() !== "manual" && review.source !== "Ověřený klient" && (
+                      <p className="text-xs text-primary">{review.source}</p>
                     )}
                   </div>
                 </div>

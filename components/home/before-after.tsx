@@ -12,12 +12,6 @@ const comparison = {
       { label: "Bezpečnost", value: "Časté zranitelnosti", icon: X, color: "text-red-600" },
       { label: "Cena", value: "15 000 - 30 000 Kč", icon: X, color: "text-red-600" },
     ],
-    problems: [
-      "Pomalé načítání (zákazníci odchází)",
-      "Časté updaty a záplaty",
-      "Komplikované pluginy",
-      "Vysoké náklady na hosting"
-    ]
   },
   after: {
     title: "Next.js web",
@@ -29,12 +23,6 @@ const comparison = {
       { label: "Bezpečnost", value: "Maximum zabezpečení", icon: Check, color: "text-green-600" },
       { label: "Cena", value: "7 990 - 14 990 Kč", icon: Check, color: "text-green-600" },
     ],
-    benefits: [
-      "Bleskové načítání (90+ PageSpeed)",
-      "Automatické updaty",
-      "Žádné pluginy, čistý kód",
-      "Levný hosting (od 0 Kč)"
-    ]
   }
 };
 
@@ -84,21 +72,6 @@ export function BeforeAfter() {
                   );
                 })}
               </div>
-
-              {/* Problems */}
-              <div className="space-y-2 pt-4">
-                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Typické problémy:
-                </div>
-                <div className="space-y-2">
-                  {comparison.before.problems.map((problem, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <X className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                      <span>{problem}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </CardContent>
           </Card>
 
@@ -130,21 +103,6 @@ export function BeforeAfter() {
                     </div>
                   );
                 })}
-              </div>
-
-              {/* Benefits */}
-              <div className="space-y-2 pt-4">
-                <div className="text-sm font-semibold text-primary uppercase tracking-wide">
-                  Výhody řešení:
-                </div>
-                <div className="space-y-2">
-                  {comparison.after.benefits.map((benefit, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>{benefit}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </CardContent>
 
