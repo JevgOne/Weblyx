@@ -9,6 +9,10 @@ export interface PortfolioProject {
   imageUrl: string;
   projectUrl?: string; // URL of the live project
   clientName?: string; // Optional client name
+  pagespeedMobile?: number; // PageSpeed score mobile (0-100)
+  pagespeedDesktop?: number; // PageSpeed score desktop (0-100)
+  loadTimeBefore?: number; // Load time before optimization (seconds)
+  loadTimeAfter?: number; // Load time after optimization (seconds)
   published: boolean;
   featured: boolean;
   order: number;
@@ -26,6 +30,10 @@ export interface PortfolioFormData {
   technologies: string[];
   imageUrl: string;
   projectUrl?: string; // URL of the live project
+  pagespeedMobile?: number;
+  pagespeedDesktop?: number;
+  loadTimeBefore?: number;
+  loadTimeAfter?: number;
   published: boolean;
   featured: boolean;
 }

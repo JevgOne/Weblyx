@@ -12,6 +12,10 @@ interface PortfolioRow {
   image_url: string | null;
   technologies: string | null;
   category: string | null;
+  pagespeed_mobile: number | null;
+  pagespeed_desktop: number | null;
+  load_time_before: number | null;
+  load_time_after: number | null;
   featured: number;
   published: number;
   order: number;
@@ -29,6 +33,10 @@ function rowToPortfolio(row: PortfolioRow): PortfolioItem {
     imageUrl: row.image_url || '',
     technologies: parseJSON<string[]>(row.technologies) || [],
     category: row.category || '',
+    pagespeedMobile: row.pagespeed_mobile || undefined,
+    pagespeedDesktop: row.pagespeed_desktop || undefined,
+    loadTimeBefore: row.load_time_before || undefined,
+    loadTimeAfter: row.load_time_after || undefined,
     featured: Boolean(row.featured),
     published: Boolean(row.published),
     order: row.order,

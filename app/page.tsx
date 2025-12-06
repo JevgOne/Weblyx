@@ -1,11 +1,14 @@
 import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
+import { SocialProofStats } from "@/components/home/social-proof-stats";
 import { TargetAudience } from "@/components/home/target-audience";
 import { USPSection } from "@/components/home/usp-section";
+import { BeforeAfter } from "@/components/home/before-after";
 import { Services } from "@/components/home/services";
 import { Process } from "@/components/home/process";
 import { Portfolio } from "@/components/home/portfolio";
 import { Reviews } from "@/components/home/reviews";
+import { TrustBadges } from "@/components/home/trust-badges";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { CTASection } from "@/components/home/cta-section";
@@ -102,12 +105,15 @@ export default async function HomePage() {
 
       <main className="min-h-screen">
         <Hero />
+        <SocialProofStats />
         <TargetAudience />
         <USPSection />
+        <BeforeAfter />
         <Services />
         <Process />
         <Portfolio />
         <Reviews />
+        <TrustBadges />
         <Pricing />
         <FAQ />
         <CTASection />
