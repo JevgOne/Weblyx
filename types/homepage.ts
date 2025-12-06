@@ -41,6 +41,10 @@ export interface PortfolioProject {
   imageUrl: string;
   projectUrl?: string;
   clientName?: string;
+  pagespeedMobile?: number;
+  pagespeedDesktop?: number;
+  loadTimeBefore?: number;
+  loadTimeAfter?: number;
   published: boolean;
   featured: boolean;
   order: number;
