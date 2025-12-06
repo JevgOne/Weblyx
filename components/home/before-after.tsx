@@ -111,13 +111,6 @@ export function BeforeAfter() {
           </Card>
         </div>
 
-        {/* Arrow between cards (desktop only) */}
-        <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-background border-2 border-primary rounded-full p-4 shadow-lg">
-            <ArrowRight className="h-8 w-8 text-primary" />
-          </div>
-        </div>
-
         {/* Bottom CTA */}
         <div className="text-center mt-12 p-8 rounded-2xl bg-primary/5 border border-primary/20">
           <p className="text-lg font-semibold mb-2">
