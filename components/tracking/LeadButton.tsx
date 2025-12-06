@@ -38,9 +38,8 @@ export function LeadButton({
       variant={variant}
       size={size}
       className={className}
-      onClick={handleClick}
     >
-      <Link href={href} className="group">
+      <Link href={href} className="group" onClick={handleClick}>
         {children}
         {showArrow && (
           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
