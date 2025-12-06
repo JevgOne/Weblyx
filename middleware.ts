@@ -290,16 +290,18 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-default-locale', locale);
 
   // 7. Apply i18n middleware (only for non-API, non-admin routes)
+  // TEMPORARILY DISABLED: i18n app structure not migrated yet, causing 404s
   let response: NextResponse;
+  response = NextResponse.next();
 
-  if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
-    // Apply i18n middleware for public pages
-    const intlResponse = intlMiddleware(request);
-    response = intlResponse || NextResponse.next();
-  } else {
-    // Skip i18n for API/admin routes
-    response = NextResponse.next();
-  }
+  // if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
+  //   // Apply i18n middleware for public pages
+  //   const intlResponse = intlMiddleware(request);
+  //   response = intlResponse || NextResponse.next();
+  // } else {
+  //   // Skip i18n for API/admin routes
+  //   response = NextResponse.next();
+  // }
 
   // 8. Add locale headers to response
   response.headers.set('x-locale', locale);
