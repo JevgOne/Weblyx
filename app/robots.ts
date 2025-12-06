@@ -6,7 +6,7 @@ import { MetadataRoute } from 'next';
  */
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://weblyx.cz';
+  const baseUrl = 'https://www.weblyx.cz';
 
   return {
     rules: [
