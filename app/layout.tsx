@@ -66,11 +66,12 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#14B8A6" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* Analytics - placed in head for optimal tracking */}
+        <GoogleAnalytics />
+        <FacebookPixel />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <GoogleAnalytics />
-          <FacebookPixel />
           <PWAProvider>
             <Header />
             {children}
