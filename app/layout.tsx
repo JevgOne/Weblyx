@@ -49,8 +49,8 @@ export default async function RootLayout({
   // Get messages for i18n
   const messages = await getMessages();
 
-  // Detect locale from middleware header
-  const locale = 'cs'; // Default to Czech for now (middleware will handle domain detection)
+  // Detect locale from domain
+  const locale = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'de' : 'cs';
 
   return (
     <html lang={locale} suppressHydrationWarning>
