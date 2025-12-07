@@ -25,8 +25,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
-  description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč), e-shopy na míru, SEO optimalizace. Web do týdne (5-7 dní), Next.js místo WordPressu. Kolik stojí web? Od 10K!",
+  title: "Tvorba webových stránek, e-shopů a SEO | Od 9 990 Kč",
+  description: "⚡ Rychlá tvorba webových stránek od 9 990 Kč, e-shopy na míru, SEO optimalizace. Web do týdne (5-7 dní), Next.js místo WordPressu. Férové ceny bez skrytých poplatků.",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     "údržba webu"
   ],
   openGraph: {
-    title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč",
-    description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web do týdne, Next.js místo WordPressu.",
+    title: "Tvorba webových stránek, e-shopů a SEO | Od 9 990 Kč",
+    description: "⚡ Rychlá tvorba webových stránek od 9 990 Kč. Web do týdne, Next.js místo WordPressu. Férové ceny bez skrytých poplatků.",
     url: "https://weblyx.cz/sluzby",
     type: "website",
     images: [
@@ -82,7 +82,7 @@ export default async function ServicesPage() {
       icon: Globe,
       title: "Tvorba webových stránek",
       slug: "web",
-      price: "od 10 000 Kč",
+      price: "od 9 990 Kč",
       imageUrl: undefined, // Optional: Add image URL from Firebase Storage
       description:
         "Vytvoříme pro vás moderní, responzivní webové stránky přizpůsobené na míru vašim potřebám a cílové skupině.",
@@ -102,7 +102,7 @@ export default async function ServicesPage() {
       icon: ShoppingCart,
       title: "E-shopy",
       slug: "eshop",
-      price: "od 85 000 Kč",
+      price: "od 49 990 Kč",
       description:
         "Kompletní e-commerce řešení pro online prodej s platebními branami, správou produktů a objednávek.",
       includes: [
@@ -141,7 +141,7 @@ export default async function ServicesPage() {
       icon: Palette,
       title: "Redesign webu",
       slug: "redesign",
-      price: "od 15 000 Kč",
+      price: "od 19 990 Kč",
       description:
         "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze při zachování vaší značky.",
       includes: [

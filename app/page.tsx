@@ -67,7 +67,7 @@ export default async function HomePage() {
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
   const localBusinessSchema = generateLocalBusinessSchema({
-    priceRange: "10000 Kč - 50000 Kč",
+    priceRange: "9990 Kč - 89990 Kč",
     openingHours: ["Mo-Fr 09:00-18:00"],
   });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
@@ -81,7 +81,7 @@ export default async function HomePage() {
     areaServed: "Česká republika",
     offers: {
       priceCurrency: "CZK",
-      priceRange: "7990-14990",
+      priceRange: "9990-89990",
     },
     aggregateRating: {
       ratingValue: 4.9,

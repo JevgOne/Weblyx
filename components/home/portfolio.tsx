@@ -155,11 +155,21 @@ export async function Portfolio() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Button asChild variant="outline" size="lg">
-            <Link href="/portfolio">{buttonText}</Link>
-          </Button>
-        </div>
+        {projects.length > 0 && (
+          <div className="text-center space-y-6 mt-8">
+            <div className="max-w-2xl mx-auto p-6 rounded-lg bg-muted/50 border border-border">
+              <p className="text-muted-foreground mb-2">
+                💼 <strong>Více než 15 projektů realizováno</strong>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Portfolio obsahuje vybrané projekty. Pro kompletní reference a další ukázky nás kontaktujte.
+              </p>
+            </div>
+            <Button asChild variant="outline" size="lg">
+              <Link href="/kontakt">Konzultace zdarma</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

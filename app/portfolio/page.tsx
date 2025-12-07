@@ -106,6 +106,11 @@ export default async function PortfolioPage() {
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Podívejte se na ukázky naší práce a realizovaných projektů
             </p>
+            <div className="max-w-2xl mx-auto p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <p className="text-sm text-muted-foreground">
+                💼 Zobrazujeme vybrané projekty. <strong>Více než 15 webů realizováno</strong> – pro kompletní reference kontaktujte nás.
+              </p>
+            </div>
           </div>
         </section>
         <div className="py-16">

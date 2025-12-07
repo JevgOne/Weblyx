@@ -59,7 +59,7 @@ export default async function Image() {
             lineHeight: 1.2,
           }}
         >
-          Tvorba webových stránek od 10 000 Kč
+          Tvorba webových stránek od 9 990 Kč
         </div>
 
         {/* Subheadline */}
@@ -89,7 +89,7 @@ export default async function Image() {
             color: 'white',
           }}
         >
-          AKCE: Od 7 990 Kč
+          Next.js místo WordPressu
         </div>
       </div>
     ),
