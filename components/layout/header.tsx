@@ -10,20 +10,22 @@ import { useTranslations } from 'next-intl';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = useTranslations('nav');
+  const tRoutes = useTranslations('routes');
 
   // Detect if German site
   const isGermanSite = typeof window !== 'undefined'
     ? window.location.hostname.includes('seitelyx.de')
     : false;
   const brandName = isGermanSite ? 'Seitelyx' : 'Weblyx';
+  const logoSrc = isGermanSite ? '/logo-de.svg' : '/logo.svg';
 
   const navigation = [
-    { name: t('services'), href: "/sluzby" },
-    { name: t('portfolio'), href: "/portfolio" },
-    { name: t('blog'), href: "/blog" },
-    { name: t('faq'), href: "/faq" },
-    { name: t('about'), href: "/o-nas" },
-    { name: t('contact'), href: "/kontakt" },
+    { name: t('services'), href: tRoutes('services') },
+    { name: t('portfolio'), href: tRoutes('portfolio') },
+    { name: t('blog'), href: tRoutes('blog') },
+    { name: t('faq'), href: tRoutes('faq') },
+    { name: t('about'), href: tRoutes('about') },
+    { name: t('contact'), href: tRoutes('contact') },
   ];
 
   return (
@@ -32,7 +34,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img src="/logo.svg" alt={brandName} className="h-10" />
+            <img src={logoSrc} alt={brandName} className="h-10" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -50,7 +52,7 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <LeadButton href="/poptavka" className="shadow-elegant">
+            <LeadButton href={tRoutes('quote')} className="shadow-elegant">
               {t('cta')}
             </LeadButton>
           </div>
@@ -84,7 +86,7 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <LeadButton href="/poptavka" className="w-full">
+            <LeadButton href={tRoutes('quote')} className="w-full">
               {t('cta')}
             </LeadButton>
           </div>

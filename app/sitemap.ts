@@ -11,8 +11,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
   const isGermanSite = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de';
 
-  // Static routes with priorities (common for both sites)
-  const commonRoutes: MetadataRoute.Sitemap = [
+  // Static routes with priorities
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -20,34 +20,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/sluzby`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/portfolio`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/poptavka`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/kontakt`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/o-nas`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
     },
     {
       url: `${baseUrl}/blog`,
@@ -61,7 +37,56 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/kontakt`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
   ];
+
+  // Language-specific routes for Services, About, Quote
+  const languageRoutes: MetadataRoute.Sitemap = isGermanSite
+    ? [
+        {
+          url: `${baseUrl}/leistungen`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.9,
+        },
+        {
+          url: `${baseUrl}/uber-uns`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.6,
+        },
+        {
+          url: `${baseUrl}/anfrage`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.9,
+        },
+      ]
+    : [
+        {
+          url: `${baseUrl}/sluzby`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.9,
+        },
+        {
+          url: `${baseUrl}/o-nas`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.6,
+        },
+        {
+          url: `${baseUrl}/poptavka`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.9,
+        },
+      ];
 
   // German-specific routes
   const germanRoutes: MetadataRoute.Sitemap = isGermanSite
@@ -111,7 +136,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ]
     : [];
 
-  const staticRoutes = [...commonRoutes, ...germanRoutes, ...czechRoutes];
+  const allStaticRoutes = [...staticRoutes, ...languageRoutes, ...germanRoutes, ...czechRoutes];
 
   // Fetch dynamic portfolio items from Turso
   let portfolioRoutes: MetadataRoute.Sitemap = [];
@@ -144,5 +169,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching blog posts for sitemap:', error);
   }
 
-  return [...staticRoutes, ...portfolioRoutes, ...blogRoutes];
+  return [...allStaticRoutes, ...portfolioRoutes, ...blogRoutes];
 }

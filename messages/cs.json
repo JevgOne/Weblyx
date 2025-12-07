@@ -10,6 +10,17 @@
     "pricing": "Ceník",
     "cta": "Nezávazná poptávka"
   },
+  "routes": {
+    "services": "/sluzby",
+    "about": "/o-nas",
+    "portfolio": "/portfolio",
+    "blog": "/blog",
+    "faq": "/faq",
+    "contact": "/kontakt",
+    "quote": "/poptavka",
+    "privacy": "/ochrana-udaju",
+    "terms": "/obchodni-podminky"
+  },
   "hero": {
     "badge": "🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč",
     "title": "Tvorba webových stránek od 10 000 Kč | Web za týden",

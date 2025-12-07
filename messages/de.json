@@ -10,6 +10,18 @@
     "pricing": "Preise",
     "cta": "Jetzt starten"
   },
+  "routes": {
+    "services": "/leistungen",
+    "about": "/uber-uns",
+    "portfolio": "/portfolio",
+    "blog": "/blog",
+    "faq": "/faq",
+    "contact": "/kontakt",
+    "quote": "/anfrage",
+    "pricing": "/preise",
+    "impressum": "/impressum",
+    "privacy": "/datenschutz"
+  },
   "hero": {
     "badge": "🚀 AKTION: Website ab 349 € statt 449 €",
     "title": "Website erstellen lassen | Festpreis ab 349€",

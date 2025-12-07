@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 export function Footer() {
   const t = useTranslations('footer');
   const tNav = useTranslations('nav');
+  const tRoutes = useTranslations('routes');
 
   // Detect if German site
   const isGermanSite = typeof window !== 'undefined'
@@ -17,30 +18,33 @@ export function Footer() {
   const brandName = isGermanSite ? 'Seitelyx' : 'Weblyx';
   const contactEmail = isGermanSite ? 'kontakt@seitelyx.de' : 'info@weblyx.cz';
 
+  // Get the services route for building anchor links
+  const servicesRoute = tRoutes('services');
+
   const footerLinks = {
     company: [
-      { name: tNav('about'), href: "/o-nas" },
-      { name: tNav('services'), href: "/sluzby" },
-      { name: tNav('portfolio'), href: "/portfolio" },
-      { name: tNav('blog'), href: "/blog" },
-      { name: tNav('faq'), href: "/faq" },
-      { name: tNav('contact'), href: "/kontakt" },
+      { name: tNav('about'), href: tRoutes('about') },
+      { name: tNav('services'), href: tRoutes('services') },
+      { name: tNav('portfolio'), href: tRoutes('portfolio') },
+      { name: tNav('blog'), href: tRoutes('blog') },
+      { name: tNav('faq'), href: tRoutes('faq') },
+      { name: tNav('contact'), href: tRoutes('contact') },
     ],
     services: [
-      { name: t('webDevelopment'), href: "/sluzby#web" },
-      { name: t('ecommerce'), href: "/sluzby#eshop" },
-      { name: t('seo'), href: "/sluzby#seo" },
-      { name: t('redesign'), href: "/sluzby#redesign" },
-      { name: t('maintenance'), href: "/sluzby#maintenance" },
+      { name: t('webDevelopment'), href: `${servicesRoute}#web` },
+      { name: t('ecommerce'), href: `${servicesRoute}#eshop` },
+      { name: t('seo'), href: `${servicesRoute}#seo` },
+      { name: t('redesign'), href: `${servicesRoute}#redesign` },
+      { name: t('maintenance'), href: `${servicesRoute}#maintenance` },
     ],
     legal: isGermanSite
       ? [
-          { name: t('impressum'), href: "/impressum" },
-          { name: t('privacy'), href: "/datenschutz" },
+          { name: t('impressum'), href: tRoutes('impressum') },
+          { name: t('privacy'), href: tRoutes('privacy') },
         ]
       : [
-          { name: t('privacy'), href: "/ochrana-udaju" },
-          { name: t('terms'), href: "/obchodni-podminky" },
+          { name: t('privacy'), href: tRoutes('privacy') },
+          { name: t('terms'), href: tRoutes('terms') },
         ],
   };
 
