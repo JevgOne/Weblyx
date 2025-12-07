@@ -7,40 +7,40 @@
     "blog": "Blog",
     "contact": "Kontakt",
     "faq": "FAQ",
-    "pricing": "Preise"
+    "pricing": "Preise",
+    "cta": "Unverbindliche Anfrage"
   },
   "hero": {
-    "title": "Webseiten erstellen, die wirklich verkaufen",
-    "subtitle": "Moderne, schnelle und SEO-optimierte Websites für Ihr Unternehmen",
-    "cta": "Unverbindliche Anfrage",
-    "ctaSecondary": "Portfolio ansehen"
+    "badge": "🎉 SONDERANGEBOT: Website für 199€ statt 249€",
+    "title": "Webseitenerstellung ab 249€ | Website in einer Woche",
+    "subtitle": "Schnelle Erstellung von <strong>Webseiten und Online-Shops</strong> mit <strong>Next.js statt WordPress</strong>. Website in einer Woche (<strong>5–7 Tage</strong>), schnellste Ladezeit <strong>unter 2 Sekunden</strong>, <strong>SEO-Optimierung inklusive</strong>. Günstige Websites für Selbstständige und Unternehmen.",
+    "cta": "Kostenlose unverbindliche Beratung",
+    "ctaSecondary": "Projekte ansehen",
+    "stat1Value": "⚡ 5–7 Tage",
+    "stat1Label": "Schnelle Website-Erstellung",
+    "stat2Value": "🚀 Unter 2s",
+    "stat2Label": "Blitzschnelles Laden",
+    "stat3Value": "249€",
+    "stat3Label": "Startpreis",
+    "heroImageAlt": "Seitelyx - Moderne Webseiten",
+    "heroPlaceholder": "Hero-Bild",
+    "heroPlaceholderDesc": "Laden Sie ein Bild im <span class=\"text-primary font-medium\">Admin-Panel</span> hoch, um es hier anzuzeigen",
+    "heroAdminHint": "Admin → Hero-Bereich"
   },
   "services": {
     "title": "Unsere Leistungen",
-    "subtitle": "Komplettlösungen für Ihren Online-Erfolg",
-    "webDev": {
-      "title": "Webentwicklung",
-      "description": "Moderne responsive Websites mit neuesten Technologien"
+    "subtitle": "Komplette Lösung für Ihre Online-Präsenz",
+    "service1": {
+      "title": "Webseiten",
+      "description": "Moderne, responsive Websites nach Ihren Bedürfnissen. Von einfachen Präsentationen bis zu komplexen Unternehmenswebsites."
     },
-    "ecommerce": {
-      "title": "E-Commerce",
-      "description": "Professionelle Online-Shops, die Ihren Umsatz steigern"
-    },
-    "seo": {
+    "service2": {
       "title": "SEO-Optimierung",
-      "description": "Wir sorgen dafür, dass Ihre Kunden Sie auf Google finden"
+      "description": "Erreichen Sie Top-Positionen in Suchmaschinen. Umfassende On-Page- und Off-Page-Optimierung für bessere Sichtbarkeit."
     },
-    "maintenance": {
-      "title": "Wartung & Support",
-      "description": "Wir kümmern uns um Ihre Website, damit Sie sich auf Ihr Geschäft konzentrieren können"
-    },
-    "redesign": {
-      "title": "Website-Redesign",
-      "description": "Modernisierung bestehender Websites für bessere Ergebnisse"
-    },
-    "consulting": {
-      "title": "Beratung",
-      "description": "Beratung im Bereich digitales Marketing und Technologien"
+    "service3": {
+      "title": "Online-Shops",
+      "description": "Komplettlösung für Online-Verkauf. Integration mit Zahlungsgateways, Lagerverwaltung und Bestellabwicklung."
     }
   },
   "process": {
@@ -103,12 +103,35 @@
     "privacy": "Datenschutz",
     "terms": "AGB",
     "cookies": "Cookies",
-    "copyright": "© 2024 Seitelyx. Alle Rechte vorbehalten."
+    "copyright": "© 2024 Seitelyx. Alle Rechte vorbehalten.",
+    "company": "Unternehmen",
+    "servicesTitle": "Leistungen",
+    "contactTitle": "Kontakt",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "location": "Prag, Tschechische Republik",
+    "hours": "Öffnungszeiten",
+    "weekdays": "Mo - Fr: 9:00 - 18:00",
+    "weekend": "Sa - So: Geschlossen",
+    "tagline": "Mit ❤️ und ☕️ in Tschechien erstellt",
+    "webDevelopment": "Webentwicklung",
+    "ecommerce": "E-Commerce",
+    "seo": "SEO-Optimierung",
+    "redesign": "Redesign",
+    "maintenance": "Wartung"
   },
   "cta": {
     "title": "Bereit anzufangen?",
     "subtitle": "Lassen Sie uns gemeinsam eine Website erstellen, die Ihr Geschäft voranbringt",
-    "button": "Unverbindliche Anfrage"
+    "primaryButton": "Unverbindliche Anfrage",
+    "secondaryButton": "Portfolio ansehen",
+    "benefit1Title": "Schnelle Entwicklung",
+    "benefit1Desc": "Website in 5-7 Tagen",
+    "benefit2Title": "Moderne Technologie",
+    "benefit2Desc": "Next.js und React",
+    "benefit3Title": "SEO inklusive",
+    "benefit3Desc": "Optimierung für Google"
   },
   "common": {
     "learnMore": "Mehr erfahren",
@@ -116,5 +139,23 @@
     "viewAll": "Alle anzeigen",
     "loading": "Lädt...",
     "error": "Fehler"
+  },
+  "cookies": {
+    "title": "Wir verwenden Cookies",
+    "description": "Wir verwenden Cookies, um die grundlegende Funktionalität der Website zu gewährleisten und die Besucherzahlen zu analysieren. Weitere Informationen finden Sie in unserer",
+    "privacyLink": "Datenschutzerklärung",
+    "cookiesLink": "Cookie-Richtlinie",
+    "settings": "Einstellungen",
+    "acceptNecessary": "Nur notwendige",
+    "acceptAll": "Alle akzeptieren",
+    "settingsTitle": "Cookie-Einstellungen",
+    "necessaryTitle": "Notwendige Cookies",
+    "necessaryDesc": "Diese Cookies sind für das ordnungsgemäße Funktionieren der Website erforderlich und können nicht deaktiviert werden. Sie umfassen grundlegende Funktionen wie Sicherheit und Zugänglichkeit.",
+    "analyticsTitle": "Analytische Cookies",
+    "analyticsDesc": "Helfen uns zu verstehen, wie Besucher die Website nutzen, damit wir ihre Funktionalität und Inhalte verbessern können.",
+    "marketingTitle": "Marketing-Cookies",
+    "marketingDesc": "Werden verwendet, um relevante Werbung und Marketingkampagnen basierend auf Ihren Präferenzen anzuzeigen.",
+    "back": "Zurück",
+    "save": "Einstellungen speichern"
   }
 }

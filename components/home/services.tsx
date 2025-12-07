@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getActiveServices } from "@/lib/turso/services";
 import { getPageContent } from "@/lib/firestore-pages";
+import { getTranslations } from 'next-intl/server';
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -32,6 +33,7 @@ async function getServices() {
 }
 
 export async function Services() {
+  const t = await getTranslations('services');
   const servicesData = await getServices();
   const sectionContent = await getPageContent('homepage-services');
 
@@ -40,31 +42,31 @@ export async function Services() {
     {
       id: 'fallback-1',
       icon: 'Globe',
-      title: 'Webové stránky',
-      description: 'Moderní, responzivní weby přizpůsobené vašim potřebám. Od jednoduchých prezentací po komplexní firemní weby.',
+      title: t('service1.title'),
+      description: t('service1.description'),
       order: 1,
       isActive: true,
     },
     {
       id: 'fallback-2',
       icon: 'TrendingUp',
-      title: 'SEO optimalizace',
-      description: 'Dostaňte se na přední pozice ve vyhledávačích. Komplexní on-page i off-page optimalizace pro lepší viditelnost.',
+      title: t('service2.title'),
+      description: t('service2.description'),
       order: 2,
       isActive: true,
     },
     {
       id: 'fallback-3',
       icon: 'ShoppingCart',
-      title: 'E-shopy',
-      description: 'Kompletní řešení pro online prodej. Propojení s platebními branami, správa skladu a expedice objednávek.',
+      title: t('service3.title'),
+      description: t('service3.description'),
       order: 3,
       isActive: true,
     },
   ];
 
   // Use content from page_content collection or fallback
-  const heading = sectionContent?.content?.heading || 'Naše služby';
+  const heading = sectionContent?.content?.heading || t('title');
   const subheading = sectionContent?.content?.subheading || 'Komplexní řešení pro vaši online přítomnost';
 
   return (

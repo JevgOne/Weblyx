@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Zap, Code2, TrendingUp } from "lucide-react";
 import { CTASection as CTASectionType } from "@/types/cms";
 import { getCTASection } from "@/lib/turso/cms";
 import { getIcon } from "@/lib/icon-map";
+import { getTranslations } from 'next-intl/server';
 
 async function getCTAData(): Promise<CTASectionType | null> {
   try {
@@ -17,11 +18,35 @@ async function getCTAData(): Promise<CTASectionType | null> {
 }
 
 export async function CTASection() {
+  const t = await getTranslations('cta');
   const section = await getCTAData();
 
-  if (!section || !section.enabled) {
-    return null;
-  }
+  // If no DB data or disabled, use translations
+  const heading = section?.heading || t('title');
+  const subheading = section?.subheading || t('subtitle');
+  const primaryButtonText = section?.primaryButtonText || t('primaryButton');
+  const primaryButtonLink = section?.primaryButtonLink || '/poptavka';
+  const secondaryButtonText = section?.secondaryButtonText || t('secondaryButton');
+  const secondaryButtonLink = section?.secondaryButtonLink || '/portfolio';
+
+  // Default benefits from translations if no DB data
+  const benefits = section?.benefits && section.benefits.length > 0 ? section.benefits : [
+    {
+      icon: 'Zap',
+      title: t('benefit1Title'),
+      description: t('benefit1Desc'),
+    },
+    {
+      icon: 'Code2',
+      title: t('benefit2Title'),
+      description: t('benefit2Desc'),
+    },
+    {
+      icon: 'TrendingUp',
+      title: t('benefit3Title'),
+      description: t('benefit3Desc'),
+    },
+  ];
 
   return (
     <section className="py-16 md:py-24 px-4">
@@ -33,16 +58,16 @@ export async function CTASection() {
           <div className="relative z-10 space-y-8">
             <div className="space-y-4">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-                {section.heading}
+                {heading}
               </h2>
               <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-                {section.subheading}
+                {subheading}
               </p>
             </div>
 
             {/* Benefits Grid */}
             <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              {section.benefits.map((benefit, index) => {
+              {benefits.map((benefit, index) => {
                 const IconComponent = getIcon(benefit.icon);
                 return (
                   <div
@@ -63,12 +88,12 @@ export async function CTASection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               {/* Primary CTA with Facebook Pixel Lead tracking */}
               <LeadButton
-                href={section.primaryButtonLink}
+                href={primaryButtonLink}
                 size="lg"
                 variant="secondary"
                 className="text-base shadow-lg"
               >
-                {section.primaryButtonText}
+                {primaryButtonText}
               </LeadButton>
               <Button
                 asChild
@@ -76,7 +101,7 @@ export async function CTASection() {
                 variant="outline"
                 className="text-base bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
-                <Link href={section.secondaryButtonLink}>{section.secondaryButtonText}</Link>
+                <Link href={secondaryButtonLink}>{secondaryButtonText}</Link>
               </Button>
             </div>
           </div>

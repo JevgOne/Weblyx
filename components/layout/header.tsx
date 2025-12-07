@@ -5,17 +5,19 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
+import { useTranslations } from 'next-intl';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = useTranslations('nav');
 
   const navigation = [
-    { name: "Služby", href: "/sluzby" },
-    { name: "Portfolio", href: "/portfolio" },
-    { name: "Blog", href: "/blog" },
-    { name: "FAQ", href: "/faq" },
-    { name: "O nás", href: "/o-nas" },
-    { name: "Kontakt", href: "/kontakt" },
+    { name: t('services'), href: "/sluzby" },
+    { name: t('portfolio'), href: "/portfolio" },
+    { name: t('blog'), href: "/blog" },
+    { name: t('faq'), href: "/faq" },
+    { name: t('about'), href: "/o-nas" },
+    { name: t('contact'), href: "/kontakt" },
   ];
 
   return (
@@ -43,7 +45,7 @@ export function Header() {
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             <LeadButton href="/poptavka" className="shadow-elegant">
-              Nezávazná poptávka
+              {t('cta')}
             </LeadButton>
           </div>
 
@@ -77,7 +79,7 @@ export function Header() {
               </Link>
             ))}
             <LeadButton href="/poptavka" className="w-full">
-              Nezávazná poptávka
+              {t('cta')}
             </LeadButton>
           </div>
         </div>

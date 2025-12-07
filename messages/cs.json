@@ -7,40 +7,40 @@
     "blog": "Blog",
     "contact": "Kontakt",
     "faq": "FAQ",
-    "pricing": "Ceník"
+    "pricing": "Ceník",
+    "cta": "Nezávazná poptávka"
   },
   "hero": {
-    "title": "Tvorba webů, které opravdu prodávají",
-    "subtitle": "Moderní, rychlé a SEO optimalizované weby pro váš byznys",
-    "cta": "Nezávazná poptávka",
-    "ctaSecondary": "Zobrazit portfolio"
+    "badge": "🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč",
+    "title": "Tvorba webových stránek od 10 000 Kč | Web za týden",
+    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Levné weby pro živnostníky a firmy.",
+    "cta": "Nezávazná konzultace zdarma",
+    "ctaSecondary": "Zobrazit projekty",
+    "stat1Value": "⚡ 5–7 dní",
+    "stat1Label": "Rychlá tvorba webu",
+    "stat2Value": "🚀 Pod 2s",
+    "stat2Label": "Bleskové načítání",
+    "stat3Value": "10 000 Kč",
+    "stat3Label": "Startovací cena",
+    "heroImageAlt": "Weblyx - Moderní webové stránky",
+    "heroPlaceholder": "Hero Obrázek",
+    "heroPlaceholderDesc": "Nahrajte obrázek v <span class=\"text-primary font-medium\">admin panelu</span> pro zobrazení zde",
+    "heroAdminHint": "Admin → Hero sekce"
   },
   "services": {
     "title": "Naše služby",
-    "subtitle": "Kompletní řešení pro váš online úspěch",
-    "webDev": {
-      "title": "Tvorba webů",
-      "description": "Moderní responzivní weby postavené na nejnovějších technologiích"
+    "subtitle": "Kompletní řešení pro vaši online přítomnost",
+    "service1": {
+      "title": "Webové stránky",
+      "description": "Moderní, responzivní weby přizpůsobené vašim potřebám. Od jednoduchých prezentací po komplexní firemní weby."
     },
-    "ecommerce": {
-      "title": "E-commerce",
-      "description": "Profesionální e-shopy, které zvyšují vaše prodeje"
-    },
-    "seo": {
+    "service2": {
       "title": "SEO optimalizace",
-      "description": "Zajistíme, aby vás zákazníci našli na Google"
+      "description": "Dostaňte se na přední pozice ve vyhledávačích. Komplexní on-page i off-page optimalizace pro lepší viditelnost."
     },
-    "maintenance": {
-      "title": "Údržba a podpora",
-      "description": "Starám se o váš web, abyste se vy mohli věnovat byznysu"
-    },
-    "redesign": {
-      "title": "Redesign webu",
-      "description": "Modernizace stávajících webů pro lepší výsledky"
-    },
-    "consulting": {
-      "title": "Konzultace",
-      "description": "Poradenství v oblasti digitálního marketingu a technologií"
+    "service3": {
+      "title": "E-shopy",
+      "description": "Kompletní řešení pro online prodej. Propojení s platebními branami, správa skladu a expedice objednávek."
     }
   },
   "process": {
@@ -103,12 +103,35 @@
     "privacy": "Ochrana údajů",
     "terms": "Obchodní podmínky",
     "cookies": "Cookies",
-    "copyright": "© 2024 Weblyx. Všechna práva vyhrazena."
+    "copyright": "© 2024 Weblyx. Všechna práva vyhrazena.",
+    "company": "Společnost",
+    "servicesTitle": "Služby",
+    "contactTitle": "Kontakt",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adresa",
+    "location": "Praha, Česká republika",
+    "hours": "Otevírací doba",
+    "weekdays": "Po - Pá: 9:00 - 18:00",
+    "weekend": "So - Ne: Zavřeno",
+    "tagline": "Vytvořeno s ❤️ a ☕️ v Česku",
+    "webDevelopment": "Webové stránky",
+    "ecommerce": "E-shopy",
+    "seo": "SEO optimalizace",
+    "redesign": "Redesign",
+    "maintenance": "Údržba"
   },
   "cta": {
     "title": "Připraveni začít?",
     "subtitle": "Pojďme společně vytvořit web, který posune váš byznys kupředu",
-    "button": "Nezávazná poptávka"
+    "primaryButton": "Nezávazná poptávka",
+    "secondaryButton": "Zobrazit portfolio",
+    "benefit1Title": "Rychlý vývoj",
+    "benefit1Desc": "Web za 5-7 dní",
+    "benefit2Title": "Moderní technologie",
+    "benefit2Desc": "Next.js a React",
+    "benefit3Title": "SEO zdarma",
+    "benefit3Desc": "Optimalizace pro Google"
   },
   "common": {
     "learnMore": "Zjistit více",
@@ -116,5 +139,23 @@
     "viewAll": "Zobrazit vše",
     "loading": "Načítání...",
     "error": "Chyba"
+  },
+  "cookies": {
+    "title": "Používáme cookies",
+    "description": "Používáme cookies pro zajištění základní funkčnosti webu a pro analýzu návštěvnosti. Více informací najdete v našich",
+    "privacyLink": "zásadách ochrany osobních údajů",
+    "cookiesLink": "zásadách cookies",
+    "settings": "Nastavení",
+    "acceptNecessary": "Pouze nezbytné",
+    "acceptAll": "Přijmout vše",
+    "settingsTitle": "Nastavení cookies",
+    "necessaryTitle": "Nezbytné cookies",
+    "necessaryDesc": "Tyto cookies jsou nezbytné pro správné fungování webu a nelze je vypnout. Zahrnují základní funkce jako bezpečnost a přístupnost.",
+    "analyticsTitle": "Analytické cookies",
+    "analyticsDesc": "Pomáhají nám pochopit, jak návštěvníci používají web, abychom mohli zlepšovat jeho funkčnost a obsah.",
+    "marketingTitle": "Marketingové cookies",
+    "marketingDesc": "Používají se k zobrazení relevantních reklam a marketingových kampaní na základě vašich preferencí.",
+    "back": "Zpět",
+    "save": "Uložit nastavení"
   }
 }

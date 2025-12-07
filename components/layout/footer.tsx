@@ -1,27 +1,33 @@
+"use client";
+
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { Instagram, Facebook, MessageCircle, MapPin } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 export function Footer() {
+  const t = useTranslations('footer');
+  const tNav = useTranslations('nav');
+
   const footerLinks = {
     company: [
-      { name: "O nás", href: "/o-nas" },
-      { name: "Služby", href: "/sluzby" },
-      { name: "Portfolio", href: "/portfolio" },
-      { name: "Blog", href: "/blog" },
-      { name: "FAQ", href: "/faq" },
-      { name: "Kontakt", href: "/kontakt" },
+      { name: tNav('about'), href: "/o-nas" },
+      { name: tNav('services'), href: "/sluzby" },
+      { name: tNav('portfolio'), href: "/portfolio" },
+      { name: tNav('blog'), href: "/blog" },
+      { name: tNav('faq'), href: "/faq" },
+      { name: tNav('contact'), href: "/kontakt" },
     ],
     services: [
-      { name: "Webové stránky", href: "/sluzby#web" },
-      { name: "E-shopy", href: "/sluzby#eshop" },
-      { name: "SEO optimalizace", href: "/sluzby#seo" },
-      { name: "Redesign", href: "/sluzby#redesign" },
-      { name: "Údržba", href: "/sluzby#maintenance" },
+      { name: t('webDevelopment'), href: "/sluzby#web" },
+      { name: t('ecommerce'), href: "/sluzby#eshop" },
+      { name: t('seo'), href: "/sluzby#seo" },
+      { name: t('redesign'), href: "/sluzby#redesign" },
+      { name: t('maintenance'), href: "/sluzby#maintenance" },
     ],
     legal: [
-      { name: "Ochrana osobních údajů", href: "/ochrana-udaju" },
-      { name: "Obchodní podmínky", href: "/obchodni-podminky" },
+      { name: t('privacy'), href: "/ochrana-udaju" },
+      { name: t('terms'), href: "/obchodni-podminky" },
     ],
   };
 
@@ -40,8 +46,7 @@ export function Footer() {
               <span className="font-bold text-xl">Weblyx</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek za
-              konkurenceschopné ceny.
+              {t('aboutText')}
             </p>
             {/* Social Media Links */}
             <div className="flex gap-3">
@@ -87,7 +92,7 @@ export function Footer() {
 
           {/* Company Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Společnost</h3>
+            <h3 className="font-semibold">{t('company')}</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
@@ -104,7 +109,7 @@ export function Footer() {
 
           {/* Services Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Služby</h3>
+            <h3 className="font-semibold">{t('servicesTitle')}</h3>
             <ul className="space-y-3">
               {footerLinks.services.map((link, index) => (
                 <li key={index}>
@@ -121,7 +126,7 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Kontakt</h3>
+            <h3 className="font-semibold">{t('contactTitle')}</h3>
             <ul className="space-y-3">
               <li>
                 <a
@@ -158,10 +163,10 @@ export function Footer() {
         {/* Bottom Footer */}
         <div className="py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground text-center md:text-left">
-            &copy; {new Date().getFullYear()} Weblyx. Všechna práva vyhrazena.
+            {t('copyright').replace('2024', new Date().getFullYear().toString())}
           </p>
           <p className="text-sm text-muted-foreground">
-            Vytvořeno s ❤️ a ☕️ v Česku
+            {t('tagline')}
           </p>
         </div>
       </div>

@@ -8,70 +8,18 @@ import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { getSEOMetadata } from '@/lib/seo-metadata';
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
+// Generate dynamic metadata based on domain
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.weblyx.cz"),
-  title: {
-    default: "Tvorba webových stránek od 10 000 Kč | Web za týden | Weblyx",
-    template: "%s | Weblyx",
-  },
-  description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma. Nezávazná konzultace zdarma.",
-  keywords: [
-    "tvorba webových stránek",
-    "tvorba webu",
-    "webové stránky cena",
-    "kolik stojí webové stránky",
-    "levné webové stránky",
-    "rychlá tvorba webu",
-    "web za týden",
-    "web do týdne",
-    "web od 10 000 Kč",
-    "nejrychlejší webové stránky",
-    "web pod 2 sekundy",
-    "Next.js web",
-    "web pro živnostníky",
-    "e-shop na míru",
-    "SEO optimalizace",
-    "webdesign",
-  ],
-  authors: [{ name: "Weblyx", url: "https://www.weblyx.cz" }],
-  creator: "Weblyx",
-  publisher: "Weblyx",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  openGraph: {
-    type: "website",
-    locale: "cs_CZ",
-    url: "https://www.weblyx.cz",
-    title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
-    description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma.",
-    siteName: "Weblyx",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Tvorba webových stránek od 10 000 Kč | Web za týden",
-    description: "Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za týden, načítání pod 2s, SEO zdarma.",
-    creator: "@weblyx",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  ...getSEOMetadata(),
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -88,21 +36,24 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/manifest.json",
-  alternates: {
-    canonical: "https://www.weblyx.cz",
-  },
   verification: {
     google: "google-site-verification-code", // TODO: Add actual verification code
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get messages for i18n
+  const messages = await getMessages();
+
+  // Detect locale from middleware header
+  const locale = 'cs'; // Default to Czech for now (middleware will handle domain detection)
+
   return (
-    <html lang="cs" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         {/* PWA Meta Tags */}
         <meta name="application-name" content="Weblyx Admin" />
@@ -114,15 +65,17 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <GoogleAnalytics />
-        <FacebookPixel />
-        <PWAProvider>
-          <Header />
-          {children}
-          <Footer />
-          <CookieConsent />
-          <WhatsAppChat />
-        </PWAProvider>
+        <NextIntlClientProvider messages={messages}>
+          <GoogleAnalytics />
+          <FacebookPixel />
+          <PWAProvider>
+            <Header />
+            {children}
+            <Footer />
+            <CookieConsent />
+            <WhatsAppChat />
+          </PWAProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

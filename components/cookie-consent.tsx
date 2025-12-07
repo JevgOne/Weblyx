@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Cookie, Settings, X } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 // Declare gtag for TypeScript
 declare global {
@@ -14,6 +15,7 @@ declare global {
 }
 
 export function CookieConsent() {
+  const t = useTranslations('cookies');
   const [isVisible, setIsVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -115,16 +117,15 @@ export function CookieConsent() {
                   </div>
 
                   <div className="flex-1 space-y-2">
-                    <h3 className="text-lg font-semibold">Používáme cookies</h3>
+                    <h3 className="text-lg font-semibold">{t('title')}</h3>
                     <p className="text-sm text-muted-foreground">
-                      Používáme cookies pro zajištění základní funkčnosti webu a pro analýzu návštěvnosti.
-                      Více informací najdete v našich{" "}
+                      {t('description')}{" "}
                       <Link href="/ochrana-udaju" className="text-primary hover:underline">
-                        zásadách ochrany osobních údajů
+                        {t('privacyLink')}
                       </Link>
                       {" "}a{" "}
                       <Link href="/cookies" className="text-primary hover:underline">
-                        zásadách cookies
+                        {t('cookiesLink')}
                       </Link>
                       .
                     </p>
@@ -138,7 +139,7 @@ export function CookieConsent() {
                       className="w-full sm:w-auto"
                     >
                       <Settings className="h-4 w-4 mr-2" />
-                      Nastavení
+                      {t('settings')}
                     </Button>
                     <Button
                       variant="outline"
@@ -146,7 +147,7 @@ export function CookieConsent() {
                       onClick={acceptNecessary}
                       className="w-full sm:w-auto"
                     >
-                      Pouze nezbytné
+                      {t('acceptNecessary')}
                     </Button>
                     <Button
                       variant="outline"
@@ -154,7 +155,7 @@ export function CookieConsent() {
                       onClick={acceptAll}
                       className="w-full sm:w-auto"
                     >
-                      Přijmout vše
+                      {t('acceptAll')}
                     </Button>
                   </div>
                 </div>
@@ -162,7 +163,7 @@ export function CookieConsent() {
                 // Settings view
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Nastavení cookies</h3>
+                    <h3 className="text-lg font-semibold">{t('settingsTitle')}</h3>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -182,10 +183,9 @@ export function CookieConsent() {
                         className="mt-1"
                       />
                       <div className="flex-1 space-y-1">
-                        <p className="font-medium text-sm">Nezbytné cookies</p>
+                        <p className="font-medium text-sm">{t('necessaryTitle')}</p>
                         <p className="text-xs text-muted-foreground">
-                          Tyto cookies jsou nezbytné pro správné fungování webu a nelze je vypnout.
-                          Zahrnují základní funkce jako bezpečnost a přístupnost.
+                          {t('necessaryDesc')}
                         </p>
                       </div>
                     </div>
@@ -201,10 +201,9 @@ export function CookieConsent() {
                         className="mt-1 cursor-pointer"
                       />
                       <div className="flex-1 space-y-1">
-                        <p className="font-medium text-sm">Analytické cookies</p>
+                        <p className="font-medium text-sm">{t('analyticsTitle')}</p>
                         <p className="text-xs text-muted-foreground">
-                          Pomáhají nám pochopit, jak návštěvníci používají web, abychom mohli
-                          zlepšovat jeho funkčnost a obsah.
+                          {t('analyticsDesc')}
                         </p>
                       </div>
                     </div>
@@ -220,10 +219,9 @@ export function CookieConsent() {
                         className="mt-1 cursor-pointer"
                       />
                       <div className="flex-1 space-y-1">
-                        <p className="font-medium text-sm">Marketingové cookies</p>
+                        <p className="font-medium text-sm">{t('marketingTitle')}</p>
                         <p className="text-xs text-muted-foreground">
-                          Používají se k zobrazení relevantních reklam a marketingových kampaní
-                          na základě vašich preferencí.
+                          {t('marketingDesc')}
                         </p>
                       </div>
                     </div>
@@ -235,10 +233,10 @@ export function CookieConsent() {
                       onClick={() => setShowSettings(false)}
                       className="flex-1"
                     >
-                      Zpět
+                      {t('back')}
                     </Button>
                     <Button variant="outline" onClick={saveCustomPreferences} className="flex-1">
-                      Uložit nastavení
+                      {t('save')}
                     </Button>
                   </div>
                 </div>

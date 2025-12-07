@@ -5,6 +5,7 @@ import { ArrowRight, Zap, Clock, TrendingUp } from "lucide-react";
 import { HeroSection } from "@/types/cms";
 import { HeroData } from "@/types/homepage";
 import { getHomepageSections } from "@/lib/turso/cms";
+import { getTranslations } from 'next-intl/server';
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -14,44 +15,48 @@ const iconMap: Record<string, any> = {
 };
 
 async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection | null }> {
+  // Get translations for fallback
+  const t = await getTranslations('hero');
+
   try {
     const sections = await getHomepageSections();
-
     const heroSection: HeroSection | null = sections?.hero || null;
 
-    // Convert Turso HeroSection to legacy HeroData format
+    // Use translations as fallback, DB data as override
     const data: HeroData = {
-      badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
-      title: heroSection?.headline || 'Tvorba webových stránek od 10 000 Kč | Web za týden',
+      badge: t('badge'),
+      title: heroSection?.headline || t('title'),
       titleHighlight: '',
-      subtitle: heroSection?.subheadline || 'Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Levné weby pro živnostníky a firmy.',
+      subtitle: heroSection?.subheadline || t('subtitle'),
       ctaPrimary: {
-        text: heroSection?.ctaText || 'Nezávazná konzultace zdarma',
+        text: heroSection?.ctaText || t('cta'),
         href: heroSection?.ctaLink || '/poptavka'
       },
-      ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
+      ctaSecondary: { text: t('ctaSecondary'), href: '/portfolio' },
       stats: [
-        { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Rychlá tvorba webu' },
-        { icon: 'Zap', value: '🚀 Pod 2s', label: 'Bleskové načítání' },
-        { icon: 'TrendingUp', value: '10 000 Kč', label: 'Startovací cena' },
+        { icon: 'Clock', value: t('stat1Value'), label: t('stat1Label') },
+        { icon: 'Zap', value: t('stat2Value'), label: t('stat2Label') },
+        { icon: 'TrendingUp', value: t('stat3Value'), label: t('stat3Label') },
       ],
     };
 
     return { data, heroSection };
   } catch (error) {
     console.error('Error fetching hero data:', error);
+
+    // Fallback to translations only
     return {
       data: {
-        badge: '🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč',
-        title: 'Tvorba webových stránek od 10 000 Kč | Web za týden',
+        badge: t('badge'),
+        title: t('title'),
         titleHighlight: '',
-        subtitle: 'Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Levné weby pro živnostníky a firmy.',
-        ctaPrimary: { text: 'Nezávazná konzultace zdarma', href: '/poptavka' },
-        ctaSecondary: { text: 'Zobrazit projekty', href: '/portfolio' },
+        subtitle: t('subtitle'),
+        ctaPrimary: { text: t('cta'), href: '/poptavka' },
+        ctaSecondary: { text: t('ctaSecondary'), href: '/portfolio' },
         stats: [
-          { icon: 'Clock', value: '⚡ 5–7 dní', label: 'Rychlá tvorba webu' },
-          { icon: 'Zap', value: '🚀 Pod 2s', label: 'Bleskové načítání' },
-          { icon: 'TrendingUp', value: '10 000 Kč', label: 'Startovací cena' },
+          { icon: 'Clock', value: t('stat1Value'), label: t('stat1Label') },
+          { icon: 'Zap', value: t('stat2Value'), label: t('stat2Label') },
+          { icon: 'TrendingUp', value: t('stat3Value'), label: t('stat3Label') },
         ],
       },
       heroSection: null,
@@ -61,6 +66,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
 
 export async function Hero() {
   const { data, heroSection } = await getHeroData();
+  const t = await getTranslations('hero');
 
   return (
     <section className="relative min-h-[90vh] flex items-center py-20 md:py-0 px-4 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
@@ -163,7 +169,7 @@ export async function Hero() {
                 <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
                   <img
                     src={heroSection.backgroundImage}
-                    alt="Weblyx - Moderní webové stránky"
+                    alt={t('heroImageAlt')}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   {/* Overlay gradient */}
@@ -185,15 +191,16 @@ export async function Hero() {
                     </div>
 
                     <div className="space-y-2">
-                      <p className="text-lg font-semibold text-foreground">Hero Obrázek</p>
-                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                        Nahrajte obrázek v <span className="text-primary font-medium">admin panelu</span> pro zobrazení zde
-                      </p>
+                      <p className="text-lg font-semibold text-foreground">{t('heroPlaceholder')}</p>
+                      <p
+                        className="text-sm text-muted-foreground max-w-xs mx-auto"
+                        dangerouslySetInnerHTML={{ __html: t('heroPlaceholderDesc') }}
+                      />
                     </div>
 
                     {/* Upload hint */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                      <span>Admin → Hero sekce</span>
+                      <span>{t('heroAdminHint')}</span>
                       <ArrowRight className="h-3 w-3" />
                     </div>
                   </div>
