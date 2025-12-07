@@ -1,7 +1,11 @@
 import Script from 'next/script';
 
 export function GoogleAnalytics() {
-  const GA_MEASUREMENT_ID = 'G-Q08S39LQVK';
+  // Dynamic GA4 ID based on domain
+  const isGermanSite = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de';
+  const GA_MEASUREMENT_ID = isGermanSite
+    ? process.env.NEXT_PUBLIC_GA4_ID_DE || 'G-XXXXXXXXXX' // Seitelyx.de (German)
+    : process.env.NEXT_PUBLIC_GA4_ID_CS || 'G-Q08S39LQVK';  // Weblyx.cz (Czech)
 
   return (
     <>

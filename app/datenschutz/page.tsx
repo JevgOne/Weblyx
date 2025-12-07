@@ -108,10 +108,11 @@ export default function DatenschutzPage() {
           Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:
         </p>
         <p>
-          Seitelyx
+          Altro Servis Group s.r.o.
           <br />
-          {/* TODO: Add actual business address */}
-          Prag, Tschechische Republik
+          Schulstraße 660/3, Nové Město
+          <br />
+          110 00 Prag, Tschechische Republik
           <br />
           <br />
           E-Mail: <a href="mailto:kontakt@seitelyx.de" className="text-primary hover:underline">kontakt@seitelyx.de</a>

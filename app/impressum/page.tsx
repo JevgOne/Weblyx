@@ -14,12 +14,18 @@ export default function ImpressumPage() {
 
         <h2>Anbieter</h2>
         <p>
-          <strong>Seitelyx</strong>
+          <strong>Altro Servis Group s.r.o.</strong>
           <br />
-          Moderne Webagentur für professionelle Websites
+          Schulstraße 660/3, Nové Město
           <br />
-          {/* TODO: Add actual business details */}
-          Prag, Tschechische Republik
+          110 00 Prag, Tschechische Republik
+          <br />
+          <br />
+          IČO (Steuernummer): 23673389
+          <br />
+          Grundkapital: 20.000 CZK
+          <br />
+          Datová schránka: rtq6w48
         </p>
 
         <h2>Kontakt</h2>
@@ -35,10 +41,11 @@ export default function ImpressumPage() {
         <p>
           Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:
           <br />
-          {/* TODO: Add responsible person name */}
-          Seitelyx
+          Altro Servis Group s.r.o.
           <br />
-          Prag, Tschechische Republik
+          Schulstraße 660/3, Nové Město
+          <br />
+          110 00 Prag, Tschechische Republik
         </p>
 
         <h2>EU-Streitschlichtung</h2>
