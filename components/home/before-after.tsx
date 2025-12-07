@@ -1,43 +1,48 @@
+"use client";
+
 import { ArrowRight, X, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
-const comparison = {
-  before: {
-    title: "WordPress web",
-    subtitle: "Tradiční řešení",
-    metrics: [
-      { label: "Načítání", value: "4-8 sekund", icon: X, color: "text-red-600" },
-      { label: "PageSpeed", value: "40-60/100", icon: X, color: "text-red-600" },
-      { label: "Údržba", value: "Složitá, pravidelná", icon: X, color: "text-red-600" },
-      { label: "Bezpečnost", value: "Časté zranitelnosti", icon: X, color: "text-red-600" },
-      { label: "Cena", value: "15 000 - 30 000 Kč", icon: X, color: "text-red-600" },
-    ],
-  },
-  after: {
-    title: "Next.js web",
-    subtitle: "Moderní technologie",
-    metrics: [
-      { label: "Načítání", value: "< 2 sekundy", icon: Check, color: "text-green-600" },
-      { label: "PageSpeed", value: "90-100/100", icon: Check, color: "text-green-600" },
-      { label: "Údržba", value: "Minimální", icon: Check, color: "text-green-600" },
-      { label: "Bezpečnost", value: "Maximum zabezpečení", icon: Check, color: "text-green-600" },
-      { label: "Cena", value: "7 990 - 14 990 Kč", icon: Check, color: "text-green-600" },
-    ],
-  }
-};
+import { useTranslations } from "next-intl";
 
 export function BeforeAfter() {
+  const t = useTranslations("beforeAfter");
+
+  const comparison = {
+    before: {
+      title: t("beforeTitle"),
+      subtitle: t("beforeSubtitle"),
+      metrics: [
+        { label: t("metricLoading"), value: t("beforeLoading"), icon: X, color: "text-red-600" },
+        { label: t("metricPageSpeed"), value: t("beforePageSpeed"), icon: X, color: "text-red-600" },
+        { label: t("metricMaintenance"), value: t("beforeMaintenance"), icon: X, color: "text-red-600" },
+        { label: t("metricSecurity"), value: t("beforeSecurity"), icon: X, color: "text-red-600" },
+        { label: t("metricPrice"), value: t("beforePrice"), icon: X, color: "text-red-600" },
+      ],
+    },
+    after: {
+      title: t("afterTitle"),
+      subtitle: t("afterSubtitle"),
+      metrics: [
+        { label: t("metricLoading"), value: t("afterLoading"), icon: Check, color: "text-green-600" },
+        { label: t("metricPageSpeed"), value: t("afterPageSpeed"), icon: Check, color: "text-green-600" },
+        { label: t("metricMaintenance"), value: t("afterMaintenance"), icon: Check, color: "text-green-600" },
+        { label: t("metricSecurity"), value: t("afterSecurity"), icon: Check, color: "text-green-600" },
+        { label: t("metricPrice"), value: t("afterPrice"), icon: Check, color: "text-green-600" },
+      ],
+    }
+  };
+
   return (
     <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-muted/30 to-background">
       <div className="container mx-auto max-w-7xl">
         {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-muted-foreground">WordPress</span> vs{" "}
-            <span className="text-primary">Next.js</span>
+            <span className="text-muted-foreground">{t("title")}</span> {t("titleVs")}{" "}
+            <span className="text-primary">{t("titleHighlight")}</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Proč moderní technologie poráží tradiční CMS ve všech metrikách
+            {t("subtitle")}
           </p>
         </div>
 
@@ -47,7 +52,7 @@ export function BeforeAfter() {
           <Card className="relative overflow-hidden border-2 border-red-200 dark:border-red-900/30">
             {/* Badge */}
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-semibold">
-              PŘED
+              {t("badgeeBefore")}
             </div>
 
             <CardContent className="p-8 space-y-6">
@@ -79,7 +84,7 @@ export function BeforeAfter() {
           <Card className="relative overflow-hidden border-2 border-primary shadow-lg shadow-primary/10">
             {/* Badge */}
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-              PO
+              {t("badgeAfter")}
             </div>
 
             <CardContent className="p-8 space-y-6">
@@ -114,10 +119,10 @@ export function BeforeAfter() {
         {/* Bottom CTA */}
         <div className="text-center mt-12 p-8 rounded-2xl bg-primary/5 border border-primary/20">
           <p className="text-lg font-semibold mb-2">
-            💡 <span className="text-primary">Ušetřete až 50%</span> a získejte rychlejší web
+            {t("ctaTitle")} <span className="text-primary">{t("ctaHighlight")}</span> {t("ctaText")}
           </p>
           <p className="text-sm text-muted-foreground">
-            Moderní technologie = menší náklady, vyšší výkon, spokojení zákazníci
+            {t("ctaSubtitle")}
           </p>
         </div>
       </div>

@@ -1,22 +1,27 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Briefcase, Rocket } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function TargetAudience() {
+  const t = useTranslations("targetAudience");
+
   const audiences = [
     {
       icon: Users,
-      title: "Web pro živnostníky",
-      description: "Kadeřnictví, autoservisy, fotografové, účetní. Rychlý web s kontaktem, ceníkem a galerií prací – bez měsíčních poplatků za WordPress.",
+      title: t("audience1Title"),
+      description: t("audience1Desc"),
     },
     {
       icon: Briefcase,
-      title: "Web pro malé firmy",
-      description: "Stavební firmy, poradenství, výroba. Web s referencemi, týmem a poptávkovým formulářem, který generuje zákazníky 24/7.",
+      title: t("audience2Title"),
+      description: t("audience2Desc"),
     },
     {
       icon: Rocket,
-      title: "E-shopy a start-upy",
-      description: "Růst z 100 na 10 000 návštěv měsíčně? Náš web to zvládne. Rychlost, SEO a škálovatelnost – bez drahých redesignů.",
+      title: t("audience3Title"),
+      description: t("audience3Desc"),
     },
   ];
 
@@ -25,10 +30,10 @@ export function TargetAudience() {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl font-bold">
-            Pro koho tvoříme weby
+            {t("title")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Pomáháme hlavně těm, kteří potřebují rychlou, moderní a cenově dostupnou tvorbu webu – bez zbytečné byrokracie a čekání.
+            {t("subtitle")}
           </p>
         </div>
 

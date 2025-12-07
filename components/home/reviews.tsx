@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
+import { getTranslations } from "next-intl/server";
 
 async function getReviews(): Promise<Review[]> {
   try {
@@ -32,6 +33,7 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export async function Reviews() {
+  const t = await getTranslations("reviews");
   const reviews = await getReviews();
 
   // Don't render section if no reviews
@@ -43,9 +45,9 @@ export async function Reviews() {
     <section id="recenze" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Co říkají naši klienti</h2>
+          <h2 className="text-4xl font-bold mb-4">{t("title")}</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Přečtěte si, co o nás říkají spokojení zákazníci
+            {t("subtitle")}
           </p>
         </div>
 
@@ -100,7 +102,7 @@ export async function Reviews() {
                     rel="noopener noreferrer"
                     className="text-xs text-primary hover:underline block"
                   >
-                    Zobrazit originál →
+                    {t("viewOriginal")}
                   </a>
                 )}
               </CardContent>

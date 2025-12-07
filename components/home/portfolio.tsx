@@ -42,14 +42,17 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
   }
 }
 
+import { getTranslations } from "next-intl/server";
+
 export async function Portfolio() {
+  const t = await getTranslations("portfolio");
   const projects = await getPortfolioProjects();
   const sectionContent = await getPageContent('homepage-portfolio');
 
-  // Use content from page_content collection or fallback
-  const heading = sectionContent?.content?.heading || 'Naše projekty';
-  const subheading = sectionContent?.content?.subheading || 'Ukázky naší práce a realizovaných projektů';
-  const buttonText = sectionContent?.content?.buttonText || 'Zobrazit všechny projekty';
+  // Use content from page_content collection or fallback to translations
+  const heading = sectionContent?.content?.heading || t("fallbackHeading");
+  const subheading = sectionContent?.content?.subheading || t("fallbackSubheading");
+  const buttonText = sectionContent?.content?.buttonText || t("fallbackButtonText");
 
   return (
     <section className="py-16 md:py-24 px-4 bg-muted/50">
@@ -88,7 +91,7 @@ export async function Portfolio() {
                     <div className="text-center space-y-2 p-4">
                       <div className="text-4xl font-bold text-primary/30">📸</div>
                       <p className="text-sm text-muted-foreground">
-                        Screenshot projektu
+                        {t("projectScreenshot")}
                       </p>
                     </div>
                   </div>
@@ -97,7 +100,7 @@ export async function Portfolio() {
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button variant="secondary" size="sm">
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      Zobrazit web
+                      {t("viewWebsite")}
                     </Button>
                   </div>
                 )}

@@ -1,29 +1,34 @@
-import { Shield, Award, Clock, Ban } from "lucide-react";
+"use client";
 
-const badges = [
-  {
-    icon: Shield,
-    title: "SSL & Bezpečnost",
-    description: "Vždy zabezpečený HTTPS"
-  },
-  {
-    icon: Award,
-    title: "Garance kvality",
-    description: "PageSpeed 90+ nebo vrácení peněz"
-  },
-  {
-    icon: Clock,
-    title: "Dodání do 7 dní",
-    description: "Nebo sleva 20%"
-  },
-  {
-    icon: Ban,
-    title: "Bez skrytých poplatků",
-    description: "Transparentní ceník"
-  }
-];
+import { Shield, Award, Clock, Ban } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function TrustBadges() {
+  const t = useTranslations("trustBadges");
+
+  const badges = [
+    {
+      icon: Shield,
+      title: t("badge1Title"),
+      description: t("badge1Desc")
+    },
+    {
+      icon: Award,
+      title: t("badge2Title"),
+      description: t("badge2Desc")
+    },
+    {
+      icon: Clock,
+      title: t("badge3Title"),
+      description: t("badge3Desc")
+    },
+    {
+      icon: Ban,
+      title: t("badge4Title"),
+      description: t("badge4Desc")
+    }
+  ];
+
   return (
     <section className="py-12 px-4 bg-muted/20 border-y border-border/50">
       <div className="container mx-auto max-w-7xl">

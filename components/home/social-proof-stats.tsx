@@ -1,42 +1,47 @@
-import { TrendingUp, Users, Zap, Award } from "lucide-react";
+"use client";
 
-const stats = [
-  {
-    icon: TrendingUp,
-    value: "15+",
-    label: "Dokončených projektů",
-    description: "Od živnostníků po firmy"
-  },
-  {
-    icon: Users,
-    value: "98%",
-    label: "Spokojených klientů",
-    description: "Vrací se k nám pro další projekty"
-  },
-  {
-    icon: Zap,
-    value: "< 2s",
-    label: "Průměrná rychlost",
-    description: "PageSpeed 90+ garantováno"
-  },
-  {
-    icon: Award,
-    value: "7 dní",
-    label: "Průměrná doba dodání",
-    description: "Od poptávky po spuštění"
-  }
-];
+import { TrendingUp, Users, Zap, Award } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function SocialProofStats() {
+  const t = useTranslations("socialProof");
+
+  const stats = [
+    {
+      icon: TrendingUp,
+      value: t("stat1Value"),
+      label: t("stat1Label"),
+      description: t("stat1Desc")
+    },
+    {
+      icon: Users,
+      value: t("stat2Value"),
+      label: t("stat2Label"),
+      description: t("stat2Desc")
+    },
+    {
+      icon: Zap,
+      value: t("stat3Value"),
+      label: t("stat3Label"),
+      description: t("stat3Desc")
+    },
+    {
+      icon: Award,
+      value: t("stat4Value"),
+      label: t("stat4Label"),
+      description: t("stat4Desc")
+    }
+  ];
+
   return (
     <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Důvěřují nám <span className="text-primary">desítky klientů</span>
+            {t("title")} <span className="text-primary">{t("titleHighlight")}</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Naše čísla mluví za nás - rychlost, kvalita a spokojenost
+            {t("subtitle")}
           </p>
         </div>
 
