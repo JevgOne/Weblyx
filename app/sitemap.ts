@@ -8,7 +8,7 @@ import { getPublishedBlogPosts } from '@/lib/turso/blog';
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.weblyx.cz';
+  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
   // Static routes with priorities
   const staticRoutes: MetadataRoute.Sitemap = [

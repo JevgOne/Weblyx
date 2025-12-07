@@ -6,7 +6,7 @@ import { MetadataRoute } from 'next';
  */
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://www.weblyx.cz';
+  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
   return {
     rules: [

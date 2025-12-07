@@ -15,6 +15,9 @@ import { getSEOMetadata } from '@/lib/seo-metadata';
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
 });
 
 // Generate dynamic metadata based on domain

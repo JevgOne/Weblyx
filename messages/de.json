@@ -3,135 +3,152 @@
     "home": "Startseite",
     "about": "Über uns",
     "services": "Leistungen",
-    "portfolio": "Portfolio",
+    "portfolio": "Referenzen",
     "blog": "Blog",
     "contact": "Kontakt",
     "faq": "FAQ",
     "pricing": "Preise",
-    "cta": "Unverbindliche Anfrage"
+    "cta": "Jetzt starten"
   },
   "hero": {
-    "badge": "🎉 SONDERANGEBOT: Website für 199€ statt 249€",
-    "title": "Webseitenerstellung ab 249€ | Website in einer Woche",
-    "subtitle": "Schnelle Erstellung von <strong>Webseiten und Online-Shops</strong> mit <strong>Next.js statt WordPress</strong>. Website in einer Woche (<strong>5–7 Tage</strong>), schnellste Ladezeit <strong>unter 2 Sekunden</strong>, <strong>SEO-Optimierung inklusive</strong>. Günstige Websites für Selbstständige und Unternehmen.",
-    "cta": "Kostenlose unverbindliche Beratung",
-    "ctaSecondary": "Projekte ansehen",
-    "stat1Value": "⚡ 5–7 Tage",
-    "stat1Label": "Schnelle Website-Erstellung",
-    "stat2Value": "🚀 Unter 2s",
-    "stat2Label": "Blitzschnelles Laden",
-    "stat3Value": "249€",
-    "stat3Label": "Startpreis",
-    "heroImageAlt": "Seitelyx - Moderne Webseiten",
+    "badge": "🚀 AKTION: Website ab 349 € statt 449 €",
+    "title": "Website erstellen lassen | Festpreis ab 349€",
+    "subtitle": "Schneller. Moderner. Günstiger. Professionelle <strong>Website erstellen lassen</strong> von Ihrer <strong>Webdesign Agentur</strong>. Mit <strong>Next.js statt WordPress</strong> – 3× schneller, <strong>DSGVO-konform</strong>, Lieferung in <strong>3-7 Tagen</strong>. Festpreis ohne monatliche Kosten.",
+    "cta": "Jetzt kostenloses Erstgespräch",
+    "ctaSecondary": "Referenzen ansehen",
+    "stat1Value": "⚡ 3–7 Tage",
+    "stat1Label": "Lieferzeit garantiert",
+    "stat2Value": "🚀 3× schneller",
+    "stat2Label": "als WordPress",
+    "stat3Value": "Ab 349 €",
+    "stat3Label": "Festpreis ohne Abo",
+    "heroImageAlt": "Seitelyx - Website erstellen lassen von Webdesign Agentur",
     "heroPlaceholder": "Hero-Bild",
-    "heroPlaceholderDesc": "Laden Sie ein Bild im <span class=\"text-primary font-medium\">Admin-Panel</span> hoch, um es hier anzuzeigen",
+    "heroPlaceholderDesc": "Laden Sie ein Bild im <span class=\"text-primary font-medium\">Admin-Panel</span> hoch",
     "heroAdminHint": "Admin → Hero-Bereich"
   },
   "services": {
-    "title": "Unsere Leistungen",
-    "subtitle": "Komplette Lösung für Ihre Online-Präsenz",
+    "title": "Unsere Leistungen als Webdesign Agentur",
+    "subtitle": "Alles für Ihren erfolgreichen Online-Auftritt – aus einer Hand, zum Festpreis",
     "service1": {
-      "title": "Webseiten",
-      "description": "Moderne, responsive Websites nach Ihren Bedürfnissen. Von einfachen Präsentationen bis zu komplexen Unternehmenswebsites."
+      "title": "Website erstellen lassen",
+      "description": "Professionelle Website erstellen lassen von erfahrener Webdesign Agentur. Moderne, responsive Websites zum Festpreis – von Homepage für Freelancer bis zu komplexen Unternehmenswebsites. Mit Next.js statt WordPress: 3× schneller, sicherer, zukunftssicher."
     },
     "service2": {
-      "title": "SEO-Optimierung",
-      "description": "Erreichen Sie Top-Positionen in Suchmaschinen. Umfassende On-Page- und Off-Page-Optimierung für bessere Sichtbarkeit."
+      "title": "SEO-Optimierung inklusive",
+      "description": "Ihre Website wird gefunden. Technisches SEO, On-Page-Optimierung und Keyword-Integration sind bei unserer Webdesign Agentur Standard – nicht optional. Lighthouse Score 95+ garantiert für maximale Sichtbarkeit."
     },
     "service3": {
-      "title": "Online-Shops",
-      "description": "Komplettlösung für Online-Verkauf. Integration mit Zahlungsgateways, Lagerverwaltung und Bestellabwicklung."
+      "title": "Online-Shops (E-Commerce)",
+      "description": "E-Commerce Website erstellen lassen ohne monatliche Gebühren für Shopify oder WooCommerce. Moderne Online-Shop-Lösung mit Zahlungsintegration, Produktverwaltung und Bestellabwicklung zum Festpreis."
     }
   },
   "process": {
-    "title": "Wie es funktioniert",
-    "subtitle": "Einfacher Prozess vom Erstkontakt bis zum Launch",
+    "title": "So läuft's ab",
+    "subtitle": "Von der ersten Idee bis zum Go-Live – in nur 3-7 Tagen",
     "step1": {
-      "title": "Beratung",
-      "description": "Wir besprechen Ihre Anforderungen und Ziele"
+      "title": "Kostenloses Erstgespräch",
+      "description": "Wir besprechen Ihre Anforderungen, Ziele und Wünsche – völlig unverbindlich"
     },
     "step2": {
-      "title": "Entwurf",
-      "description": "Wir erstellen ein Design genau nach Ihren Vorstellungen"
+      "title": "Briefing & Design-Abstimmung",
+      "description": "Sie erhalten einen konkreten Vorschlag mit Wireframes und Design-Ideen"
     },
     "step3": {
-      "title": "Entwicklung",
-      "description": "Wir programmieren Ihre Website mit Fokus auf Qualität"
+      "title": "Entwicklung (3-7 Tage)",
+      "description": "Wir entwickeln Ihre Website mit Next.js – schnell, modern und DSGVO-konform"
     },
     "step4": {
-      "title": "Testing",
-      "description": "Wir testen alle Funktionen gründlich"
+      "title": "Testing & Qualitätskontrolle",
+      "description": "Umfassende Tests auf Desktop, Tablet und Mobile – alles muss perfekt laufen"
     },
     "step5": {
-      "title": "Launch",
-      "description": "Wir bringen Ihre Website live und sorgen für einen reibungslosen Start"
+      "title": "Go-Live",
+      "description": "Ihre Website geht online – mit SSL, Analytics und allen Zugängen für Sie"
     },
     "step6": {
-      "title": "Support",
-      "description": "Wir sind auch nach dem Launch für Sie da"
+      "title": "Support ohne Abo-Zwang",
+      "description": "Wir sind auch nach dem Launch für Sie da – ohne monatliche Gebühren"
     }
   },
   "pricing": {
-    "title": "Preise",
-    "subtitle": "Transparente Preise ohne versteckte Gebühren",
+    "title": "Transparente Preise",
+    "subtitle": "Festpreise ohne versteckte Kosten. Keine monatlichen Gebühren.",
     "monthly": "Monatlich",
-    "oneTime": "Einmalig",
-    "cta": "Paket wählen",
-    "popular": "Beliebteste"
+    "oneTime": "Einmalzahlung",
+    "cta": "Paket auswählen",
+    "popular": "Am beliebtesten"
   },
   "faq": {
     "title": "Häufig gestellte Fragen",
-    "subtitle": "Alles, was Sie wissen müssen"
+    "subtitle": "Alles, was Sie über Ihre neue Website wissen müssen",
+    "q1": "Was kostet es, eine Website erstellen zu lassen?",
+    "a1": "Bei unserer Webdesign Agentur starten die Preise ab 349€ Festpreis für eine professionelle Homepage. Im Gegensatz zu WordPress-Agenturen mit monatlichen Kosten zahlen Sie nur einmal. Alle Leistungen (Design, Entwicklung, SEO, DSGVO) sind im Preis enthalten – keine versteckten Kosten.",
+    "q2": "Warum Next.js statt WordPress?",
+    "a2": "Next.js ist 3× schneller als WordPress, hat keine Sicherheitslücken durch Plugins, bessere SEO-Performance und ist zukunftssicher. WordPress ist veraltet, langsam und anfällig für Hackerangriffe. Wenn Sie eine moderne Website erstellen lassen möchten, ist Next.js die beste Wahl.",
+    "q3": "Wie läuft der Prozess ab, wenn ich eine Website erstellen lassen möchte?",
+    "a3": "1) Kostenloses Erstgespräch mit unserer Webdesign Agentur, 2) Briefing & Design-Abstimmung, 3) Entwicklung in 3-7 Tagen, 4) Testing & Feedback, 5) Go-Live. Sie erhalten alle Zugänge und können kleinere Änderungen selbst vornehmen.",
+    "q4": "Was ist im Festpreis enthalten?",
+    "a4": "Design, Entwicklung, SEO-Optimierung, SSL-Zertifikat, DSGVO-Compliance (Impressum, Datenschutz), Mobile-Optimierung, Analytics-Integration und persönlicher Support. Keine versteckten Kosten – alles zum Festpreis.",
+    "q5": "Brauche ich technische Kenntnisse?",
+    "a5": "Nein. Unsere Webdesign Agentur übernimmt alles – von der Domain-Einrichtung bis zum Hosting. Sie erhalten eine fertige Website mit Anleitung für einfache Änderungen.",
+    "q6": "Ist die Website DSGVO-konform?",
+    "a6": "Ja, garantiert. Cookie-Banner mit Opt-in, Datenschutzerklärung, Impressum, SSL-Verschlüsselung und DSGVO-konforme Analytics sind Standard bei unserer Webdesign Agentur. Rechtssicherheit inklusive.",
+    "q7": "Wie lange dauert es, bis meine Website online ist?",
+    "a7": "3-7 Tage garantiert. Anders als bei WordPress-Agenturen, die Wochen oder Monate brauchen, erstellen wir Ihre professionelle Website in Rekordzeit – ohne Qualitätsverlust.",
+    "q8": "Welche Zahlungsmöglichkeiten gibt es?",
+    "a8": "Banküberweisung, PayPal oder Ratenzahlung (bei größeren Projekten). 50% Anzahlung, 50% nach Go-Live – fair und transparent. Keine monatlichen Gebühren."
   },
   "contact": {
-    "title": "Kontaktieren Sie uns",
-    "subtitle": "Wir freuen uns auf Ihre Nachricht",
-    "name": "Name",
-    "email": "E-Mail",
-    "phone": "Telefon",
-    "message": "Nachricht",
-    "send": "Senden",
+    "title": "Kostenloses Erstgespräch vereinbaren",
+    "subtitle": "Wir freuen uns auf Ihr Projekt",
+    "name": "Ihr Name",
+    "email": "Ihre E-Mail-Adresse",
+    "phone": "Telefonnummer (optional)",
+    "message": "Ihre Nachricht",
+    "send": "Anfrage absenden",
     "sending": "Wird gesendet...",
-    "success": "Nachricht wurde gesendet!",
-    "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
+    "success": "Vielen Dank! Wir melden uns innerhalb von 24 Stunden.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder schreiben Sie uns direkt an kontakt@seitelyx.de"
   },
   "footer": {
-    "about": "Über uns",
-    "aboutText": "Seitelyx ist eine moderne Webagentur, die sich auf die Erstellung von Websites spezialisiert hat, die Ergebnisse liefern.",
-    "quickLinks": "Schnelllinks",
+    "about": "Über Seitelyx",
+    "aboutText": "Seitelyx ist Ihre moderne Webagentur für professionelle Websites ohne WordPress. Wir entwickeln mit Next.js – für maximale Performance, Sicherheit und Zukunftssicherheit.",
+    "quickLinks": "Schnellzugriff",
     "legal": "Rechtliches",
     "privacy": "Datenschutz",
     "terms": "AGB",
-    "cookies": "Cookies",
+    "cookies": "Cookie-Einstellungen",
+    "impressum": "Impressum",
     "copyright": "© 2024 Seitelyx. Alle Rechte vorbehalten.",
     "company": "Unternehmen",
     "servicesTitle": "Leistungen",
     "contactTitle": "Kontakt",
     "email": "E-Mail",
     "phone": "Telefon",
-    "address": "Adresse",
+    "address": "Anschrift",
     "location": "Prag, Tschechische Republik",
-    "hours": "Öffnungszeiten",
-    "weekdays": "Mo - Fr: 9:00 - 18:00",
+    "hours": "Erreichbarkeit",
+    "weekdays": "Mo - Fr: 9:00 - 18:00 Uhr",
     "weekend": "Sa - So: Geschlossen",
-    "tagline": "Mit ❤️ und ☕️ in Tschechien erstellt",
-    "webDevelopment": "Webentwicklung",
-    "ecommerce": "E-Commerce",
+    "tagline": "Entwickelt mit ❤️ und ☕️ in Tschechien",
+    "webDevelopment": "Website erstellen lassen",
+    "ecommerce": "Online-Shop Entwicklung",
     "seo": "SEO-Optimierung",
-    "redesign": "Redesign",
-    "maintenance": "Wartung"
+    "redesign": "Website-Redesign",
+    "maintenance": "Website-Wartung"
   },
   "cta": {
-    "title": "Bereit anzufangen?",
-    "subtitle": "Lassen Sie uns gemeinsam eine Website erstellen, die Ihr Geschäft voranbringt",
-    "primaryButton": "Unverbindliche Anfrage",
-    "secondaryButton": "Portfolio ansehen",
-    "benefit1Title": "Schnelle Entwicklung",
-    "benefit1Desc": "Website in 5-7 Tagen",
+    "title": "Bereit für Ihre neue Website?",
+    "subtitle": "Lassen Sie uns gemeinsam eine Website erstellen, die Ihr Geschäft wirklich voranbringt",
+    "primaryButton": "Jetzt kostenloses Erstgespräch",
+    "secondaryButton": "Referenzen ansehen",
+    "benefit1Title": "Schnelle Lieferung",
+    "benefit1Desc": "Website in 3-7 Tagen",
     "benefit2Title": "Moderne Technologie",
-    "benefit2Desc": "Next.js und React",
+    "benefit2Desc": "Next.js statt WordPress",
     "benefit3Title": "SEO inklusive",
-    "benefit3Desc": "Optimierung für Google"
+    "benefit3Desc": "Lighthouse Score 95+"
   },
   "common": {
     "learnMore": "Mehr erfahren",

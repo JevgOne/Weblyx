@@ -5,8 +5,10 @@
 
 import { Service, FAQItem, PricingTier } from '@/types/cms';
 
-// Base URL for the website
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.weblyx.cz';
+export type Locale = 'cs' | 'de';
+
+// Base URL for the website - dynamic based on domain
+const BASE_URL = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
 // ============================================================================
 // ORGANIZATION SCHEMA
@@ -23,20 +25,56 @@ export interface OrganizationData {
   addressCountry?: string;
   streetAddress?: string;
   foundingDate?: string;
+  locale?: Locale;
 }
 
 export function generateOrganizationSchema(data?: OrganizationData) {
+  const locale = data?.locale || (process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'de' : 'cs');
+
+  const defaults = {
+    cs: {
+      name: 'Weblyx',
+      url: 'https://www.weblyx.cz',
+      logo: 'https://www.weblyx.cz/logo.png',
+      description: 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek a e-shopů s využitím AI technologií',
+      email: 'info@weblyx.cz',
+      phone: '+420702110166',
+      addressLocality: 'Praha',
+      addressCountry: 'CZ',
+      streetAddress: 'Praha',
+      foundingDate: '2024-02',
+      areaServedName: 'Czech Republic',
+      availableLanguage: ['cs', 'Czech'],
+    },
+    de: {
+      name: 'Seitelyx',
+      url: 'https://seitelyx.de',
+      logo: 'https://seitelyx.de/logo.png',
+      description: 'Moderne Webagentur für professionelle Websites ohne WordPress. Next.js Entwicklung für maximale Performance und Sicherheit.',
+      email: 'kontakt@seitelyx.de',
+      phone: '+420702110166',
+      addressLocality: 'Prag',
+      addressCountry: 'DE',
+      streetAddress: 'Prag',
+      foundingDate: '2024-02',
+      areaServedName: 'Germany, Austria, Switzerland',
+      availableLanguage: ['de', 'German'],
+    },
+  };
+
+  const config = defaults[locale];
+
   const {
-    name = 'Weblyx',
-    url = BASE_URL,
-    logo = `${BASE_URL}/logo.png`,
-    description = 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek a e-shopů s využitím AI technologií',
-    email = 'info@weblyx.cz',
-    phone = '+420702110166',
-    addressLocality = 'Praha',
-    addressCountry = 'CZ',
-    streetAddress = 'Praha',
-    foundingDate = '2024-02',
+    name = config.name,
+    url = config.url,
+    logo = config.logo,
+    description = config.description,
+    email = config.email,
+    phone = config.phone,
+    addressLocality = config.addressLocality,
+    addressCountry = config.addressCountry,
+    streetAddress = config.streetAddress,
+    foundingDate = config.foundingDate,
   } = data || {};
 
   return {
@@ -60,18 +98,18 @@ export function generateOrganizationSchema(data?: OrganizationData) {
       email,
       telephone: phone,
       contactType: 'customer service',
-      availableLanguage: ['cs', 'Czech'],
+      availableLanguage: config.availableLanguage,
     },
     foundingDate,
     areaServed: {
       '@type': 'Country',
-      name: 'Czech Republic',
+      name: config.areaServedName,
     },
-    sameAs: [
+    sameAs: locale === 'cs' ? [
       'https://www.instagram.com/weblyx.cz/',
       'https://www.facebook.com/profile.php?id=61583944536147',
       'https://share.google/cZIQkYTq2bVmkRAAP',
-    ],
+    ] : [],
   };
 }
 
@@ -105,17 +143,50 @@ export interface LocalBusinessData extends OrganizationData {
 }
 
 export function generateLocalBusinessSchema(data?: LocalBusinessData) {
+  const locale = data?.locale || (process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'de' : 'cs');
+
+  const defaults = {
+    cs: {
+      name: 'Weblyx',
+      url: 'https://www.weblyx.cz',
+      description: 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
+      email: 'info@weblyx.cz',
+      phone: '+420702110166',
+      addressLocality: 'Praha',
+      addressCountry: 'CZ',
+      streetAddress: 'Praha',
+      priceRange: '10000 Kč - 50000 Kč',
+      openingHours: ['Mo-Fr 09:00-18:00'],
+      areaServedName: 'Czech Republic',
+    },
+    de: {
+      name: 'Seitelyx',
+      url: 'https://seitelyx.de',
+      description: 'Moderne Webagentur für professionelle Websites, E-Commerce und SEO-Optimierung',
+      email: 'kontakt@seitelyx.de',
+      phone: '+420702110166',
+      addressLocality: 'Prag',
+      addressCountry: 'DE',
+      streetAddress: 'Prag',
+      priceRange: '349€ - 1299€',
+      openingHours: ['Mo-Fr 09:00-18:00'],
+      areaServedName: 'Germany, Austria, Switzerland',
+    },
+  };
+
+  const config = defaults[locale];
+
   const {
-    name = 'Weblyx',
-    url = BASE_URL,
-    description = 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
-    email = 'info@weblyx.cz',
-    phone = '+420702110166',
-    addressLocality = 'Praha',
-    addressCountry = 'CZ',
-    streetAddress = 'Praha',
-    priceRange = '10000 Kč - 50000 Kč',
-    openingHours = ['Mo-Fr 09:00-18:00'],
+    name = config.name,
+    url = config.url,
+    description = config.description,
+    email = config.email,
+    phone = config.phone,
+    addressLocality = config.addressLocality,
+    addressCountry = config.addressCountry,
+    streetAddress = config.streetAddress,
+    priceRange = config.priceRange,
+    openingHours = config.openingHours,
   } = data || {};
 
   return {
@@ -165,7 +236,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
     }),
     areaServed: {
       '@type': 'Country',
-      name: 'Czech Republic',
+      name: config.areaServedName,
     },
   };
 }
