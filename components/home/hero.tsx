@@ -22,15 +22,15 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
     const sections = await getHomepageSections();
     const heroSection: HeroSection | null = sections?.hero || null;
 
-    // Use translations as fallback, DB data as override
+    // ALWAYS use translations (DB doesn't have locale support)
     const data: HeroData = {
       badge: t('badge'),
-      title: heroSection?.headline || t('title'),
+      title: t('title'),
       titleHighlight: '',
-      subtitle: heroSection?.subheadline || t('subtitle'),
+      subtitle: t('subtitle'),
       ctaPrimary: {
-        text: heroSection?.ctaText || t('cta'),
-        href: heroSection?.ctaLink || '/poptavka'
+        text: t('cta'),
+        href: '/poptavka'
       },
       ctaSecondary: { text: t('ctaSecondary'), href: '/portfolio' },
       stats: [
