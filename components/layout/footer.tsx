@@ -9,6 +9,14 @@ export function Footer() {
   const t = useTranslations('footer');
   const tNav = useTranslations('nav');
 
+  // Detect if German site
+  const isGermanSite = typeof window !== 'undefined'
+    ? window.location.hostname.includes('seitelyx.de')
+    : false;
+
+  const brandName = isGermanSite ? 'Seitelyx' : 'Weblyx';
+  const contactEmail = isGermanSite ? 'kontakt@seitelyx.de' : 'info@weblyx.cz';
+
   const footerLinks = {
     company: [
       { name: tNav('about'), href: "/o-nas" },
@@ -25,10 +33,15 @@ export function Footer() {
       { name: t('redesign'), href: "/sluzby#redesign" },
       { name: t('maintenance'), href: "/sluzby#maintenance" },
     ],
-    legal: [
-      { name: t('privacy'), href: "/ochrana-udaju" },
-      { name: t('terms'), href: "/obchodni-podminky" },
-    ],
+    legal: isGermanSite
+      ? [
+          { name: t('impressum'), href: "/impressum" },
+          { name: t('privacy'), href: "/datenschutz" },
+        ]
+      : [
+          { name: t('privacy'), href: "/ochrana-udaju" },
+          { name: t('terms'), href: "/obchodni-podminky" },
+        ],
   };
 
 
@@ -41,9 +54,11 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-md">
-                <span className="text-primary-foreground font-bold text-xl">W</span>
+                <span className="text-primary-foreground font-bold text-xl">
+                  {brandName.charAt(0)}
+                </span>
               </div>
-              <span className="font-bold text-xl">Weblyx</span>
+              <span className="font-bold text-xl">{brandName}</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               {t('aboutText')}
@@ -130,10 +145,10 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="mailto:info@weblyx.cz"
+                  href={`mailto:${contactEmail}`}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  info@weblyx.cz
+                  {contactEmail}
                 </a>
               </li>
               <li>

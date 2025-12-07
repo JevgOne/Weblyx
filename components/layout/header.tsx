@@ -11,6 +11,12 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = useTranslations('nav');
 
+  // Detect if German site
+  const isGermanSite = typeof window !== 'undefined'
+    ? window.location.hostname.includes('seitelyx.de')
+    : false;
+  const brandName = isGermanSite ? 'Seitelyx' : 'Weblyx';
+
   const navigation = [
     { name: t('services'), href: "/sluzby" },
     { name: t('portfolio'), href: "/portfolio" },
@@ -26,7 +32,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img src="/logo.svg" alt="Weblyx" className="h-10" />
+            <img src="/logo.svg" alt={brandName} className="h-10" />
           </Link>
 
           {/* Desktop Navigation */}

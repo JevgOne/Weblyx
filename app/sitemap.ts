@@ -9,9 +9,10 @@ import { getPublishedBlogPosts } from '@/lib/turso/blog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+  const isGermanSite = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de';
 
-  // Static routes with priorities
-  const staticRoutes: MetadataRoute.Sitemap = [
+  // Static routes with priorities (common for both sites)
+  const commonRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -52,33 +53,65 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 0.9, // High priority - blog is important for SEO
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/faq`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.8, // High priority - FAQ is great for SEO
-    },
-    {
-      url: `${baseUrl}/napiste-recenzi`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/ochrana-udaju`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/obchodni-podminky`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
+      priority: 0.8,
     },
   ];
+
+  // German-specific routes
+  const germanRoutes: MetadataRoute.Sitemap = isGermanSite
+    ? [
+        {
+          url: `${baseUrl}/preise`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.9, // High priority for SEO
+        },
+        {
+          url: `${baseUrl}/impressum`,
+          lastModified: new Date(),
+          changeFrequency: 'yearly',
+          priority: 0.3,
+        },
+        {
+          url: `${baseUrl}/datenschutz`,
+          lastModified: new Date(),
+          changeFrequency: 'yearly',
+          priority: 0.3,
+        },
+      ]
+    : [];
+
+  // Czech-specific routes
+  const czechRoutes: MetadataRoute.Sitemap = !isGermanSite
+    ? [
+        {
+          url: `${baseUrl}/napiste-recenzi`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/ochrana-udaju`,
+          lastModified: new Date(),
+          changeFrequency: 'yearly',
+          priority: 0.3,
+        },
+        {
+          url: `${baseUrl}/obchodni-podminky`,
+          lastModified: new Date(),
+          changeFrequency: 'yearly',
+          priority: 0.3,
+        },
+      ]
+    : [];
+
+  const staticRoutes = [...commonRoutes, ...germanRoutes, ...czechRoutes];
 
   // Fetch dynamic portfolio items from Turso
   let portfolioRoutes: MetadataRoute.Sitemap = [];
