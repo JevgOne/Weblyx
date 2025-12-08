@@ -45,6 +45,7 @@ export function Footer() {
       : [
           { name: t('privacy'), href: tRoutes('privacy') },
           { name: t('terms'), href: tRoutes('terms') },
+          { name: 'PageSpeed Garance', href: '/pagespeed-garance' },
         ],
   };
 

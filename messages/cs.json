@@ -22,17 +22,17 @@
     "terms": "/obchodni-podminky"
   },
   "hero": {
-    "badge": "🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč",
+    "badge": "🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč (jednorázově)",
     "title": "Tvorba webových stránek od 10 000 Kč | Web za týden",
-    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Skutečné weby pro živnostníky a firmy.",
+    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Základní web za <strong>5-7 pracovních dní</strong>, e-shop za <strong>4-6 týdnů</strong>. Načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Skutečné weby pro živnostníky a firmy.",
     "cta": "Nezávazná konzultace zdarma",
     "ctaSecondary": "Zobrazit projekty",
     "stat1Value": "⚡ 5–7 dní",
-    "stat1Label": "Reálná doba dodání",
+    "stat1Label": "Základní web",
     "stat2Value": "🚀 Pod 2s",
     "stat2Label": "Načítání webu",
     "stat3Value": "10 000 Kč",
-    "stat3Label": "Základní web",
+    "stat3Label": "Jednorázově",
     "heroImageAlt": "Weblyx - Moderní webové stránky",
     "heroPlaceholder": "Hero Obrázek",
     "heroPlaceholderDesc": "Nahrajte obrázek v <span class=\"text-primary font-medium\">admin panelu</span> pro zobrazení zde",
@@ -43,7 +43,7 @@
     "subtitle": "Co konkrétně děláme a za kolik",
     "service1": {
       "title": "Webové stránky (od 10 000 Kč)",
-      "description": "Responzivní web 5-10 stránek, kontaktní formulář, základní SEO. Vhodné pro živnostníky, malé firmy, prezentační weby."
+      "description": "Responzivní web 5-10 stránek, kontaktní formulář, základní SEO. Dodací doba: 5-10 pracovních dní. Vhodné pro živnostníky, malé firmy, prezentační weby."
     },
     "service2": {
       "title": "SEO optimalizace (od 5 000 Kč/měs)",
@@ -51,7 +51,7 @@
     },
     "service3": {
       "title": "E-shopy (od 85 000 Kč)",
-      "description": "Katalog produktů, košík, platební brána (GoPay/Stripe), propojení s dopravci. Dodací doba 3-6 týdnů podle rozsahu."
+      "description": "Katalog produktů, košík, platební brána (GoPay/Stripe), propojení s dopravci. Dodací doba: 4-6 týdnů podle rozsahu."
     }
   },
   "process": {
@@ -166,7 +166,7 @@
     "primaryButton": "Nezávazná poptávka",
     "secondaryButton": "Zobrazit portfolio",
     "benefit1Title": "Rychlý vývoj",
-    "benefit1Desc": "Web za 5-7 dní",
+    "benefit1Desc": "Základní web za 5-7 dní",
     "benefit2Title": "Moderní technologie",
     "benefit2Desc": "Next.js a React",
     "benefit3Title": "SEO zdarma",
@@ -276,8 +276,8 @@
     "badge1Desc": "Vždy zabezpečený HTTPS",
     "badge2Title": "Garance kvality",
     "badge2Desc": "PageSpeed 90+ nebo vrácení peněz",
-    "badge3Title": "Dodání do 7 dní",
-    "badge3Desc": "Nebo sleva 20%",
+    "badge3Title": "Dodání do 10 dní",
+    "badge3Desc": "Pro základní web nebo sleva 20%",
     "badge4Title": "Bez skrytých poplatků",
     "badge4Desc": "Transparentní ceník"
   },

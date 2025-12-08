@@ -73,7 +73,8 @@ export default async function HomePage() {
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;
 
-  // Enhanced Service schema with AggregateRating for better SEO
+  // Service schema - AggregateRating removed per Google Guidelines
+  // (requires visible reviews widget on page)
   const serviceSchema = generateServiceSchema({
     serviceName: "Profesionální tvorba webových stránek",
     description: "Rychlý vývoj moderních webových stránek pomocí Next.js s garancí rychlosti načítání pod 2 sekundy",
@@ -83,10 +84,8 @@ export default async function HomePage() {
       priceCurrency: "CZK",
       priceRange: "10000-85000",
     },
-    aggregateRating: {
-      ratingValue: 4.9,
-      reviewCount: 150,
-    },
+    // aggregateRating temporarily removed until we have visible reviews widget
+    // Real stats: 7 reviews, 5.0 avg - will add back when reviews are displayed
   });
 
   return (

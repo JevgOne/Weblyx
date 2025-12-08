@@ -2,6 +2,7 @@
 
 import { Shield, Award, Clock, Ban } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export function TrustBadges() {
   const t = useTranslations("trustBadges");
@@ -15,7 +16,8 @@ export function TrustBadges() {
     {
       icon: Award,
       title: t("badge2Title"),
-      description: t("badge2Desc")
+      description: t("badge2Desc"),
+      href: "/pagespeed-garance"
     },
     {
       icon: Clock,
@@ -35,11 +37,8 @@ export function TrustBadges() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {badges.map((badge, index) => {
             const IconComponent = badge.icon;
-            return (
-              <div
-                key={index}
-                className="flex flex-col items-center text-center space-y-3 p-4"
-              >
+            const content = (
+              <>
                 {/* Icon with border */}
                 <div className="relative">
                   <div className="p-3 rounded-full bg-primary/10 border-2 border-primary/30">
@@ -62,6 +61,30 @@ export function TrustBadges() {
                     {badge.description}
                   </div>
                 </div>
+              </>
+            );
+
+            if (badge.href) {
+              return (
+                <Link
+                  key={index}
+                  href={badge.href}
+                  className="flex flex-col items-center text-center space-y-3 p-4 transition-all hover:bg-primary/5 rounded-lg group"
+                >
+                  {content}
+                  <div className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    Zobrazit podmínky →
+                  </div>
+                </Link>
+              );
+            }
+
+            return (
+              <div
+                key={index}
+                className="flex flex-col items-center text-center space-y-3 p-4"
+              >
+                {content}
               </div>
             );
           })}
