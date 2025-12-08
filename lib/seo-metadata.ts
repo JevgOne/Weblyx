@@ -20,9 +20,9 @@ interface SEOContent {
 
 const seoContent: Record<Locale, SEOContent> = {
   cs: {
-    title: 'Tvorba webových stránek od 9 990 Kč | Web za týden | Weblyx',
+    title: 'Tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč) | Web za týden | Weblyx',
     titleTemplate: '%s | Weblyx',
-    description: 'Rychlá tvorba webů od 9 990 Kč. Web za týden, načítání pod 2s, SEO zdarma. Next.js místo WordPressu. Nezávazná konzultace zdarma.',
+    description: 'Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 pracovních dní, načítání pod 2s, SEO zdarma. Next.js místo WordPressu. Nezávazná konzultace zdarma.',
     keywords: [
       'tvorba webových stránek',
       'tvorba webu',
@@ -32,7 +32,7 @@ const seoContent: Record<Locale, SEOContent> = {
       'rychlá tvorba webu',
       'web za týden',
       'web do týdne',
-      'web od 9 990 Kč',
+      'web od 10 000 Kč',
       'nejrychlejší webové stránky',
       'web pod 2 sekundy',
       'Next.js web',
@@ -43,10 +43,10 @@ const seoContent: Record<Locale, SEOContent> = {
     ],
     siteName: 'Weblyx',
     siteUrl: 'https://weblyx.cz',
-    ogTitle: 'Tvorba webových stránek od 9 990 Kč | Web za týden',
-    ogDescription: 'Rychlá tvorba webů od 9 990 Kč. Web za týden, načítání pod 2s, SEO zdarma. Next.js místo WordPressu.',
-    twitterTitle: 'Tvorba webových stránek od 9 990 Kč | Web za týden',
-    twitterDescription: 'Rychlá tvorba webů od 9 990 Kč. Web za týden, načítání pod 2s, SEO zdarma. Next.js místo WordPressu.',
+    ogTitle: 'Tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč) | Web za týden',
+    ogDescription: 'Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 dní, načítání pod 2s, SEO zdarma.',
+    twitterTitle: 'Tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč) | Web za týden',
+    twitterDescription: 'Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 dní, načítání pod 2s, SEO zdarma.',
     locale: 'cs_CZ',
     alternateLang: 'de',
     alternateUrl: 'https://seitelyx.de',

@@ -22,17 +22,17 @@
     "terms": "/obchodni-podminky"
   },
   "hero": {
-    "badge": "✨ Next.js místo WordPressu – moderní, rychlý, bezpečný",
-    "title": "Tvorba webových stránek od 9 990 Kč | Web za týden",
-    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Férové ceny pro živnostníky a firmy.",
+    "badge": "🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč",
+    "title": "Tvorba webových stránek od 10 000 Kč | Web za týden",
+    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Web do týdne (<strong>5–7 dní</strong>), nejrychlejší načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Skutečné weby pro živnostníky a firmy.",
     "cta": "Nezávazná konzultace zdarma",
     "ctaSecondary": "Zobrazit projekty",
     "stat1Value": "⚡ 5–7 dní",
-    "stat1Label": "Rychlá tvorba webu",
+    "stat1Label": "Reálná doba dodání",
     "stat2Value": "🚀 Pod 2s",
-    "stat2Label": "Bleskové načítání",
-    "stat3Value": "9 990 Kč",
-    "stat3Label": "Startovací cena",
+    "stat2Label": "Načítání webu",
+    "stat3Value": "10 000 Kč",
+    "stat3Label": "Základní web",
     "heroImageAlt": "Weblyx - Moderní webové stránky",
     "heroPlaceholder": "Hero Obrázek",
     "heroPlaceholderDesc": "Nahrajte obrázek v <span class=\"text-primary font-medium\">admin panelu</span> pro zobrazení zde",
@@ -40,46 +40,74 @@
   },
   "services": {
     "title": "Naše služby",
-    "subtitle": "Kompletní řešení pro vaši online přítomnost",
+    "subtitle": "Co konkrétně děláme a za kolik",
     "service1": {
-      "title": "Webové stránky",
-      "description": "Moderní, responzivní weby přizpůsobené vašim potřebám. Od jednoduchých prezentací po komplexní firemní weby."
+      "title": "Webové stránky (od 10 000 Kč)",
+      "description": "Responzivní web 5-10 stránek, kontaktní formulář, základní SEO. Vhodné pro živnostníky, malé firmy, prezentační weby."
     },
     "service2": {
-      "title": "SEO optimalizace",
-      "description": "Dostaňte se na přední pozice ve vyhledávačích. Komplexní on-page i off-page optimalizace pro lepší viditelnost."
+      "title": "SEO optimalizace (od 5 000 Kč/měs)",
+      "description": "Keyword research, on-page optimalizace, technické SEO. První výsledky obvykle za 2-3 měsíce. Měsíční reporty s konkrétními daty."
     },
     "service3": {
-      "title": "E-shopy",
-      "description": "Kompletní řešení pro online prodej. Propojení s platebními branami, správa skladu a expedice objednávek."
+      "title": "E-shopy (od 85 000 Kč)",
+      "description": "Katalog produktů, košík, platební brána (GoPay/Stripe), propojení s dopravci. Dodací doba 3-6 týdnů podle rozsahu."
     }
   },
   "process": {
     "title": "Jak to funguje",
-    "subtitle": "Jednoduchý proces od prvního kontaktu po spuštění",
+    "subtitle": "Realistický proces - víme že čas jsou peníze",
     "step1": {
-      "title": "Konzultace",
-      "description": "Probereme vaše požadavky a cíle"
+      "title": "1. Konzultace (den 1)",
+      "description": "Online schůzka 30-60 min. Probereme co potřebujete, ukážeme příklady, zodpovíme otázky"
     },
     "step2": {
-      "title": "Návrh",
-      "description": "Vytvoříme design přesně podle vašich představ"
+      "title": "2. Návrh (dny 1-2)",
+      "description": "Vytvoříme design na míru. Máte 2 kola revizí zdarma (další úpravy za příplatek)"
     },
     "step3": {
-      "title": "Vývoj",
-      "description": "Naprogramujeme váš web s důrazem na kvalitu"
+      "title": "3. Vývoj (dny 3-5)",
+      "description": "Naprogramujeme web podle schváleného designu. Průběžně dostanete odkaz na testovací verzi"
     },
     "step4": {
-      "title": "Testování",
-      "description": "Důkladně otestujeme všechny funkce"
+      "title": "4. Revize (den 6)",
+      "description": "Zkontrolujete funkčnost. Opravíme případné chyby a nedostatky"
     },
     "step5": {
-      "title": "Spuštění",
-      "description": "Zprovozníme váš web a zajistíme hladký start"
+      "title": "5. Spuštění (den 7)",
+      "description": "Zprovozníme web na vaší doméně. Naučíme vás jak upravovat obsah"
     },
     "step6": {
-      "title": "Podpora",
-      "description": "Budeme tu pro vás i po spuštění"
+      "title": "6. Podpora (1 měsíc zdarma)",
+      "description": "Technická podpora emailem/telefon. Opravy chyb zdarma, nové funkce za cenu dle rozsahu"
+    }
+  },
+  "whatsIncluded": {
+    "title": "Co je v základní ceně 10 000 Kč",
+    "subtitle": "Přesný rozsah základního balíčku",
+    "included": [
+      "✅ Web 5-10 stránek (o nás, služby, reference, kontakt...)",
+      "✅ Responzivní design (funguje na mobilu, tabletu, PC)",
+      "✅ Kontaktní formulář s emailovými notifikacemi",
+      "✅ Základní SEO (meta tags, sitemap, rychlost načítání)",
+      "✅ Google Analytics integrace",
+      "✅ 2 kola revizí designu zdarma",
+      "✅ 1 měsíc technické podpory",
+      "✅ Školení jak upravovat texty a obrázky"
+    ],
+    "notIncluded": [
+      "❌ Doména a hosting (doporučíme levné řešení ~500 Kč/rok)",
+      "❌ Copywriting textů (můžeme doporučit copywritera)",
+      "❌ Profesionální fotografie (stock fotky zdarma)",
+      "❌ Rezervační systém, e-shop, pokročilé funkce (individuální nabídka)"
+    ],
+    "extraCosts": {
+      "title": "Přímluva k další spolupráci",
+      "items": [
+        "🔧 Technická podpora: 2 000 Kč/měsíc (email + telefon support)",
+        "📝 Úpravy obsahu: od 500 Kč/hodina (texty, obrázky, nové stránky)",
+        "🚀 SEO kampaň: od 5 000 Kč/měsíc (keyword research + optimalizace)"
+      ]
     }
   },
   "pricing": {
@@ -171,19 +199,19 @@
   },
   "usp": {
     "title": "Kolik stojí webové stránky?",
-    "titleHighlight": "Od 9 990 Kč",
-    "subtitle": "Na rozdíl od šablonových levných webů stavíme projekty na moderních technologiích (<strong>Next.js</strong> místo <strong>WordPressu</strong>), s důrazem na rychlost pod 2 sekundy a dlouhodobou udržitelnost. Rychlá tvorba webových stránek pro živnostníky a firmy.",
+    "titleHighlight": "Od 10 000 Kč",
+    "subtitle": "Stavíme projekty na moderních technologiích (<strong>Next.js</strong>), s důrazem na rychlost a dlouhodobou udržitelnost. Každý projekt je na míru podle vašich potřeb a rozpočtu.",
     "badTitle": "Co u nás nezažijete:",
     "goodTitle": "Co děláme jinak:",
     "bad1": "Šablonové WordPress weby, které se načítají věčnost",
     "bad2": "Skryté poplatky a doplatky \"za každou drobnost\"",
     "bad3": "Dodací lhůty 4+ týdny",
     "bad4": "Zmizelý dodavatel po spuštění webu",
-    "good1": "⚡ Rychlá tvorba webu na míru – web do týdne (5–7 dní)",
-    "good2": "🚀 Nejrychlejší weby v ČR – načítání pod 2 sekundy (PageSpeed 95+)",
-    "good3": "💰 Férové ceny od 9 990 Kč – transparentní ceník bez skrytých poplatků",
-    "good4": "✅ Dlouhodobá podpora, údržba a modernizace webu",
-    "good5": "🎯 Next.js a moderní frameworky místo zastaralého WordPressu"
+    "good1": "⚡ Rychlá tvorba webu na míru – reálný termín 5–7 pracovních dní pro základní web",
+    "good2": "🚀 Optimalizované weby – cílíme na načítání pod 2 sekundy a PageSpeed 90+",
+    "good3": "💰 Transparentní ceník – AKČNÍ SLEVA: základní web za 7 990 Kč místo 10 000 Kč",
+    "good4": "✅ Dlouhodobá podpora – nejste odkázáni sami na sebe",
+    "good5": "🎯 Moderní technologie – Next.js místo zastaralého WordPressu"
   },
   "beforeAfter": {
     "title": "WordPress",
@@ -210,7 +238,7 @@
     "afterPageSpeed": "90-100/100",
     "afterMaintenance": "Minimální",
     "afterSecurity": "Maximum zabezpečení",
-    "afterPrice": "9 990 - 24 990 Kč",
+    "afterPrice": "7 990 - 14 990 Kč",
     "ctaTitle": "💡",
     "ctaHighlight": "Ušetřete až 50%",
     "ctaText": "a získejte rychlejší web",
