@@ -20,7 +20,8 @@ async function updateReviews() {
 
     current.rows.forEach((row, i) => {
       console.log(`${i + 1}. ${row.author_name} (${row.author_role || 'no role'})`);
-      console.log(`   "${row.text.toString().substring(0, 60)}..."\n`);
+      const text = row.text?.toString() || '';
+      console.log(`   "${text.substring(0, 60)}..."\n`);
     });
 
     // Keep only authentic reviews, unpublish ones from fake projects
