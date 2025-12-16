@@ -11,16 +11,33 @@ export async function POST(request: NextRequest) {
     const {
       projectType,
       projectTypeOther,
+      projectGoal,
+      projectReason,
       companyName,
       businessDescription,
+      existingWebsite,
+      companySize,
+      industry,
+      ico,
+      address,
+      yearsInBusiness,
+      socialMedia,
+      customerAcquisition,
+      usp,
+      topCompetitors,
       projectDetails,
       features,
       designPreferences,
+      marketingTech,
       budget,
       timeline,
       name,
       email,
       phone,
+      additionalRequirements,
+      howDidYouHear,
+      preferredContact,
+      preferredMeetingTime,
     } = body;
 
     // Validation
@@ -31,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!projectType || !companyName || !businessDescription) {
+    if (!projectType || !companyName || !businessDescription || !industry) {
       return NextResponse.json(
         { error: "Vyplňte prosím všechny povinné údaje." },
         { status: 400 }
@@ -55,10 +72,15 @@ export async function POST(request: NextRequest) {
       sql: `
         INSERT INTO leads (
           id, name, email, phone, company, project_type,
-          project_type_other, business_description, project_details,
-          features, design_preferences, budget_range, timeline,
+          project_type_other, project_goal, project_reason,
+          business_description, existing_website, company_size, industry,
+          ico, address, years_in_business, social_media,
+          customer_acquisition, usp, top_competitors,
+          project_details, features, design_preferences, marketing_tech,
+          budget_range, timeline, additional_requirements,
+          how_did_you_hear, preferred_contact, preferred_meeting_time,
           status, source, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
       `,
       args: [
         leadId,
@@ -68,12 +90,29 @@ export async function POST(request: NextRequest) {
         companyName,
         projectType,
         projectTypeOther || null,
+        projectGoal || null,
+        projectReason || null,
         businessDescription,
+        existingWebsite || null,
+        companySize || null,
+        industry,
+        ico || null,
+        address || null,
+        yearsInBusiness || null,
+        JSON.stringify(socialMedia || {}),
+        customerAcquisition || null,
+        usp || null,
+        JSON.stringify(topCompetitors || []),
         JSON.stringify(projectDetails || {}),
         JSON.stringify(features || []),
         JSON.stringify(designPreferences || {}),
+        JSON.stringify(marketingTech || {}),
         budget || null,
         timeline || null,
+        additionalRequirements || null,
+        howDidYouHear || null,
+        preferredContact || null,
+        preferredMeetingTime || null,
         "new",
         "questionnaire",
       ],

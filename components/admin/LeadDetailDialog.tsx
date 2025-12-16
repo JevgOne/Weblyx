@@ -259,6 +259,40 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
             </div>
           )}
 
+          {/* NEW: Extended Business Info */}
+          {(currentLead.industry || currentLead.companySize || currentLead.existingWebsite) && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Informace o firmě</h4>
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                {currentLead.industry && (
+                  <div className="text-sm">
+                    <span className="font-medium">Odvětví: </span>
+                    <span>{currentLead.industry}</span>
+                  </div>
+                )}
+                {currentLead.companySize && (
+                  <div className="text-sm">
+                    <span className="font-medium">Velikost firmy: </span>
+                    <span>{currentLead.companySize} zaměstnanců</span>
+                  </div>
+                )}
+                {currentLead.existingWebsite && (
+                  <div className="text-sm">
+                    <span className="font-medium">Existující web: </span>
+                    <a
+                      href={currentLead.existingWebsite}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      {currentLead.existingWebsite}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Project Details */}
           {currentLead.projectDetails && Object.keys(currentLead.projectDetails).length > 0 && (
             <div className="space-y-2">
@@ -297,6 +331,46 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                     <span>{String(value)}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* NEW: Marketing & Technical Requirements */}
+          {currentLead.marketingTech && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Marketing & Technické požadavky</h4>
+              <div className="bg-muted p-4 rounded-lg space-y-3">
+                {/* Tracking */}
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Tracking:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {currentLead.marketingTech.needsAnalytics && <Badge variant="secondary">Google Analytics</Badge>}
+                    {currentLead.marketingTech.needsFacebookPixel && <Badge variant="secondary">Facebook Pixel</Badge>}
+                    {currentLead.marketingTech.needsGoogleAds && <Badge variant="secondary">Google Ads</Badge>}
+                  </div>
+                </div>
+                {/* Integrations */}
+                {currentLead.marketingTech.integrations && currentLead.marketingTech.integrations.length > 0 && (
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Integrace:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {currentLead.marketingTech.integrations.map((integration: string, idx: number) => (
+                        <Badge key={idx} variant="outline">{integration}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Languages */}
+                {currentLead.marketingTech.languages && currentLead.marketingTech.languages.length > 0 && (
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Jazyky:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {currentLead.marketingTech.languages.map((lang: string, idx: number) => (
+                        <Badge key={idx} variant="secondary">{lang}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
