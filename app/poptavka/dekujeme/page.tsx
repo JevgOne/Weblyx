@@ -9,6 +9,28 @@ import confetti from "canvas-confetti";
 
 export default function ThankYouPage() {
   useEffect(() => {
+    // 🎯 CONVERSION TRACKING - Fire once on page load
+    // Facebook Pixel - Track conversion
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'Lead');
+      (window as any).fbq('track', 'SubmitApplication');
+      console.log('✅ Facebook Pixel: Conversion tracked');
+    }
+
+    // Google Analytics GA4 - Track conversion
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'event_category': 'Lead',
+        'event_label': 'Quote Form Submitted',
+        'value': 1
+      });
+      (window as any).gtag('event', 'generate_lead', {
+        'currency': 'CZK',
+        'value': 10000 // Estimated project value
+      });
+      console.log('✅ GA4: Conversion tracked');
+    }
+
     // Konfety při načtení stránky
     const duration = 3000;
     const animationEnd = Date.now() + duration;

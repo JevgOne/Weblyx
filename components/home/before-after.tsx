@@ -3,6 +3,7 @@
 import { ArrowRight, X, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 export function BeforeAfter() {
   const t = useTranslations("beforeAfter");
@@ -121,9 +122,12 @@ export function BeforeAfter() {
           <p className="text-lg font-semibold mb-2">
             {t("ctaTitle")} <span className="text-primary">{t("ctaHighlight")}</span> {t("ctaText")}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mb-4">
             {t("ctaSubtitle")}
           </p>
+          <LeadButton href="/poptavka" size="lg">
+            Nezávazná poptávka
+          </LeadButton>
         </div>
       </div>
     </section>

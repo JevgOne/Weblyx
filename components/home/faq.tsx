@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { FAQSection, FAQItem } from "@/types/cms";
 import { getFAQSection, getAllFAQItems } from "@/lib/turso/cms";
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQItem[] }> {
   try {
@@ -63,14 +64,19 @@ export async function FAQ() {
           ))}
         </Accordion>
 
-        {/* Link to full FAQ page */}
-        <div className="text-center mt-8">
-          <a
-            href="/faq"
-            className="inline-flex items-center text-primary hover:underline font-medium"
-          >
-            Zobrazit všechny otázky →
-          </a>
+        {/* CTA and Link to full FAQ page */}
+        <div className="text-center mt-8 space-y-4">
+          <LeadButton href="/poptavka" size="lg">
+            Máte dotaz? Napište nám
+          </LeadButton>
+          <div>
+            <a
+              href="/faq"
+              className="inline-flex items-center text-primary hover:underline font-medium text-sm"
+            >
+              Zobrazit všechny otázky →
+            </a>
+          </div>
         </div>
       </div>
     </section>

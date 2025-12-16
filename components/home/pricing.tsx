@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LeadButton } from "@/components/tracking/LeadButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
@@ -404,16 +405,15 @@ export function Pricing() {
                     )}
                   </ul>
 
-                  <Button
-                    asChild
+                  <LeadButton
+                    href={plan.ctaLink}
                     size="sm"
                     className="w-full"
                     variant={plan.highlighted ? 'default' : 'outline'}
+                    showArrow={false}
                   >
-                    <Link href={plan.ctaLink}>
-                      {plan.ctaText}
-                    </Link>
-                  </Button>
+                    {plan.ctaText}
+                  </LeadButton>
                 </CardContent>
               </Card>
                 </div>

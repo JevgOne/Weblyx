@@ -2,6 +2,7 @@
 
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 export function USPSection() {
   const t = useTranslations("usp");
@@ -58,6 +59,13 @@ export function USPSection() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* CTA Button */}
+        <div className="text-center mt-12">
+          <LeadButton href="/poptavka" size="lg">
+            Chci to vyzkoušet
+          </LeadButton>
         </div>
       </div>
     </section>

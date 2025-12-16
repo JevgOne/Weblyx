@@ -10,6 +10,7 @@ import {
 import { getActiveServices } from "@/lib/turso/services";
 import { getPageContent } from "@/lib/firestore-pages";
 import { getTranslations } from 'next-intl/server';
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -99,6 +100,13 @@ export async function Services() {
               </Card>
             );
           })}
+        </div>
+
+        {/* CTA Button */}
+        <div className="text-center mt-12">
+          <LeadButton href="/poptavka" size="lg">
+            Poptat služby
+          </LeadButton>
         </div>
       </div>
     </section>
