@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
 import { SocialProofStats } from "@/components/home/social-proof-stats";
 import { TargetAudience } from "@/components/home/target-audience";
-import { USPSection } from "@/components/home/usp-section";
 import { BeforeAfter } from "@/components/home/before-after";
 import { Services } from "@/components/home/services";
 import { Process } from "@/components/home/process";
@@ -106,7 +105,6 @@ export default async function HomePage() {
         <Hero />
         <SocialProofStats />
         <TargetAudience />
-        <USPSection />
         <BeforeAfter />
         <Services />
         <Process />
