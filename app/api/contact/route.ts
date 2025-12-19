@@ -7,7 +7,7 @@ import { nanoid } from "nanoid";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, projectType, budget, message, __form_timestamp } = body;
+    const { name, email, phone, projectType, companyName, description, __form_timestamp } = body;
 
     // 🤖 BOT DETECTION: Honeypot validation
     if (!validateHoneypot(body)) {
@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validation
-    if (!name || !email || !message) {
+    if (!name || !email || !projectType || !companyName || !description) {
       return NextResponse.json(
-        { error: "Jméno, email a zpráva jsou povinné." },
+        { error: "Jméno, email, typ projektu, název firmy a popis jsou povinné." },
         { status: 400 }
       );
     }
@@ -52,23 +52,24 @@ export async function POST(request: NextRequest) {
     await turso.execute({
       sql: `
         INSERT INTO leads (
-          id, name, email, phone, project_type, budget_range,
-          status, source, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
+          id, name, email, phone, company, project_type,
+          business_description, status, source, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
       `,
       args: [
         leadId,
         name,
         email,
         phone || null,
-        projectType || null,
-        budget || null,
+        companyName,
+        projectType,
+        description,
         'new',
         'contact_form',
       ],
     });
 
-    console.log("✅ New lead created in Turso:", { leadId, name, email, projectType });
+    console.log("✅ New lead created in Turso:", { leadId, name, email, companyName, projectType });
 
     // TODO: Send email notification
     // Example with Resend:

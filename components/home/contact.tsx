@@ -4,16 +4,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, MapPin, Send, Phone } from "lucide-react";
 import { HoneypotInput } from "@/components/security/HoneypotInput";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import confetti from "canvas-confetti";
 
 interface ContactProps {
   isMainPage?: boolean; // If true, use H1 instead of H2
@@ -21,23 +17,133 @@ interface ContactProps {
 
 export function Contact({ isMainPage = false }: ContactProps) {
   const [formData, setFormData] = useState({
+    projectType: "",
+    companyName: "",
+    description: "",
     name: "",
     email: "",
     phone: "",
-    projectType: "",
-    budget: "",
-    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Real-time validation
+  const validateField = (name: string, value: string) => {
+    const newErrors = { ...errors };
+
+    switch (name) {
+      case "email":
+        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          newErrors.email = "Neplatná emailová adresa";
+        } else {
+          delete newErrors.email;
+        }
+        break;
+      case "phone":
+        if (value && !/^(\+420)?[0-9\s]{9,}$/.test(value.replace(/\s/g, ""))) {
+          newErrors.phone = "Neplatné telefonní číslo";
+        } else {
+          delete newErrors.phone;
+        }
+        break;
+      case "companyName":
+        if (!value.trim()) {
+          newErrors.companyName = "Název firmy/projektu je povinný";
+        } else {
+          delete newErrors.companyName;
+        }
+        break;
+      case "description":
+        if (!value.trim()) {
+          newErrors.description = "Popis je povinný";
+        } else if (value.trim().length < 10) {
+          newErrors.description = "Popis musí obsahovat alespoň 10 znaků";
+        } else {
+          delete newErrors.description;
+        }
+        break;
+      case "name":
+        if (!value.trim()) {
+          newErrors.name = "Jméno je povinné";
+        } else {
+          delete newErrors.name;
+        }
+        break;
+      case "projectType":
+        if (!value) {
+          newErrors.projectType = "Vyberte typ projektu";
+        } else {
+          delete newErrors.projectType;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const handleInputChange = (
+    name: string,
+    value: string
+  ) => {
+    setFormData({ ...formData, [name]: value });
+    validateField(name, value);
+  };
+
+  // 🎉 Confetti animation
+  const celebrateSuccess = () => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min: number, max: number) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval: NodeJS.Timeout = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      // Fire confetti from two positions
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
+
+    // Final validation
+    const finalErrors: Record<string, string> = {};
+    if (!formData.projectType) finalErrors.projectType = "Vyberte typ projektu";
+    if (!formData.companyName.trim()) finalErrors.companyName = "Název firmy/projektu je povinný";
+    if (!formData.description.trim()) finalErrors.description = "Popis je povinný";
+    if (!formData.name.trim()) finalErrors.name = "Jméno je povinné";
+    if (!formData.email.trim()) finalErrors.email = "Email je povinný";
+
+    if (Object.keys(finalErrors).length > 0) {
+      setErrors(finalErrors);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/contact", {
@@ -56,18 +162,22 @@ export function Contact({ isMainPage = false }: ContactProps) {
 
       setSubmitStatus({
         type: "success",
-        message: data.message || "Děkujeme za vaši zprávu!",
+        message: "Děkujeme! Ozveme se vám do 24 hodin a domluvíme bezplatnou konzultaci.",
       });
+
+      // 🎉 Celebrate with confetti!
+      celebrateSuccess();
 
       // Reset form
       setFormData({
+        projectType: "",
+        companyName: "",
+        description: "",
         name: "",
         email: "",
         phone: "",
-        projectType: "",
-        budget: "",
-        message: "",
       });
+      setErrors({});
     } catch (error) {
       setSubmitStatus({
         type: "error",
@@ -87,15 +197,15 @@ export function Contact({ isMainPage = false }: ContactProps) {
         <div className="text-center space-y-4 mb-12">
           {isMainPage ? (
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Napište nám
+              Nezávazná poptávka
             </h1>
           ) : (
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Napište nám
+              Nezávazná poptávka
             </h2>
           )}
           <p className="text-lg text-muted-foreground">
-            Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme
+            Vyplňte formulář a my se vám ozveme do 24 hodin
           </p>
         </div>
 
@@ -165,119 +275,142 @@ export function Contact({ isMainPage = false }: ContactProps) {
                   {/* 🤖 Anti-bot protection */}
                   <HoneypotInput />
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium">
-                        Jméno a příjmení *
-                      </label>
-                      <Input
-                        id="name"
-                        placeholder="Jan Novák"
-                        required
-                        value={formData.name}
-                        onChange={(e) =>
-                          setFormData({ ...formData, name: e.target.value })
-                        }
-                      />
-                    </div>
+                  {/* Co potřebujete? */}
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold">
+                      Co potřebujete? *
+                    </Label>
+                    <RadioGroup
+                      value={formData.projectType}
+                      onValueChange={(value) => handleInputChange("projectType", value)}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                    >
+                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                        <RadioGroupItem value="new-web" id="new-web" />
+                        <Label htmlFor="new-web" className="cursor-pointer flex-1">
+                          Nový web
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                        <RadioGroupItem value="redesign" id="redesign" />
+                        <Label htmlFor="redesign" className="cursor-pointer flex-1">
+                          Redesign webu
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                        <RadioGroupItem value="eshop" id="eshop" />
+                        <Label htmlFor="eshop" className="cursor-pointer flex-1">
+                          E-shop
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                        <RadioGroupItem value="landing" id="landing" />
+                        <Label htmlFor="landing" className="cursor-pointer flex-1">
+                          Landing page
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors sm:col-span-2">
+                        <RadioGroupItem value="other" id="other" />
+                        <Label htmlFor="other" className="cursor-pointer flex-1">
+                          Jiné
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                    {errors.projectType && (
+                      <p className="text-sm text-red-500">{errors.projectType}</p>
+                    )}
+                  </div>
 
+                  {/* Název firmy/projektu */}
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName" className="text-base font-semibold">
+                      Název firmy/projektu *
+                    </Label>
+                    <Input
+                      id="companyName"
+                      placeholder="Např. Firma s.r.o."
+                      value={formData.companyName}
+                      onChange={(e) => handleInputChange("companyName", e.target.value)}
+                      className={errors.companyName ? "border-red-500" : ""}
+                    />
+                    {errors.companyName && (
+                      <p className="text-sm text-red-500">{errors.companyName}</p>
+                    )}
+                  </div>
+
+                  {/* Stručný popis */}
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-base font-semibold">
+                      Stručný popis *
+                    </Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Stačí pár slov – čím se zabýváte? Nemusíte psát román."
+                      rows={4}
+                      value={formData.description}
+                      onChange={(e) => handleInputChange("description", e.target.value)}
+                      className={errors.description ? "border-red-500" : ""}
+                    />
+                    {errors.description && (
+                      <p className="text-sm text-red-500">{errors.description}</p>
+                    )}
+                  </div>
+
+                  {/* Vaše jméno */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-base font-semibold">
+                      Vaše jméno *
+                    </Label>
+                    <Input
+                      id="name"
+                      placeholder="Jan Novák"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      className={errors.name ? "border-red-500" : ""}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-500">{errors.name}</p>
+                    )}
+                  </div>
+
+                  {/* Email a Telefon na jednom řádku */}
+                  <div className="grid md:grid-cols-[2fr,1fr] gap-6">
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium">
+                      <Label htmlFor="email" className="text-base font-semibold">
                         Email *
-                      </label>
+                      </Label>
                       <Input
                         id="email"
                         type="email"
                         placeholder="jan@priklad.cz"
-                        required
                         value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        className={errors.email ? "border-red-500" : ""}
                       />
+                      {errors.email && (
+                        <p className="text-sm text-red-500">{errors.email}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium">
-                        Telefon
-                      </label>
+                      <Label htmlFor="phone" className="text-base font-semibold">
+                        Telefon <span className="text-muted-foreground font-normal">(nepovinné)</span>
+                      </Label>
                       <Input
                         id="phone"
                         type="tel"
                         placeholder="+420 123 456 789"
                         value={formData.phone}
-                        onChange={(e) =>
-                          setFormData({ ...formData, phone: e.target.value })
-                        }
+                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        className={errors.phone ? "border-red-500" : ""}
                       />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="projectType"
-                        className="text-sm font-medium"
-                      >
-                        Typ projektu *
-                      </label>
-                      <Select
-                        value={formData.projectType}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, projectType: value })
-                        }
-                      >
-                        <SelectTrigger id="projectType">
-                          <SelectValue placeholder="Vyberte typ projektu" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="web">Webové stránky</SelectItem>
-                          <SelectItem value="eshop">E-shop</SelectItem>
-                          <SelectItem value="redesign">Redesign</SelectItem>
-                          <SelectItem value="seo">SEO optimalizace</SelectItem>
-                          <SelectItem value="other">Jiné</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <label htmlFor="budget" className="text-sm font-medium">
-                        Orientační rozpočet
-                      </label>
-                      <Select
-                        value={formData.budget}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, budget: value })
-                        }
-                      >
-                        <SelectTrigger id="budget">
-                          <SelectValue placeholder="Vyberte rozpočet" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="10-20k">10 000 - 20 000 Kč</SelectItem>
-                          <SelectItem value="20-50k">20 000 - 50 000 Kč</SelectItem>
-                          <SelectItem value="50-100k">50 000 - 100 000 Kč</SelectItem>
-                          <SelectItem value="100k+">100 000+ Kč</SelectItem>
-                          <SelectItem value="flexible">Flexibilní</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <label htmlFor="message" className="text-sm font-medium">
-                        Zpráva *
-                      </label>
-                      <Textarea
-                        id="message"
-                        placeholder="Popište nám váš projekt..."
-                        rows={6}
-                        required
-                        value={formData.message}
-                        onChange={(e) =>
-                          setFormData({ ...formData, message: e.target.value })
-                        }
-                      />
+                      {errors.phone && (
+                        <p className="text-sm text-red-500">{errors.phone}</p>
+                      )}
                     </div>
                   </div>
 
+                  {/* Success/Error Messages */}
                   {submitStatus.type && (
                     <div
                       className={`p-4 rounded-lg ${
@@ -290,15 +423,20 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     </div>
                   )}
 
+                  {/* Submit Button */}
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full md:w-auto"
-                    disabled={isSubmitting}
+                    className="w-full"
+                    disabled={isSubmitting || Object.keys(errors).length > 0}
                   >
                     <Send className="mr-2 h-5 w-5" />
-                    {isSubmitting ? "Odesílání..." : "Odeslat zprávu"}
+                    {isSubmitting ? "Odesílání..." : "Odeslat poptávku"}
                   </Button>
+
+                  <p className="text-sm text-muted-foreground text-center">
+                    * Povinná pole
+                  </p>
                 </form>
               </CardContent>
             </Card>
