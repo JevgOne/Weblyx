@@ -10,21 +10,40 @@ export interface AdminUser {
 }
 
 /**
+ * Admin users configuration
+ */
+const ADMIN_USERS = [
+  {
+    id: 'admin-1',
+    email: process.env.ADMIN_EMAIL || 'admin@weblyx.cz',
+    password: process.env.ADMIN_PASSWORD || 'admin123',
+    name: 'Admin',
+  },
+  {
+    id: 'admin-2',
+    email: process.env.ADMIN_EMAIL_2 || 'zvin.a@seznam.cz',
+    password: process.env.ADMIN_PASSWORD_2 || 'Muzaisthebest',
+    name: 'Admin 2',
+  },
+];
+
+/**
  * Verify admin credentials
  */
 export async function verifyAdminCredentials(
   email: string,
   password: string
 ): Promise<AdminUser | null> {
-  // Get admin credentials from env
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@weblyx.cz';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  // Find matching admin user
+  const admin = ADMIN_USERS.find(
+    (user) => user.email === email && user.password === password
+  );
 
-  if (email === adminEmail && password === adminPassword) {
+  if (admin) {
     return {
-      id: 'admin-1',
-      email: adminEmail,
-      name: 'Admin',
+      id: admin.id,
+      email: admin.email,
+      name: admin.name,
     };
   }
 
