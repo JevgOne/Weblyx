@@ -271,47 +271,47 @@ export function Contact({ isMainPage = false }: ContactProps) {
           <div className="lg:col-span-2">
             <Card>
               <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-3">
                   {/* 🤖 Anti-bot protection */}
                   <HoneypotInput />
 
                   {/* Co potřebujete? */}
-                  <div className="space-y-3">
-                    <Label className="text-base font-semibold">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">
                       Co potřebujete? *
                     </Label>
                     <RadioGroup
                       value={formData.projectType}
                       onValueChange={(value) => handleInputChange("projectType", value)}
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                      className="flex flex-wrap gap-4"
                     >
-                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="new-web" id="new-web" />
-                        <Label htmlFor="new-web" className="cursor-pointer flex-1">
+                        <Label htmlFor="new-web" className="cursor-pointer font-normal">
                           Nový web
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="redesign" id="redesign" />
-                        <Label htmlFor="redesign" className="cursor-pointer flex-1">
-                          Redesign webu
+                        <Label htmlFor="redesign" className="cursor-pointer font-normal">
+                          Redesign
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="eshop" id="eshop" />
-                        <Label htmlFor="eshop" className="cursor-pointer flex-1">
+                        <Label htmlFor="eshop" className="cursor-pointer font-normal">
                           E-shop
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="landing" id="landing" />
-                        <Label htmlFor="landing" className="cursor-pointer flex-1">
+                        <Label htmlFor="landing" className="cursor-pointer font-normal">
                           Landing page
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors sm:col-span-2">
+                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="other" id="other" />
-                        <Label htmlFor="other" className="cursor-pointer flex-1">
+                        <Label htmlFor="other" className="cursor-pointer font-normal">
                           Jiné
                         </Label>
                       </div>
@@ -321,62 +321,45 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     )}
                   </div>
 
-                  {/* Název firmy/projektu */}
-                  <div className="space-y-2">
-                    <Label htmlFor="companyName" className="text-base font-semibold">
-                      Název firmy/projektu *
-                    </Label>
-                    <Input
-                      id="companyName"
-                      placeholder="Např. Firma s.r.o."
-                      value={formData.companyName}
-                      onChange={(e) => handleInputChange("companyName", e.target.value)}
-                      className={errors.companyName ? "border-red-500" : ""}
-                    />
-                    {errors.companyName && (
-                      <p className="text-sm text-red-500">{errors.companyName}</p>
-                    )}
-                  </div>
-
-                  {/* Stručný popis */}
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-base font-semibold">
-                      Stručný popis *
-                    </Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Stačí pár slov – čím se zabýváte? Nemusíte psát román."
-                      rows={4}
-                      value={formData.description}
-                      onChange={(e) => handleInputChange("description", e.target.value)}
-                      className={errors.description ? "border-red-500" : ""}
-                    />
-                    {errors.description && (
-                      <p className="text-sm text-red-500">{errors.description}</p>
-                    )}
-                  </div>
-
-                  {/* Vaše jméno */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-base font-semibold">
-                      Vaše jméno *
-                    </Label>
-                    <Input
-                      id="name"
-                      placeholder="Jan Novák"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange("name", e.target.value)}
-                      className={errors.name ? "border-red-500" : ""}
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-red-500">{errors.name}</p>
-                    )}
-                  </div>
-
-                  {/* Email a Telefon na jednom řádku */}
-                  <div className="grid md:grid-cols-[2fr,1fr] gap-6">
+                  {/* Název firmy + Jméno na jednom řádku */}
+                  <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-base font-semibold">
+                      <Label htmlFor="companyName" className="text-sm font-medium">
+                        Název firmy/projektu *
+                      </Label>
+                      <Input
+                        id="companyName"
+                        placeholder="Např. Firma s.r.o."
+                        value={formData.companyName}
+                        onChange={(e) => handleInputChange("companyName", e.target.value)}
+                        className={errors.companyName ? "border-red-500" : ""}
+                      />
+                      {errors.companyName && (
+                        <p className="text-sm text-red-500">{errors.companyName}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-sm font-medium">
+                        Vaše jméno *
+                      </Label>
+                      <Input
+                        id="name"
+                        placeholder="Jan Novák"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange("name", e.target.value)}
+                        className={errors.name ? "border-red-500" : ""}
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-red-500">{errors.name}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Email + Telefon na jednom řádku */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
                         Email *
                       </Label>
                       <Input
@@ -393,8 +376,8 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-base font-semibold">
-                        Telefon <span className="text-muted-foreground font-normal">(nepovinné)</span>
+                      <Label htmlFor="phone" className="text-sm font-medium">
+                        Telefon <span className="text-muted-foreground font-normal text-xs">(nepovinné)</span>
                       </Label>
                       <Input
                         id="phone"
@@ -408,6 +391,24 @@ export function Contact({ isMainPage = false }: ContactProps) {
                         <p className="text-sm text-red-500">{errors.phone}</p>
                       )}
                     </div>
+                  </div>
+
+                  {/* Stručný popis */}
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-sm font-medium">
+                      Stručný popis *
+                    </Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Stačí pár slov – čím se zabýváte? Nemusíte psát román."
+                      rows={2}
+                      value={formData.description}
+                      onChange={(e) => handleInputChange("description", e.target.value)}
+                      className={errors.description ? "border-red-500" : ""}
+                    />
+                    {errors.description && (
+                      <p className="text-sm text-red-500">{errors.description}</p>
+                    )}
                   </div>
 
                   {/* Success/Error Messages */}
