@@ -42,7 +42,7 @@ const seoContent: Record<Locale, SEOContent> = {
       'webdesign',
     ],
     siteName: 'Weblyx',
-    siteUrl: 'https://weblyx.cz',
+    siteUrl: 'https://www.weblyx.cz',
     ogTitle: 'Tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč) | Web za týden',
     ogDescription: 'Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 dní, načítání pod 2s, SEO zdarma.',
     twitterTitle: 'Tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč) | Web za týden',
@@ -80,7 +80,7 @@ const seoContent: Record<Locale, SEOContent> = {
     twitterDescription: 'Website erstellen lassen ab 349€ Festpreis. 3× schneller als WordPress, Lieferung in 3-7 Tagen, DSGVO-konform.',
     locale: 'de_DE',
     alternateLang: 'cs',
-    alternateUrl: 'https://weblyx.cz',
+    alternateUrl: 'https://www.weblyx.cz',
   },
 };
 

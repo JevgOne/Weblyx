@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "O nás | Weblyx – moderní webová agentura",
     description: "Moderní webová agentura z Prahy zaměřená na rychlé a kvalitní webové stránky.",
-    url: "https://weblyx.cz/o-nas",
+    url: "https://www.weblyx.cz/o-nas",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://weblyx.cz/o-nas"
+    canonical: "https://www.weblyx.cz/o-nas"
   }
 };
 
@@ -74,14 +74,14 @@ export default function AboutPage() {
 
   // Generate breadcrumb
   const breadcrumbs: BreadcrumbItem[] = [
-    { name: 'Domů', url: 'https://weblyx.cz' },
-    { name: 'O nás', url: 'https://weblyx.cz/o-nas' },
+    { name: 'Domů', url: 'https://www.weblyx.cz' },
+    { name: 'O nás', url: 'https://www.weblyx.cz/o-nas' },
   ];
 
   const webpageSchema = generateWebPageSchema({
     name: 'O nás',
     description: 'Jsme moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
-    url: 'https://weblyx.cz/o-nas',
+    url: 'https://www.weblyx.cz/o-nas',
     breadcrumbs,
   });
 

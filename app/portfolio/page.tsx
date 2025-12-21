@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Portfolio | Naše projekty – weby a e-shopy",
     description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili pro naše klienty.",
-    url: "https://weblyx.cz/portfolio",
+    url: "https://www.weblyx.cz/portfolio",
     type: "website",
     images: [
       {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://weblyx.cz/portfolio"
+    canonical: "https://www.weblyx.cz/portfolio"
   }
 };
 
@@ -69,15 +69,15 @@ export default async function PortfolioPage() {
 
   // Generate breadcrumb
   const breadcrumbs: BreadcrumbItem[] = [
-    { name: 'Domů', url: 'https://weblyx.cz' },
-    { name: 'Portfolio', url: 'https://weblyx.cz/portfolio' },
+    { name: 'Domů', url: 'https://www.weblyx.cz' },
+    { name: 'Portfolio', url: 'https://www.weblyx.cz/portfolio' },
   ];
 
   // Generate schemas
   const webpageSchema = generateWebPageSchema({
     name: 'Portfolio',
     description: 'Naše realizované projekty a ukázky práce',
-    url: 'https://weblyx.cz/portfolio',
+    url: 'https://www.weblyx.cz/portfolio',
     breadcrumbs,
   });
 

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Blog | Weblyx – tipy ze světa webu",
     description: "Praktické tipy z oblasti tvorby webu, SEO a online marketingu.",
-    url: "https://weblyx.cz/blog",
+    url: "https://www.weblyx.cz/blog",
     type: "website",
     images: [
       {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://weblyx.cz/blog"
+    canonical: "https://www.weblyx.cz/blog"
   }
 };
 
@@ -79,13 +79,13 @@ export default async function BlogPage() {
               "@type": "ListItem",
               position: 1,
               name: "Domů",
-              item: "https://weblyx.cz",
+              item: "https://www.weblyx.cz",
             },
             {
               "@type": "ListItem",
               position: 2,
               name: "Blog",
-              item: "https://weblyx.cz/blog",
+              item: "https://www.weblyx.cz/blog",
             },
           ],
         }}

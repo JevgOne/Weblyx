@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč (AKCE 7 990 Kč)",
     description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 dní, Next.js místo WordPressu. Transparentní ceník.",
-    url: "https://weblyx.cz/sluzby",
+    url: "https://www.weblyx.cz/sluzby",
     type: "website",
     images: [
       {
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://weblyx.cz/sluzby"
+    canonical: "https://www.weblyx.cz/sluzby"
   }
 };
 
@@ -220,15 +220,15 @@ export default async function ServicesPage() {
 
   // Generate breadcrumb schema
   const breadcrumbs: BreadcrumbItem[] = [
-    { name: 'Domů', url: 'https://weblyx.cz' },
-    { name: 'Služby', url: 'https://weblyx.cz/sluzby' },
+    { name: 'Domů', url: 'https://www.weblyx.cz' },
+    { name: 'Služby', url: 'https://www.weblyx.cz/sluzby' },
   ];
 
   // Generate webpage schema
   const webpageSchema = generateWebPageSchema({
     name: 'Služby',
     description: 'Nabízíme tvorbu webových stránek, e-shopů, SEO optimalizaci, redesign, optimalizaci rychlosti a následnou podporu',
-    url: 'https://weblyx.cz/sluzby',
+    url: 'https://www.weblyx.cz/sluzby',
     breadcrumbs,
   });
 
@@ -252,7 +252,7 @@ export default async function ServicesPage() {
     provider: {
       '@type': 'Organization',
       name: 'Weblyx',
-      url: 'https://weblyx.cz',
+      url: 'https://www.weblyx.cz',
     },
     areaServed: {
       '@type': 'Country',

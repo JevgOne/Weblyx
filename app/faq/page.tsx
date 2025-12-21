@@ -23,9 +23,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Časté otázky o tvorbě webů | Weblyx",
     description: "Kompletní odpovědi na všechny vaše dotazy ohledně tvorby webových stránek, cen a služeb.",
-    url: "https://weblyx.cz/faq",
+    url: "https://www.weblyx.cz/faq",
     type: "website",
   },
+  alternates: {
+    canonical: "https://www.weblyx.cz/faq"
+  }
 };
 
 // Revalidate every hour
@@ -58,13 +61,13 @@ export default async function FAQPage() {
               "@type": "ListItem",
               position: 1,
               name: "Domů",
-              item: "https://weblyx.cz",
+              item: "https://www.weblyx.cz",
             },
             {
               "@type": "ListItem",
               position: 2,
               name: "FAQ",
-              item: "https://weblyx.cz/faq",
+              item: "https://www.weblyx.cz/faq",
             },
           ],
         }}

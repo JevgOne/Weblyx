@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Kontakt | Weblyx – nezávazná konzultace zdarma",
     description: "Máte zájem o nový web? Napište nám a my se vám ozveme do 24 hodin s návrhem řešení.",
-    url: "https://weblyx.cz/kontakt",
+    url: "https://www.weblyx.cz/kontakt",
     type: "website",
     images: [
       {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://weblyx.cz/kontakt"
+    canonical: "https://www.weblyx.cz/kontakt"
   }
 };
 
@@ -38,7 +38,7 @@ export default function ContactPage() {
   const contactPageSchema = generateContactPageSchema();
   const localBusinessSchema = generateLocalBusinessSchema({
     name: 'Weblyx',
-    url: 'https://weblyx.cz',
+    url: 'https://www.weblyx.cz',
     description: 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
     email: 'info@weblyx.cz',
     addressLocality: 'Praha',
@@ -49,14 +49,14 @@ export default function ContactPage() {
 
   // Generate breadcrumb
   const breadcrumbs: BreadcrumbItem[] = [
-    { name: 'Domů', url: 'https://weblyx.cz' },
-    { name: 'Kontakt', url: 'https://weblyx.cz/kontakt' },
+    { name: 'Domů', url: 'https://www.weblyx.cz' },
+    { name: 'Kontakt', url: 'https://www.weblyx.cz/kontakt' },
   ];
 
   const webpageSchema = generateWebPageSchema({
     name: 'Kontakt',
     description: 'Kontaktujte Weblyx - moderní webovou agenturu',
-    url: 'https://weblyx.cz/kontakt',
+    url: 'https://www.weblyx.cz/kontakt',
     breadcrumbs,
   });
 

@@ -49,7 +49,7 @@ export async function generateMetadata({
           height: 630,
           alt: post.title
         }] : [],
-        url: `https://weblyx.cz/blog/${slug}`,
+        url: `https://www.weblyx.cz/blog/${slug}`,
         siteName: "Weblyx",
         locale: "cs_CZ",
       },
@@ -61,7 +61,7 @@ export async function generateMetadata({
         creator: "@weblyx",
       },
       alternates: {
-        canonical: `https://weblyx.cz/blog/${slug}`,
+        canonical: `https://www.weblyx.cz/blog/${slug}`,
       },
       robots: {
         index: true,
