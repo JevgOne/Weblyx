@@ -439,3 +439,180 @@ Email: info@weblyx.cz | Web: weblyx.cz
 
   return { subject, html, text };
 }
+
+/**
+ * Immediate thank you email to client (auto-response)
+ */
+export function generateClientThankYouEmail(data: {
+  clientName: string;
+  companyName: string;
+}) {
+  const subject = `Děkujeme za poptávku - ${data.companyName} | Weblyx`;
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Děkujeme za poptávku</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); padding: 40px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">
+                ✅ Poptávka úspěšně přijata!
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <p style="margin: 0 0 20px 0; font-size: 16px; color: #374151; line-height: 1.6;">
+                Dobrý den <strong>${data.clientName}</strong>,
+              </p>
+              <p style="margin: 0 0 20px 0; font-size: 16px; color: #374151; line-height: 1.6;">
+                děkujeme za Vaši poptávku! Vaše zpráva byla úspěšně doručena a my na ní již pracujeme.
+              </p>
+
+              <!-- Timeline -->
+              <div style="background-color: #f0fdfa; padding: 25px; border-radius: 8px; border-left: 4px solid #14B8A6; margin: 30px 0;">
+                <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #0f766e; font-weight: 700;">
+                  📅 Co se děje dál?
+                </h2>
+                <div style="margin-bottom: 15px;">
+                  <p style="margin: 0 0 5px 0; font-size: 14px; color: #134e4a; font-weight: 600;">
+                    ⏱️ Do 2 hodin:
+                  </p>
+                  <p style="margin: 0; font-size: 14px; color: #134e4a;">
+                    Náš tým si projde Vaši poptávku a začne připravovat návrh
+                  </p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <p style="margin: 0 0 5px 0; font-size: 14px; color: #134e4a; font-weight: 600;">
+                    📧 Do 24 hodin:
+                  </p>
+                  <p style="margin: 0; font-size: 14px; color: #134e4a;">
+                    Ozveme se Vám s personalizovaným návrhem a cenovou nabídkou
+                  </p>
+                </div>
+                <div>
+                  <p style="margin: 0 0 5px 0; font-size: 14px; color: #134e4a; font-weight: 600;">
+                    🤝 Do 48 hodin:
+                  </p>
+                  <p style="margin: 0; font-size: 14px; color: #134e4a;">
+                    Domluvíme si nezávaznou konzultaci (online nebo osobně)
+                  </p>
+                </div>
+              </div>
+
+              <!-- What to expect -->
+              <div style="background-color: #fffbeb; padding: 25px; border-radius: 8px; margin: 30px 0;">
+                <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #92400e; font-weight: 700;">
+                  🎯 Co od nás můžete očekávat:
+                </h3>
+                <ul style="margin: 0; padding-left: 20px; color: #78350f; font-size: 14px; line-height: 1.8;">
+                  <li>Personalizovaný návrh přesně pro ${data.companyName}</li>
+                  <li>Transparentní cenu bez skrytých poplatků</li>
+                  <li>Realistický časový odhad projektu</li>
+                  <li>Profesionální přístup a jasnou komunikaci</li>
+                </ul>
+              </div>
+
+              <p style="margin: 30px 0 0 0; font-size: 16px; color: #374151; line-height: 1.6;">
+                Mezitím si můžete prohlédnout naše <a href="https://www.weblyx.cz/portfolio" style="color: #14B8A6; text-decoration: none; font-weight: 600;">portfolio</a> nebo se podívat na <a href="https://www.weblyx.cz/blog" style="color: #14B8A6; text-decoration: none; font-weight: 600;">náš blog</a> s tipy ze světa webu.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Contact CTA -->
+          <tr>
+            <td style="padding: 0 30px 40px 30px;" align="center">
+              <div style="background-color: #f9fafb; padding: 25px; border-radius: 8px;">
+                <p style="margin: 0 0 15px 0; font-size: 14px; color: #6b7280;">
+                  Máte naléhavý dotaz?
+                </p>
+                <p style="margin: 0; font-size: 16px; color: #111827;">
+                  📧 <a href="mailto:info@weblyx.cz" style="color: #14B8A6; text-decoration: none; font-weight: 600;">info@weblyx.cz</a>
+                </p>
+                <p style="margin: 10px 0 0 0; font-size: 16px; color: #111827;">
+                  📱 <a href="tel:+420775861234" style="color: #14B8A6; text-decoration: none; font-weight: 600;">+420 775 861 234</a>
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px; background-color: #f9fafb; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 15px 0; font-size: 16px; color: #111827; font-weight: 600;">
+                Těšíme se na spolupráci! 🚀
+              </p>
+              <p style="margin: 0; font-size: 14px; color: #374151; font-weight: 600;">
+                Tým Weblyx
+              </p>
+              <p style="margin: 10px 0 0 0; font-size: 12px; color: #9ca3af; line-height: 1.6;">
+                Weblyx | Moderní webové stránky<br>
+                📧 info@weblyx.cz | 🌐 <a href="https://www.weblyx.cz" style="color: #14B8A6; text-decoration: none;">weblyx.cz</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const text = `
+✅ POPTÁVKA ÚSPĚŠNĚ PŘIJATA!
+
+Dobrý den ${data.clientName},
+
+Děkujeme za Vaši poptávku! Vaše zpráva byla úspěšně doručena a my na ní již pracujeme.
+
+📅 CO SE DĚJE DÁL?
+
+⏱️ Do 2 hodin:
+Náš tým si projde Vaši poptávku a začne připravovat návrh
+
+📧 Do 24 hodin:
+Ozveme se Vám s personalizovaným návrhem a cenovou nabídkou
+
+🤝 Do 48 hodin:
+Domluvíme si nezávaznou konzultaci (online nebo osobně)
+
+🎯 CO OD NÁS MŮŽETE OČEKÁVAT:
+- Personalizovaný návrh přesně pro ${data.companyName}
+- Transparentní cenu bez skrytých poplatků
+- Realistický časový odhad projektu
+- Profesionální přístup a jasnou komunikaci
+
+Mezitím si můžete prohlédnout naše portfolio nebo blog:
+- Portfolio: https://www.weblyx.cz/portfolio
+- Blog: https://www.weblyx.cz/blog
+
+📞 KONTAKT:
+Máte naléhavý dotaz?
+📧 info@weblyx.cz
+📱 +420 775 861 234
+
+Těšíme se na spolupráci! 🚀
+
+Tým Weblyx
+--
+Weblyx | Moderní webové stránky
+📧 info@weblyx.cz | 🌐 weblyx.cz
+  `;
+
+  return { subject, html, text };
+}

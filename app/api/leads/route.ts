@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { turso } from "@/lib/turso";
 import { sendEmail, EMAIL_CONFIG } from "@/lib/email/resend-client";
-import { generateAdminNotificationEmail } from "@/lib/email/lead-templates";
+import { generateAdminNotificationEmail, generateClientThankYouEmail } from "@/lib/email/lead-templates";
 import { sendPushNotificationToAdmins } from "@/lib/push-notifications/send-notification";
 import { nanoid } from "nanoid";
 
@@ -119,6 +119,27 @@ export async function POST(request: NextRequest) {
     });
 
     console.log("✅ Lead saved to Turso:", leadId);
+
+    // 📧 Send thank you email to client immediately
+    const clientEmailTemplate = generateClientThankYouEmail({
+      clientName: name,
+      companyName,
+    });
+
+    sendEmail({
+      to: email,
+      subject: clientEmailTemplate.subject,
+      html: clientEmailTemplate.html,
+      text: clientEmailTemplate.text,
+    }).then((result) => {
+      if (result.success) {
+        console.log("✅ Client thank you email sent to:", email);
+      } else {
+        console.warn("⚠️ Client thank you email failed:", result.error);
+      }
+    }).catch((err) => {
+      console.warn("⚠️ Client email error:", err);
+    });
 
     // 📧 Send admin notification email immediately
     const adminEmailTemplate = generateAdminNotificationEmail({
