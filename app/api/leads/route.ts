@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
     const clientEmailTemplate = generateClientThankYouEmail({
       clientName: name,
       companyName,
+      projectType,
     });
 
     sendEmail({
