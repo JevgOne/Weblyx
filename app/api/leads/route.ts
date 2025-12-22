@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!projectType || !companyName || !businessDescription || !industry) {
+    if (!projectType || !companyName || !businessDescription) {
       return NextResponse.json(
         { error: "Vyplňte prosím všechny povinné údaje." },
         { status: 400 }
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         businessDescription,
         existingWebsite || null,
         companySize || null,
-        industry,
+        industry || null,
         ico || null,
         address || null,
         yearsInBusiness || null,
