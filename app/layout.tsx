@@ -38,7 +38,7 @@ export const metadata: Metadata = {
       { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
     ],
   },
-  manifest: "/manifest.json",
+  manifest: "/site.webmanifest",
   verification: {
     google: "google-site-verification-code", // TODO: Add actual verification code
   },
