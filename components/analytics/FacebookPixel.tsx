@@ -1,9 +1,6 @@
 import Script from 'next/script';
 
 export function FacebookPixel() {
-  // Facebook Pixel ID - hardcoded (NOT RECOMMENDED - use env vars instead)
-  const FB_PIXEL_ID = '1205303944860801';
-
   return (
     <>
       <Script
@@ -19,7 +16,7 @@ export function FacebookPixel() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${FB_PIXEL_ID}');
+            fbq('init', '1205303944860801');
             fbq('track', 'PageView');
           `,
         }}
@@ -30,7 +27,7 @@ export function FacebookPixel() {
           height="1"
           width="1"
           style={{ display: 'none' }}
-          src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
+          src="https://www.facebook.com/tr?id=1205303944860801&ev=PageView&noscript=1"
         />
       </noscript>
     </>
