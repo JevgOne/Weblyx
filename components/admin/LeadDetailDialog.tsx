@@ -31,6 +31,34 @@ const statusConfig = {
   paused: { label: "Pozastaveno", color: "bg-orange-500" },
 };
 
+// Helper function to parse AI Brief from rawResponse
+function parseAIBrief(aiBrief: any) {
+  if (!aiBrief) return null;
+
+  // If it's already parsed correctly, return it
+  if (aiBrief.projectOverview || aiBrief.targetAudience) {
+    return aiBrief;
+  }
+
+  // If it has rawResponse, parse it
+  if (aiBrief.rawResponse) {
+    try {
+      // Remove markdown code block wrappers (```json ... ```)
+      let jsonString = aiBrief.rawResponse.trim();
+      jsonString = jsonString.replace(/^```json\s*\n?/, '').replace(/\n?```\s*$/, '');
+
+      // Parse the JSON
+      const parsed = JSON.parse(jsonString);
+      return parsed;
+    } catch (error) {
+      console.error('Failed to parse AI Brief rawResponse:', error);
+      return null;
+    }
+  }
+
+  return null;
+}
+
 export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUpdate }: LeadDetailDialogProps) {
   const [currentLead, setCurrentLead] = useState(lead);
   const [generating, setGenerating] = useState(false);
@@ -412,19 +440,21 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
               AI Project Brief
             </h4>
 
-            {currentLead.aiBrief ? (
+            {(() => {
+              const parsedBrief = parseAIBrief(currentLead.aiBrief);
+              return parsedBrief ? (
               <div className="border rounded-lg p-6 space-y-4 bg-muted/30">
                 {/* Project Overview */}
-                {currentLead.aiBrief.projectOverview && (
+                {parsedBrief.projectOverview && (
                   <div>
                     <h5 className="font-semibold text-sm text-muted-foreground mb-2">PROJECT OVERVIEW</h5>
-                    <h6 className="font-bold text-lg mb-2">{currentLead.aiBrief.projectOverview.title}</h6>
-                    <p className="text-sm mb-3">{currentLead.aiBrief.projectOverview.summary}</p>
-                    {currentLead.aiBrief.projectOverview.businessGoals && (
+                    <h6 className="font-bold text-lg mb-2">{parsedBrief.projectOverview.title}</h6>
+                    <p className="text-sm mb-3">{parsedBrief.projectOverview.summary}</p>
+                    {parsedBrief.projectOverview.businessGoals && (
                       <div>
                         <p className="text-xs font-medium text-muted-foreground mb-1">Business Goals:</p>
                         <ul className="text-sm list-disc list-inside space-y-1">
-                          {currentLead.aiBrief.projectOverview.businessGoals.map((goal: string, idx: number) => (
+                          {parsedBrief.projectOverview.businessGoals.map((goal: string, idx: number) => (
                             <li key={idx}>{goal}</li>
                           ))}
                         </ul>
@@ -434,18 +464,18 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                 )}
 
                 {/* AI Implementation Prompt */}
-                {currentLead.aiBrief.aiImplementationPrompt && (
+                {parsedBrief.aiImplementationPrompt && (
                   <div>
                     <h5 className="font-semibold text-sm text-muted-foreground mb-2">AI IMPLEMENTATION PROMPT</h5>
                     <div className="bg-background p-4 rounded border font-mono text-xs overflow-x-auto">
-                      <pre className="whitespace-pre-wrap">{currentLead.aiBrief.aiImplementationPrompt}</pre>
+                      <pre className="whitespace-pre-wrap">{parsedBrief.aiImplementationPrompt}</pre>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       className="mt-2"
                       onClick={() => {
-                        navigator.clipboard.writeText(currentLead.aiBrief.aiImplementationPrompt);
+                        navigator.clipboard.writeText(parsedBrief.aiImplementationPrompt);
                       }}
                     >
                       📋 Copy Prompt
@@ -506,7 +536,8 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                   )}
                 </Button>
               </div>
-            )}
+            );
+            })()}
           </div>
 
           {/* Delete Section */}
