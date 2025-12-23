@@ -25,6 +25,7 @@ export default function QuotePage() {
     projectType: "",
     companyName: "",
     description: "",
+    budget: "",
     name: "",
     email: "",
     phone: "",
@@ -149,9 +150,13 @@ export default function QuotePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
-          company: formData.companyName,
+          projectType: formData.projectType,
+          companyName: formData.companyName,
           businessDescription: formData.description,
+          budget: formData.budget,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
         }),
       });
 
@@ -247,6 +252,22 @@ export default function QuotePage() {
                 {errors.description && (
                   <p className="text-sm text-red-500">{errors.description}</p>
                 )}
+              </div>
+
+              {/* Rozpočet */}
+              <div className="space-y-2">
+                <Label htmlFor="budget" className="text-sm font-medium">
+                  Rozpočet{" "}
+                  <span className="text-muted-foreground font-normal text-xs">
+                    (nepovinné)
+                  </span>
+                </Label>
+                <Input
+                  id="budget"
+                  placeholder="Např. 50 000 - 100 000 Kč"
+                  value={formData.budget}
+                  onChange={(e) => handleInputChange("budget", e.target.value)}
+                />
               </div>
 
               {/* Vaše jméno */}
