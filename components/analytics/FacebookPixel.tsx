@@ -1,13 +1,8 @@
 import Script from 'next/script';
 
 export function FacebookPixel() {
-  // Facebook Pixel ID from environment variable
-  const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || '';
-
-  if (!FB_PIXEL_ID) {
-    console.warn('Facebook Pixel ID not configured. Set NEXT_PUBLIC_FB_PIXEL_ID in your .env file.');
-    return null;
-  }
+  // Facebook Pixel ID - hardcoded (NOT RECOMMENDED - use env vars instead)
+  const FB_PIXEL_ID = '1205303944860801';
 
   return (
     <>
