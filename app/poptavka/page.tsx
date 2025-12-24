@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Send } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -17,6 +24,15 @@ const projectTypes = [
   { id: "eshop", label: "E-shop" },
   { id: "landing", label: "Landing page" },
   { id: "other", label: "Jiné" },
+];
+
+const budgetOptions = [
+  { id: "landing", label: "Landing Page - 7 990 Kč", value: "7 990 Kč" },
+  { id: "basic", label: "Základní Web - 9 990 Kč", value: "9 990 Kč" },
+  { id: "standard", label: "Standardní Web - 24 990 Kč", value: "24 990 Kč" },
+  { id: "eshop-mini", label: "Mini E-shop - 49 990 Kč", value: "49 990 Kč" },
+  { id: "eshop-full", label: "Plnohodnotný E-shop - 89 990 Kč", value: "89 990 Kč" },
+  { id: "custom", label: "Jiný rozpočet", value: "custom" },
 ];
 
 export default function QuotePage() {
@@ -82,6 +98,13 @@ export default function QuotePage() {
           delete newErrors.projectType;
         }
         break;
+      case "budget":
+        if (!value) {
+          newErrors.budget = "Vyberte rozpočet";
+        } else {
+          delete newErrors.budget;
+        }
+        break;
     }
 
     setErrors(newErrors);
@@ -134,6 +157,7 @@ export default function QuotePage() {
     if (!formData.companyName.trim())
       finalErrors.companyName = "Název firmy/projektu je povinný";
     if (!formData.description.trim()) finalErrors.description = "Popis je povinný";
+    if (!formData.budget) finalErrors.budget = "Vyberte rozpočet";
     if (!formData.name.trim()) finalErrors.name = "Jméno je povinné";
     if (!formData.email.trim()) finalErrors.email = "Email je povinný";
 
@@ -257,17 +281,29 @@ export default function QuotePage() {
               {/* Rozpočet */}
               <div className="space-y-2">
                 <Label htmlFor="budget" className="text-sm font-medium">
-                  Rozpočet{" "}
-                  <span className="text-muted-foreground font-normal text-xs">
-                    (nepovinné)
-                  </span>
+                  Rozpočet *
                 </Label>
-                <Input
-                  id="budget"
-                  placeholder="Např. 50 000 - 100 000 Kč"
+                <Select
                   value={formData.budget}
-                  onChange={(e) => handleInputChange("budget", e.target.value)}
-                />
+                  onValueChange={(value) => handleInputChange("budget", value)}
+                >
+                  <SelectTrigger className={errors.budget ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Vyberte váš rozpočet" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {budgetOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.budget && (
+                  <p className="text-sm text-red-500">{errors.budget}</p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Pomůže nám připravit přesnou nabídku
+                </p>
               </div>
 
               {/* Vaše jméno */}
