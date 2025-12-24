@@ -14,8 +14,18 @@ export default function TermsPage() {
 
         <h2>1. Základní ustanovení</h2>
         <p>
-          Tyto obchodní podmínky upravují vztahy mezi poskytovatelem služeb Weblyx (dále jen
-          "poskytovatel") a klientem (dále jen "klient").
+          Tyto obchodní podmínky upravují vztahy mezi poskytovatelem služeb:
+        </p>
+        <p>
+          <strong>Altro Servis Group s.r.o.</strong><br />
+          IČO: 23673389<br />
+          Sídlo: Školská 660/3, Nové Město (Praha 1), 110 00 Praha<br />
+          Email: info@weblyx.cz<br />
+          Telefon: +420 702 110 166<br />
+          (dále jen "poskytovatel")
+        </p>
+        <p>
+          a klientem (dále jen "klient").
         </p>
 
         <h2>2. Vymezení pojmů</h2>
@@ -90,7 +100,11 @@ export default function TermsPage() {
 
         <h2>11. Kontakt</h2>
         <p>
-          Email: info@weblyx.cz
+          <strong>Altro Servis Group s.r.o.</strong><br />
+          IČO: 23673389<br />
+          Sídlo: Školská 660/3, Nové Město (Praha 1), 110 00 Praha<br />
+          Email: <a href="mailto:info@weblyx.cz" className="text-primary hover:underline">info@weblyx.cz</a><br />
+          Telefon: <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a>
         </p>
       </div>
     </main>

@@ -182,9 +182,14 @@ export function Footer() {
 
         {/* Bottom Footer */}
         <div className="py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground text-center md:text-left">
-            {t('copyright').replace('2024', new Date().getFullYear().toString())}
-          </p>
+          <div className="text-sm text-muted-foreground text-center md:text-left">
+            <p className="mb-1">
+              {t('copyright').replace('2024', new Date().getFullYear().toString())}
+            </p>
+            <p className="text-xs">
+              Provozovatel: Altro Servis Group s.r.o. | IČO: 23673389 | Školská 660/3, 110 00 Praha
+            </p>
+          </div>
           <p className="text-sm text-muted-foreground">
             {t('tagline')}
           </p>

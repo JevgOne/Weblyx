@@ -14,7 +14,14 @@ export default function PrivacyPage() {
 
         <h2>1. Správce osobních údajů</h2>
         <p>
-          Správcem vašich osobních údajů je Weblyx, se sídlem v České republice.
+          Správcem vašich osobních údajů je:
+        </p>
+        <p>
+          <strong>Altro Servis Group s.r.o.</strong><br />
+          IČO: 23673389<br />
+          Sídlo: Školská 660/3, Nové Město (Praha 1), 110 00 Praha<br />
+          Email: info@weblyx.cz<br />
+          Telefon: +420 702 110 166
         </p>
 
         <h2>2. Jaké údaje sbíráme</h2>
@@ -73,9 +80,12 @@ export default function PrivacyPage() {
         <h2>8. Kontakt</h2>
         <p>
           V případě dotazů ohledně ochrany osobních údajů nás můžete kontaktovat na:
-          <br />
-          Email: <a href="mailto:info@weblyx.cz" className="text-primary hover:underline">info@weblyx.cz</a>
-          <br />
+        </p>
+        <p>
+          <strong>Altro Servis Group s.r.o.</strong><br />
+          IČO: 23673389<br />
+          Sídlo: Školská 660/3, Nové Město (Praha 1), 110 00 Praha<br />
+          Email: <a href="mailto:info@weblyx.cz" className="text-primary hover:underline">info@weblyx.cz</a><br />
           Telefon: <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a>
         </p>
       </div>

@@ -3,6 +3,7 @@ import { turso } from "@/lib/turso";
 import { sendEmail, EMAIL_CONFIG } from "@/lib/email/resend-client";
 import { generateAdminNotificationEmail, generateClientThankYouEmail } from "@/lib/email/lead-templates";
 import { sendPushNotificationToAdmins } from "@/lib/push-notifications/send-notification";
+import { sendTelegramNotification } from "@/lib/telegram";
 import { nanoid } from "nanoid";
 
 export async function POST(request: NextRequest) {
@@ -192,6 +193,26 @@ export async function POST(request: NextRequest) {
       }
     }).catch((err) => {
       console.warn("⚠️ Push notification error:", err);
+    });
+
+    // 📱 Send Telegram notification
+    sendTelegramNotification({
+      name,
+      email,
+      phone,
+      company: companyName,
+      projectType,
+      budget,
+      description: businessDescription,
+      leadId,
+    }).then((sent) => {
+      if (sent) {
+        console.log("✅ Telegram notification sent");
+      } else {
+        console.warn("⚠️ Telegram notification failed or not configured");
+      }
+    }).catch((err) => {
+      console.warn("⚠️ Telegram notification error:", err);
     });
 
     // 🤖 Trigger AI generation in background (don't await)

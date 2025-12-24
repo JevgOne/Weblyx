@@ -172,7 +172,7 @@ export default function AdminInvoicesPage() {
             Správa faktur a dokladů
           </p>
         </div>
-        <Button onClick={() => router.push("/admin/invoices/create")}>
+        <Button onClick={() => router.push("/admin/invoices/new")}>
           <FileText className="mr-2 h-4 w-4" />
           Nová faktura
         </Button>
