@@ -16,6 +16,36 @@ import { put } from '@vercel/blob';
 import type { Invoice, InvoiceItem } from '@/types/payments';
 
 // =====================================================
+// HELPER FUNCTIONS
+// =====================================================
+
+/**
+ * Remove Czech diacritics for PDF compatibility with WinAnsi encoding
+ * StandardFonts (Helvetica) don't support UTF-8, so we need to convert Czech chars
+ */
+function removeDiacritics(text: string): string {
+  const diacriticsMap: Record<string, string> = {
+    'á': 'a', 'Á': 'A',
+    'č': 'c', 'Č': 'C',
+    'ď': 'd', 'Ď': 'D',
+    'é': 'e', 'É': 'E',
+    'ě': 'e', 'Ě': 'E',
+    'í': 'i', 'Í': 'I',
+    'ň': 'n', 'Ň': 'N',
+    'ó': 'o', 'Ó': 'O',
+    'ř': 'r', 'Ř': 'R',
+    'š': 's', 'Š': 'S',
+    'ť': 't', 'Ť': 'T',
+    'ú': 'u', 'Ú': 'U',
+    'ů': 'u', 'Ů': 'U',
+    'ý': 'y', 'Ý': 'Y',
+    'ž': 'z', 'Ž': 'Z',
+  };
+
+  return text.replace(/[áÁčČďĎéÉěĚíÍňŇóÓřŘšŠťŤúÚůŮýÝžŽ]/g, (char) => diacriticsMap[char] || char);
+}
+
+// =====================================================
 // TYPES
 // =====================================================
 
@@ -163,6 +193,11 @@ export async function generateInvoicePDF(
   const page = pdfDoc.addPage([595, 842]); // A4 size
   const { width, height } = page.getSize();
 
+  // Helper function to draw text without diacritics
+  const drawText = (text: string, options: any) => {
+    page.drawText(removeDiacritics(text), options);
+  };
+
   let y = height - 50; // Start from top with margin
 
   // =====================================================
@@ -171,7 +206,7 @@ export async function generateInvoicePDF(
 
   const invoiceTypeLabel = getInvoiceTypeLabel(invoiceData.invoice_type);
 
-  page.drawText(invoiceTypeLabel, {
+  drawText(invoiceTypeLabel, {
     x: 50,
     y,
     size: 24,
@@ -186,7 +221,7 @@ export async function generateInvoicePDF(
   // =====================================================
 
   // Invoice number
-  page.drawText('Číslo faktury:', {
+  drawText('Číslo faktury:', {
     x: 50,
     y,
     size: 10,
@@ -194,7 +229,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(invoiceData.invoice_number, {
+  drawText(invoiceData.invoice_number, {
     x: 150,
     y,
     size: 10,
@@ -205,7 +240,7 @@ export async function generateInvoicePDF(
   y -= 15;
 
   // Variable symbol
-  page.drawText('Variabilní symbol:', {
+  drawText('Variabilní symbol:', {
     x: 50,
     y,
     size: 10,
@@ -213,7 +248,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(invoiceData.variable_symbol, {
+  drawText(invoiceData.variable_symbol, {
     x: 150,
     y,
     size: 10,
@@ -224,7 +259,7 @@ export async function generateInvoicePDF(
   y -= 15;
 
   // Issue date
-  page.drawText('Datum vystavení:', {
+  drawText('Datum vystavení:', {
     x: 50,
     y,
     size: 10,
@@ -232,7 +267,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(formatDate(invoiceData.issue_date), {
+  drawText(formatDate(invoiceData.issue_date), {
     x: 150,
     y,
     size: 10,
@@ -243,7 +278,7 @@ export async function generateInvoicePDF(
   y -= 15;
 
   // Due date
-  page.drawText('Datum splatnosti:', {
+  drawText('Datum splatnosti:', {
     x: 50,
     y,
     size: 10,
@@ -251,7 +286,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(formatDate(invoiceData.due_date), {
+  drawText(formatDate(invoiceData.due_date), {
     x: 150,
     y,
     size: 10,
@@ -263,7 +298,7 @@ export async function generateInvoicePDF(
 
   // Delivery date (DUZP)
   if (invoiceData.delivery_date) {
-    page.drawText('Datum zdan. plnění:', {
+    drawText('Datum zdan. plnění:', {
       x: 50,
       y,
       size: 10,
@@ -271,7 +306,7 @@ export async function generateInvoicePDF(
       color: COLORS.darkGray,
     });
 
-    page.drawText(formatDate(invoiceData.delivery_date), {
+    drawText(formatDate(invoiceData.delivery_date), {
       x: 150,
       y,
       size: 10,
@@ -283,7 +318,7 @@ export async function generateInvoicePDF(
   }
 
   // Payment method
-  page.drawText('Způsob platby:', {
+  drawText('Způsob platby:', {
     x: 50,
     y,
     size: 10,
@@ -291,7 +326,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(getPaymentMethodLabel(invoiceData.payment_method), {
+  drawText(getPaymentMethodLabel(invoiceData.payment_method), {
     x: 150,
     y,
     size: 10,
@@ -305,7 +340,7 @@ export async function generateInvoicePDF(
   // COMPANY INFO (DODAVATEL)
   // =====================================================
 
-  page.drawText('Dodavatel:', {
+  drawText('Dodavatel:', {
     x: 50,
     y,
     size: 12,
@@ -316,7 +351,7 @@ export async function generateInvoicePDF(
   y -= 20;
 
   // Company name
-  page.drawText(invoiceData.company.name, {
+  drawText(invoiceData.company.name, {
     x: 50,
     y,
     size: 10,
@@ -327,7 +362,7 @@ export async function generateInvoicePDF(
   y -= 15;
 
   // Address
-  page.drawText(`${invoiceData.company.street}`, {
+  drawText(`${invoiceData.company.street}`, {
     x: 50,
     y,
     size: 9,
@@ -337,7 +372,7 @@ export async function generateInvoicePDF(
 
   y -= 12;
 
-  page.drawText(`${invoiceData.company.zip} ${invoiceData.company.city}`, {
+  drawText(`${invoiceData.company.zip} ${invoiceData.company.city}`, {
     x: 50,
     y,
     size: 9,
@@ -347,7 +382,7 @@ export async function generateInvoicePDF(
 
   y -= 12;
 
-  page.drawText(invoiceData.company.country, {
+  drawText(invoiceData.company.country, {
     x: 50,
     y,
     size: 9,
@@ -358,7 +393,7 @@ export async function generateInvoicePDF(
   y -= 15;
 
   // IČO, DIČ
-  page.drawText(`IČO: ${invoiceData.company.ico}`, {
+  drawText(`IČO: ${invoiceData.company.ico}`, {
     x: 50,
     y,
     size: 9,
@@ -368,7 +403,7 @@ export async function generateInvoicePDF(
 
   if (invoiceData.company.dic) {
     y -= 12;
-    page.drawText(`DIČ: ${invoiceData.company.dic}`, {
+    drawText(`DIČ: ${invoiceData.company.dic}`, {
       x: 50,
       y,
       size: 9,
@@ -383,7 +418,7 @@ export async function generateInvoicePDF(
   // CLIENT INFO (ODBĚRATEL)
   // =====================================================
 
-  page.drawText('Odběratel:', {
+  drawText('Odběratel:', {
     x: 50,
     y,
     size: 12,
@@ -394,7 +429,7 @@ export async function generateInvoicePDF(
   y -= 20;
 
   // Client name
-  page.drawText(invoiceData.client_name, {
+  drawText(invoiceData.client_name, {
     x: 50,
     y,
     size: 10,
@@ -406,7 +441,7 @@ export async function generateInvoicePDF(
 
   // Address
   if (invoiceData.client_street) {
-    page.drawText(invoiceData.client_street, {
+    drawText(invoiceData.client_street, {
       x: 50,
       y,
       size: 9,
@@ -417,7 +452,7 @@ export async function generateInvoicePDF(
   }
 
   if (invoiceData.client_zip && invoiceData.client_city) {
-    page.drawText(`${invoiceData.client_zip} ${invoiceData.client_city}`, {
+    drawText(`${invoiceData.client_zip} ${invoiceData.client_city}`, {
       x: 50,
       y,
       size: 9,
@@ -427,7 +462,7 @@ export async function generateInvoicePDF(
     y -= 12;
   }
 
-  page.drawText(invoiceData.client_country, {
+  drawText(invoiceData.client_country, {
     x: 50,
     y,
     size: 9,
@@ -439,7 +474,7 @@ export async function generateInvoicePDF(
 
   // IČO, DIČ
   if (invoiceData.client_ico) {
-    page.drawText(`IČO: ${invoiceData.client_ico}`, {
+    drawText(`IČO: ${invoiceData.client_ico}`, {
       x: 50,
       y,
       size: 9,
@@ -450,7 +485,7 @@ export async function generateInvoicePDF(
   }
 
   if (invoiceData.client_dic) {
-    page.drawText(`DIČ: ${invoiceData.client_dic}`, {
+    drawText(`DIČ: ${invoiceData.client_dic}`, {
       x: 50,
       y,
       size: 9,
@@ -475,7 +510,7 @@ export async function generateInvoicePDF(
     color: COLORS.teal,
   });
 
-  page.drawText('Popis', {
+  drawText('Popis', {
     x: 60,
     y: y - 10,
     size: 9,
@@ -483,7 +518,7 @@ export async function generateInvoicePDF(
     color: COLORS.white,
   });
 
-  page.drawText('Množství', {
+  drawText('Množství', {
     x: 320,
     y: y - 10,
     size: 9,
@@ -491,7 +526,7 @@ export async function generateInvoicePDF(
     color: COLORS.white,
   });
 
-  page.drawText('Jedn. cena', {
+  drawText('Jedn. cena', {
     x: 390,
     y: y - 10,
     size: 9,
@@ -499,7 +534,7 @@ export async function generateInvoicePDF(
     color: COLORS.white,
   });
 
-  page.drawText('Celkem', {
+  drawText('Celkem', {
     x: 470,
     y: y - 10,
     size: 9,
@@ -513,7 +548,7 @@ export async function generateInvoicePDF(
   for (const item of invoiceData.items) {
     const totalPrice = item.quantity * item.unit_price;
 
-    page.drawText(item.description, {
+    drawText(item.description, {
       x: 60,
       y,
       size: 9,
@@ -522,7 +557,7 @@ export async function generateInvoicePDF(
       maxWidth: 250,
     });
 
-    page.drawText(`${item.quantity}`, {
+    drawText(`${item.quantity}`, {
       x: 330,
       y,
       size: 9,
@@ -530,7 +565,7 @@ export async function generateInvoicePDF(
       color: COLORS.black,
     });
 
-    page.drawText(formatCurrency(item.unit_price, ''), {
+    drawText(formatCurrency(item.unit_price, ''), {
       x: 390,
       y,
       size: 9,
@@ -538,7 +573,7 @@ export async function generateInvoicePDF(
       color: COLORS.black,
     });
 
-    page.drawText(formatCurrency(totalPrice, ''), {
+    drawText(formatCurrency(totalPrice, ''), {
       x: 470,
       y,
       size: 9,
@@ -555,43 +590,57 @@ export async function generateInvoicePDF(
   // TOTALS
   // =====================================================
 
-  // Amount without VAT
-  page.drawText('Základ daně:', {
-    x: 350,
-    y,
-    size: 10,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
+  // If VAT payer, show breakdown
+  if (invoiceData.vat_rate > 0) {
+    // Amount without VAT
+    drawText('Základ daně:', {
+      x: 350,
+      y,
+      size: 10,
+      font: fontBold,
+      color: COLORS.darkGray,
+    });
 
-  page.drawText(formatCurrency(invoiceData.amount_without_vat, invoiceData.currency), {
-    x: 470,
-    y,
-    size: 10,
-    font,
-    color: COLORS.black,
-  });
+    drawText(formatCurrency(invoiceData.amount_without_vat, invoiceData.currency), {
+      x: 470,
+      y,
+      size: 10,
+      font,
+      color: COLORS.black,
+    });
 
-  y -= 15;
+    y -= 15;
 
-  // VAT
-  page.drawText(`DPH (${invoiceData.vat_rate}%):`, {
-    x: 350,
-    y,
-    size: 10,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
+    // VAT
+    drawText(`DPH (${invoiceData.vat_rate}%):`, {
+      x: 350,
+      y,
+      size: 10,
+      font: fontBold,
+      color: COLORS.darkGray,
+    });
 
-  page.drawText(formatCurrency(invoiceData.vat_amount, invoiceData.currency), {
-    x: 470,
-    y,
-    size: 10,
-    font,
-    color: COLORS.black,
-  });
+    drawText(formatCurrency(invoiceData.vat_amount, invoiceData.currency), {
+      x: 470,
+      y,
+      size: 10,
+      font,
+      color: COLORS.black,
+    });
 
-  y -= 20;
+    y -= 20;
+  } else {
+    // Not VAT payer - show note
+    drawText('Nejsme plátci DPH', {
+      x: 350,
+      y,
+      size: 9,
+      font,
+      color: COLORS.lightGray,
+    });
+
+    y -= 25;
+  }
 
   // Total amount
   page.drawRectangle({
@@ -602,7 +651,7 @@ export async function generateInvoicePDF(
     color: COLORS.teal,
   });
 
-  page.drawText('Celkem k úhradě:', {
+  drawText('Celkem k úhradě:', {
     x: 350,
     y,
     size: 12,
@@ -610,7 +659,7 @@ export async function generateInvoicePDF(
     color: COLORS.white,
   });
 
-  page.drawText(formatCurrency(invoiceData.amount_with_vat, invoiceData.currency), {
+  drawText(formatCurrency(invoiceData.amount_with_vat, invoiceData.currency), {
     x: 470,
     y,
     size: 12,
@@ -624,7 +673,7 @@ export async function generateInvoicePDF(
   // BANK DETAILS
   // =====================================================
 
-  page.drawText('Platební údaje:', {
+  drawText('Platební údaje:', {
     x: 50,
     y,
     size: 11,
@@ -634,7 +683,7 @@ export async function generateInvoicePDF(
 
   y -= 20;
 
-  page.drawText('Číslo účtu:', {
+  drawText('Číslo účtu:', {
     x: 50,
     y,
     size: 9,
@@ -642,7 +691,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(invoiceData.company.bank_account, {
+  drawText(invoiceData.company.bank_account, {
     x: 150,
     y,
     size: 9,
@@ -652,7 +701,7 @@ export async function generateInvoicePDF(
 
   y -= 12;
 
-  page.drawText('IBAN:', {
+  drawText('IBAN:', {
     x: 50,
     y,
     size: 9,
@@ -660,7 +709,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(invoiceData.company.iban, {
+  drawText(invoiceData.company.iban, {
     x: 150,
     y,
     size: 9,
@@ -670,7 +719,7 @@ export async function generateInvoicePDF(
 
   y -= 12;
 
-  page.drawText('SWIFT:', {
+  drawText('SWIFT:', {
     x: 50,
     y,
     size: 9,
@@ -678,7 +727,7 @@ export async function generateInvoicePDF(
     color: COLORS.darkGray,
   });
 
-  page.drawText(invoiceData.company.swift, {
+  drawText(invoiceData.company.swift, {
     x: 150,
     y,
     size: 9,
@@ -693,7 +742,7 @@ export async function generateInvoicePDF(
   // =====================================================
 
   if (invoiceData.notes) {
-    page.drawText('Poznámka:', {
+    drawText('Poznámka:', {
       x: 50,
       y,
       size: 9,
@@ -703,7 +752,7 @@ export async function generateInvoicePDF(
 
     y -= 15;
 
-    page.drawText(invoiceData.notes, {
+    drawText(invoiceData.notes, {
       x: 50,
       y,
       size: 8,
@@ -719,7 +768,7 @@ export async function generateInvoicePDF(
   // FOOTER
   // =====================================================
 
-  page.drawText(`${invoiceData.company.name} | ${invoiceData.company.email} | ${invoiceData.company.phone}`, {
+  drawText(`${invoiceData.company.name} | ${invoiceData.company.email} | ${invoiceData.company.phone}`, {
     x: 50,
     y: 30,
     size: 8,
@@ -727,7 +776,7 @@ export async function generateInvoicePDF(
     color: COLORS.lightGray,
   });
 
-  page.drawText(invoiceData.company.website, {
+  drawText(invoiceData.company.website, {
     x: width - 150,
     y: 30,
     size: 8,
