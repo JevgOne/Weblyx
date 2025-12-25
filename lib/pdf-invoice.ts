@@ -13,6 +13,7 @@
 
 import { PDFDocument, StandardFonts, rgb, PDFPage } from 'pdf-lib';
 import { put } from '@vercel/blob';
+import QRCode from 'qrcode';
 import type { Invoice, InvoiceItem } from '@/types/payments';
 
 // =====================================================
@@ -43,6 +44,40 @@ function removeDiacritics(text: string): string {
   };
 
   return text.replace(/[áÁčČďĎéÉěĚíÍňŇóÓřŘšŠťŤúÚůŮýÝžŽ]/g, (char) => diacriticsMap[char] || char);
+}
+
+/**
+ * Generate SPAYD (Short Payment Descriptor) QR code for Czech banking
+ * Standard format: SPD*1.0*ACC:IBAN*AM:amount*CC:CZK*MSG:message*X-VS:variable_symbol
+ */
+async function generatePaymentQRCode(
+  iban: string,
+  amount: number, // in haléře
+  currency: string,
+  variableSymbol: string,
+  message: string
+): Promise<string> {
+  // Convert amount from haléře to currency (30000.00)
+  const amountFormatted = (amount / 100).toFixed(2);
+
+  // Build SPAYD string
+  const spayd = [
+    'SPD*1.0',
+    `ACC:${iban}`,
+    `AM:${amountFormatted}`,
+    `CC:${currency}`,
+    `MSG:${message}`,
+    `X-VS:${variableSymbol}`,
+  ].join('*');
+
+  // Generate QR code as Data URL
+  const qrDataUrl = await QRCode.toDataURL(spayd, {
+    errorCorrectionLevel: 'M',
+    margin: 1,
+    width: 200,
+  });
+
+  return qrDataUrl;
 }
 
 // =====================================================
@@ -334,7 +369,7 @@ export async function generateInvoicePDF(
     color: COLORS.black,
   });
 
-  y -= 40;
+  y -= 50;  // More spacing before company info
 
   // =====================================================
   // COMPANY INFO (DODAVATEL)
@@ -412,7 +447,7 @@ export async function generateInvoicePDF(
     });
   }
 
-  y -= 40;
+  y -= 50;  // More spacing before client info
 
   // =====================================================
   // CLIENT INFO (ODBĚRATEL)
@@ -495,7 +530,7 @@ export async function generateInvoicePDF(
     y -= 12;
   }
 
-  y -= 30;
+  y -= 50;  // More spacing before items table
 
   // =====================================================
   // ITEMS TABLE
@@ -733,6 +768,40 @@ export async function generateInvoicePDF(
     size: 9,
     font,
     color: COLORS.black,
+  });
+
+  // =====================================================
+  // QR CODE for Payment
+  // =====================================================
+
+  // Generate QR code
+  const qrCodeDataUrl = await generatePaymentQRCode(
+    invoiceData.company.iban,
+    invoiceData.amount_with_vat,
+    invoiceData.currency,
+    invoiceData.variable_symbol,
+    `Faktura ${invoiceData.invoice_number}`
+  );
+
+  // Embed QR code image
+  const qrImageBytes = Buffer.from(qrCodeDataUrl.split(',')[1], 'base64');
+  const qrImage = await pdfDoc.embedPng(qrImageBytes);
+  const qrDims = qrImage.scale(0.5); // Scale to 100x100px
+
+  page.drawImage(qrImage, {
+    x: width - 150, // Right side
+    y: y - 100,     // Below bank details
+    width: qrDims.width,
+    height: qrDims.height,
+  });
+
+  // Add "Zaplaťte skenováním" label
+  drawText('Zaplaťte skenováním:', {
+    x: width - 150,
+    y: y - 110,
+    size: 8,
+    font: fontBold,
+    color: COLORS.darkGray,
   });
 
   y -= 30;
