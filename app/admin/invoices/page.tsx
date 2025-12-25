@@ -56,12 +56,14 @@ interface InvoiceStats {
 }
 
 const statusConfig: Record<InvoiceStatus, { label: string; color: string; icon: any }> = {
-  draft: { label: "Rozpracovaná", color: "bg-gray-500", icon: FileText },
-  issued: { label: "Vystavená", color: "bg-blue-500", icon: Send },
-  sent: { label: "Odeslaná", color: "bg-cyan-500", icon: Send },
-  paid: { label: "Zaplacená", color: "bg-green-500", icon: CheckCircle2 },
+  draft: { label: "Koncept", color: "bg-gray-500", icon: FileText },
+  issued: { label: "Vystaveno", color: "bg-blue-500", icon: Send },
+  sent: { label: "Odesláno", color: "bg-cyan-500", icon: Send },
+  awaiting_payment: { label: "Čeká na zaplacení", color: "bg-orange-500", icon: Clock },
+  deposit_paid: { label: "Zaplacena záloha", color: "bg-teal-500", icon: CheckCircle2 },
+  paid: { label: "Zaplaceno", color: "bg-green-500", icon: CheckCircle2 },
   overdue: { label: "Po splatnosti", color: "bg-red-500", icon: AlertCircle },
-  cancelled: { label: "Stornovaná", color: "bg-gray-400", icon: AlertCircle },
+  cancelled: { label: "Zrušeno", color: "bg-gray-400", icon: AlertCircle },
 };
 
 const typeConfig: Record<InvoiceType, { label: string; color: string }> = {
@@ -268,12 +270,14 @@ export default function AdminInvoicesPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Všechny statusy</SelectItem>
-                <SelectItem value="draft">Rozpracovaná</SelectItem>
-                <SelectItem value="issued">Vystavená</SelectItem>
-                <SelectItem value="sent">Odeslaná</SelectItem>
-                <SelectItem value="paid">Zaplacená</SelectItem>
+                <SelectItem value="draft">Koncept</SelectItem>
+                <SelectItem value="issued">Vystaveno</SelectItem>
+                <SelectItem value="sent">Odesláno</SelectItem>
+                <SelectItem value="awaiting_payment">Čeká na zaplacení</SelectItem>
+                <SelectItem value="deposit_paid">Zaplacena záloha</SelectItem>
+                <SelectItem value="paid">Zaplaceno</SelectItem>
                 <SelectItem value="overdue">Po splatnosti</SelectItem>
-                <SelectItem value="cancelled">Stornovaná</SelectItem>
+                <SelectItem value="cancelled">Zrušeno</SelectItem>
               </SelectContent>
             </Select>
 

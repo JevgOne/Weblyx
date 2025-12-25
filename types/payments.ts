@@ -105,12 +105,14 @@ export type InvoiceType =
   | 'credit_note';  // Dobropis
 
 export type InvoiceStatus =
-  | 'draft'         // Rozpracovaná
-  | 'issued'        // Vystavená
-  | 'sent'          // Odeslaná klientovi
-  | 'paid'          // Zaplacená
-  | 'overdue'       // Po splatnosti
-  | 'cancelled';    // Stornovaná
+  | 'draft'            // Koncept
+  | 'issued'           // Vystaveno
+  | 'sent'             // Odesláno
+  | 'awaiting_payment' // Čeká na zaplacení
+  | 'deposit_paid'     // Zaplacena záloha
+  | 'paid'             // Zaplaceno
+  | 'overdue'          // Po splatnosti
+  | 'cancelled';       // Zrušeno
 
 export type PaymentMethod =
   | 'bank_transfer' // Bankovní převod
@@ -136,6 +138,7 @@ export interface Invoice {
   payment_id: string | null;
   lead_id: string | null;
   project_id: string | null;
+  related_invoice_id: string | null; // For deposit→final invoice linking
 
   // Invoice type
   invoice_type: InvoiceType;
@@ -218,6 +221,7 @@ export interface CreateInvoiceInput {
   payment_id?: string;
   lead_id?: string;
   project_id?: string;
+  related_invoice_id?: string; // For deposit→final invoice linking
 
   // Optional
   payment_method?: PaymentMethod;

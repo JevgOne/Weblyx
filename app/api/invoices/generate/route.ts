@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     await turso.execute({
       sql: `INSERT INTO invoices (
         invoice_number, variable_symbol,
-        payment_id, lead_id, project_id,
+        payment_id, lead_id, project_id, related_invoice_id,
         invoice_type,
         client_name, client_street, client_city, client_zip, client_country,
         client_ico, client_dic, client_email,
@@ -164,13 +164,14 @@ export async function POST(request: NextRequest) {
         status,
         pdf_url, pdf_generated_at,
         notes, internal_notes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         nextInvoiceNumber,
         variableSymbol,
         paymentId,
         leadId,
         projectId,
+        input.related_invoice_id || null,
         input.invoice_type || 'standard',
         input.client_name,
         input.client_street || null,
@@ -190,7 +191,7 @@ export async function POST(request: NextRequest) {
         dueDate,
         deliveryDate,
         input.payment_method || 'bank_transfer',
-        'issued',
+        (input as any).status || 'draft',
         pdfUrl,
         Math.floor(Date.now() / 1000),
         input.notes || null,

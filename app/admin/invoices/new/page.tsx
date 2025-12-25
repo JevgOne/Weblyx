@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, Plus, Trash2, FileText, Loader2, Download } from "lucide-react";
-import type { InvoiceType, InvoiceItem, PaymentMethod } from "@/types/payments";
+import type { InvoiceType, InvoiceItem, PaymentMethod, InvoiceStatus } from "@/types/payments";
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -39,7 +39,9 @@ export default function NewInvoicePage() {
     client_dic: "",
     invoice_type: "standard" as InvoiceType,
     payment_method: "bank_transfer" as PaymentMethod,
+    status: "draft" as InvoiceStatus,
     due_days: 14,
+    related_invoice_id: "",
     notes: "",
     internal_notes: "",
   });
@@ -49,7 +51,7 @@ export default function NewInvoicePage() {
       description: "Vývoj webových stránek",
       quantity: 1,
       unit_price: 3000000, // 30,000 CZK in haléře
-      vat_rate: 21,
+      vat_rate: 0, // Default 0% - nejsme plátci DPH
     },
   ]);
 
@@ -86,7 +88,7 @@ export default function NewInvoicePage() {
         description: "",
         quantity: 1,
         unit_price: 0,
-        vat_rate: 21,
+        vat_rate: 0, // Default 0% - nejsme plátci DPH
       },
     ]);
   };
@@ -201,7 +203,7 @@ export default function NewInvoicePage() {
             <CardTitle>Nastavení faktury</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <Label htmlFor="invoice_type">Typ faktury</Label>
                 <Select
@@ -217,6 +219,28 @@ export default function NewInvoicePage() {
                     <SelectItem value="deposit">Záloha</SelectItem>
                     <SelectItem value="final">Konečná faktura</SelectItem>
                     <SelectItem value="credit_note">Dobropis</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value as InvoiceStatus })}
+                >
+                  <SelectTrigger id="status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Koncept</SelectItem>
+                    <SelectItem value="issued">Vystaveno</SelectItem>
+                    <SelectItem value="sent">Odesláno</SelectItem>
+                    <SelectItem value="awaiting_payment">Čeká na zaplacení</SelectItem>
+                    <SelectItem value="deposit_paid">Zaplacena záloha</SelectItem>
+                    <SelectItem value="paid">Zaplaceno</SelectItem>
+                    <SelectItem value="overdue">Po splatnosti</SelectItem>
+                    <SelectItem value="cancelled">Zrušeno</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -250,6 +274,24 @@ export default function NewInvoicePage() {
                 />
               </div>
             </div>
+
+            {/* Related Invoice (for final invoices after deposit) */}
+            {formData.invoice_type === "final" && (
+              <div className="space-y-2 pt-4 border-t">
+                <Label htmlFor="related_invoice_id">
+                  Navázat na zálohovou fakturu (volitelné)
+                </Label>
+                <Input
+                  id="related_invoice_id"
+                  placeholder="ID zálohové faktury"
+                  value={formData.related_invoice_id}
+                  onChange={(e) => setFormData({ ...formData, related_invoice_id: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pokud tato faktura navazuje na dříve vystavenou zálohu, zadejte zde ID té faktury
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -398,6 +440,9 @@ export default function NewInvoicePage() {
                       <SelectItem value="21">21%</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Nejsme plátci DPH
+                  </p>
                 </div>
 
                 <div className="md:col-span-1 flex items-end">
