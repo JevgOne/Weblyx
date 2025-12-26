@@ -64,6 +64,7 @@ export default function EditReviewPage() {
           sourceUrl: data.sourceUrl || "",
           published: data.published || false,
           featured: data.featured || false,
+          locale: data.locale || "cs",
         });
       } else {
         alert("Recenze nenalezena");
