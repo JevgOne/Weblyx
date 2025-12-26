@@ -24,13 +24,20 @@ interface LeadNotificationData {
 export async function sendTelegramNotification(
   leadData: LeadNotificationData
 ): Promise<boolean> {
+  console.log('📱 [Telegram] Starting notification send...');
+  console.log('📱 [Telegram] Bot Token:', TELEGRAM_BOT_TOKEN ? `${TELEGRAM_BOT_TOKEN.substring(0, 15)}...` : 'NOT SET');
+  console.log('📱 [Telegram] Chat ID:', TELEGRAM_CHAT_ID || 'NOT SET');
+
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     console.warn('⚠️ Telegram credentials not configured. Skipping notification.');
+    console.warn('⚠️ TELEGRAM_BOT_TOKEN:', TELEGRAM_BOT_TOKEN ? 'SET' : 'MISSING');
+    console.warn('⚠️ TELEGRAM_CHAT_ID:', TELEGRAM_CHAT_ID ? 'SET' : 'MISSING');
     return false;
   }
 
   try {
     const message = formatLeadMessage(leadData);
+    console.log('📱 [Telegram] Message formatted, sending to Telegram API...');
 
     const response = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -49,17 +56,21 @@ export async function sendTelegramNotification(
     );
 
     const data = await response.json();
+    console.log('📱 [Telegram] API Response:', JSON.stringify(data));
 
     if (!data.ok) {
-      console.error('❌ Telegram API error:', data.description);
+      console.error('❌ [Telegram] API error:', data.description);
+      console.error('❌ [Telegram] Full error:', JSON.stringify(data));
       return false;
     }
 
-    console.log('✅ Telegram notification sent successfully');
+    console.log('✅ [Telegram] Notification sent successfully!');
+    console.log('✅ [Telegram] Message ID:', data.result?.message_id);
     return true;
 
   } catch (error: any) {
-    console.error('❌ Failed to send Telegram notification:', error.message);
+    console.error('❌ [Telegram] Network/Parse error:', error.message);
+    console.error('❌ [Telegram] Stack:', error.stack);
     return false;
   }
 }
