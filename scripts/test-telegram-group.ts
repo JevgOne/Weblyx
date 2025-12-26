@@ -4,13 +4,13 @@
  * Test Telegram bot send to GROUP
  */
 
-const TELEGRAM_BOT_TOKEN = '8505304862:AAGJ4OLh9Ddz3qPU35I6xOoa1cysBn8WJyE';
-const TELEGRAM_CHAT_ID = '-5014512888'; // GROUP CHAT ID
+const TELEGRAM_GROUP_BOT_TOKEN = '8505304862:AAGJ4OLh9Ddz3qPU35I6xOoa1cysBn8WJyE';
+const TELEGRAM_GROUP_CHAT_ID = '-5014512888'; // GROUP CHAT ID
 
 async function testTelegramGroup() {
   console.log('🧪 Testing Telegram bot send to group...\n');
-  console.log(`📱 Chat ID: ${TELEGRAM_CHAT_ID}`);
-  console.log(`🤖 Bot Token: ${TELEGRAM_BOT_TOKEN.substring(0, 15)}...\n`);
+  console.log(`📱 Chat ID: ${TELEGRAM_GROUP_CHAT_ID}`);
+  console.log(`🤖 Bot Token: ${TELEGRAM_GROUP_BOT_TOKEN.substring(0, 15)}...\n`);
 
   const message = `🧪 <b>TEST ZPRÁVA</b>
 
@@ -29,14 +29,14 @@ Testovací lead z Claudea - ověřuji že notifikace fungují správně.
 
   try {
     const response = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      `https://api.telegram.org/bot${TELEGRAM_GROUP_BOT_TOKEN}/sendMessage`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
+          chat_id: TELEGRAM_GROUP_CHAT_ID,
           text: message,
           parse_mode: 'HTML',
           disable_web_page_preview: true,
