@@ -2,11 +2,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 async function getReviews(): Promise<Review[]> {
   try {
-    const reviews = await getPublishedReviews();
+    // Get current locale to fetch locale-specific reviews
+    const locale = (await getLocale()) as 'cs' | 'de';
+    const reviews = await getPublishedReviews(locale);
     // Limit to 6 most important reviews (sorted by order)
     return reviews.slice(0, 6);
   } catch (error) {

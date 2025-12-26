@@ -13,6 +13,7 @@ export interface Review {
   published: boolean;
   featured: boolean; // zvýrazněná recenze
   order: number;
+  locale: 'cs' | 'de'; // Language/locale for multi-domain support
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,4 +29,5 @@ export interface ReviewFormData {
   sourceUrl?: string;
   published: boolean;
   featured: boolean;
+  locale: 'cs' | 'de';
 }

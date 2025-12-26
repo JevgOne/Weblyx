@@ -16,6 +16,7 @@ interface ReviewRow {
   published: number;
   featured: number;
   order: number;
+  locale: string;
   created_at: number;
   updated_at: number;
 }
@@ -34,6 +35,7 @@ function rowToReview(row: ReviewRow): Review {
     published: Boolean(row.published),
     featured: Boolean(row.featured),
     order: row.order,
+    locale: (row.locale || 'cs') as 'cs' | 'de',
     createdAt: unixToDate(row.created_at) || new Date(),
     updatedAt: unixToDate(row.updated_at) || new Date(),
   };
@@ -56,10 +58,18 @@ export async function getReviewById(id: string): Promise<Review | null> {
   return rowToReview(result.rows[0] as unknown as ReviewRow);
 }
 
-export async function getPublishedReviews(): Promise<Review[]> {
-  const result = await turso.execute(
-    'SELECT * FROM reviews WHERE published = 1 ORDER BY "order" ASC'
-  );
+export async function getPublishedReviews(locale?: 'cs' | 'de'): Promise<Review[]> {
+  let sql = 'SELECT * FROM reviews WHERE published = 1';
+  const args: any[] = [];
+
+  if (locale) {
+    sql += ' AND locale = ?';
+    args.push(locale);
+  }
+
+  sql += ' ORDER BY "order" ASC';
+
+  const result = await turso.execute(args.length > 0 ? { sql, args } : sql);
   return result.rows.map((row) => rowToReview(row as unknown as ReviewRow));
 }
 
@@ -81,6 +91,7 @@ export async function createReview(data: {
   sourceUrl?: string;
   published?: boolean;
   featured?: boolean;
+  locale?: 'cs' | 'de';
 }): Promise<Review> {
   const id = nanoid();
   const now = Math.floor(Date.now() / 1000);
@@ -94,9 +105,9 @@ export async function createReview(data: {
   await turso.execute({
     sql: `INSERT INTO reviews (
       id, author_name, author_image, author_role, rating, text,
-      date, source, source_url, published, featured, "order",
+      date, source, source_url, published, featured, "order", locale,
       created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.authorName,
@@ -110,6 +121,7 @@ export async function createReview(data: {
       data.published ? 1 : 0,
       data.featured ? 1 : 0,
       maxOrder + 1,
+      data.locale || 'cs',
       now,
       now,
     ],

@@ -4,18 +4,17 @@ import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { Instagram, Facebook, MessageCircle, MapPin } from "lucide-react";
 import { useTranslations } from 'next-intl';
+import { getBrandConfig, isSeitelyxDomain } from '@/lib/brand';
 
 export function Footer() {
   const t = useTranslations('footer');
   const tNav = useTranslations('nav');
   const tRoutes = useTranslations('routes');
 
-  // Detect if German site
-  const isGermanSite = typeof window !== 'undefined'
-    ? window.location.hostname.includes('seitelyx.de')
-    : false;
-
-  const brandName = isGermanSite ? 'Seitelyx' : 'Weblyx';
+  // Get brand configuration
+  const brand = getBrandConfig();
+  const isGermanSite = isSeitelyxDomain();
+  const brandName = brand.name;
   const contactEmail = isGermanSite ? 'kontakt@seitelyx.de' : 'info@weblyx.cz';
 
   // Get the services route for building anchor links

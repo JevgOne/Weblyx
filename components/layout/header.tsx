@@ -6,18 +6,16 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { useTranslations } from 'next-intl';
+import { getBrandConfig } from '@/lib/brand';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = useTranslations('nav');
   const tRoutes = useTranslations('routes');
 
-  // Detect if German site
-  const isGermanSite = typeof window !== 'undefined'
-    ? window.location.hostname.includes('seitelyx.de')
-    : false;
-  const brandName = isGermanSite ? 'Seitelyx' : 'Weblyx';
-  const logoSrc = isGermanSite ? '/logo-de.svg' : '/logo.svg';
+  // Get brand configuration based on domain
+  const brand = getBrandConfig();
+  const { name: brandName, logo } = brand;
 
   const navigation = [
     { name: t('services'), href: tRoutes('services') },
@@ -34,7 +32,13 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img src={logoSrc} alt={brandName} className="h-10" />
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              className="h-10"
+              width={logo.width}
+              height={logo.height}
+            />
           </Link>
 
           {/* Desktop Navigation */}
