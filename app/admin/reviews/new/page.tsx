@@ -40,6 +40,7 @@ export default function NewReviewPage() {
     sourceUrl: "",
     published: false,
     featured: false,
+    locale: "cs",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

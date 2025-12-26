@@ -37,6 +37,7 @@ export default function EditReviewPage() {
     sourceUrl: "",
     published: false,
     featured: false,
+    locale: "cs",
   });
 
   useEffect(() => {
