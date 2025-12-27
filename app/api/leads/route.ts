@@ -195,25 +195,29 @@ export async function POST(request: NextRequest) {
       console.warn("⚠️ Push notification error:", err);
     });
 
-    // 📱 Send Telegram notification
-    sendTelegramNotification({
-      name,
-      email,
-      phone,
-      company: companyName,
-      projectType,
-      budget,
-      description: businessDescription,
-      leadId,
-    }).then((sent) => {
-      if (sent) {
-        console.log("✅ Telegram notification sent");
+    // 📱 Send Telegram notification (MUST await to ensure it completes)
+    try {
+      console.log('📱 [LEAD API] Attempting to send Telegram notification...');
+      const telegramSent = await sendTelegramNotification({
+        name,
+        email,
+        phone,
+        company: companyName,
+        projectType,
+        budget,
+        description: businessDescription,
+        leadId,
+      });
+
+      if (telegramSent) {
+        console.log("✅ [LEAD API] Telegram notification sent successfully");
       } else {
-        console.warn("⚠️ Telegram notification failed or not configured");
+        console.error("❌ [LEAD API] Telegram notification failed - check logs above");
       }
-    }).catch((err) => {
-      console.warn("⚠️ Telegram notification error:", err);
-    });
+    } catch (err: any) {
+      console.error("❌ [LEAD API] Telegram notification error:", err.message);
+      console.error("❌ [LEAD API] Stack:", err.stack);
+    }
 
     // 🤖 Trigger AI generation in background (don't await)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
