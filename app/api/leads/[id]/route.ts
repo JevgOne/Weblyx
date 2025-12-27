@@ -84,7 +84,7 @@ export async function DELETE(
 
 /**
  * PATCH /api/leads/[id]
- * Update lead status (Admin only)
+ * Update lead (status, assignedTo, etc.) - Admin only
  */
 export async function PATCH(
   request: NextRequest,
@@ -93,14 +93,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { status } = body;
-
-    if (!status) {
-      return NextResponse.json(
-        { error: "Status je povinný" },
-        { status: 400 }
-      );
-    }
+    const { status, assignedTo } = body;
 
     // Check if lead exists
     const checkResult = await turso.execute({
@@ -115,13 +108,37 @@ export async function PATCH(
       );
     }
 
-    // Update lead status
+    // Build dynamic UPDATE query based on provided fields
+    const updates: string[] = [];
+    const args: any[] = [];
+
+    if (status !== undefined) {
+      updates.push("status = ?");
+      args.push(status);
+    }
+
+    if (assignedTo !== undefined) {
+      updates.push("assigned_to = ?");
+      args.push(assignedTo);
+    }
+
+    if (updates.length === 0) {
+      return NextResponse.json(
+        { error: "Žádná pole k aktualizaci" },
+        { status: 400 }
+      );
+    }
+
+    // Add id to args (for WHERE clause)
+    args.push(id);
+
+    // Update lead
     await turso.execute({
-      sql: "UPDATE leads SET status = ? WHERE id = ?",
-      args: [status, id],
+      sql: `UPDATE leads SET ${updates.join(", ")} WHERE id = ?`,
+      args,
     });
 
-    console.log(`✅ Lead ${id} status updated to ${status}`);
+    console.log(`✅ Lead ${id} updated:`, { status, assignedTo });
 
     // Return updated lead
     const result = await turso.execute({

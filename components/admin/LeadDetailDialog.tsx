@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2 } from "lucide-react";
+import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, User, UserCheck } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { AIDesignSuggestionCard } from "./AIDesignSuggestionCard";
 
 interface LeadDetailDialogProps {
@@ -67,10 +69,13 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [assignedTo, setAssignedTo] = useState<string>(lead.assignedTo || "");
+  const [updatingAssignment, setUpdatingAssignment] = useState(false);
 
   // Update currentLead when lead prop changes
   useEffect(() => {
     setCurrentLead(lead);
+    setAssignedTo(lead.assignedTo || "");
   }, [lead]);
 
   const generateDesign = async () => {
@@ -148,6 +153,46 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
 
   const handleRegenerate = async () => {
     await generateDesign();
+  };
+
+  const handleUpdateAssignment = async () => {
+    setUpdatingAssignment(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch(`/api/leads/${currentLead.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assignedTo: assignedTo.trim() || null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess(`✅ Lead ${assignedTo.trim() ? `přiřazen uživateli ${assignedTo}` : 'odebráno přiřazení'}`);
+        setCurrentLead({ ...currentLead, assignedTo: assignedTo.trim() || null });
+
+        if (onLeadUpdate) {
+          onLeadUpdate({ ...currentLead, assignedTo: assignedTo.trim() || null });
+        }
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+      } else {
+        setError(data.error || "Update přiřazení selhal. Zkuste to znovu.");
+      }
+    } catch (error: any) {
+      setError("Chyba spojení. Zkuste to znovu.");
+      console.error("Error updating assignment:", error);
+    } finally {
+      setUpdatingAssignment(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -275,6 +320,42 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Assignment Section */}
+          <div className="space-y-3 bg-muted p-4 rounded-lg">
+            <Label htmlFor="assignedTo" className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4" />
+              Přiřadit kolegovi
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                id="assignedTo"
+                placeholder="Jméno kolegy (např. Jevgenij, Maxim)"
+                value={assignedTo}
+                onChange={(e) => setAssignedTo(e.target.value)}
+                disabled={updatingAssignment}
+              />
+              <Button
+                onClick={handleUpdateAssignment}
+                disabled={updatingAssignment || assignedTo === (currentLead.assignedTo || "")}
+                size="sm"
+              >
+                {updatingAssignment ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Ukládám...
+                  </>
+                ) : (
+                  "Uložit"
+                )}
+              </Button>
+            </div>
+            {currentLead.assignedTo && (
+              <p className="text-xs text-muted-foreground">
+                Aktuálně přiřazeno: <strong>{currentLead.assignedTo}</strong>
+              </p>
+            )}
           </div>
 
           {/* Business Description */}

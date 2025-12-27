@@ -193,9 +193,6 @@ export interface PromoCode {
   updatedAt: Date;
 }
 
-// Team Assignment Types
-export type TeamMember = 'jevgenij' | 'maxim';
-
 export interface Lead {
   id?: string;
   // Basic info
@@ -213,8 +210,8 @@ export interface Lead {
   aiDesigns?: AIGeneratedDesigns;
   selectedDesign?: string; // ID of chosen design
 
-  // Team assignment
-  assignedTo?: TeamMember;
+  // Team assignment - flexible string to support any team member name
+  assignedTo?: string;
   assignedAt?: Date;
   status: 'new' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
 

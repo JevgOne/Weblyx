@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles, User } from "lucide-react";
 import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
 import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
 import { NotificationPermission } from "@/components/admin/NotificationPermission";
@@ -236,8 +236,8 @@ export default function AdminLeadsPage() {
           Zobrazeno {filteredLeads.length} z {leads.length} poptávek
         </div>
 
-        {/* Leads Table */}
-        <Card>
+        {/* Leads Table - Hidden on mobile */}
+        <Card className="hidden md:block">
           <Table>
             <TableHeader>
               <TableRow>
@@ -246,6 +246,7 @@ export default function AdminLeadsPage() {
                 <TableHead>Typ projektu</TableHead>
                 <TableHead>Rozpočet</TableHead>
                 <TableHead>Stav</TableHead>
+                <TableHead>Přiřazeno</TableHead>
                 <TableHead>Datum</TableHead>
                 <TableHead className="text-right">Akce</TableHead>
               </TableRow>
@@ -273,6 +274,9 @@ export default function AdminLeadsPage() {
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
                     <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
                       <Skeleton className="h-4 w-24" />
                     </TableCell>
                     <TableCell>
@@ -282,7 +286,7 @@ export default function AdminLeadsPage() {
                 ))
               ) : filteredLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
                     Žádné poptávky nenalezeny
                   </TableCell>
                 </TableRow>
@@ -337,6 +341,15 @@ export default function AdminLeadsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm">
+                      {lead.assignedTo ? (
+                        <Badge variant="secondary" className="font-normal">
+                          {lead.assignedTo}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">Nepřiřazeno</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
                         {new Date(lead.created).toLocaleDateString('cs-CZ')}
@@ -365,6 +378,114 @@ export default function AdminLeadsPage() {
             </TableBody>
           </Table>
         </Card>
+
+        {/* Mobile Cards - Visible only on mobile */}
+        <div className="md:hidden space-y-4">
+          {loading ? (
+            // Skeleton loading cards
+            Array.from({ length: 3 }).map((_, i) => (
+              <Card key={`skeleton-card-${i}`} className="p-4">
+                <Skeleton className="h-6 w-32 mb-3" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4 mb-3" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 flex-1" />
+                  <Skeleton className="h-8 flex-1" />
+                </div>
+              </Card>
+            ))
+          ) : filteredLeads.length === 0 ? (
+            <Card className="p-8">
+              <p className="text-center text-muted-foreground">
+                Žádné poptávky nenalezeny
+              </p>
+            </Card>
+          ) : (
+            filteredLeads.map((lead) => (
+              <Card key={lead.id} className="p-4">
+                <div className="space-y-3">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold text-lg">{lead.name}</h3>
+                      {lead.company && (
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Building2 className="h-3 w-3" />
+                          {lead.company}
+                        </p>
+                      )}
+                    </div>
+                    <Badge
+                      className={`${statusConfig[lead.status as keyof typeof statusConfig].color} text-white`}
+                    >
+                      {statusConfig[lead.status as keyof typeof statusConfig].label}
+                    </Badge>
+                  </div>
+
+                  {/* Contact */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1 text-sm">
+                      <Mail className="h-3 w-3 text-muted-foreground" />
+                      <a href={`mailto:${lead.email}`} className="hover:text-primary">
+                        {lead.email}
+                      </a>
+                    </div>
+                    {lead.phone && (
+                      <div className="flex items-center gap-1 text-sm">
+                        <Phone className="h-3 w-3 text-muted-foreground" />
+                        <a href={`tel:${lead.phone}`} className="hover:text-primary">
+                          {lead.phone}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <Badge variant="outline">{lead.projectType}</Badge>
+                    {lead.budgetRange && (
+                      <Badge variant="secondary">{lead.budgetRange}</Badge>
+                    )}
+                    {lead.assignedTo && (
+                      <Badge variant="secondary" className="gap-1">
+                        <User className="h-3 w-3" />
+                        {lead.assignedTo}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Date */}
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Calendar className="h-3 w-3" />
+                    {new Date(lead.created).toLocaleDateString('cs-CZ')}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => handleViewDetail(lead)}
+                    >
+                      Detail
+                    </Button>
+                    {(lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
+                      <Button
+                        size="sm"
+                        className="flex-1 gap-1"
+                        onClick={() => handleConvertLead(lead)}
+                      >
+                        <ArrowRight className="h-3 w-3" />
+                        Převést
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
 
         {/* Detail Dialog */}
         {selectedLead && (
