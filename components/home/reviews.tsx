@@ -7,7 +7,7 @@ import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBad
 import { GoogleReviewsList } from "@/components/google-reviews/GoogleReviewsList";
 
 // Set to true to use Google Reviews, false to use Turso DB reviews
-const USE_GOOGLE_REVIEWS = true;
+const USE_GOOGLE_REVIEWS = false; // Temporarily disabled - waiting for Google billing setup
 
 async function getReviews(): Promise<Review[]> {
   try {
