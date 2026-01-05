@@ -25,7 +25,8 @@ interface GoogleReview {
 
 async function syncGoogleReviews() {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-  const placeId = process.env.GOOGLE_PLACE_ID || 'ChIJRXDG3wC5S0cRFZIz5-vFbHY';
+  const placeId = process.env.GOOGLE_PLACE_ID;
+  const businessName = process.env.GOOGLE_BUSINESS_NAME || 'Weblyx';
 
   if (!apiKey) {
     console.error('❌ Missing GOOGLE_PLACES_API_KEY environment variable');
@@ -35,9 +36,30 @@ async function syncGoogleReviews() {
   console.log('🔍 Fetching Google reviews...');
 
   try {
+    let placeIdToUse = placeId;
+
+    // If no Place ID, search by business name
+    if (!placeId) {
+      console.log(`🔍 No Place ID provided, searching for: ${businessName}`);
+      const searchResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(businessName)}&inputtype=textquery&fields=place_id,name&key=${apiKey}`
+      );
+      const searchData = await searchResponse.json();
+
+      if (searchData.status !== 'OK' || !searchData.candidates?.[0]) {
+        console.error('❌ Could not find business:', businessName);
+        console.error('   Try setting GOOGLE_PLACE_ID or GOOGLE_BUSINESS_NAME');
+        process.exit(1);
+      }
+
+      placeIdToUse = searchData.candidates[0].place_id;
+      console.log(`✅ Found Place ID: ${placeIdToUse}`);
+      console.log(`   Business name: ${searchData.candidates[0].name}`);
+    }
+
     // Fetch place details including reviews
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,user_ratings_total,reviews&key=${apiKey}&language=cs`
+      `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeIdToUse}&fields=name,rating,user_ratings_total,reviews&key=${apiKey}&language=cs`
     );
 
     const data = await response.json();
