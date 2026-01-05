@@ -6,8 +6,8 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBadge";
 import { GoogleReviewsList } from "@/components/google-reviews/GoogleReviewsList";
 
-// Set to true to use Google Reviews, false to use Turso DB reviews
-const USE_GOOGLE_REVIEWS = false; // Temporarily disabled - waiting for Google billing setup
+// Now using unified approach: Google reviews are imported to DB and approved in admin
+// Both Google and manual reviews are displayed from Turso DB
 
 async function getReviews(): Promise<Review[]> {
   try {
@@ -65,15 +65,8 @@ export async function Reviews() {
           placeUrl="https://share.google/cZIQkYTq2bVmkRAAP"
         />
 
-        {/* Reviews Grid */}
-        {USE_GOOGLE_REVIEWS ? (
-          // Use Google Reviews (client-side fetching)
-          <div className="mt-12">
-            <GoogleReviewsList />
-          </div>
-        ) : (
-          // Use Turso DB reviews (server-side)
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto mt-12">
+        {/* Reviews Grid - Unified (Google + Manual from DB) */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto mt-12">
           {reviews.map((review) => (
             <Card
               key={review.id}
@@ -130,8 +123,7 @@ export async function Reviews() {
               </CardContent>
             </Card>
           ))}
-          </div>
-        )}
+        </div>
       </div>
     </section>
   );

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "emulators": "firebase emulators:start --import=./firebase-data --export-on-exit",
-    "emulators:ui": "firebase emulators:start --import=./firebase-data --export-on-exit"
+    "emulators:ui": "firebase emulators:start --import=./firebase-data --export-on-exit",
+    "sync-google-reviews": "TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\" TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\" GOOGLE_PLACES_API_KEY=\"$GOOGLE_PLACES_API_KEY\" GOOGLE_PLACE_ID=\"$GOOGLE_PLACE_ID\" tsx scripts/sync-google-reviews.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
