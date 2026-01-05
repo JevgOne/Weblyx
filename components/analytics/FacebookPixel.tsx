@@ -28,6 +28,7 @@ export function FacebookPixel() {
           width="1"
           style={{ display: 'none' }}
           src="https://www.facebook.com/tr?id=1205303944860801&ev=PageView&noscript=1"
+          alt=""
         />
       </noscript>
     </>

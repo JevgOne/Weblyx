@@ -3,6 +3,11 @@ import { Star } from "lucide-react";
 import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getTranslations, getLocale } from "next-intl/server";
+import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBadge";
+import { GoogleReviewsList } from "@/components/google-reviews/GoogleReviewsList";
+
+// Set to true to use Google Reviews, false to use Turso DB reviews
+const USE_GOOGLE_REVIEWS = true;
 
 async function getReviews(): Promise<Review[]> {
   try {
@@ -38,22 +43,37 @@ export async function Reviews() {
   const t = await getTranslations("reviews");
   const reviews = await getReviews();
 
-  // Don't render section if no reviews
-  if (reviews.length === 0) {
+  // For Turso reviews, don't render section if no reviews
+  if (!USE_GOOGLE_REVIEWS && reviews.length === 0) {
     return null;
   }
 
   return (
     <section id="recenze" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">{t("title")}</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {t("subtitle")}
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
+        {/* Google Reviews Badge */}
+        <GoogleReviewsBadge
+          rating={5.0}
+          reviewCount={7}
+          placeUrl="https://share.google/cZIQkYTq2bVmkRAAP"
+        />
+
+        {/* Reviews Grid */}
+        {USE_GOOGLE_REVIEWS ? (
+          // Use Google Reviews (client-side fetching)
+          <div className="mt-12">
+            <GoogleReviewsList />
+          </div>
+        ) : (
+          // Use Turso DB reviews (server-side)
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto mt-12">
           {reviews.map((review) => (
             <Card
               key={review.id}
@@ -110,7 +130,8 @@ export async function Reviews() {
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
