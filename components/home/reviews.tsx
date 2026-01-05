@@ -4,7 +4,6 @@ import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getTranslations, getLocale } from "next-intl/server";
 import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBadge";
-import { GoogleReviewsList } from "@/components/google-reviews/GoogleReviewsList";
 
 // Now using unified approach: Google reviews are imported to DB and approved in admin
 // Both Google and manual reviews are displayed from Turso DB
@@ -43,8 +42,8 @@ export async function Reviews() {
   const t = await getTranslations("reviews");
   const reviews = await getReviews();
 
-  // For Turso reviews, don't render section if no reviews
-  if (!USE_GOOGLE_REVIEWS && reviews.length === 0) {
+  // Don't render section if no reviews
+  if (reviews.length === 0) {
     return null;
   }
 
