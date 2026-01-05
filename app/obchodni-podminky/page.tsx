@@ -2,7 +2,26 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Obchodní podmínky | Weblyx",
-  description: "Všeobecné obchodní podmínky poskytování služeb.",
+  description: "Všeobecné obchodní podmínky poskytování služeb. Pravidla spolupráce, platební podmínky a reklamační řád.",
+  openGraph: {
+    title: "Obchodní podmínky | Weblyx",
+    description: "Všeobecné obchodní podmínky poskytování služeb.",
+    type: "website",
+    locale: "cs_CZ",
+    siteName: "Weblyx",
+  },
+  twitter: {
+    card: "summary",
+    title: "Obchodní podmínky | Weblyx",
+    description: "Všeobecné obchodní podmínky poskytování služeb.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/obchodni-podminky",
+  },
 };
 
 export default function TermsPage() {

@@ -2,7 +2,26 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Datenschutzerklärung | Seitelyx",
-  description: "Datenschutzerklärung und DSGVO-Compliance für Seitelyx - Ihre moderne Webagentur.",
+  description: "Datenschutzerklärung und DSGVO-Compliance für Seitelyx. Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.",
+  openGraph: {
+    title: "Datenschutzerklärung | Seitelyx",
+    description: "Datenschutzerklärung und DSGVO-Compliance für Seitelyx.",
+    type: "website",
+    locale: "de_DE",
+    siteName: "Seitelyx",
+  },
+  twitter: {
+    card: "summary",
+    title: "Datenschutzerklärung | Seitelyx",
+    description: "Datenschutzerklärung und DSGVO-Compliance.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://seitelyx.de/datenschutz",
+  },
 };
 
 export default function DatenschutzPage() {

@@ -2,7 +2,26 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Impressum | Seitelyx",
-  description: "Impressum und Angaben gemäß § 5 DDG für Seitelyx - Ihre moderne Webagentur.",
+  description: "Impressum und Angaben gemäß § 5 DDG für Seitelyx. Rechtliche Informationen und Kontaktdaten.",
+  openGraph: {
+    title: "Impressum | Seitelyx",
+    description: "Impressum und Angaben gemäß § 5 DDG für Seitelyx.",
+    type: "website",
+    locale: "de_DE",
+    siteName: "Seitelyx",
+  },
+  twitter: {
+    card: "summary",
+    title: "Impressum | Seitelyx",
+    description: "Impressum und rechtliche Informationen.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://seitelyx.de/impressum",
+  },
 };
 
 export default function ImpressumPage() {

@@ -13,9 +13,9 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
     // Fetch from Turso
     const allProjects = await getAllPortfolio();
 
-    // Filter for published and featured, then sort and limit
+    // Filter for published only, then sort and limit
     const projects = allProjects
-      .filter(p => p.published && p.featured)
+      .filter(p => p.published)
       .sort((a, b) => (a.order || 0) - (b.order || 0))
       .slice(0, 6)
       .map(data => ({
@@ -106,11 +106,15 @@ export async function Portfolio() {
                 )}
               </div>
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {project.category}
+                    </Badge>
+                  </div>
                   <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">
                     {project.title}
                   </h3>
-                  <Badge variant="secondary">{project.category}</Badge>
                 </div>
 
                 {/* PageSpeed Scores */}

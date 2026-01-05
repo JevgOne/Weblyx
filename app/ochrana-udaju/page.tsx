@@ -2,7 +2,26 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Ochrana osobních údajů | Weblyx",
-  description: "Zásady ochrany osobních údajů a GDPR compliance.",
+  description: "Zásady ochrany osobních údajů a GDPR compliance. Informace o zpracování osobních údajů dle nařízení GDPR.",
+  openGraph: {
+    title: "Ochrana osobních údajů | Weblyx",
+    description: "Zásady ochrany osobních údajů a GDPR compliance.",
+    type: "website",
+    locale: "cs_CZ",
+    siteName: "Weblyx",
+  },
+  twitter: {
+    card: "summary",
+    title: "Ochrana osobních údajů | Weblyx",
+    description: "Zásady ochrany osobních údajů a GDPR compliance.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://weblyx.cz/ochrana-udaju",
+  },
 };
 
 export default function PrivacyPage() {
