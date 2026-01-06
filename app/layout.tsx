@@ -11,6 +11,7 @@ import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { getSEOMetadata } from '@/lib/seo-metadata';
+import { getBrandConfig } from '@/lib/brand';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,28 +22,38 @@ const inter = Inter({
 });
 
 // Generate dynamic metadata based on domain
-export const metadata: Metadata = {
-  ...getSEOMetadata(),
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-    other: [
-      { rel: "icon", url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
-      { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
-    ],
-  },
-  manifest: "/site.webmanifest",
-  verification: {
-    google: "google-site-verification-code", // TODO: Add actual verification code
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'weblyx.cz';
+  const isSeitelyx = domain.includes('seitelyx.de');
+
+  // Use seitelyx icon for seitelyx.de, otherwise use default weblyx icons
+  const iconUrl = isSeitelyx ? "/seitelyx-icon.svg" : "/favicon.ico";
+  const favicon16 = isSeitelyx ? "/seitelyx-icon.svg" : "/favicon-16x16.png";
+  const favicon32 = isSeitelyx ? "/seitelyx-icon.svg" : "/favicon-32x32.png";
+
+  return {
+    ...getSEOMetadata(),
+    icons: {
+      icon: [
+        { url: iconUrl },
+        { url: favicon16, sizes: "16x16", type: isSeitelyx ? "image/svg+xml" : "image/png" },
+        { url: favicon32, sizes: "32x32", type: isSeitelyx ? "image/svg+xml" : "image/png" },
+      ],
+      shortcut: iconUrl,
+      apple: [
+        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+      other: [
+        { rel: "icon", url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+        { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+      ],
+    },
+    manifest: "/site.webmanifest",
+    verification: {
+      google: "google-site-verification-code", // TODO: Add actual verification code
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -52,19 +63,20 @@ export default async function RootLayout({
   // Get messages for i18n
   const messages = await getMessages();
 
-  // Detect locale from domain
-  const locale = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'de' : 'cs';
+  // Detect locale and brand from domain
+  const brand = getBrandConfig();
+  const locale = brand.locale;
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
         {/* PWA Meta Tags */}
-        <meta name="application-name" content="Weblyx Admin" />
+        <meta name="application-name" content={`${brand.name} Admin`} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Weblyx" />
+        <meta name="apple-mobile-web-app-title" content={brand.name} />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#14B8A6" />
+        <meta name="theme-color" content={brand.colors.primary} />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Analytics - placed in head for optimal tracking */}
         <GoogleAnalytics />

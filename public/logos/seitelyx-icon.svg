@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06B6D4"/>
+      <stop offset="100%" style="stop-color:#14B8A6"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#06B6D4" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Pozadí - BÍLÉ -->
+  <rect width="512" height="512" rx="100" fill="#FFFFFF"/>
+  
+  <!-- Jemný border -->
+  <rect width="512" height="512" rx="100" fill="none" stroke="#E2E8F0" stroke-width="2"/>
+  
+  <!-- Subtle gradient glow -->
+  <circle cx="256" cy="256" r="140" fill="url(#brandGradient)" opacity="0.08"/>
+  
+  <!-- Logo mark - stylizované S - zmenšené a vycentrované -->
+  <g transform="translate(156, 116)" filter="url(#shadow)">
+    <path d="M160 25 C160 25 142 0 95 0 C48 0 15 35 15 70 C15 105 50 128 95 142 C140 156 175 178 175 222 C175 266 133 300 80 300 C27 300 0 268 0 268" 
+          stroke="url(#brandGradient)" 
+          stroke-width="30" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+</svg>
