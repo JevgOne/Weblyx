@@ -7,6 +7,7 @@ import {
 import { getAllFAQItems, getFAQSection } from "@/lib/turso/cms";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateFAQSchema } from "@/lib/schema-org";
+import { generateSpeakableSchema } from "@/lib/schema-generators";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -46,10 +47,18 @@ export default async function FAQPage() {
   // Generate FAQ Schema.org
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
 
+  // Generate Speakable Schema for Voice Search (Google Assistant, Alexa)
+  const speakableSchema = generateSpeakableSchema({
+    cssSelectors: ['h1', 'h2', '.faq-question', '.faq-answer'],
+  });
+
   return (
     <>
       {/* Schema.org JSON-LD for FAQ */}
       {faqSchema && <JsonLd data={faqSchema} />}
+
+      {/* Speakable Schema for Voice Search Optimization */}
+      <JsonLd data={speakableSchema} />
 
       {/* Breadcrumb Schema */}
       <JsonLd
