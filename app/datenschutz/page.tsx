@@ -129,7 +129,7 @@ export default function DatenschutzPage() {
         <p>
           Altro Servis Group s.r.o.
           <br />
-          Schulstraße 660/3, Nové Město
+          Schulstraße 660/3
           <br />
           110 00 Prag, Tschechische Republik
           <br />

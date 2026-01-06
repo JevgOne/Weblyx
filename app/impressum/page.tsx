@@ -35,16 +35,14 @@ export default function ImpressumPage() {
         <p>
           <strong>Altro Servis Group s.r.o.</strong>
           <br />
-          Schulstraße 660/3, Nové Město
+          Schulstraße 660/3
           <br />
           110 00 Prag, Tschechische Republik
           <br />
           <br />
-          IČO (Steuernummer): 23673389
+          Steuernummer: 23673389
           <br />
           Grundkapital: 20.000 CZK (ca. 800 EUR)
-          <br />
-          Datová schránka: rtq6w48
         </p>
 
         <h2>Kontakt</h2>
@@ -62,7 +60,7 @@ export default function ImpressumPage() {
           <br />
           Altro Servis Group s.r.o.
           <br />
-          Schulstraße 660/3, Nové Město
+          Schulstraße 660/3
           <br />
           110 00 Prag, Tschechische Republik
         </p>
