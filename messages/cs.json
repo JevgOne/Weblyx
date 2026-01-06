@@ -294,5 +294,55 @@
     "title": "Co říkají naši klienti",
     "subtitle": "Přečtěte si, co o nás říkají spokojení zákazníci",
     "viewOriginal": "Zobrazit originál →"
+  },
+  "contactForm": {
+    "errors": {
+      "invalidEmail": "Neplatná emailová adresa",
+      "invalidPhone": "Neplatné telefonní číslo",
+      "companyNameRequired": "Název firmy/projektu je povinný",
+      "descriptionRequired": "Popis je povinný",
+      "descriptionTooShort": "Popis musí obsahovat alespoň 10 znaků",
+      "nameRequired": "Jméno je povinné",
+      "emailRequired": "Email je povinný",
+      "projectTypeRequired": "Vyberte typ projektu"
+    },
+    "messages": {
+      "successTitle": "Děkujeme!",
+      "successMessage": "Ozveme se vám do 24 hodin a domluvíme bezplatnou konzultaci.",
+      "errorTitle": "Něco se pokazilo",
+      "errorMessage": "Došlo k chybě při odesílání. Zkuste to prosím znovu."
+    },
+    "form": {
+      "title": "Nezávazná poptávka",
+      "subtitle": "Vyplňte formulář a my se vám ozveme do 24 hodin",
+      "projectTypeLabel": "Co potřebujete?",
+      "projectType": {
+        "newWebsite": "Nový web",
+        "redesign": "Redesign",
+        "eshop": "E-shop",
+        "landingPage": "Landing page",
+        "other": "Jiné"
+      },
+      "companyNameLabel": "Název firmy/projektu",
+      "companyNamePlaceholder": "Např. Firma s.r.o.",
+      "nameLabel": "Vaše jméno",
+      "namePlaceholder": "Jan Novák",
+      "emailLabel": "Email",
+      "emailPlaceholder": "jan@priklad.cz",
+      "phoneLabel": "Telefon (nepovinné)",
+      "phonePlaceholder": "+420 123 456 789",
+      "descriptionLabel": "Stručný popis",
+      "descriptionPlaceholder": "Stačí pár slov – čím se zabýváte? Nemusíte psát román.",
+      "submitButton": "Odeslat poptávku",
+      "submitting": "Odesílání...",
+      "requiredFields": "* Povinná pole"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "address": "Praha, Česká republika",
+      "hours": "Otevírací doba",
+      "weekdays": "Po - Pá: 9:00 - 18:00",
+      "weekend": "So - Ne: Zavřeno"
+    }
   }
 }

@@ -312,5 +312,55 @@
     "title": "Was unsere Kunden sagen",
     "subtitle": "Lesen Sie, was zufriedene Kunden über uns sagen",
     "viewOriginal": "Original ansehen →"
+  },
+  "contactForm": {
+    "errors": {
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "invalidPhone": "Ungültige Telefonnummer",
+      "companyNameRequired": "Unternehmensname/Projekt erforderlich",
+      "descriptionRequired": "Beschreibung erforderlich",
+      "descriptionTooShort": "Beschreibung muss mindestens 10 Zeichen enthalten",
+      "nameRequired": "Name erforderlich",
+      "emailRequired": "E-Mail erforderlich",
+      "projectTypeRequired": "Projekttyp auswählen"
+    },
+    "messages": {
+      "successTitle": "Vielen Dank!",
+      "successMessage": "Wir melden uns innerhalb von 24 Stunden und vereinbaren ein kostenloses Beratungsgespräch.",
+      "errorTitle": "Etwas ist schiefgelaufen",
+      "errorMessage": "Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    },
+    "form": {
+      "title": "Unverbindliche Anfrage",
+      "subtitle": "Füllen Sie das Formular aus und wir melden uns innerhalb von 24 Stunden",
+      "projectTypeLabel": "Was benötigen Sie?",
+      "projectType": {
+        "newWebsite": "Neue Website",
+        "redesign": "Redesign",
+        "eshop": "Online-Shop",
+        "landingPage": "Landing Page",
+        "other": "Sonstiges"
+      },
+      "companyNameLabel": "Unternehmensname/Projekt",
+      "companyNamePlaceholder": "z.B. Firma GmbH",
+      "nameLabel": "Ihr Name",
+      "namePlaceholder": "Max Mustermann",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "max@beispiel.de",
+      "phoneLabel": "Telefon (optional)",
+      "phonePlaceholder": "+49 123 456 789",
+      "descriptionLabel": "Kurzbeschreibung",
+      "descriptionPlaceholder": "Ein paar Worte reichen – was machen Sie? Kein Roman nötig.",
+      "submitButton": "Anfrage absenden",
+      "submitting": "Wird gesendet...",
+      "requiredFields": "* Erforderliche Felder"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "address": "Prag, EU",
+      "hours": "Erreichbarkeit",
+      "weekdays": "Mo - Fr: 9:00 - 18:00",
+      "weekend": "Sa - So: Geschlossen"
+    }
   }
 }

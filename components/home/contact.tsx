@@ -10,12 +10,16 @@ import { HoneypotInput } from "@/components/security/HoneypotInput";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import confetti from "canvas-confetti";
+import { useTranslations } from 'next-intl';
 
 interface ContactProps {
   isMainPage?: boolean; // If true, use H1 instead of H2
 }
 
 export function Contact({ isMainPage = false }: ContactProps) {
+  // i18n translations
+  const t = useTranslations('contactForm');
+
   const [formData, setFormData] = useState({
     projectType: "",
     companyName: "",
@@ -38,44 +42,44 @@ export function Contact({ isMainPage = false }: ContactProps) {
     switch (name) {
       case "email":
         if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          newErrors.email = "Neplatná emailová adresa";
+          newErrors.email = t('errors.invalidEmail');
         } else {
           delete newErrors.email;
         }
         break;
       case "phone":
         if (value && !/^(\+420)?[0-9\s]{9,}$/.test(value.replace(/\s/g, ""))) {
-          newErrors.phone = "Neplatné telefonní číslo";
+          newErrors.phone = t('errors.invalidPhone');
         } else {
           delete newErrors.phone;
         }
         break;
       case "companyName":
         if (!value.trim()) {
-          newErrors.companyName = "Název firmy/projektu je povinný";
+          newErrors.companyName = t('errors.companyNameRequired');
         } else {
           delete newErrors.companyName;
         }
         break;
       case "description":
         if (!value.trim()) {
-          newErrors.description = "Popis je povinný";
+          newErrors.description = t('errors.descriptionRequired');
         } else if (value.trim().length < 10) {
-          newErrors.description = "Popis musí obsahovat alespoň 10 znaků";
+          newErrors.description = t('errors.descriptionTooShort');
         } else {
           delete newErrors.description;
         }
         break;
       case "name":
         if (!value.trim()) {
-          newErrors.name = "Jméno je povinné";
+          newErrors.name = t('errors.nameRequired');
         } else {
           delete newErrors.name;
         }
         break;
       case "projectType":
         if (!value) {
-          newErrors.projectType = "Vyberte typ projektu";
+          newErrors.projectType = t('errors.projectTypeRequired');
         } else {
           delete newErrors.projectType;
         }
@@ -133,11 +137,11 @@ export function Contact({ isMainPage = false }: ContactProps) {
 
     // Final validation
     const finalErrors: Record<string, string> = {};
-    if (!formData.projectType) finalErrors.projectType = "Vyberte typ projektu";
-    if (!formData.companyName.trim()) finalErrors.companyName = "Název firmy/projektu je povinný";
-    if (!formData.description.trim()) finalErrors.description = "Popis je povinný";
-    if (!formData.name.trim()) finalErrors.name = "Jméno je povinné";
-    if (!formData.email.trim()) finalErrors.email = "Email je povinný";
+    if (!formData.projectType) finalErrors.projectType = t('errors.projectTypeRequired');
+    if (!formData.companyName.trim()) finalErrors.companyName = t('errors.companyNameRequired');
+    if (!formData.description.trim()) finalErrors.description = t('errors.descriptionRequired');
+    if (!formData.name.trim()) finalErrors.name = t('errors.nameRequired');
+    if (!formData.email.trim()) finalErrors.email = t('errors.emailRequired');
 
     if (Object.keys(finalErrors).length > 0) {
       setErrors(finalErrors);
@@ -157,12 +161,12 @@ export function Contact({ isMainPage = false }: ContactProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Něco se pokazilo");
+        throw new Error(data.error || t('messages.errorTitle'));
       }
 
       setSubmitStatus({
         type: "success",
-        message: "Děkujeme! Ozveme se vám do 24 hodin a domluvíme bezplatnou konzultaci.",
+        message: t('messages.successMessage'),
       });
 
       // 🎉 Celebrate with confetti!
@@ -184,7 +188,7 @@ export function Contact({ isMainPage = false }: ContactProps) {
         message:
           error instanceof Error
             ? error.message
-            : "Došlo k chybě při odesílání. Zkuste to prosím znovu.",
+            : t('messages.errorMessage'),
       });
     } finally {
       setIsSubmitting(false);
@@ -197,15 +201,15 @@ export function Contact({ isMainPage = false }: ContactProps) {
         <div className="text-center space-y-4 mb-12">
           {isMainPage ? (
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Nezávazná poptávka
+              {t('form.title')}
             </h1>
           ) : (
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Nezávazná poptávka
+              {t('form.title')}
             </h2>
           )}
           <p className="text-lg text-muted-foreground">
-            Vyplňte formulář a my se vám ozveme do 24 hodin
+            {t('form.subtitle')}
           </p>
         </div>
 
@@ -251,7 +255,7 @@ export function Contact({ isMainPage = false }: ContactProps) {
                   <div>
                     <h3 className="font-semibold mb-1 text-lg">Adresa</h3>
                     <p className="text-muted-foreground">
-                      Praha, Česká republika
+                      {t('contact.address')}
                     </p>
                   </div>
                 </div>
@@ -259,10 +263,10 @@ export function Contact({ isMainPage = false }: ContactProps) {
             </Card>
 
             <div className="space-y-2">
-              <h3 className="font-semibold text-lg">Otevírací doba</h3>
+              <h3 className="font-semibold text-lg">{t('contact.hours')}</h3>
               <div className="text-sm text-muted-foreground space-y-1">
-                <p>Po - Pá: 9:00 - 18:00</p>
-                <p>So - Ne: Zavřeno</p>
+                <p>{t('contact.weekdays')}</p>
+                <p>{t('contact.weekend')}</p>
               </div>
             </div>
           </div>
@@ -275,10 +279,10 @@ export function Contact({ isMainPage = false }: ContactProps) {
                   {/* 🤖 Anti-bot protection */}
                   <HoneypotInput />
 
-                  {/* Co potřebujete? */}
+                  {/* Project Type */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">
-                      Co potřebujete? *
+                      {t('form.projectTypeLabel')} *
                     </Label>
                     <RadioGroup
                       value={formData.projectType}
@@ -288,31 +292,31 @@ export function Contact({ isMainPage = false }: ContactProps) {
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="new-web" id="new-web" />
                         <Label htmlFor="new-web" className="cursor-pointer font-normal">
-                          Nový web
+                          {t('form.projectType.newWebsite')}
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="redesign" id="redesign" />
                         <Label htmlFor="redesign" className="cursor-pointer font-normal">
-                          Redesign
+                          {t('form.projectType.redesign')}
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="eshop" id="eshop" />
                         <Label htmlFor="eshop" className="cursor-pointer font-normal">
-                          E-shop
+                          {t('form.projectType.eshop')}
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="landing" id="landing" />
                         <Label htmlFor="landing" className="cursor-pointer font-normal">
-                          Landing page
+                          {t('form.projectType.landingPage')}
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="other" id="other" />
                         <Label htmlFor="other" className="cursor-pointer font-normal">
-                          Jiné
+                          {t('form.projectType.other')}
                         </Label>
                       </div>
                     </RadioGroup>
@@ -321,15 +325,15 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     )}
                   </div>
 
-                  {/* Název firmy + Jméno na jednom řádku */}
+                  {/* Company Name + Name Row */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="companyName" className="text-sm font-medium">
-                        Název firmy/projektu *
+                        {t('form.companyNameLabel')} *
                       </Label>
                       <Input
                         id="companyName"
-                        placeholder="Např. Firma s.r.o."
+                        placeholder={t('form.companyNamePlaceholder')}
                         value={formData.companyName}
                         onChange={(e) => handleInputChange("companyName", e.target.value)}
                         className={errors.companyName ? "border-red-500" : ""}
@@ -341,11 +345,11 @@ export function Contact({ isMainPage = false }: ContactProps) {
 
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-sm font-medium">
-                        Vaše jméno *
+                        {t('form.nameLabel')} *
                       </Label>
                       <Input
                         id="name"
-                        placeholder="Jan Novák"
+                        placeholder={t('form.namePlaceholder')}
                         value={formData.name}
                         onChange={(e) => handleInputChange("name", e.target.value)}
                         className={errors.name ? "border-red-500" : ""}
@@ -356,16 +360,16 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     </div>
                   </div>
 
-                  {/* Email + Telefon na jednom řádku */}
+                  {/* Email + Phone Row */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-sm font-medium">
-                        Email *
+                        {t('form.emailLabel')} *
                       </Label>
                       <Input
                         id="email"
                         type="email"
-                        placeholder="jan@priklad.cz"
+                        placeholder={t('form.emailPlaceholder')}
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
                         className={errors.email ? "border-red-500" : ""}
@@ -377,12 +381,12 @@ export function Contact({ isMainPage = false }: ContactProps) {
 
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="text-sm font-medium">
-                        Telefon <span className="text-muted-foreground font-normal text-xs">(nepovinné)</span>
+                        {t('form.phoneLabel')}
                       </Label>
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="+420 123 456 789"
+                        placeholder={t('form.phonePlaceholder')}
                         value={formData.phone}
                         onChange={(e) => handleInputChange("phone", e.target.value)}
                         className={errors.phone ? "border-red-500" : ""}
@@ -393,14 +397,14 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     </div>
                   </div>
 
-                  {/* Stručný popis */}
+                  {/* Description */}
                   <div className="space-y-2">
                     <Label htmlFor="description" className="text-sm font-medium">
-                      Stručný popis *
+                      {t('form.descriptionLabel')} *
                     </Label>
                     <Textarea
                       id="description"
-                      placeholder="Stačí pár slov – čím se zabýváte? Nemusíte psát román."
+                      placeholder={t('form.descriptionPlaceholder')}
                       rows={2}
                       value={formData.description}
                       onChange={(e) => handleInputChange("description", e.target.value)}
@@ -432,11 +436,11 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     disabled={isSubmitting || Object.keys(errors).length > 0}
                   >
                     <Send className="mr-2 h-5 w-5" />
-                    {isSubmitting ? "Odesílání..." : "Odeslat poptávku"}
+                    {isSubmitting ? t('form.submitting') : t('form.submitButton')}
                   </Button>
 
                   <p className="text-sm text-muted-foreground text-center">
-                    * Povinná pole
+                    {t('form.requiredFields')}
                   </p>
                 </form>
               </CardContent>
