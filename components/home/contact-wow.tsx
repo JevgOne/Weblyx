@@ -26,17 +26,20 @@ import {
   Check,
   ArrowRight
 } from "lucide-react";
-
-const formFields = [
-  { id: "name", label: "Jméno a příjmení", icon: User, placeholder: "Jan Novák", type: "text", required: true },
-  { id: "email", label: "Email", icon: Mail, placeholder: "jan@priklad.cz", type: "email", required: true },
-  { id: "phone", label: "Telefon", icon: Phone, placeholder: "+420 123 456 789", type: "tel", required: false },
-  { id: "projectType", label: "Typ projektu", icon: Briefcase, type: "select", required: true },
-  { id: "budget", label: "Rozpočet", icon: DollarSign, type: "select", required: false },
-  { id: "message", label: "Zpráva", icon: MessageSquare, placeholder: "Popište nám váš projekt...", type: "textarea", required: true },
-];
+import { useTranslations } from 'next-intl';
 
 export function ContactWow() {
+  const t = useTranslations('contactForm.contactWow');
+
+  const formFields = [
+    { id: "name", label: t('fields.name'), icon: User, placeholder: t('fields.namePlaceholder'), type: "text", required: true },
+    { id: "email", label: t('fields.email'), icon: Mail, placeholder: t('fields.emailPlaceholder'), type: "email", required: true },
+    { id: "phone", label: t('fields.phone'), icon: Phone, placeholder: t('fields.phonePlaceholder'), type: "tel", required: false },
+    { id: "projectType", label: t('fields.projectType'), icon: Briefcase, type: "select", required: true },
+    { id: "budget", label: t('fields.budget'), icon: DollarSign, type: "select", required: false },
+    { id: "message", label: t('fields.message'), icon: MessageSquare, placeholder: t('fields.messagePlaceholder'), type: "textarea", required: true },
+  ];
+
   const [currentField, setCurrentField] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
@@ -72,13 +75,13 @@ export function ContactWow() {
     if (!field) return "";
 
     if (field.required && !value.trim()) {
-      return "Toto pole je povinné";
+      return t('errors.fieldRequired');
     }
 
     if (fieldId === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
-        return "Neplatný formát emailu";
+        return t('errors.invalidEmail');
       }
     }
 
@@ -133,7 +136,7 @@ export function ContactWow() {
       });
 
       if (!response.ok) {
-        throw new Error("Něco se pokazilo");
+        throw new Error(t('errors.somethingWrong'));
       }
 
       // Success! 🎉
@@ -154,7 +157,7 @@ export function ContactWow() {
       }, 3000);
 
     } catch (error) {
-      setErrors({ submit: "Došlo k chybě při odesílání. Zkuste to prosím znovu." });
+      setErrors({ submit: t('errors.sendingError') });
     } finally {
       setIsSubmitting(false);
     }
@@ -189,24 +192,24 @@ export function ContactWow() {
             onValueChange={(val) => handleFieldChange(field.id, val)}
           >
             <SelectTrigger className="h-14 border-2 focus:border-primary transition-all">
-              <SelectValue placeholder={`Vyberte ${field.label.toLowerCase()}`} />
+              <SelectValue placeholder={`${t('selectPlaceholder')} ${field.label.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
               {field.id === "projectType" ? (
                 <>
-                  <SelectItem value="web">Webové stránky</SelectItem>
-                  <SelectItem value="eshop">E-shop</SelectItem>
-                  <SelectItem value="redesign">Redesign</SelectItem>
-                  <SelectItem value="seo">SEO optimalizace</SelectItem>
-                  <SelectItem value="other">Jiné</SelectItem>
+                  <SelectItem value="web">{t('projectTypes.web')}</SelectItem>
+                  <SelectItem value="eshop">{t('projectTypes.eshop')}</SelectItem>
+                  <SelectItem value="redesign">{t('projectTypes.redesign')}</SelectItem>
+                  <SelectItem value="seo">{t('projectTypes.seo')}</SelectItem>
+                  <SelectItem value="other">{t('projectTypes.other')}</SelectItem>
                 </>
               ) : (
                 <>
-                  <SelectItem value="10-20k">10 000 - 20 000 Kč</SelectItem>
-                  <SelectItem value="20-50k">20 000 - 50 000 Kč</SelectItem>
-                  <SelectItem value="50-100k">50 000 - 100 000 Kč</SelectItem>
-                  <SelectItem value="100k+">100 000+ Kč</SelectItem>
-                  <SelectItem value="flexible">Flexibilní</SelectItem>
+                  <SelectItem value="10-20k">{t('budgetRanges.10-20k')}</SelectItem>
+                  <SelectItem value="20-50k">{t('budgetRanges.20-50k')}</SelectItem>
+                  <SelectItem value="50-100k">{t('budgetRanges.50-100k')}</SelectItem>
+                  <SelectItem value="100k+">{t('budgetRanges.100k+')}</SelectItem>
+                  <SelectItem value="flexible">{t('budgetRanges.flexible')}</SelectItem>
                 </>
               )}
             </SelectContent>
@@ -292,12 +295,12 @@ export function ContactWow() {
             </div>
 
             <div>
-              <h2 className="text-4xl font-bold mb-2">Děkujeme! 🎉</h2>
+              <h2 className="text-4xl font-bold mb-2">{t('success.title')}</h2>
               <p className="text-xl text-muted-foreground">
-                Vaše zpráva byla úspěšně odeslána
+                {t('success.message')}
               </p>
               <p className="text-sm text-muted-foreground mt-4">
-                Ozveme se vám do 24 hodin
+                {t('success.followUp')}
               </p>
             </div>
           </div>
@@ -316,10 +319,10 @@ export function ContactWow() {
           className="text-center space-y-4 mb-12"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            Napište nám
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme
+            {t('subtitle')}
           </p>
         </div>
 
@@ -337,7 +340,7 @@ export function ContactWow() {
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Email</h3>
+                    <h3 className="font-semibold mb-1">{t('contact.email')}</h3>
                     <a
                       href="mailto:info@weblyx.cz"
                       className="text-muted-foreground hover:text-primary transition-colors"
@@ -354,7 +357,7 @@ export function ContactWow() {
                     <Phone className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Telefon</h3>
+                    <h3 className="font-semibold mb-1">{t('contact.phone')}</h3>
                     <a
                       href="tel:+420702110166"
                       className="text-muted-foreground hover:text-primary transition-colors"
@@ -371,9 +374,9 @@ export function ContactWow() {
                     <MapPin className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Adresa</h3>
+                    <h3 className="font-semibold mb-1">{t('contact.address')}</h3>
                     <p className="text-muted-foreground">
-                      Praha, Česká republika
+                      {t('contact.addressValue')}
                     </p>
                   </div>
                 </div>
@@ -382,10 +385,10 @@ export function ContactWow() {
 
             <Card className="backdrop-blur-sm bg-card/50 border-2">
               <div className="p-4">
-                <h3 className="font-semibold mb-2">Otevírací doba</h3>
+                <h3 className="font-semibold mb-2">{t('contact.hours')}</h3>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p>Po - Pá: 9:00 - 18:00</p>
-                  <p>So - Ne: Zavřeno</p>
+                  <p>{t('contact.weekdays')}</p>
+                  <p>{t('contact.weekend')}</p>
                 </div>
               </div>
             </Card>
@@ -401,7 +404,7 @@ export function ContactWow() {
                   {/* Progress Bar */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="font-medium">Krok {currentField + 1} z {formFields.length}</span>
+                      <span className="font-medium">{t('progress.step')} {currentField + 1} {t('progress.of')} {formFields.length}</span>
                       <span className="text-muted-foreground">{Math.round(progress)}%</span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -427,7 +430,7 @@ export function ContactWow() {
                       disabled={currentField === 0}
                       className="min-w-24"
                     >
-                      Zpět
+                      {t('buttons.back')}
                     </Button>
 
                     {currentField === formFields.length - 1 ? (
@@ -437,11 +440,11 @@ export function ContactWow() {
                         className="min-w-32 gap-2"
                       >
                         {isSubmitting ? (
-                          "Odesílám..."
+                          t('buttons.sending')
                         ) : (
                           <>
                             <Send className="h-4 w-4" />
-                            Odeslat
+                            {t('buttons.submit')}
                           </>
                         )}
                       </Button>
@@ -451,7 +454,7 @@ export function ContactWow() {
                         onClick={handleNext}
                         className="min-w-32 gap-2"
                       >
-                        Další
+                        {t('buttons.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     )}
@@ -459,7 +462,7 @@ export function ContactWow() {
 
                   {/* Keyboard hint */}
                   <p className="text-xs text-center text-muted-foreground">
-                    💡 Tip: Použijte Enter pro přechod na další pole
+                    {t('keyboardHint')}
                   </p>
                 </div>
               </Card>

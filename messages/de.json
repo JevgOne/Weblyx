@@ -361,6 +361,68 @@
       "hours": "Erreichbarkeit",
       "weekdays": "Mo - Fr: 9:00 - 18:00",
       "weekend": "Sa - So: Geschlossen"
+    },
+    "contactWow": {
+      "title": "Schreib uns",
+      "subtitle": "Kontaktiere uns unverbindlich und wir antworten dir innerhalb von 24 Stunden",
+      "fields": {
+        "name": "Vor- und Nachname",
+        "namePlaceholder": "Max Mustermann",
+        "email": "E-Mail",
+        "emailPlaceholder": "max@beispiel.de",
+        "phone": "Telefon",
+        "phonePlaceholder": "+49 123 456 789",
+        "projectType": "Projekttyp",
+        "budget": "Budget",
+        "message": "Nachricht",
+        "messagePlaceholder": "Beschreib uns dein Projekt..."
+      },
+      "projectTypes": {
+        "web": "Website",
+        "eshop": "Online-Shop",
+        "redesign": "Redesign",
+        "seo": "SEO-Optimierung",
+        "other": "Sonstiges"
+      },
+      "budgetRanges": {
+        "10-20k": "400 - 800 EUR",
+        "20-50k": "800 - 2.000 EUR",
+        "50-100k": "2.000 - 4.000 EUR",
+        "100k+": "4.000+ EUR",
+        "flexible": "Flexibel"
+      },
+      "errors": {
+        "fieldRequired": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Ungültiges E-Mail-Format",
+        "sendingError": "Beim Senden ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        "somethingWrong": "Etwas ist schiefgelaufen"
+      },
+      "success": {
+        "title": "Danke! 🎉",
+        "message": "Deine Nachricht wurde erfolgreich gesendet",
+        "followUp": "Wir melden uns innerhalb von 24 Stunden bei dir"
+      },
+      "buttons": {
+        "back": "Zurück",
+        "next": "Weiter",
+        "submit": "Absenden",
+        "sending": "Wird gesendet..."
+      },
+      "progress": {
+        "step": "Schritt",
+        "of": "von"
+      },
+      "selectPlaceholder": "Wähle",
+      "keyboardHint": "💡 Tipp: Drücke Enter, um zum nächsten Feld zu wechseln",
+      "contact": {
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "address": "Adresse",
+        "addressValue": "Prag, Tschechien",
+        "hours": "Öffnungszeiten",
+        "weekdays": "Mo - Fr: 9:00 - 18:00",
+        "weekend": "Sa - So: Geschlossen"
+      }
     }
   }
 }

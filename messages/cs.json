@@ -343,6 +343,68 @@
       "hours": "Otevírací doba",
       "weekdays": "Po - Pá: 9:00 - 18:00",
       "weekend": "So - Ne: Zavřeno"
+    },
+    "contactWow": {
+      "title": "Napište nám",
+      "subtitle": "Nezávazně nás kontaktujte a my vám do 24 hodin odpovíme",
+      "fields": {
+        "name": "Jméno a příjmení",
+        "namePlaceholder": "Jan Novák",
+        "email": "Email",
+        "emailPlaceholder": "jan@priklad.cz",
+        "phone": "Telefon",
+        "phonePlaceholder": "+420 123 456 789",
+        "projectType": "Typ projektu",
+        "budget": "Rozpočet",
+        "message": "Zpráva",
+        "messagePlaceholder": "Popište nám váš projekt..."
+      },
+      "projectTypes": {
+        "web": "Webové stránky",
+        "eshop": "E-shop",
+        "redesign": "Redesign",
+        "seo": "SEO optimalizace",
+        "other": "Jiné"
+      },
+      "budgetRanges": {
+        "10-20k": "10 000 - 20 000 Kč",
+        "20-50k": "20 000 - 50 000 Kč",
+        "50-100k": "50 000 - 100 000 Kč",
+        "100k+": "100 000+ Kč",
+        "flexible": "Flexibilní"
+      },
+      "errors": {
+        "fieldRequired": "Toto pole je povinné",
+        "invalidEmail": "Neplatný formát emailu",
+        "sendingError": "Došlo k chybě při odesílání. Zkuste to prosím znovu.",
+        "somethingWrong": "Něco se pokazilo"
+      },
+      "success": {
+        "title": "Děkujeme! 🎉",
+        "message": "Vaše zpráva byla úspěšně odeslána",
+        "followUp": "Ozveme se vám do 24 hodin"
+      },
+      "buttons": {
+        "back": "Zpět",
+        "next": "Další",
+        "submit": "Odeslat",
+        "sending": "Odesílám..."
+      },
+      "progress": {
+        "step": "Krok",
+        "of": "z"
+      },
+      "selectPlaceholder": "Vyberte",
+      "keyboardHint": "💡 Tip: Použijte Enter pro přechod na další pole",
+      "contact": {
+        "email": "Email",
+        "phone": "Telefon",
+        "address": "Adresa",
+        "addressValue": "Praha, Česká republika",
+        "hours": "Otevírací doba",
+        "weekdays": "Po - Pá: 9:00 - 18:00",
+        "weekend": "So - Ne: Zavřeno"
+      }
     }
   }
 }
