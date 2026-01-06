@@ -2,6 +2,22 @@ import { Metadata } from 'next';
 
 export type Locale = 'cs' | 'de';
 
+// Path mapping mezi češtinou a němčinou
+const pathMapping: Record<string, { cs: string; de: string }> = {
+  '/': { cs: '/', de: '/' },
+  '/sluzby': { cs: '/sluzby', de: '/leistungen' },
+  '/o-nas': { cs: '/o-nas', de: '/uber-uns' },
+  '/portfolio': { cs: '/portfolio', de: '/portfolio' },
+  '/blog': { cs: '/blog', de: '/blog' },
+  '/faq': { cs: '/faq', de: '/faq' },
+  '/poptavka': { cs: '/poptavka', de: '/anfrage' },
+  '/cenik': { cs: '/cenik', de: '/preise' },
+  '/kontakt': { cs: '/kontakt', de: '/kontakt' },
+  '/ochrana-udaju': { cs: '/ochrana-udaju', de: '/datenschutz' },
+  '/obchodni-podminky': { cs: '/obchodni-podminky', de: '/impressum' },
+  '/napiste-recenzi': { cs: '/napiste-recenzi', de: '/schreiben-sie-eine-bewertung' },
+};
+
 interface SEOContent {
   title: string;
   titleTemplate: string;
@@ -84,6 +100,28 @@ const seoContent: Record<Locale, SEOContent> = {
   },
 };
 
+// Helper pro generování hreflang alternates pro danou cestu
+export function getAlternateLanguages(path: string = '/'): Record<string, string> {
+  // Najdi mapping pro tuto cestu
+  const mapping = pathMapping[path];
+
+  if (mapping) {
+    // Máme mapping - použij ho
+    return {
+      'cs': `https://www.weblyx.cz${mapping.cs}`,
+      'de': `https://seitelyx.de${mapping.de}`,
+      'x-default': `https://www.weblyx.cz${mapping.cs}`,
+    };
+  }
+
+  // Nemáme mapping - použij stejnou cestu na obou doménách (pro blog/portfolio detail)
+  return {
+    'cs': `https://www.weblyx.cz${path}`,
+    'de': `https://seitelyx.de${path}`,
+    'x-default': `https://www.weblyx.cz${path}`,
+  };
+}
+
 export function getLocaleFromDomain(): Locale {
   // Server-side: read from env var
   if (typeof window === 'undefined') {
@@ -143,9 +181,7 @@ export function getSEOMetadata(locale?: Locale, pageTitle?: string): Metadata {
     },
     alternates: {
       canonical: content.siteUrl,
-      languages: {
-        [content.alternateLang]: content.alternateUrl,
-      },
+      languages: getAlternateLanguages('/'),
     },
   };
 }
@@ -161,7 +197,8 @@ export function getPageMetadata(
 ): Metadata {
   const content = seoContent[locale];
   const fullTitle = `${page.title} | ${content.siteName}`;
-  const url = page.path ? `${content.siteUrl}${page.path}` : content.siteUrl;
+  const path = page.path || '/';
+  const url = `${content.siteUrl}${path}`;
 
   return {
     title: page.title,
@@ -177,6 +214,7 @@ export function getPageMetadata(
     },
     alternates: {
       canonical: url,
+      languages: getAlternateLanguages(path),
     },
   };
 }
