@@ -102,7 +102,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
                 aria-label="Google Business Profile"
-                title="Najděte nás na Google Maps"
+                title={t('mapsTooltip')}
               >
                 <MapPin className="h-5 w-5" />
               </a>
@@ -186,7 +186,7 @@ export function Footer() {
               {t('copyright').replace('2024', new Date().getFullYear().toString())}
             </p>
             <p className="text-xs">
-              Provozovatel: Altro Servis Group s.r.o. | IČO: 23673389 | Školská 660/3, 110 00 Praha
+              {t('companyInfo')}
             </p>
           </div>
           <p className="text-sm text-muted-foreground">

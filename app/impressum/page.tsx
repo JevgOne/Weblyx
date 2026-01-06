@@ -42,7 +42,7 @@ export default function ImpressumPage() {
           <br />
           IČO (Steuernummer): 23673389
           <br />
-          Grundkapital: 20.000 CZK
+          Grundkapital: 20.000 CZK (ca. 800 EUR)
           <br />
           Datová schránka: rtq6w48
         </p>
