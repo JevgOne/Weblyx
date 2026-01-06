@@ -4,6 +4,8 @@ import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getTranslations, getLocale } from "next-intl/server";
 import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBadge";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateReviewsSchema } from "@/lib/schema-generators";
 
 // Now using unified approach: Google reviews are imported to DB and approved in admin
 // Both Google and manual reviews are displayed from Turso DB
@@ -47,8 +49,16 @@ export async function Reviews() {
     return null;
   }
 
+  // Generate Review schemas for SEO
+  const reviewSchemas = generateReviewsSchema(reviews);
+
   return (
     <section id="recenze" className="py-24 bg-muted/30">
+      {/* Review Schemas for Rich Snippets */}
+      {reviewSchemas.map((schema, index) => (
+        <JsonLd key={`review-schema-${index}`} data={schema} />
+      ))}
+
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">{t("title")}</h2>

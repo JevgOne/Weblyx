@@ -147,20 +147,27 @@ export interface ReviewSchemaData {
     name: string;
     description?: string;
   };
+  locale?: 'cs' | 'de';
 }
 
 export function generateReviewSchema(data: ReviewSchemaData) {
+  const isGerman = data.locale === 'de';
+  const orgName = isGerman ? 'Seitelyx' : 'Weblyx';
+  const orgUrl = isGerman ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+  const serviceName = data.itemReviewed?.name || (isGerman ? 'Webentwicklungsdienste' : 'Služby tvorby webových stránek');
+  const serviceDesc = data.itemReviewed?.description || (isGerman ? 'Professionelle Webentwicklung und Webdesign' : 'Profesionální tvorba webových stránek a webdesign');
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Review',
     itemReviewed: {
       '@type': 'Service',
-      name: data.itemReviewed?.name || 'Web Development Services',
-      description: data.itemReviewed?.description || 'Professional web development services',
+      name: serviceName,
+      description: serviceDesc,
       provider: {
         '@type': 'Organization',
-        name: 'Weblyx',
-        url: 'https://www.weblyx.cz',
+        name: orgName,
+        url: orgUrl,
       },
     },
     author: {
@@ -177,6 +184,25 @@ export function generateReviewSchema(data: ReviewSchemaData) {
     datePublished: data.datePublished,
     reviewBody: data.reviewBody,
   };
+}
+
+// Helper function to generate multiple Review schemas from database reviews
+export function generateReviewsSchema(reviews: Array<{
+  authorName: string;
+  authorImage?: string;
+  rating: number;
+  text: string;
+  date: Date;
+  locale: 'cs' | 'de';
+}>) {
+  return reviews.map(review => generateReviewSchema({
+    reviewBody: review.text,
+    authorName: review.authorName,
+    authorImage: review.authorImage,
+    ratingValue: review.rating,
+    datePublished: review.date.toISOString(),
+    locale: review.locale,
+  }));
 }
 
 // ============================================================================
