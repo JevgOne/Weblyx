@@ -17,6 +17,7 @@ interface PricingOption {
   description: string;
   price: number;
   popular?: boolean;
+  features: string[];
 }
 
 interface AddOn {
@@ -33,6 +34,15 @@ const baseOptions: PricingOption[] = [
     label: "Landing Page",
     description: "Jedna stránka s 3-5 sekcemi",
     price: 7990,
+    features: [
+      "1 stránka, 3–5 sekcí",
+      "Responzivní design",
+      "Kontaktní formulář",
+      "SEO základy",
+      "Google Analytics",
+      "Dodání za 3–5 dní",
+      "1 měsíc podpora",
+    ],
   },
   {
     id: "basic",
@@ -40,18 +50,51 @@ const baseOptions: PricingOption[] = [
     description: "3-5 podstránek s moderním designem",
     price: 9990,
     popular: true,
+    features: [
+      "3–5 podstránek",
+      "Moderní design",
+      "Pokročilé SEO",
+      "Blog s CMS editorem",
+      "Kontaktní formulář",
+      "Napojení na sociální sítě",
+      "Dodání za 5–7 dní",
+      "2 měsíce podpora",
+    ],
   },
   {
     id: "standard",
     label: "Standardní Web",
     description: "10+ podstránek, premium design",
     price: 24990,
+    features: [
+      "10+ podstránek",
+      "Premium design na míru",
+      "Pokročilé animace",
+      "Kompletní CMS pro správu obsahu",
+      "Rezervační systém",
+      "Newsletter integrace",
+      "Pokročilé SEO a Analytics",
+      "Dodání za 7–10 dní",
+      "3 měsíce podpora",
+      "2h úprav zdarma",
+    ],
   },
   {
     id: "eshop",
     label: "Mini E-shop",
     description: "Plný e-shop s platební bránou",
     price: 49990,
+    features: [
+      "Do 50 produktů",
+      "Platební brána",
+      "Správa objednávek",
+      "Kategorie a filtry",
+      "Wishlist, košík, checkout",
+      "Email notifikace",
+      "SEO optimalizace",
+      "Dodání za 14 dní",
+      "6 měsíců podpora",
+    ],
   },
 ];
 
@@ -209,9 +252,20 @@ export function PricingCalculator() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">
+                            <p className="text-sm text-muted-foreground mb-3">
                               {option.description}
                             </p>
+
+                            {/* Features list */}
+                            <ul className="space-y-1.5 mb-3">
+                              {option.features.map((feature, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                  <Check className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+
                             <p className="text-lg font-bold text-primary">
                               {option.price.toLocaleString("cs-CZ")} Kč
                             </p>
