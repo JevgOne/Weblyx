@@ -1,6 +1,7 @@
 import { ProcessSection, ProcessStep } from "@/types/cms";
 import { getProcessSection, getAllProcessSteps } from "@/lib/turso/cms";
 import { getIcon } from "@/lib/icon-map";
+import { getTranslations } from 'next-intl/server';
 
 async function getProcessData(): Promise<{ section: ProcessSection | null; steps: ProcessStep[] }> {
   try {
@@ -20,6 +21,7 @@ async function getProcessData(): Promise<{ section: ProcessSection | null; steps
 }
 
 export async function Process() {
+  const t = await getTranslations('process');
   const { section, steps } = await getProcessData();
 
   // Filter enabled steps
@@ -39,7 +41,7 @@ export async function Process() {
         {/* Header */}
         <div className="text-center space-y-4 mb-16 md:mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <span>Náš postup</span>
+            <span>{t('badge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
             {section.heading}
@@ -95,7 +97,7 @@ export async function Process() {
         {/* Bottom CTA hint */}
         <div className="mt-16 text-center">
           <p className="text-sm text-muted-foreground">
-            Každý projekt je unikátní, proces přizpůsobíme vašim potřebám
+            {t('bottomHint')}
           </p>
         </div>
       </div>

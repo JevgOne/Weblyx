@@ -23,16 +23,18 @@
     "privacy": "/datenschutz"
   },
   "hero": {
-    "badge": "🚀 Launch-Angebot: Website ab 349 € (spare 100 €)",
-    "title": "Website erstellen lassen | Festpreis ab 349€",
-    "subtitle": "Schneller. Moderner. Günstiger. Deine professionelle <strong>Website</strong> – entwickelt mit <strong>Next.js statt WordPress</strong>. 3× schneller, <strong>DSGVO-konform</strong>, fertig in <strong>3-7 Tagen</strong>. Festpreis, kein Abo-Zwang.",
+    "badge": "🚀 Launch-Angebot: Website ab 320 € statt 400 € (Sie sparen 80 €)",
+    "title": "KI-optimierte Websites | Moderne Website in 7 Tagen",
+    "subtitle": "Schneller. Moderner. Günstiger. Deine professionelle <strong>Website mit KI-Unterstützung</strong> – entwickelt mit <strong>Next.js statt WordPress</strong>. 3× schneller, <strong>DSGVO-konform</strong>, fertig in <strong>3-7 Tagen</strong>. Festpreis, kein Abo-Zwang.",
     "cta": "Kostenlosen Kennenlern-Call buchen",
+    "ctaPrimaryLink": "/anfrage",
     "ctaSecondary": "Referenzen ansehen",
+    "ctaSecondaryLink": "/portfolio",
     "stat1Value": "⚡ 3–7 Tage",
     "stat1Label": "Lieferzeit garantiert",
     "stat2Value": "🚀 3× schneller",
     "stat2Label": "als WordPress",
-    "stat3Value": "Ab 349 €",
+    "stat3Value": "400 €",
     "stat3Label": "Festpreis, kein Abo",
     "heroImageAlt": "Seitelyx - Moderne Websites ohne WordPress",
     "heroPlaceholder": "Hero-Bild",
@@ -41,26 +43,30 @@
   },
   "services": {
     "title": "Unsere Leistungen",
-    "subtitle": "Alles für deine Website – zum Festpreis, ohne Überraschungen",
+    "subtitle": "Alles für deine Website – zum Festpreis, transparent kalkuliert",
     "service1": {
       "title": "Website erstellen lassen",
-      "description": "Moderne, responsive Websites zum Festpreis – von der Freelancer-Homepage bis zur komplexen Unternehmenswebsite. Mit Next.js statt WordPress: 3× schneller, sicherer, zukunftssicher. Kein Template-Kram – echte Handarbeit."
+      "description": "Moderne, responsive Websites zum Festpreis – von der Freelancer-Homepage bis zur komplexen Unternehmenswebsite. Mit Next.js statt WordPress: 3× schneller, sicherer, zukunftssicher. Keine fertigen Vorlagen – individuelle Entwicklung."
     },
     "service2": {
       "title": "SEO-Optimierung inklusive",
-      "description": "Deine Website wird gefunden. Technisches SEO, On-Page-Optimierung und Keywords? Bei uns inklusive – nicht optional. Lighthouse Score 95+ garantiert – oder Geld zurück. Google liebt schnelle Websites. Deine Kunden auch."
+      "description": "Deine Website wird gefunden. Technisches SEO, On-Page-Optimierung und Keywords? Bei uns inklusive – nicht optional. Lighthouse Score 95+ garantiert – oder Geld zurück. Google bevorzugt schnelle Websites. Deine Kunden ebenso."
     },
     "service3": {
       "title": "Online-Shops (E-Commerce)",
       "description": "E-Commerce Website ohne monatliche Gebühren für Shopify oder WooCommerce. Moderne Online-Shop-Lösung mit Zahlungsintegration, Produktverwaltung und Bestellabwicklung zum Festpreis."
-    }
+    },
+    "ctaText": "Paket auswählen",
+    "ctaLink": "/anfrage"
   },
   "process": {
+    "badge": "Unser Vorgehen",
     "title": "Von der Anfrage zur fertigen Website in 7 Tagen",
     "subtitle": "So läuft die Zusammenarbeit ab – transparent und schnell",
+    "bottomHint": "Jedes Projekt ist einzigartig, wir passen den Prozess an Ihre Bedürfnisse an",
     "step1": {
       "title": "Tag 0: Kostenloses Beratungsgespräch (15 Min.)",
-      "description": "Wir hören zu, du erzählst deine Ideen – ganz unverbindlich"
+      "description": "Wir hören zu, du schilderst deine Anforderungen – ganz unverbindlich"
     },
     "step2": {
       "title": "Tag 1: Briefing & Design-Abstimmung",
@@ -72,7 +78,7 @@
     },
     "step4": {
       "title": "Tag 6: Testing & Qualitätskontrolle",
-      "description": "Gründliche Tests auf Desktop, Tablet und Smartphone – läuft erst live, wenn alles perfekt ist"
+      "description": "Gründliche Tests auf Desktop, Tablet und Smartphone – geht erst online, wenn alles perfekt ist"
     },
     "step5": {
       "title": "Tag 7: Go-Live",
@@ -84,7 +90,7 @@
     }
   },
   "whatsIncluded": {
-    "title": "Was ist im Festpreis ab 349 € enthalten",
+    "title": "Was ist im Festpreis ab 400 € enthalten",
     "subtitle": "Genauer Umfang des Basispakets",
     "included": [
       "✅ Website mit 5-10 Seiten (Über uns, Leistungen, Referenzen, Kontakt...)",
@@ -117,13 +123,24 @@
     "monthly": "Monatlich",
     "oneTime": "Einmalzahlung",
     "cta": "Paket auswählen",
-    "popular": "Am beliebtesten"
+    "popular": "Am beliebtesten",
+    "fairPrices": "Faire Preise ohne versteckte Kosten",
+    "promoCodeLabel": "Haben Sie einen Promo-Code?",
+    "promoCodePlaceholder": "Code eingeben...",
+    "applyButton": "Anwenden",
+    "validating": "Prüfen...",
+    "enterPromoCode": "Promo-Code eingeben",
+    "invalidPromoCode": "Ungültiger Promo-Code",
+    "promoCodeError": "Fehler beim Validieren",
+    "customSolutionCTA": "💬 Benötigen Sie eine individuelle Lösung? Kontaktieren Sie uns für ein persönliches Angebot",
+    "pricingNote": "Die Preise sind unverbindlich. Der Endpreis hängt vom Umfang und der Komplexität des Projekts ab.",
+    "additionalFeatures": "+ {count} weitere"
   },
   "faq": {
     "title": "Häufig gestellte Fragen",
     "subtitle": "Alles, was du über deine neue Website wissen musst",
     "q1": "Was kostet es, eine Website erstellen zu lassen?",
-    "a1": "Wir starten ab 349€ Festpreis für eine professionelle Homepage. Im Gegensatz zu WordPress-Agenturen mit monatlichen Kosten zahlst du nur einmal. Alle Leistungen (Design, Entwicklung, SEO, DSGVO) sind im Preis enthalten – keine versteckten Kosten.",
+    "a1": "Wir starten ab 320€ Aktionspreis (regulär 400€) für eine professionelle Homepage. Im Gegensatz zu WordPress-Agenturen mit monatlichen Kosten zahlst du nur einmal. Alle Leistungen (Design, Entwicklung, SEO, DSGVO) sind im Preis enthalten – keine versteckten Kosten.",
     "q2": "Warum Next.js statt WordPress?",
     "a2": "Next.js ist moderner und 3× schneller. WordPress benötigt ständige Updates und Sicherheits-Patches. Mit Next.js entfallen diese Probleme komplett. Wenn du eine moderne Website möchtest, ist Next.js die beste Wahl.",
     "q3": "Wie läuft der Prozess ab?",
@@ -140,7 +157,7 @@
     "a8": "Banküberweisung, PayPal oder Ratenzahlung (bei größeren Projekten). 50% Anzahlung, 50% nach Go-Live – fair und transparent. Keine monatlichen Gebühren."
   },
   "contact": {
-    "title": "Lass uns über dein Projekt sprechen",
+    "title": "Sprich mit uns über dein Projekt",
     "subtitle": "Wir freuen uns auf deine Ideen – kostenlos und unverbindlich",
     "name": "Dein Name",
     "email": "Deine E-Mail-Adresse",
@@ -149,7 +166,7 @@
     "send": "Jetzt starten → 3-7 Tage bis Go-Live",
     "sending": "Wird gesendet...",
     "success": "Vielen Dank! Wir melden uns innerhalb von 24 Stunden.",
-    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut oder schreibe uns direkt an kontakt@seitelyx.de"
+    "error": "Ein Fehler ist aufgetreten. Bitte versuche es erneut oder schreibe uns direkt an kontakt@seitelyx.de"
   },
   "footer": {
     "about": "Über Seitelyx",
@@ -173,7 +190,7 @@
     "weekend": "Sa - So: Geschlossen",
     "companyInfo": "Betreiber: Altro Servis Group GmbH | Steuernummer: 23673389 | Schulstraße 660/3, 110 00 Prag",
     "mapsTooltip": "Finden Sie uns auf Google Maps",
-    "tagline": "Entwickelt mit ❤️ und ☕️ in Prag, EU",
+    "tagline": "Mit Leidenschaft entwickelt in Prag, EU",
     "webDevelopment": "Website erstellen lassen",
     "ecommerce": "Online-Shop Entwicklung",
     "seo": "SEO-Optimierung",
@@ -181,8 +198,8 @@
     "maintenance": "Website-Wartung"
   },
   "cta": {
-    "title": "Deine Konkurrenz ist bereits online. Wann startest du?",
-    "subtitle": "Lass uns gemeinsam eine Website erstellen, die dein Geschäft wirklich voranbringt",
+    "title": "Deine Konkurrenz ist bereits online. Bist du bereit?",
+    "subtitle": "Erstelle gemeinsam mit uns eine Website, die dein Geschäft wirklich voranbringt",
     "primaryButton": "Website-Potenzial kostenlos prüfen (15 Min.)",
     "secondaryButton": "Echte Beispiele ansehen",
     "benefit1Title": "Schnelle Lieferung",
@@ -219,17 +236,17 @@
   },
   "usp": {
     "title": "Was kostet eine Website?",
-    "titleHighlight": "Ab 349 €!",
-    "subtitle": "Im Gegensatz zu Template-Websites setzen wir auf moderne Technologien (<strong>Next.js</strong> statt <strong>WordPress</strong>) – mit Fokus auf unter 2 Sekunden Ladezeit und langfristige Wartbarkeit. Schnelle Website-Entwicklung für Freelancer und Unternehmen.",
+    "titleHighlight": "Ab 400 €!",
+    "subtitle": "Im Gegensatz zu Template-Websites setzen wir auf moderne Technologien (<strong>Next.js</strong> statt <strong>WordPress</strong>) – optimiert auf unter 2 Sekunden Ladezeit und langfristige Wartbarkeit. Schnelle Website-Entwicklung für Freelancer und Unternehmen.",
     "badTitle": "Was du bei uns NICHT erlebst:",
     "goodTitle": "Was wir anders machen:",
     "bad1": "Template-WordPress-Websites mit endlosen Ladezeiten",
-    "bad2": "Versteckte Kosten und Aufpreise \"für jede Kleinigkeit\"",
+    "bad2": "Versteckte Kosten und Aufpreise für jede Anpassung",
     "bad3": "Lieferzeiten von 4+ Wochen",
     "bad4": "Verschwundener Anbieter nach Website-Launch",
     "good1": "⚡ Schnelle Website-Entwicklung – in 3-7 Tagen fertig",
-    "good2": "🚀 Schnellste Websites in DE – Ladezeit unter 2 Sekunden (PageSpeed 95+)",
-    "good3": "💰 Website erstellen lassen ab 349 € – Launch-Angebot: jetzt 299 € (spare 50 €)",
+    "good2": "🚀 Schnellste Websites in Deutschland – Ladezeit unter 2 Sekunden (PageSpeed 95+)",
+    "good3": "💰 Website erstellen lassen ab 400 € – Launch-Angebot: jetzt 320 € (spare 80 €)",
     "good4": "✅ Langfristige Betreuung, Wartung und Modernisierung",
     "good5": "🎯 Next.js und moderne Frameworks statt veraltetem WordPress"
   },
@@ -258,7 +275,7 @@
     "afterPageSpeed": "90-100/100",
     "afterMaintenance": "Minimal",
     "afterSecurity": "Maximale Sicherheit",
-    "afterPrice": "299 - 549 €",
+    "afterPrice": "320 - 600 €",
     "ctaTitle": "💡",
     "ctaHighlight": "Sparen Sie bis zu 50%",
     "ctaText": "und erhalten Sie eine schnellere Website",
@@ -283,11 +300,11 @@
   },
   "targetAudience": {
     "title": "Für wen erstellen wir Websites",
-    "subtitle": "Wir helfen vor allem denjenigen, die eine schnelle, moderne und erschwingliche Website-Entwicklung benötigen – ohne unnötige Bürokratie und Wartezeiten.",
+    "subtitle": "Wir helfen vor allem denjenigen, die eine schnelle, moderne und erschwingliche Website-Entwicklung benötigen – ohne komplizierte Prozesse und lange Wartezeiten.",
     "audience1Title": "Website für Freelancer",
-    "audience1Desc": "Friseure, Autowerkstätten, Fotografen, Buchhalter. Schnelle Website mit Kontakt, Preisliste und Galerie – ohne monatliche WordPress-Gebühren. Investition: 349€. Schon 1 neuer Kunde holt das rein.",
+    "audience1Desc": "Friseure, Autowerkstätten, Fotografen, Buchhalter. Schnelle Website mit Kontakt, Preisliste und Galerie – ohne monatliche WordPress-Gebühren. Investition: 320€ (Aktion). Die Investition amortisiert sich bereits durch einen Neukunden.",
     "audience2Title": "Website für kleine Unternehmen",
-    "audience2Desc": "Bauunternehmen, Beratung, Produktion. Website mit Referenzen, Team und Kontaktformular, das 24/7 Kunden generiert. Deine Konkurrenz ist bereits online und rankt auf Google.",
+    "audience2Desc": "Bauunternehmen, Beratung, Produktion. Website mit Referenzen, Team und Kontaktformular, das 24/7 Kunden generiert. Deine Konkurrenz ist bereits online und wird auf Google gefunden.",
     "audience3Title": "Online-Shops und Start-ups",
     "audience3Desc": "Wachstum von 100 auf 10.000 Besucher monatlich? Unsere Website schafft das. Geschwindigkeit, SEO und Skalierbarkeit – ohne teure Redesigns."
   },
@@ -350,7 +367,7 @@
       "phoneLabel": "Telefon (optional)",
       "phonePlaceholder": "+49 123 456 789",
       "descriptionLabel": "Kurzbeschreibung",
-      "descriptionPlaceholder": "Ein paar Worte reichen – was machen Sie? Kein Roman nötig.",
+      "descriptionPlaceholder": "Ein paar Worte genügen – beschreibe kurz dein Geschäftsfeld.",
       "submitButton": "Anfrage absenden",
       "submitting": "Wird gesendet...",
       "requiredFields": "* Erforderliche Felder"
@@ -364,7 +381,7 @@
     },
     "contactWow": {
       "title": "Schreib uns",
-      "subtitle": "Kontaktiere uns unverbindlich und wir antworten dir innerhalb von 24 Stunden",
+      "subtitle": "Nimm unverbindlich Kontakt auf und wir antworten dir innerhalb von 24 Stunden",
       "fields": {
         "name": "Vor- und Nachname",
         "namePlaceholder": "Max Mustermann",
@@ -424,5 +441,39 @@
         "weekend": "Sa - So: Geschlossen"
       }
     }
+  },
+  "notFound": {
+    "metaTitle": "Seite nicht gefunden | Seitelyx",
+    "metaDescription": "Die angeforderte Seite existiert nicht.",
+    "title": "Seite nicht gefunden",
+    "description": "Entschuldigung, die von Ihnen gesuchte Seite existiert nicht.",
+    "homeButton": "Zurück zur Startseite",
+    "contactButton": "Kontaktieren Sie uns",
+    "contactLink": "/anfrage"
+  },
+  "faqPage": {
+    "metaTitle": "Häufig gestellte Fragen (FAQ) – Website erstellen lassen | Seitelyx",
+    "metaDescription": "Antworten auf die häufigsten Fragen zur Erstellung von Websites, Preisen, Lieferzeiten und Dienstleistungen.",
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Finden Sie Antworten auf alle Ihre Fragen zur Website-Erstellung",
+    "noFaqs": "Derzeit sind keine FAQs verfügbar. Wir werden sie bald hinzufügen.",
+    "ctaTitle": "Antwort nicht gefunden?",
+    "ctaDescription": "Kontaktieren Sie uns und wir helfen Ihnen gerne bei allen Fragen zur Website-Erstellung.",
+    "contactButton": "Kontaktieren Sie uns",
+    "quoteButton": "Unverbindliche Anfrage",
+    "contactLink": "/anfrage",
+    "quoteLink": "/anfrage",
+    "breadcrumbHome": "Startseite",
+    "breadcrumbFaq": "FAQ"
+  },
+  "faqComponent": {
+    "ctaButton": "Haben Sie eine Frage? Schreiben Sie uns",
+    "ctaLink": "/anfrage",
+    "allFaqsLink": "Alle Fragen anzeigen →",
+    "allFaqsHref": "/faq"
+  },
+  "pricingCalculator": {
+    "freeConsultation": "Kostenlose Beratung",
+    "infoNote": "💡 <strong>Preise sind unverbindlich.</strong> Der Endpreis kann durch den Einsatz von KI-Tools und Automatisierung niedriger ausfallen. Kontaktieren Sie uns für ein maßgeschneidertes Angebot."
   }
 }

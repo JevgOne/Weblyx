@@ -125,8 +125,8 @@ export function BeforeAfter() {
           <p className="text-sm text-muted-foreground mb-4">
             {t("ctaSubtitle")}
           </p>
-          <LeadButton href="/poptavka" size="lg">
-            Nezávazná poptávka
+          <LeadButton href={t("ctaLink")} size="lg">
+            {t("ctaText")}
           </LeadButton>
         </div>
       </div>

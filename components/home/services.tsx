@@ -68,7 +68,7 @@ export async function Services() {
 
   // Use content from page_content collection or fallback
   const heading = sectionContent?.content?.heading || t('title');
-  const subheading = sectionContent?.content?.subheading || 'Komplexní řešení pro vaši online přítomnost';
+  const subheading = sectionContent?.content?.subheading || t('subtitle');
 
   return (
     <section className="py-16 md:py-24 px-4 bg-muted/50">
@@ -104,8 +104,8 @@ export async function Services() {
 
         {/* CTA Button */}
         <div className="text-center mt-12">
-          <LeadButton href="/poptavka" size="lg">
-            Poptat služby
+          <LeadButton href={t('ctaLink')} size="lg">
+            {t('ctaText')}
           </LeadButton>
         </div>
       </div>

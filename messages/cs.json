@@ -23,10 +23,12 @@
   },
   "hero": {
     "badge": "🎉 AKČNÍ SLEVA: Web za 7 990 Kč místo 10 000 Kč (jednorázově)",
-    "title": "Tvorba webových stránek od 10 000 Kč | Web za týden",
-    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> na <strong>Next.js místo WordPressu</strong>. Základní web za <strong>5-7 pracovních dní</strong>, e-shop za <strong>4-6 týdnů</strong>. Načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Skutečné weby pro živnostníky a firmy.",
+    "title": "AI-Enhanced Tvorba Webů | Moderní Web za Týden",
+    "subtitle": "Rychlá tvorba <strong>webových stránek a e-shopů</strong> s <strong>AI-asistovaným designem</strong> na <strong>Next.js místo WordPressu</strong>. Základní web za <strong>5-7 pracovních dní</strong>, e-shop za <strong>4-6 týdnů</strong>. Načítání <strong>pod 2 sekundy</strong>, <strong>SEO optimalizace zdarma</strong>. Skutečné weby pro živnostníky a firmy.",
     "cta": "Nezávazná konzultace zdarma",
+    "ctaPrimaryLink": "/poptavka",
     "ctaSecondary": "Zobrazit projekty",
+    "ctaSecondaryLink": "/portfolio",
     "stat1Value": "⚡ 5–7 dní",
     "stat1Label": "Základní web",
     "stat2Value": "🚀 Pod 2s",
@@ -52,11 +54,15 @@
     "service3": {
       "title": "E-shopy (od 85 000 Kč)",
       "description": "Katalog produktů, košík, platební brána (GoPay/Stripe), propojení s dopravci. Dodací doba: 4-6 týdnů podle rozsahu."
-    }
+    },
+    "ctaText": "Poptat služby",
+    "ctaLink": "/poptavka"
   },
   "process": {
+    "badge": "Náš postup",
     "title": "Jak to funguje",
     "subtitle": "Realistický proces - víme že čas jsou peníze",
+    "bottomHint": "Každý projekt je unikátní, proces přizpůsobíme vašim potřebám",
     "step1": {
       "title": "1. Konzultace (den 1)",
       "description": "Online schůzka 30-60 min. Probereme co potřebujete, ukážeme příklady, zodpovíme otázky"
@@ -116,7 +122,18 @@
     "monthly": "Měsíčně",
     "oneTime": "Jednorázově",
     "cta": "Vybrat balíček",
-    "popular": "Nejoblíbenější"
+    "popular": "Nejoblíbenější",
+    "fairPrices": "Férové ceny bez skrytých poplatků",
+    "promoCodeLabel": "Máte promo kód?",
+    "promoCodePlaceholder": "Zadejte kód...",
+    "applyButton": "Použít",
+    "validating": "Ověřuji...",
+    "enterPromoCode": "Zadejte promo kód",
+    "invalidPromoCode": "Neplatný promo kód",
+    "promoCodeError": "Chyba při ověřování kódu",
+    "customSolutionCTA": "💬 Potřebujete individuální řešení? Kontaktujte nás pro osobní nabídku",
+    "pricingNote": "Ceny jsou orientační. Finální cena závisí na rozsahu a složitosti projektu.",
+    "additionalFeatures": "+ {count} dalších"
   },
   "faq": {
     "title": "Často kladené otázky",
@@ -406,5 +423,39 @@
         "weekend": "So - Ne: Zavřeno"
       }
     }
+  },
+  "notFound": {
+    "metaTitle": "Stránka nenalezena | Weblyx",
+    "metaDescription": "Požadovaná stránka neexistuje.",
+    "title": "Stránka nenalezena",
+    "description": "Omlouváme se, ale stránka, kterou hledáte, neexistuje.",
+    "homeButton": "Zpět domů",
+    "contactButton": "Kontaktujte nás",
+    "contactLink": "/kontakt"
+  },
+  "faqPage": {
+    "metaTitle": "Časté otázky (FAQ) – Tvorba webových stránek | Weblyx",
+    "metaDescription": "Odpovědi na nejčastější otázky o tvorbě webů, cenách, dodacích lhůtách a službách.",
+    "title": "Často kladené otázky",
+    "subtitle": "Najděte odpovědi na všechny vaše otázky o tvorbě webových stránek",
+    "noFaqs": "Zatím nejsou k dispozici žádné FAQ. Brzy je doplníme.",
+    "ctaTitle": "Nenašli jste odpověď?",
+    "ctaDescription": "Kontaktujte nás a rádi vám poradíme s čímkoliv ohledně tvorby webových stránek.",
+    "contactButton": "Kontaktujte nás",
+    "quoteButton": "Nezávazná poptávka",
+    "contactLink": "/kontakt",
+    "quoteLink": "/poptavka",
+    "breadcrumbHome": "Domů",
+    "breadcrumbFaq": "FAQ"
+  },
+  "faqComponent": {
+    "ctaButton": "Máte dotaz? Napište nám",
+    "ctaLink": "/poptavka",
+    "allFaqsLink": "Zobrazit všechny otázky →",
+    "allFaqsHref": "/faq"
+  },
+  "pricingCalculator": {
+    "freeConsultation": "Nezávazná konzultace zdarma",
+    "infoNote": "💡 <strong>Ceny jsou orientační.</strong> Finální cena může být nižší při využití AI nástrojů a automatizace. Kontaktujte nás pro přesnou cenovou nabídku na míru."
   }
 }

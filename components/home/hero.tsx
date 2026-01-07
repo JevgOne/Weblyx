@@ -30,9 +30,9 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       subtitle: t('subtitle'),
       ctaPrimary: {
         text: t('cta'),
-        href: '/poptavka'
+        href: t('ctaPrimaryLink')
       },
-      ctaSecondary: { text: t('ctaSecondary'), href: '/portfolio' },
+      ctaSecondary: { text: t('ctaSecondary'), href: t('ctaSecondaryLink') },
       stats: [
         { icon: 'Clock', value: t('stat1Value'), label: t('stat1Label') },
         { icon: 'Zap', value: t('stat2Value'), label: t('stat2Label') },
@@ -51,8 +51,8 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         title: t('title'),
         titleHighlight: '',
         subtitle: t('subtitle'),
-        ctaPrimary: { text: t('cta'), href: '/poptavka' },
-        ctaSecondary: { text: t('ctaSecondary'), href: '/portfolio' },
+        ctaPrimary: { text: t('cta'), href: t('ctaPrimaryLink') },
+        ctaSecondary: { text: t('ctaSecondary'), href: t('ctaSecondaryLink') },
         stats: [
           { icon: 'Clock', value: t('stat1Value'), label: t('stat1Label') },
           { icon: 'Zap', value: t('stat2Value'), label: t('stat2Label') },

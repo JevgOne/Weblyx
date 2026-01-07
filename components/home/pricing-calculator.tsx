@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, Sparkles, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 
 interface PricingOption {
   id: string;
@@ -114,6 +115,7 @@ const addOns: AddOn[] = [
 ];
 
 export function PricingCalculator() {
+  const t = useTranslations('pricingCalculator');
   const [selectedBase, setSelectedBase] = useState<string>("basic");
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
 
@@ -340,7 +342,7 @@ export function PricingCalculator() {
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Check className="h-4 w-4 text-green-600" />
-                    <span className="text-muted-foreground">Nezávazná konzultace zdarma</span>
+                    <span className="text-muted-foreground">{t('freeConsultation')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -352,10 +354,7 @@ export function PricingCalculator() {
         <div className="mt-12 max-w-4xl mx-auto">
           <Card className="bg-muted/50 border-0">
             <CardContent className="p-6">
-              <p className="text-sm text-muted-foreground text-center">
-                💡 <strong>Ceny jsou orientační.</strong> Finální cena může být nižší při využití AI nástrojů a automatizace.
-                Kontaktujte nás pro přesnou cenovou nabídku na míru.
-              </p>
+              <p className="text-sm text-muted-foreground text-center" dangerouslySetInnerHTML={{ __html: t('infoNote') }} />
             </CardContent>
           </Card>
         </div>
