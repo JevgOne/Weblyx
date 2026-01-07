@@ -161,6 +161,7 @@ export function PricingCalculator() {
   const t = useTranslations('pricingCalculator');
   const [selectedBase, setSelectedBase] = useState<string>("basic");
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
+  const [expandedPackage, setExpandedPackage] = useState<string | null>(null);
 
   const totalPrice = useMemo(() => {
     const basePrice = baseOptions.find((opt) => opt.id === selectedBase)?.price || 0;
@@ -252,21 +253,35 @@ export function PricingCalculator() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground mb-3">
+                            <p className="text-sm text-muted-foreground mb-2">
                               {option.description}
                             </p>
 
-                            {/* Features list */}
-                            <ul className="space-y-1.5 mb-3">
-                              {option.features.map((feature, idx) => (
-                                <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
-                                  <Check className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            {/* Expandable Features */}
+                            {expandedPackage === option.id && (
+                              <ul className="space-y-1.5 mb-3 mt-3 pt-3 border-t">
+                                {option.features.map((feature, idx) => (
+                                  <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                    <Check className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
+                                    <span>{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
 
-                            <p className="text-lg font-bold text-primary">
+                            {/* Show details button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setExpandedPackage(expandedPackage === option.id ? null : option.id);
+                              }}
+                              className="text-xs text-primary hover:underline mb-2"
+                            >
+                              {expandedPackage === option.id ? "Skrýt detaily" : "Zobrazit detaily"}
+                            </button>
+
+                            <p className="text-lg font-bold text-primary mt-2">
                               {option.price.toLocaleString("cs-CZ")} Kč
                             </p>
                           </div>
