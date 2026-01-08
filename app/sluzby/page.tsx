@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getActiveServices, Service } from "@/lib/turso/services";
 
 // Force dynamic rendering to avoid build timeout
 export const dynamic = 'force-dynamic';
@@ -65,100 +66,50 @@ export const metadata: Metadata = {
   }
 };
 
-async function getServicesFromDatabase() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz'}/api/services`, {
-      next: { revalidate: 3600 }, // Cache for 1 hour instead of no-store
-    });
-    const result = await response.json();
-
-    if (result.success && result.data.length > 0) {
-      return result.data;
-    }
-  } catch (error) {
-    console.error('Error fetching services:', error);
-  }
-  return null;
+// Interface for pricing package with features
+interface PricingPackage {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  priceNote: string;
+  popular: boolean;
+  features: Array<{ name: string; included: boolean | string }>;
+  cta: string;
+  ideal: string;
 }
 
-// Pricing packages with detailed feature comparison
-const PRICING_PACKAGES = [
-  {
-    id: "starter",
-    title: "Starter Web",
-    description: "Ideální pro začínající podnikatele",
-    price: 10000,
+// Helper function to transform database services to pricing packages
+function transformServicesToPricingPackages(services: Service[]): PricingPackage[] {
+  // Filter services that have pricing (priceFrom is not null)
+  const pricingServices = services
+    .filter(service => service.priceFrom !== null && service.priceFrom !== undefined)
+    .sort((a, b) => a.order - b.order);
+
+  // Create all unique feature names from all services
+  const allFeatureNames = new Set<string>();
+  pricingServices.forEach(service => {
+    service.features.forEach(feature => allFeatureNames.add(feature));
+  });
+
+  // Transform each service to pricing package format
+  return pricingServices.map((service) => ({
+    id: service.id,
+    title: service.title,
+    description: service.description,
+    price: service.priceFrom!,
     priceNote: "jednorázově",
-    popular: false,
-    features: [
-      { name: "Počet stránek", included: "až 5" },
-      { name: "Responzivní design", included: true },
-      { name: "Moderní UI design", included: true },
-      { name: "Základní SEO", included: true },
-      { name: "Kontaktní formulář", included: true },
-      { name: "Google Analytics", included: true },
-      { name: "Rychlost načítání", included: "< 2s" },
-      { name: "SSL certifikát", included: true },
-      { name: "Blog/Aktuality", included: false },
-      { name: "E-commerce funkce", included: false },
-      { name: "Pokročilé SEO", included: false },
-      { name: "Podpora", included: "1 měsíc" },
-      { name: "Dodací lhůta", included: "5-7 dní" },
-    ],
-    cta: "Objednat Starter",
-    ideal: "Živnostníci, malé firmy, portfolia",
-  },
-  {
-    id: "business",
-    title: "Business Web",
-    description: "Pro rostoucí firmy a profesionály",
-    price: 25000,
-    priceNote: "jednorázově",
-    popular: true,
-    features: [
-      { name: "Počet stránek", included: "až 15" },
-      { name: "Responzivní design", included: true },
-      { name: "Moderní UI design", included: true },
-      { name: "Základní SEO", included: true },
-      { name: "Kontaktní formulář", included: true },
-      { name: "Google Analytics", included: true },
-      { name: "Rychlost načítání", included: "< 1.5s" },
-      { name: "SSL certifikát", included: true },
-      { name: "Blog/Aktuality", included: true },
-      { name: "E-commerce funkce", included: false },
-      { name: "Pokročilé SEO", included: true },
-      { name: "Podpora", included: "3 měsíce" },
-      { name: "Dodací lhůta", included: "10-14 dní" },
-    ],
-    cta: "Objednat Business",
-    ideal: "Střední firmy, profesionální služby",
-  },
-  {
-    id: "ecommerce",
-    title: "E-commerce",
-    description: "Kompletní řešení pro online prodej",
-    price: 85000,
-    priceNote: "jednorázově",
-    popular: false,
-    features: [
-      { name: "Počet stránek", included: "neomezeno" },
-      { name: "Responzivní design", included: true },
-      { name: "Moderní UI design", included: true },
-      { name: "Základní SEO", included: true },
-      { name: "Kontaktní formulář", included: true },
-      { name: "Google Analytics", included: true },
-      { name: "Rychlost načítání", included: "< 1.5s" },
-      { name: "SSL certifikát", included: true },
-      { name: "Blog/Aktuality", included: true },
-      { name: "E-commerce funkce", included: "Plné" },
-      { name: "Pokročilé SEO", included: true },
-      { name: "Podpora", included: "6 měsíců" },
-      { name: "Dodací lhůta", included: "3-4 týdny" },
-    ],
-    cta: "Objednat E-shop",
-    ideal: "E-shopy, online obchody, B2B/B2C",
-  },
-];
+    // Mark "Základní Web" as popular
+    popular: service.title.toLowerCase().includes("základní"),
+    // Map features: included if present in this service's features array
+    features: Array.from(allFeatureNames).map(featureName => ({
+      name: featureName,
+      included: service.features.includes(featureName),
+    })),
+    cta: `Objednat ${service.title}`,
+    ideal: service.description, // Use description as "ideal for" text
+  }));
+}
 
 // Additional services (secondary)
 const ADDITIONAL_SERVICES = [
@@ -225,6 +176,12 @@ const ADDITIONAL_SERVICES = [
 ];
 
 export default async function ServicesPage() {
+  // Fetch active services from database
+  const dbServices = await getActiveServices();
+
+  // Transform database services to pricing packages
+  const PRICING_PACKAGES = transformServicesToPricingPackages(dbServices);
+
   // Generate breadcrumb schema
   const breadcrumbs: BreadcrumbItem[] = [
     { name: 'Domů', url: 'https://www.weblyx.cz' },
