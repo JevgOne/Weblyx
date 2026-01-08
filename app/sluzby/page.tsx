@@ -11,7 +11,8 @@ import {
   Zap,
   HeadphonesIcon,
   Check,
-  ArrowRight,
+  X,
+  Sparkles,
 } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
@@ -19,6 +20,14 @@ import { Service as ServiceType } from "@/types/cms";
 import { Pricing } from "@/components/home/pricing";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Force dynamic rendering to avoid build timeout
 export const dynamic = 'force-dynamic';
@@ -72,179 +81,150 @@ async function getServicesFromDatabase() {
   return null;
 }
 
-// Separate pricing packages (with prices) from additional services (without prices)
-function separateServices(services: any[]) {
-  const pricingPackages = services.filter(s => s.priceFrom || s.price_from);
-  const additionalServices = services.filter(s => !s.priceFrom && !s.price_from);
+// Pricing packages with detailed feature comparison
+const PRICING_PACKAGES = [
+  {
+    id: "starter",
+    title: "Starter Web",
+    description: "Ideální pro začínající podnikatele",
+    price: 10000,
+    priceNote: "jednorázově",
+    popular: false,
+    features: [
+      { name: "Počet stránek", included: "až 5" },
+      { name: "Responzivní design", included: true },
+      { name: "Moderní UI design", included: true },
+      { name: "Základní SEO", included: true },
+      { name: "Kontaktní formulář", included: true },
+      { name: "Google Analytics", included: true },
+      { name: "Rychlost načítání", included: "< 2s" },
+      { name: "SSL certifikát", included: true },
+      { name: "Blog/Aktuality", included: false },
+      { name: "E-commerce funkce", included: false },
+      { name: "Pokročilé SEO", included: false },
+      { name: "Podpora", included: "1 měsíc" },
+      { name: "Dodací lhůta", included: "5-7 dní" },
+    ],
+    cta: "Objednat Starter",
+    ideal: "Živnostníci, malé firmy, portfolia",
+  },
+  {
+    id: "business",
+    title: "Business Web",
+    description: "Pro rostoucí firmy a profesionály",
+    price: 25000,
+    priceNote: "jednorázově",
+    popular: true,
+    features: [
+      { name: "Počet stránek", included: "až 15" },
+      { name: "Responzivní design", included: true },
+      { name: "Moderní UI design", included: true },
+      { name: "Základní SEO", included: true },
+      { name: "Kontaktní formulář", included: true },
+      { name: "Google Analytics", included: true },
+      { name: "Rychlost načítání", included: "< 1.5s" },
+      { name: "SSL certifikát", included: true },
+      { name: "Blog/Aktuality", included: true },
+      { name: "E-commerce funkce", included: false },
+      { name: "Pokročilé SEO", included: true },
+      { name: "Podpora", included: "3 měsíce" },
+      { name: "Dodací lhůta", included: "10-14 dní" },
+    ],
+    cta: "Objednat Business",
+    ideal: "Střední firmy, profesionální služby",
+  },
+  {
+    id: "ecommerce",
+    title: "E-commerce",
+    description: "Kompletní řešení pro online prodej",
+    price: 85000,
+    priceNote: "jednorázově",
+    popular: false,
+    features: [
+      { name: "Počet stránek", included: "neomezeno" },
+      { name: "Responzivní design", included: true },
+      { name: "Moderní UI design", included: true },
+      { name: "Základní SEO", included: true },
+      { name: "Kontaktní formulář", included: true },
+      { name: "Google Analytics", included: true },
+      { name: "Rychlost načítání", included: "< 1.5s" },
+      { name: "SSL certifikát", included: true },
+      { name: "Blog/Aktuality", included: true },
+      { name: "E-commerce funkce", included: "Plné" },
+      { name: "Pokročilé SEO", included: true },
+      { name: "Podpora", included: "6 měsíců" },
+      { name: "Dodací lhůta", included: "3-4 týdny" },
+    ],
+    cta: "Objednat E-shop",
+    ideal: "E-shopy, online obchody, B2B/B2C",
+  },
+];
 
-  return { pricingPackages, additionalServices };
-}
+// Additional services (secondary)
+const ADDITIONAL_SERVICES = [
+  {
+    icon: TrendingUp,
+    title: "SEO optimalizace",
+    slug: "seo",
+    price: "od 5 000 Kč/měsíc",
+    description:
+      "Dostaňte se na přední pozice ve vyhledávačích. Kompletní on-page i off-page SEO pro lepší viditelnost.",
+    includes: [
+      "Keyword research a analýza konkurence",
+      "On-page optimalizace (meta tags, headings, content)",
+      "Technické SEO (rychlost, Core Web Vitals)",
+      "Link building a off-page optimalizace",
+      "Měsíční reporty a analytics",
+    ],
+  },
+  {
+    icon: Palette,
+    title: "Redesign webu",
+    slug: "redesign",
+    price: "od 15 000 Kč",
+    description:
+      "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze při zachování vaší značky.",
+    includes: [
+      "Analýza současného webu a UX audit",
+      "Nový moderní design respektující brand identity",
+      "Zlepšení UX/UI a konverzního designu",
+      "Migrace obsahu a SEO redirecty",
+      "3 měsíce podpora zdarma",
+    ],
+  },
+  {
+    icon: Zap,
+    title: "Optimalizace rychlosti",
+    slug: "speed",
+    price: "od 8 000 Kč",
+    description:
+      "Zrychlení načítání webu pro lepší SEO a uživatelskou zkušenost. Cíl: < 2 sekundy.",
+    includes: [
+      "Audit výkonu webu (Lighthouse, PageSpeed)",
+      "Optimalizace obrázků a médií",
+      "Caching strategie a CDN implementace",
+      "Core Web Vitals optimalizace",
+      "Lighthouse score > 90",
+    ],
+  },
+  {
+    icon: HeadphonesIcon,
+    title: "Údržba a podpora",
+    slug: "maintenance",
+    price: "od 2 000 Kč/měsíc",
+    description:
+      "Pravidelné aktualizace, zálohy a technická podpora. Váš web bude vždy funkční a bezpečný.",
+    includes: [
+      "Pravidelné aktualizace systému a pluginů",
+      "Bezpečnostní zálohy a monitoring",
+      "Technická podpora (email, telefon)",
+      "Malé úpravy obsahu",
+      "Měsíční reporty o výkonu webu",
+    ],
+  },
+];
 
 export default async function ServicesPage() {
-  // Try to load from database first
-  const dbServices = await getServicesFromDatabase();
-
-  // Fallback hardcoded services (will be used for additional services section)
-  const hardcodedServices = [
-    {
-      icon: Globe,
-      title: "Tvorba webových stránek",
-      slug: "web",
-      price: "od 10 000 Kč",
-      imageUrl: undefined, // Optional: Add image URL from Firebase Storage
-      description:
-        "Vytvoříme pro vás moderní, responzivní webové stránky přizpůsobené na míru vašim potřebám a cílové skupině.",
-      includes: [
-        "Responzivní design (mobil, tablet, desktop)",
-        "Moderní a čistý design",
-        "Základní SEO optimalizace",
-        "Kontaktní formulář",
-        "Google Analytics integrace",
-        "Rychlé načítání (< 2s)",
-        "1 měsíc podpora zdarma",
-        "Školení pro správu webu",
-      ],
-      ideal: ["Malé a střední firmy", "Živnostníci", "Neziskové organizace", "Prezentační weby"],
-    },
-    {
-      icon: ShoppingCart,
-      title: "E-shopy",
-      slug: "eshop",
-      price: "od 85 000 Kč",
-      description:
-        "Kompletní e-commerce řešení pro online prodej s platebními branami, správou produktů a objednávek.",
-      includes: [
-        "Katalog produktů s variantami",
-        "Nákupní košík a checkout",
-        "Platební brány (GoPay, Stripe, PayPal)",
-        "Doprava (Zásilkovna, PPL, Česká pošta)",
-        "Admin panel pro správu",
-        "Správa skladu a objednávek",
-        "Email notifikace",
-        "SEO optimalizace pro produkty",
-        "6 měsíců podpora zdarma",
-      ],
-      ideal: ["Online obchody", "Výrobci produktů", "Velkoobchod", "B2B i B2C prodej"],
-    },
-    {
-      icon: TrendingUp,
-      title: "SEO optimalizace",
-      slug: "seo",
-      price: "od 5 000 Kč/měsíc",
-      description:
-        "Dostaňte se na přední pozice ve vyhledávačích. Kompletní on-page i off-page SEO pro lepší viditelnost.",
-      includes: [
-        "Keyword research",
-        "On-page optimalizace",
-        "Technické SEO (rychlost, Core Web Vitals)",
-        "Content optimalizace",
-        "Meta tags a structured data",
-        "Link building",
-        "Měsíční reporty a analytics",
-        "Competitor analysis",
-      ],
-      ideal: ["Existující weby", "E-shopy", "Blogy a magazíny", "Lokální firmy"],
-    },
-    {
-      icon: Palette,
-      title: "Redesign webu",
-      slug: "redesign",
-      price: "od 15 000 Kč",
-      description:
-        "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze při zachování vaší značky.",
-      includes: [
-        "Analýza současného webu",
-        "Nový moderní design",
-        "Zlepšení UX/UI",
-        "Optimalizace pro mobilní zařízení",
-        "Migrace obsahu",
-        "SEO redirecty",
-        "Vyšší rychlost načítání",
-        "3 měsíce podpora zdarma",
-      ],
-      ideal: ["Zastaralé weby", "Pomalé weby", "Non-responzivní weby", "Nízká konverze"],
-    },
-    {
-      icon: Zap,
-      title: "Optimalizace rychlosti",
-      slug: "speed",
-      price: "od 8 000 Kč",
-      description:
-        "Zrychlení načítání webu pro lepší SEO a uživatelskou zkušenost. Cíl: < 2 sekundy.",
-      includes: [
-        "Audit výkonu webu",
-        "Optimalizace obrázků",
-        "Minifikace CSS/JS",
-        "Lazy loading",
-        "Caching strategie",
-        "CDN implementace",
-        "Core Web Vitals optimalizace",
-        "Lighthouse score > 90",
-      ],
-      ideal: ["Pomalé weby", "E-shopy", "Content-heavy weby", "Vysoká návštěvnost"],
-    },
-    {
-      icon: HeadphonesIcon,
-      title: "Údržba a podpora",
-      slug: "maintenance",
-      price: "od 2 000 Kč/měsíc",
-      description:
-        "Pravidelné aktualizace, zálohy a technická podpora. Váš web bude vždy funkční a bezpečný.",
-      includes: [
-        "Pravidelné aktualizace systému",
-        "Bezpečnostní zálohy",
-        "Monitoring výkonu a dostupnosti",
-        "Technická podpora (email, telefon)",
-        "Malé úpravy obsahu",
-        "Opravy bugů",
-        "Měsíční reporty",
-        "Prioritní reakce na problémy",
-      ],
-      ideal: ["Všechny typy webů", "E-shopy", "Kritické weby", "Dlouhodobá spolupráce"],
-    },
-  ];
-
-  // Separate database services into pricing packages and additional services
-  let pricingPackages: any[] = [];
-  let additionalServices: any[] = [];
-
-  if (dbServices && dbServices.length > 0) {
-    const separated = separateServices(dbServices);
-
-    // Map pricing packages from database
-    pricingPackages = separated.pricingPackages.map((pkg: any) => ({
-      id: pkg.id,
-      title: pkg.title,
-      description: pkg.description,
-      price: pkg.priceFrom || pkg.price_from,
-      features: pkg.features || [],
-      imageUrl: pkg.imageUrl || pkg.image_url,
-    }));
-
-    // Map additional services from database (services without prices)
-    additionalServices = separated.additionalServices.map((svc: any) => {
-      const hardcodedMatch = hardcodedServices.find(hs =>
-        hs.title.toLowerCase().includes(svc.title.toLowerCase().split(' ')[0])
-      );
-
-      return {
-        icon: Globe, // Default icon
-        title: svc.title,
-        slug: svc.id,
-        price: "Cena na dotaz",
-        imageUrl: svc.imageUrl || svc.image_url,
-        description: svc.description,
-        includes: svc.features || hardcodedMatch?.includes || [],
-        ideal: hardcodedMatch?.ideal || [],
-      };
-    });
-  }
-
-  // If no database services or no additional services, use hardcoded as fallback
-  if (additionalServices.length === 0) {
-    additionalServices = hardcodedServices;
-  }
-
   // Generate breadcrumb schema
   const breadcrumbs: BreadcrumbItem[] = [
     { name: 'Domů', url: 'https://www.weblyx.cz' },
@@ -259,50 +239,33 @@ export default async function ServicesPage() {
     breadcrumbs,
   });
 
-  // Generate service schemas for ALL services (packages + additional)
-  const allServicesForSchema = [
-    ...pricingPackages.map(pkg => ({
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      name: pkg.title,
-      description: pkg.description,
-      offers: {
-        '@type': 'Offer',
-        price: pkg.price,
-        priceCurrency: 'CZK',
-      },
-      provider: {
-        '@type': 'Organization',
-        name: 'Weblyx',
-        url: 'https://www.weblyx.cz',
-      },
-      areaServed: {
-        '@type': 'Country',
-        name: 'Czech Republic',
-      },
-    })),
-    ...additionalServices.map(svc => ({
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      name: svc.title,
-      description: svc.description,
-      provider: {
-        '@type': 'Organization',
-        name: 'Weblyx',
-        url: 'https://www.weblyx.cz',
-      },
-      areaServed: {
-        '@type': 'Country',
-        name: 'Czech Republic',
-      },
-    })),
-  ];
+  // Generate service schemas
+  const serviceSchemas = PRICING_PACKAGES.map(pkg => ({
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: pkg.title,
+    description: pkg.description,
+    offers: {
+      '@type': 'Offer',
+      price: pkg.price,
+      priceCurrency: 'CZK',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'Weblyx',
+      url: 'https://www.weblyx.cz',
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: 'Czech Republic',
+    },
+  }));
 
   return (
     <>
       {/* Schema.org JSON-LD */}
       <JsonLd data={webpageSchema} />
-      {allServicesForSchema.map((schema, index) => (
+      {serviceSchemas.map((schema, index) => (
         <JsonLd key={index} data={schema} />
       ))}
 
@@ -313,71 +276,251 @@ export default async function ServicesPage() {
             { label: "Služby", href: "/sluzby" }
           ]}
         />
-        {/* Hero Section */}
-      <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-            Naše <span className="text-primary">cenové balíčky</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Profesionální řešení za transparentní ceny. Vyberte si balíček, který nejlépe odpovídá vašim potřebám.
-          </p>
-        </div>
-      </section>
 
-      {/* Pricing Packages - MAIN CONTENT */}
-      {pricingPackages.length > 0 ? (
+        {/* HERO SECTION - Clean & Minimal */}
+        <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-muted/20">
+          <div className="container mx-auto max-w-5xl text-center space-y-6">
+            <Badge variant="secondary" className="mb-2">
+              Transparentní ceník
+            </Badge>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+              Transparentní ceny.{" "}
+              <span className="text-primary">Žádné skryté poplatky.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Profesionální webové stránky a e-shopy za férové ceny.
+              Víte přesně, co dostanete a za kolik. Bez překvapení.
+            </p>
+          </div>
+        </section>
+
+        {/* PRICING CARDS - Side-by-side with prominent pricing */}
         <section className="py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Naše <span className="text-primary">balíčky</span>
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                Vše v ceně. Transparentně. Bez skrytých poplatků.
-              </p>
-            </div>
-
             {/* Pricing cards grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {pricingPackages.map((pkg: any, index: number) => (
+            <div className="grid lg:grid-cols-3 gap-8 mb-20">
+              {PRICING_PACKAGES.map((pkg) => (
                 <Card
                   key={pkg.id}
-                  className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30"
+                  className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl ${
+                    pkg.popular
+                      ? "border-primary/50 shadow-xl scale-105 lg:scale-110 z-10"
+                      : "hover:border-primary/30"
+                  }`}
                 >
-                  <CardHeader className="space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-bold mb-2">{pkg.title}</h3>
-                      <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                  {/* Popular badge */}
+                  {pkg.popular && (
+                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1.5 text-xs font-semibold rounded-bl-lg flex items-center gap-1">
+                      <Sparkles className="h-3 w-3" />
+                      NEJOBLÍBENĚJŠÍ
+                    </div>
+                  )}
+
+                  <CardHeader className="space-y-6 pt-8">
+                    {/* Package name and description */}
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-bold">{pkg.title}</h3>
+                      <p className="text-sm text-muted-foreground h-10">
+                        {pkg.description}
+                      </p>
                     </div>
 
-                    {/* Price */}
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-black text-primary">
-                        {new Intl.NumberFormat('cs-CZ').format(pkg.price)}
-                      </span>
-                      <span className="text-lg text-muted-foreground font-medium">Kč</span>
+                    {/* LARGE PRICE - Very prominent */}
+                    <div className="space-y-1">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-5xl md:text-6xl font-black text-primary">
+                          {new Intl.NumberFormat('cs-CZ').format(pkg.price)}
+                        </span>
+                        <span className="text-xl text-muted-foreground font-medium">
+                          Kč
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {pkg.priceNote}
+                      </p>
                     </div>
-                  </CardHeader>
 
-                  <CardContent className="space-y-6">
-                    {/* All features visible */}
-                    <ul className="space-y-3">
-                      {pkg.features.map((feature: string, i: number) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                          <span className="text-sm text-muted-foreground">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
+                    {/* CTA Button - Prominent */}
                     <LeadButton
                       href="/poptavka"
                       size="lg"
-                      className="w-full"
+                      className={`w-full ${
+                        pkg.popular
+                          ? "bg-primary hover:bg-primary/90 text-white shadow-lg"
+                          : ""
+                      }`}
                       showArrow
                     >
-                      Objednat
+                      {pkg.cta}
+                    </LeadButton>
+                  </CardHeader>
+
+                  <CardContent className="space-y-6 pb-8">
+                    {/* Key features - First 7 most important */}
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Zahrnuje:
+                      </p>
+                      <ul className="space-y-3">
+                        {pkg.features.slice(0, 7).map((feature, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            {feature.included === true || typeof feature.included === 'string' ? (
+                              <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                            ) : (
+                              <X className="h-5 w-5 text-muted-foreground/30 shrink-0 mt-0.5" />
+                            )}
+                            <div className="flex-1">
+                              <span className={`text-sm ${
+                                feature.included === true || typeof feature.included === 'string'
+                                  ? "text-foreground"
+                                  : "text-muted-foreground/50 line-through"
+                              }`}>
+                                {feature.name}
+                              </span>
+                              {typeof feature.included === 'string' && (
+                                <span className="text-sm font-semibold text-primary ml-2">
+                                  {feature.included}
+                                </span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Ideal for */}
+                    <div className="pt-4 border-t">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                        Ideální pro:
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {pkg.ideal}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* COMPARISON TABLE - Desktop only */}
+            <div className="hidden lg:block">
+              <h2 className="text-3xl font-bold text-center mb-8">
+                Detailní <span className="text-primary">porovnání balíčků</span>
+              </h2>
+              <Card>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="w-[300px] text-base font-bold">
+                          Funkce
+                        </TableHead>
+                        {PRICING_PACKAGES.map((pkg) => (
+                          <TableHead key={pkg.id} className="text-center">
+                            <div className="space-y-1">
+                              <p className="font-bold text-foreground">{pkg.title}</p>
+                              {pkg.popular && (
+                                <Badge variant="default" className="text-[10px] px-2 py-0">
+                                  POPULAR
+                                </Badge>
+                              )}
+                            </div>
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {/* Group features by extracting unique feature names */}
+                      {PRICING_PACKAGES[0].features.map((_, featureIndex) => {
+                        const featureName = PRICING_PACKAGES[0].features[featureIndex].name;
+
+                        return (
+                          <TableRow key={featureIndex}>
+                            <TableCell className="font-medium">
+                              {featureName}
+                            </TableCell>
+                            {PRICING_PACKAGES.map((pkg) => {
+                              const feature = pkg.features[featureIndex];
+                              const isIncluded = feature.included === true || typeof feature.included === 'string';
+
+                              return (
+                                <TableCell key={pkg.id} className="text-center">
+                                  {feature.included === true ? (
+                                    <Check className="h-5 w-5 text-primary mx-auto" />
+                                  ) : feature.included === false ? (
+                                    <X className="h-5 w-5 text-muted-foreground/30 mx-auto" />
+                                  ) : (
+                                    <span className="text-sm font-semibold text-primary">
+                                      {feature.included}
+                                    </span>
+                                  )}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* ADDITIONAL SERVICES - Clearly separated, less prominent */}
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-12 space-y-3">
+              <Badge variant="outline" className="mb-2">
+                Doplňkové služby
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Doplňkové služby a <span className="text-primary">podpora</span>
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Nabízíme také další služby pro zlepšení výkonu, SEO a údržbu vašeho webu.
+              </p>
+            </div>
+
+            {/* Simple grid of cards */}
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {ADDITIONAL_SERVICES.map((service) => (
+                <Card
+                  key={service.slug}
+                  className="transition-all duration-300 hover:shadow-lg hover:border-primary/20"
+                >
+                  <CardHeader className="space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <service.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {service.price}
+                      </Badge>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {service.description}
+                      </p>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ul className="space-y-2">
+                      {service.includes.map((item, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm">
+                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <span className="text-muted-foreground">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <LeadButton
+                      href="/poptavka"
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Nezávazná poptávka
                     </LeadButton>
                   </CardContent>
                 </Card>
@@ -385,125 +528,34 @@ export default async function ServicesPage() {
             </div>
           </div>
         </section>
-      ) : (
-        /* Fallback to Pricing component if no packages from DB */
-        <Pricing />
-      )}
 
-      {/* Additional Services - SECONDARY CONTENT */}
-      {additionalServices.length > 0 && (
-        <section className="py-16 md:py-24 px-4 bg-muted/30">
-          <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-16">
-              <Badge variant="secondary" className="mb-4">
-                Doplňkové služby
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Rozšiřte možnosti vašeho webu
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Nabízíme také další služby pro zlepšení výkonu, SEO a údržbu vašeho webu.
-              </p>
-            </div>
-
-            <div className="space-y-24">
-              {additionalServices.map((service: any, index: number) => (
-            <div
-              key={index}
-              id={service.slug}
-              className={`grid lg:grid-cols-2 gap-12 items-center ${
-                index % 2 === 1 ? "lg:flex-row-reverse" : ""
-              }`}
-            >
-              <div className={`space-y-6 ${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <service.icon className="h-8 w-8 text-primary" />
-                  </div>
-                  <Badge variant="secondary" className="text-base">
-                    {service.price}
-                  </Badge>
-                </div>
-
-                <h2 className="text-3xl md:text-4xl font-bold">{service.title}</h2>
-                <p className="text-lg text-muted-foreground">{service.description}</p>
-
+        {/* BOTTOM CTA - Final conversion */}
+        <section className="py-16 md:py-24 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+              <CardContent className="p-8 md:p-12 text-center space-y-6">
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-lg">Co zahrnuje:</h3>
-                  <ul className="space-y-2">
-                    {service.includes.map((item: string, i: number) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <h2 className="text-3xl md:text-4xl font-bold">
+                    Nevíte si rady? Napište nám pro{" "}
+                    <span className="text-primary">konzultaci zdarma</span>
+                  </h2>
+                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Pomůžeme vám vybrat správný balíček a odpovíme na všechny vaše otázky.
+                    Bez závazků.
+                  </p>
                 </div>
-
-                <div className="space-y-2">
-                  <h4 className="font-semibold">Pro koho je vhodné:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {service.ideal.map((tag: string, i: number) => (
-                      <Badge key={i} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                  <LeadButton href="/poptavka" size="lg" showArrow>
+                    Vyplnit dotazník
+                  </LeadButton>
+                  <Button asChild variant="outline" size="lg">
+                    <Link href="/kontakt">Kontaktovat nás</Link>
+                  </Button>
                 </div>
-
-                <LeadButton href="/poptavka" size="lg" showArrow>
-                  Nezávazná poptávka
-                </LeadButton>
-              </div>
-
-              <Card className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                <CardContent className="p-0 aspect-square flex items-center justify-center overflow-hidden">
-                  {service.imageUrl ? (
-                    <div className="w-full h-full relative">
-                      <img
-                        src={service.imageUrl}
-                        alt={service.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-full h-full bg-gradient-hero flex items-center justify-center">
-                      <div className="text-center space-y-4">
-                        <service.icon className="h-24 w-24 text-primary/30 mx-auto" />
-                        <p className="text-sm text-muted-foreground">Visual placeholder</p>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-                </div>
-              ))}
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
-      )}
-
-      {/* CTA */}
-      <section className="py-16 md:py-24 px-4 bg-muted/50">
-        <div className="container mx-auto max-w-4xl text-center space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Nevíte, kterou službu potřebujete?
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Napište nám a my vám poradíme nejlepší řešení pro váš projekt.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
-              <Link href="/poptavka">Vyplnit dotazník</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/kontakt">Kontaktovat nás</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
       </main>
     </>
   );
