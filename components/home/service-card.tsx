@@ -21,10 +21,10 @@ interface ServiceCardProps {
 export function ServiceCard({ service, IconComponent }: ServiceCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Get features array
-  const features = service.features || [];
+  // Get features array - handle both array and undefined
+  const features = Array.isArray(service.features) ? service.features : [];
   const hasFeatures = features.length > 0;
-  const hasPrice = service.priceFrom !== null && service.priceFrom !== undefined;
+  const hasPrice = typeof service.priceFrom === 'number' && service.priceFrom > 0;
 
   return (
     <Card className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
