@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   }
 };
 
-async function getServicesFromFirestore() {
+async function getServicesFromDatabase() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz'}/api/services`, {
       next: { revalidate: 3600 }, // Cache for 1 hour instead of no-store
@@ -72,11 +72,19 @@ async function getServicesFromFirestore() {
   return null;
 }
 
-export default async function ServicesPage() {
-  // Try to load from Firestore first
-  const firestoreServices = await getServicesFromFirestore();
+// Separate pricing packages (with prices) from additional services (without prices)
+function separateServices(services: any[]) {
+  const pricingPackages = services.filter(s => s.priceFrom || s.price_from);
+  const additionalServices = services.filter(s => !s.priceFrom && !s.price_from);
 
-  // Fallback hardcoded services
+  return { pricingPackages, additionalServices };
+}
+
+export default async function ServicesPage() {
+  // Try to load from database first
+  const dbServices = await getServicesFromDatabase();
+
+  // Fallback hardcoded services (will be used for additional services section)
   const hardcodedServices = [
     {
       icon: Globe,
@@ -196,27 +204,46 @@ export default async function ServicesPage() {
     },
   ];
 
-  // Use Firestore services if available, otherwise fallback to hardcoded
-  const services = firestoreServices && firestoreServices.length > 0
-    ? firestoreServices.map((fsService: any) => {
-        // Map Firestore service to expected format
-        // Find matching hardcoded service for additional data (price, includes, ideal)
-        const hardcodedMatch = hardcodedServices.find(hs =>
-          hs.title.toLowerCase().includes(fsService.title.toLowerCase().split(' ')[0])
-        );
+  // Separate database services into pricing packages and additional services
+  let pricingPackages: any[] = [];
+  let additionalServices: any[] = [];
 
-        return {
-          icon: Globe, // Default icon, could be mapped based on fsService.icon
-          title: fsService.title,
-          slug: fsService.id,
-          price: hardcodedMatch?.price || "Cena na dotaz",
-          imageUrl: fsService.imageUrl,
-          description: fsService.description,
-          includes: fsService.features || hardcodedMatch?.includes || [],
-          ideal: hardcodedMatch?.ideal || [],
-        };
-      })
-    : hardcodedServices;
+  if (dbServices && dbServices.length > 0) {
+    const separated = separateServices(dbServices);
+
+    // Map pricing packages from database
+    pricingPackages = separated.pricingPackages.map((pkg: any) => ({
+      id: pkg.id,
+      title: pkg.title,
+      description: pkg.description,
+      price: pkg.priceFrom || pkg.price_from,
+      features: pkg.features || [],
+      imageUrl: pkg.imageUrl || pkg.image_url,
+    }));
+
+    // Map additional services from database (services without prices)
+    additionalServices = separated.additionalServices.map((svc: any) => {
+      const hardcodedMatch = hardcodedServices.find(hs =>
+        hs.title.toLowerCase().includes(svc.title.toLowerCase().split(' ')[0])
+      );
+
+      return {
+        icon: Globe, // Default icon
+        title: svc.title,
+        slug: svc.id,
+        price: "Cena na dotaz",
+        imageUrl: svc.imageUrl || svc.image_url,
+        description: svc.description,
+        includes: svc.features || hardcodedMatch?.includes || [],
+        ideal: hardcodedMatch?.ideal || [],
+      };
+    });
+  }
+
+  // If no database services or no additional services, use hardcoded as fallback
+  if (additionalServices.length === 0) {
+    additionalServices = hardcodedServices;
+  }
 
   // Generate breadcrumb schema
   const breadcrumbs: BreadcrumbItem[] = [
@@ -232,39 +259,50 @@ export default async function ServicesPage() {
     breadcrumbs,
   });
 
-  // Convert services to Service schema format
-  const servicesForSchema: ServiceType[] = services.map((service: any) => ({
-    id: service.slug,
-    title: service.title,
-    description: service.description,
-    icon: service.icon.displayName || 'Globe',
-    features: service.includes,
-    order: services.indexOf(service),
-    enabled: true,
-  }));
-
-  // Generate individual service schemas
-  const serviceSchemas = servicesForSchema.map(service => ({
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: service.title,
-    description: service.description,
-    provider: {
-      '@type': 'Organization',
-      name: 'Weblyx',
-      url: 'https://www.weblyx.cz',
-    },
-    areaServed: {
-      '@type': 'Country',
-      name: 'Czech Republic',
-    },
-  }));
+  // Generate service schemas for ALL services (packages + additional)
+  const allServicesForSchema = [
+    ...pricingPackages.map(pkg => ({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: pkg.title,
+      description: pkg.description,
+      offers: {
+        '@type': 'Offer',
+        price: pkg.price,
+        priceCurrency: 'CZK',
+      },
+      provider: {
+        '@type': 'Organization',
+        name: 'Weblyx',
+        url: 'https://www.weblyx.cz',
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'Czech Republic',
+      },
+    })),
+    ...additionalServices.map(svc => ({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: svc.title,
+      description: svc.description,
+      provider: {
+        '@type': 'Organization',
+        name: 'Weblyx',
+        url: 'https://www.weblyx.cz',
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'Czech Republic',
+      },
+    })),
+  ];
 
   return (
     <>
       {/* Schema.org JSON-LD */}
       <JsonLd data={webpageSchema} />
-      {serviceSchemas.map((schema, index) => (
+      {allServicesForSchema.map((schema, index) => (
         <JsonLd key={index} data={schema} />
       ))}
 
@@ -279,22 +317,97 @@ export default async function ServicesPage() {
       <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-            Naše <span className="text-primary">služby</span>
+            Naše <span className="text-primary">cenové balíčky</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Komplexní řešení pro vaši online přítomnost. Od jednoduchých webů po pokročilé
-            e-shopy a SEO optimalizaci.
+            Profesionální řešení za transparentní ceny. Vyberte si balíček, který nejlépe odpovídá vašim potřebám.
           </p>
         </div>
       </section>
 
-      {/* Pricing Packages */}
-      <Pricing />
+      {/* Pricing Packages - MAIN CONTENT */}
+      {pricingPackages.length > 0 ? (
+        <section className="py-16 md:py-24 px-4">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Naše <span className="text-primary">balíčky</span>
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Vše v ceně. Transparentně. Bez skrytých poplatků.
+              </p>
+            </div>
 
-      {/* Services Detail */}
-      <section className="py-16 md:py-24 px-4">
-        <div className="container mx-auto max-w-7xl space-y-24">
-          {services.map((service: any, index: number) => (
+            {/* Pricing cards grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {pricingPackages.map((pkg: any, index: number) => (
+                <Card
+                  key={pkg.id}
+                  className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30"
+                >
+                  <CardHeader className="space-y-4">
+                    <div>
+                      <h3 className="text-2xl font-bold mb-2">{pkg.title}</h3>
+                      <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                    </div>
+
+                    {/* Price */}
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-black text-primary">
+                        {new Intl.NumberFormat('cs-CZ').format(pkg.price)}
+                      </span>
+                      <span className="text-lg text-muted-foreground font-medium">Kč</span>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-6">
+                    {/* All features visible */}
+                    <ul className="space-y-3">
+                      {pkg.features.map((feature: string, i: number) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                          <span className="text-sm text-muted-foreground">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <LeadButton
+                      href="/poptavka"
+                      size="lg"
+                      className="w-full"
+                      showArrow
+                    >
+                      Objednat
+                    </LeadButton>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        /* Fallback to Pricing component if no packages from DB */
+        <Pricing />
+      )}
+
+      {/* Additional Services - SECONDARY CONTENT */}
+      {additionalServices.length > 0 && (
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-16">
+              <Badge variant="secondary" className="mb-4">
+                Doplňkové služby
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Rozšiřte možnosti vašeho webu
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Nabízíme také další služby pro zlepšení výkonu, SEO a údržbu vašeho webu.
+              </p>
+            </div>
+
+            <div className="space-y-24">
+              {additionalServices.map((service: any, index: number) => (
             <div
               key={index}
               id={service.slug}
@@ -363,10 +476,12 @@ export default async function ServicesPage() {
                   )}
                 </CardContent>
               </Card>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-16 md:py-24 px-4 bg-muted/50">
