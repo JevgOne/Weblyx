@@ -8,41 +8,48 @@ import { getAllFAQItems, getFAQSection } from "@/lib/turso/cms";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateFAQSchema } from "@/lib/schema-org";
 import { generateSpeakableSchema } from "@/lib/schema-generators";
+import { getTranslations, getLocale } from 'next-intl/server';
 import type { Metadata } from "next";
+import { FAQItem } from "@/types/cms";
 
-export const metadata: Metadata = {
-  title: "Časté otázky (FAQ) – Tvorba webových stránek | Weblyx",
-  description: "Odpovědi na nejčastější otázky o tvorbě webů, cenách, dodacích lhůtách a službách. Zjistěte vše o našich webových řešeních.",
-  keywords: [
-    "FAQ webové stránky",
-    "časté otázky tvorba webu",
-    "kolik stojí web",
-    "jak dlouho trvá web",
-    "podpora webu",
-    "hosting doména",
-  ],
-  openGraph: {
-    title: "Časté otázky o tvorbě webů | Weblyx",
-    description: "Kompletní odpovědi na všechny vaše dotazy ohledně tvorby webových stránek, cen a služeb.",
-    url: "https://www.weblyx.cz/faq",
-    type: "website",
-  },
-  alternates: {
-    canonical: "https://www.weblyx.cz/faq"
-  }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('faqPage');
+
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  };
+}
 
 // Revalidate every hour
 export const revalidate = 3600;
 
 export default async function FAQPage() {
+  const t = await getTranslations('faqPage');
+  const tFaq = await getTranslations('faq');
+  const locale = await getLocale();
+
   const [section, items] = await Promise.all([
     getFAQSection(),
-    getAllFAQItems(),
+    getAllFAQItems(locale),
   ]);
 
-  // Filter only enabled FAQs
-  const enabledFaqs = items.filter((faq) => faq.enabled);
+  // If DB returns no FAQs, use fallback from translations
+  let enabledFaqs: FAQItem[] = items.filter((faq) => faq.enabled);
+
+  if (enabledFaqs.length === 0) {
+    // Fallback to translations - create FAQ items from messages
+    enabledFaqs = [
+      { id: '1', question: tFaq('q1'), answer: tFaq('a1'), enabled: true, order: 1 },
+      { id: '2', question: tFaq('q2'), answer: tFaq('a2'), enabled: true, order: 2 },
+      { id: '3', question: tFaq('q3'), answer: tFaq('a3'), enabled: true, order: 3 },
+      { id: '4', question: tFaq('q4'), answer: tFaq('a4'), enabled: true, order: 4 },
+      { id: '5', question: tFaq('q5'), answer: tFaq('a5'), enabled: true, order: 5 },
+      { id: '6', question: tFaq('q6'), answer: tFaq('a6'), enabled: true, order: 6 },
+      { id: '7', question: tFaq('q7'), answer: tFaq('a7'), enabled: true, order: 7 },
+      { id: '8', question: tFaq('q8'), answer: tFaq('a8'), enabled: true, order: 8 },
+    ];
+  }
 
   // Generate FAQ Schema.org
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
@@ -69,13 +76,13 @@ export default async function FAQPage() {
             {
               "@type": "ListItem",
               position: 1,
-              name: "Domů",
+              name: t('breadcrumbHome'),
               item: "https://www.weblyx.cz",
             },
             {
               "@type": "ListItem",
               position: 2,
-              name: "FAQ",
+              name: t('breadcrumbFaq'),
               item: "https://www.weblyx.cz/faq",
             },
           ],
@@ -87,10 +94,10 @@ export default async function FAQPage() {
         <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
           <div className="container mx-auto max-w-4xl text-center space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-              {section?.heading || "Často kladené otázky"}
+              {section?.heading || t('title')}
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              {section?.subheading || "Najděte odpovědi na všechny vaše otázky o tvorbě webových stránek"}
+              {section?.subheading || t('subtitle')}
             </p>
           </div>
         </section>
@@ -119,7 +126,7 @@ export default async function FAQPage() {
             ) : (
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg">
-                  Zatím nejsou k dispozici žádné FAQ. Brzy je doplníme.
+                  {t('noFaqs')}
                 </p>
               </div>
             )}
@@ -127,23 +134,23 @@ export default async function FAQPage() {
             {/* CTA Section */}
             <div className="mt-16 text-center space-y-6 p-8 rounded-2xl bg-muted/50 border">
               <h2 className="text-2xl md:text-3xl font-bold">
-                Nenašli jste odpověď?
+                {t('ctaTitle')}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Kontaktujte nás a rádi vám poradíme s čímkoliv ohledně tvorby webových stránek.
+                {t('ctaDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="/kontakt"
+                  href={t('contactLink')}
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-[hsl(var(--primary-hover))] h-10 px-8"
                 >
-                  Kontaktujte nás
+                  {t('contactButton')}
                 </a>
                 <a
-                  href="/poptavka"
+                  href={t('quoteLink')}
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-8"
                 >
-                  Nezávazná poptávka
+                  {t('quoteButton')}
                 </a>
               </div>
             </div>

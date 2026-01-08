@@ -7,12 +7,14 @@ import {
 import { FAQSection, FAQItem } from "@/types/cms";
 import { getFAQSection, getAllFAQItems } from "@/lib/turso/cms";
 import { LeadButton } from "@/components/tracking/LeadButton";
+import { getTranslations, getLocale } from 'next-intl/server';
 
 async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQItem[] }> {
   try {
+    const locale = await getLocale();
     const [section, items] = await Promise.all([
       getFAQSection(),
-      getAllFAQItems()
+      getAllFAQItems(locale)
     ]);
 
     return {
@@ -26,10 +28,26 @@ async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQIte
 }
 
 export async function FAQ() {
+  const t = await getTranslations('faqComponent');
+  const tFaq = await getTranslations('faq');
   const { section, items: faqData } = await getFAQData();
 
-  // Filter only enabled FAQs and limit to top 5 for homepage
-  const faqs = faqData.filter((faq) => faq.enabled).slice(0, 5);
+  // Filter only enabled FAQs
+  let faqs = faqData.filter((faq) => faq.enabled);
+
+  // If DB returns no FAQs, use fallback from translations (first 5)
+  if (faqs.length === 0) {
+    faqs = [
+      { id: '1', question: tFaq('q1'), answer: tFaq('a1'), enabled: true, order: 1 },
+      { id: '2', question: tFaq('q2'), answer: tFaq('a2'), enabled: true, order: 2 },
+      { id: '3', question: tFaq('q3'), answer: tFaq('a3'), enabled: true, order: 3 },
+      { id: '4', question: tFaq('q4'), answer: tFaq('a4'), enabled: true, order: 4 },
+      { id: '5', question: tFaq('q5'), answer: tFaq('a5'), enabled: true, order: 5 },
+    ];
+  }
+
+  // Limit to top 5 for homepage
+  faqs = faqs.slice(0, 5);
 
   if (!section || !section.enabled || faqs.length === 0) {
     return null;
@@ -66,15 +84,15 @@ export async function FAQ() {
 
         {/* CTA and Link to full FAQ page */}
         <div className="text-center mt-8 space-y-4">
-          <LeadButton href="/poptavka" size="lg">
-            Máte dotaz? Napište nám
+          <LeadButton href={t('ctaLink')} size="lg">
+            {t('ctaButton')}
           </LeadButton>
           <div>
             <a
-              href="/faq"
+              href={t('allFaqsHref')}
               className="inline-flex items-center text-primary hover:underline font-medium text-sm"
             >
-              Zobrazit všechny otázky →
+              {t('allFaqsLink')}
             </a>
           </div>
         </div>

@@ -27,7 +27,7 @@ import {
   generateOffersSchema,
   generateLocalBusinessSchema,
 } from "@/lib/schema-org";
-import { generateServiceSchema } from "@/lib/schema-generators";
+import { generateServiceSchema, generateSpecialAnnouncementSchema } from "@/lib/schema-generators";
 import { getAllFAQItems } from "@/lib/turso/cms";
 import { getAllPricingTiers } from "@/lib/turso/cms";
 import { PricingTier, FAQItem } from "@/types/cms";
@@ -91,6 +91,15 @@ export default async function HomePage() {
     },
   });
 
+  // SpecialAnnouncement schema for promotional offer (2025/2026 trend)
+  const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
+    name: "AKČNÍ SLEVA: Web za 7 990 Kč",
+    text: "Speciální nabídka - tvorba webových stránek od 7 990 Kč místo 10 000 Kč. Moderní Next.js web s načítáním pod 2 sekundy a SEO optimalizací zdarma.",
+    datePosted: "2025-01-01",
+    expires: "2025-12-31",
+    spatialCoverage: "Czech Republic",
+  });
+
   return (
     <>
       {/* Schema.org JSON-LD */}
@@ -104,6 +113,9 @@ export default async function HomePage() {
 
       {/* Enhanced Service schema with AggregateRating (2025/2026) */}
       <JsonLd data={serviceSchema} />
+
+      {/* SpecialAnnouncement schema for promotional offer (2025/2026) */}
+      <JsonLd data={specialAnnouncementSchema} />
 
       <main className="min-h-screen">
         <Hero />

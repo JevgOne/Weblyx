@@ -8,6 +8,7 @@ import { getBlogPostBySlug, getPublishedBlogPosts } from "@/lib/turso/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { marked } from "marked";
+import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
 
 // Use ISR: Render on-demand and cache for 60 seconds
 export const revalidate = 60;
@@ -146,7 +147,7 @@ export default async function BlogPostPage({
     const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const plainTextContent = stripHtml(htmlContent);
 
-    // Generate Article schema
+    // Generate Article schema with E-E-A-T signals (2025 best practices)
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -160,8 +161,12 @@ export default async function BlogPostPage({
       } : undefined,
       "author": {
         "@type": "Person",
-        "name": post.authorName || "Weblyx",
-        "url": "https://weblyx.cz/o-nas"
+        "name": post.authorName || "Weblyx Team",
+        "jobTitle": "Senior Web Developer & SEO Specialist",
+        "url": "https://weblyx.cz/o-nas",
+        "sameAs": [
+          "https://www.linkedin.com/company/weblyx"
+        ]
       },
       "publisher": {
         "@type": "Organization",
@@ -186,6 +191,63 @@ export default async function BlogPostPage({
       "inLanguage": "cs-CZ",
       "timeRequired": `PT${readTime}M`,
     };
+
+    // Speakable schema for voice search optimization (2025/2026 trend)
+    const speakableSchema = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "h2", "article p"]
+      }
+    };
+
+    // Detect if this is a tutorial/how-to post
+    const isTutorial = post.tags?.some(tag =>
+      ['tutorial', 'návod', 'guide', 'how-to', 'jak'].some(keyword =>
+        tag.toLowerCase().includes(keyword)
+      )
+    );
+
+    // Extract HowTo steps from markdown content if it's a tutorial
+    let howToSchema = null;
+    if (isTutorial) {
+      // Extract steps from markdown headers (## 1., ## Krok 1, ## Step 1, etc.)
+      const stepRegex = /^##\s*(?:(\d+)[\.:]?\s*)?(?:Krok|Step|Schritt)?\s*(.+)$/gim;
+      const steps: HowToStep[] = [];
+      let match;
+
+      while ((match = stepRegex.exec(post.content)) !== null) {
+        const stepNumber = match[1] || (steps.length + 1).toString();
+        const stepName = match[2].trim();
+
+        // Find the content after this header until next ## header
+        const headerIndex = match.index + match[0].length;
+        const nextHeaderMatch = post.content.slice(headerIndex).match(/^##\s/m);
+        const nextHeaderIndex = nextHeaderMatch ? headerIndex + nextHeaderMatch.index! : post.content.length;
+        const stepContent = post.content.slice(headerIndex, nextHeaderIndex).trim();
+
+        // Strip markdown and get plain text (max 500 chars)
+        const plainStepText = stripHtml(await marked(stepContent)).slice(0, 500);
+
+        if (plainStepText.length > 10) {
+          steps.push({
+            name: `${stepNumber}. ${stepName}`,
+            text: plainStepText
+          });
+        }
+      }
+
+      if (steps.length >= 2) {
+        howToSchema = generateHowToSchema({
+          name: post.title,
+          description: post.excerpt || post.title,
+          steps,
+          totalTime: `PT${readTime}M`,
+          image: post.featuredImage
+        });
+      }
+    }
 
     // Generate Breadcrumbs schema
     const breadcrumbSchema = {
@@ -218,6 +280,8 @@ export default async function BlogPostPage({
         {/* Schema.org JSON-LD */}
         <JsonLd data={articleSchema} />
         <JsonLd data={breadcrumbSchema} />
+        <JsonLd data={speakableSchema} />
+        {howToSchema && <JsonLd data={howToSchema} />}
 
         <main className="min-h-screen relative">
           {/* Background gradients */}

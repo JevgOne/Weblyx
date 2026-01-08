@@ -1,3 +1,4 @@
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Globe,
   ShoppingCart,
@@ -5,15 +6,11 @@ import {
   Palette,
   Zap,
   HeadphonesIcon,
-  Rocket,
-  FileText,
-  Award,
 } from "lucide-react";
 import { getActiveServices } from "@/lib/turso/services";
 import { getPageContent } from "@/lib/firestore-pages";
 import { getTranslations } from 'next-intl/server';
 import { LeadButton } from "@/components/tracking/LeadButton";
-import { ServiceCard } from "./service-card";
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -23,19 +20,10 @@ const iconMap: Record<string, any> = {
   Palette,
   Zap,
   HeadphonesIcon,
-  Rocket,
-  FileText,
-  Award,
 };
 
 async function getServices() {
   try {
-    // Check if Turso is configured
-    if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-      console.warn('Turso not configured, using fallback services');
-      return [];
-    }
-
     // Fetch active services from Turso
     const services = await getActiveServices();
     return services;
@@ -98,11 +86,18 @@ export async function Services() {
           {services.map((service) => {
             const IconComponent = (service.icon && iconMap[service.icon as keyof typeof iconMap]) || Globe;
             return (
-              <ServiceCard
+              <Card
                 key={service.id}
-                service={service}
-                IconComponent={IconComponent}
-              />
+                className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1"
+              >
+                <CardContent className="p-6 space-y-4">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <IconComponent className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">{service.title}</h3>
+                  <p className="text-muted-foreground">{service.description}</p>
+                </CardContent>
+              </Card>
             );
           })}
         </div>

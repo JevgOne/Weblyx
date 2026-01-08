@@ -547,11 +547,18 @@ export async function updateFAQSection(section: FAQSection): Promise<void> {
   }
 }
 
-export async function getAllFAQItems(): Promise<FAQItem[]> {
+export async function getAllFAQItems(locale?: string): Promise<FAQItem[]> {
   try {
+    // Get all FAQs from DB (database doesn't have locale column yet)
     const results = await executeQuery<any>(
       'SELECT * FROM faq_items ORDER BY "order" ASC'
     );
+
+    // If no results or locale is DE, return empty array
+    // This will trigger fallback to translations in components
+    if (results.length === 0 || locale === 'de') {
+      return [];
+    }
 
     return results.map(row => ({
       id: row.id,
@@ -564,7 +571,8 @@ export async function getAllFAQItems(): Promise<FAQItem[]> {
     }));
   } catch (error) {
     console.error('Error fetching FAQ items:', error);
-    throw error;
+    // If error, return empty array (will trigger fallback to translations)
+    return [];
   }
 }
 

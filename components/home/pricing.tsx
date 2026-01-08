@@ -9,12 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PricingTier } from "@/types/cms";
+import { useLocale, useTranslations } from 'next-intl';
 
 export function Pricing() {
+  const locale = useLocale();
+  const t = useTranslations('pricing');
+
   const [plans, setPlans] = useState<PricingTier[]>([]);
-  const [heading, setHeading] = useState('Cenové balíčky');
-  const [subheading, setSubheading] = useState('Transparentní ceny bez skrytých poplatků');
-  const [footerNote, setFooterNote] = useState('Ceny jsou orientační. Finální cena závisí na rozsahu a složitosti projektu.');
+  const [heading] = useState(t('title'));
+  const [subheading] = useState(t('subtitle'));
+  const [footerNote] = useState(t('pricingNote'));
 
   // Promo code state
   const [promoCode, setPromoCode] = useState('');
@@ -22,21 +26,49 @@ export function Pricing() {
   const [promoError, setPromoError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
 
-  // Fallback mock data (used only if API fails)
-  const mockPlans: PricingTier[] = [
+  // Currency conversion (CZK to EUR ~25:1)
+  const convertPrice = (priceInCZK: number): number => {
+    if (locale === 'de') {
+      return Math.round(priceInCZK / 25);
+    }
+    return priceInCZK;
+  };
+
+  const getCurrencySymbol = (): string => {
+    return locale === 'de' ? '€' : 'Kč';
+  };
+
+  // Fallback mock data (localized based on current locale)
+  // Using translation keys for German compatibility
+  const getMockPlans = (): PricingTier[] => {
+    const isGerman = locale === 'de';
+    const ctaLink = isGerman ? '/anfrage' : '/poptavka';
+    const ctaText = isGerman ? 'Paket auswählen' : 'Objednat';
+
+    return [
       {
         id: 'tier-1',
         name: 'Landing Page',
         price: 7990,
         currency: 'CZK',
         interval: 'one-time' as const,
-        description: 'Levnější než WordPress, rychlejší než konkurence',
+        description: isGerman
+          ? 'Günstiger als WordPress, schneller als die Konkurrenz'
+          : 'Levnější než WordPress, rychlejší než konkurence',
         highlighted: false,
-        ctaText: 'Objednat',
-        ctaLink: '/poptavka',
+        ctaText,
+        ctaLink,
         order: 1,
         enabled: true,
-        features: [
+        features: isGerman ? [
+          '1 Seite, 3-5 Abschnitte',
+          'Responsive Design',
+          'Kontaktformular',
+          'Basis-SEO',
+          'Google Analytics',
+          'Lieferung in 3-5 Tagen',
+          '1 Monat Support',
+        ] : [
           '1 stránka, 3–5 sekcí',
           'Responzivní design',
           'Kontaktní formulář',
@@ -48,17 +80,28 @@ export function Pricing() {
       },
       {
         id: 'tier-2',
-        name: 'Základní Web',
+        name: isGerman ? 'Basis Website' : 'Základní Web',
         price: 9990,
         currency: 'CZK',
         interval: 'one-time' as const,
-        description: 'Moderní web bez zbytečností',
+        description: isGerman
+          ? 'Moderne Website ohne Schnickschnack'
+          : 'Moderní web bez zbytečností',
         highlighted: false,
-        ctaText: 'Objednat',
-        ctaLink: '/poptavka',
+        ctaText,
+        ctaLink,
         order: 2,
         enabled: true,
-        features: [
+        features: isGerman ? [
+          '3-5 Unterseiten',
+          'Modernes Design',
+          'Fortgeschrittenes SEO',
+          'Blog mit CMS-Editor',
+          'Kontaktformular',
+          'Social-Media-Integration',
+          'Lieferung in 5-7 Tagen',
+          '2 Monate Support',
+        ] : [
           '3–5 podstránek',
           'Moderní design',
           'Pokročilé SEO',
@@ -71,17 +114,30 @@ export function Pricing() {
       },
       {
         id: 'tier-3',
-        name: 'Standardní Web',
+        name: isGerman ? 'Standard Website' : 'Standardní Web',
         price: 24990,
         currency: 'CZK',
         interval: 'one-time' as const,
-        description: 'Co konkurence dělá za 40k a měsíc, my za 25k a týden',
+        description: isGerman
+          ? 'Was die Konkurrenz in einem Monat für 1.000€ macht, schaffen wir in einer Woche'
+          : 'Co konkurence dělá za 40k a měsíc, my za 25k a týden',
         highlighted: true,
-        ctaText: 'Objednat nejlepší',
-        ctaLink: '/poptavka',
+        ctaText: isGerman ? 'Bestes Paket wählen' : 'Objednat nejlepší',
+        ctaLink,
         order: 3,
         enabled: true,
-        features: [
+        features: isGerman ? [
+          '10+ Unterseiten',
+          'Premium-Design nach Maß',
+          'Erweiterte Animationen',
+          'Vollständiges CMS zur Inhaltsverwaltung',
+          'Buchungssystem',
+          'Newsletter-Integration',
+          'Fortgeschrittenes SEO und Analytics',
+          'Lieferung in 7-10 Tagen',
+          '3 Monate Support',
+          'Kostenlose kleine Anpassungen (2h)',
+        ] : [
           '10+ podstránek',
           'Premium design na míru',
           'Pokročilé animace',
@@ -96,17 +152,29 @@ export function Pricing() {
       },
       {
         id: 'tier-4',
-        name: 'Mini E-shop',
+        name: isGerman ? 'Mini E-Shop' : 'Mini E-shop',
         price: 49990,
         currency: 'CZK',
         interval: 'one-time' as const,
-        description: 'Moderní e-shop bez WordPress limitů',
+        description: isGerman
+          ? 'Moderner E-Shop ohne WordPress-Einschränkungen'
+          : 'Moderní e-shop bez WordPress limitů',
         highlighted: false,
-        ctaText: 'Objednat',
-        ctaLink: '/poptavka',
+        ctaText,
+        ctaLink,
         order: 4,
         enabled: true,
-        features: [
+        features: isGerman ? [
+          'Bis zu 50 Produkte',
+          'Zahlungsgateway',
+          'Bestellverwaltung',
+          'Kategorien und Filter',
+          'Wunschliste, Warenkorb, Checkout',
+          'E-Mail-Benachrichtigungen',
+          'SEO-Optimierung',
+          'Lieferung in 14 Tagen',
+          '6 Monate Support',
+        ] : [
           'Do 50 produktů',
           'Platební brána',
           'Správa objednávek',
@@ -120,17 +188,31 @@ export function Pricing() {
       },
       {
         id: 'tier-5',
-        name: 'Premium E-shop',
+        name: isGerman ? 'Premium E-Shop' : 'Premium E-shop',
         price: 89990,
         currency: 'CZK',
         interval: 'one-time' as const,
-        description: 'Enterprise řešení za poloviční cenu',
+        description: isGerman
+          ? 'Enterprise-Lösung zum halben Preis'
+          : 'Enterprise řešení za poloviční cenu',
         highlighted: false,
-        ctaText: 'Objednat',
-        ctaLink: '/poptavka',
+        ctaText,
+        ctaLink,
         order: 5,
         enabled: true,
-        features: [
+        features: isGerman ? [
+          'Unbegrenzte Produktanzahl',
+          'Mehrere Zahlungsgateways',
+          'Kurier-Integration',
+          'Erweiterte Filter und Suche',
+          'Benutzerkonten',
+          'Gutscheine und Rabatte',
+          'Produktbewertungen',
+          'Mehrsprachige Unterstützung',
+          'Buchhaltungsintegration',
+          'Lieferung in 21-28 Tagen',
+          '12 Monate Premium-Support',
+        ] : [
           'Neomezený počet produktů',
           'Více platebních bran',
           'Propojení s kurýry',
@@ -145,6 +227,7 @@ export function Pricing() {
         ],
       },
     ];
+  };
 
   useEffect(() => {
     // Fetch pricing tiers from API
@@ -161,16 +244,22 @@ export function Pricing() {
         console.error('Error loading pricing tiers:', error);
       }
 
-      // Fallback to mock data if API fails
-      setPlans(mockPlans);
+      // Fallback to localized mock data if API fails
+      setPlans(getMockPlans());
     }
 
     loadPricingTiers();
-  }, [mockPlans]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty array - only run once on mount
 
   // Helper function to format price
-  const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('cs-CZ').format(price);
+  const formatPrice = (price: number, currency: string = 'CZK') => {
+    // Convert to EUR if German locale
+    const displayPrice = convertPrice(price);
+
+    // Use appropriate locale format
+    const localeFormat = locale === 'de' ? 'de-DE' : 'cs-CZ';
+    return new Intl.NumberFormat(localeFormat).format(displayPrice);
   };
 
   // Calculate discounted price
@@ -196,7 +285,7 @@ export function Pricing() {
   // Validate promo code
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
-      setPromoError('Zadejte promo kód');
+      setPromoError(t('enterPromoCode'));
       return;
     }
 
@@ -219,11 +308,11 @@ export function Pricing() {
         setAppliedPromo(data.data);
         setPromoError('');
       } else {
-        setPromoError(data.error || 'Neplatný promo kód');
+        setPromoError(data.error || t('invalidPromoCode'));
         setAppliedPromo(null);
       }
     } catch (error) {
-      setPromoError('Chyba při ověřování kódu');
+      setPromoError(t('promoCodeError'));
       setAppliedPromo(null);
     } finally {
       setIsValidating(false);
@@ -248,7 +337,7 @@ export function Pricing() {
         <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 animate-fade-in">
             <Sparkles className="h-4 w-4" />
-            <span>Férové ceny bez skrytých poplatků</span>
+            <span>{t('fairPrices')}</span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold animate-fade-in">
             {heading}
@@ -265,13 +354,13 @@ export function Pricing() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Tag className="h-4 w-4 text-primary" />
-                  <span>Máte promo kód?</span>
+                  <span>{t('promoCodeLabel')}</span>
                 </div>
 
                 {!appliedPromo ? (
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Zadejte kód..."
+                      placeholder={t('promoCodePlaceholder')}
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
@@ -283,7 +372,7 @@ export function Pricing() {
                       disabled={isValidating || !promoCode.trim()}
                       size="sm"
                     >
-                      {isValidating ? 'Ověřuji...' : 'Použít'}
+                      {isValidating ? t('validating') : t('applyButton')}
                     </Button>
                   </div>
                 ) : (
@@ -295,7 +384,7 @@ export function Pricing() {
                       <span className="text-sm font-medium text-primary">
                         {appliedPromo.discountType === 'percentage'
                           ? `-${appliedPromo.discountValue}%`
-                          : `-${formatPrice(appliedPromo.discountValue, 'CZK')} Kč`}
+                          : `-${formatPrice(appliedPromo.discountValue, 'CZK')} ${getCurrencySymbol()}`}
                       </span>
                     </div>
                     <Button
@@ -339,7 +428,7 @@ export function Pricing() {
                 {plan.highlighted && (
                   <div className="absolute top-3 right-3 z-10">
                     <Badge className="bg-primary text-primary-foreground border-0 shadow-lg px-3 py-1.5 text-xs font-bold">
-                      Nejoblíbenější
+                      {t('popular')}
                     </Badge>
                   </div>
                 )}
@@ -367,7 +456,7 @@ export function Pricing() {
                           <span className="text-3xl md:text-4xl font-black text-primary">
                             {formatPrice(calculateDiscountedPrice(plan.price), plan.currency)}
                           </span>
-                          <span className="text-lg text-muted-foreground font-medium">Kč</span>
+                          <span className="text-lg text-muted-foreground font-medium">{getCurrencySymbol()}</span>
                         </div>
                       </>
                     ) : (
@@ -375,12 +464,12 @@ export function Pricing() {
                         <span className="text-3xl md:text-4xl font-black text-primary">
                           {formatPrice(plan.price, plan.currency)}
                         </span>
-                        <span className="text-lg text-muted-foreground font-medium">Kč</span>
+                        <span className="text-lg text-muted-foreground font-medium">{getCurrencySymbol()}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
-                      <span>Jednorázová platba</span>
+                      <span>{t('oneTime')}</span>
                     </div>
                   </div>
                 </CardHeader>
@@ -400,7 +489,7 @@ export function Pricing() {
                     ))}
                     {plan.features.length > 6 && (
                       <li className="text-xs text-primary font-medium pl-6">
-                        + {plan.features.length - 6} dalších
+                        {t('additionalFeatures').replace('{count}', String(plan.features.length - 6))}
                       </li>
                     )}
                   </ul>
@@ -443,7 +532,7 @@ export function Pricing() {
             {footerNote}
           </p>
           <p className="text-sm font-medium text-primary">
-            💬 Potřebujete individuální řešení? Kontaktujte nás pro osobní nabídku
+            {t('customSolutionCTA')}
           </p>
         </div>
       </div>
