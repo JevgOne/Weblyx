@@ -1,18 +1,21 @@
 // Turso Database Client
 import { createClient } from '@libsql/client';
 
-if (!process.env.TURSO_DATABASE_URL) {
-  throw new Error('TURSO_DATABASE_URL environment variable is not set');
+// Check if Turso is configured
+const isTursoConfigured = !!(process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN);
+
+if (!isTursoConfigured) {
+  console.warn('⚠️ Turso database not configured - using fallback mode');
 }
 
-if (!process.env.TURSO_AUTH_TOKEN) {
-  throw new Error('TURSO_AUTH_TOKEN environment variable is not set');
-}
+export const turso = isTursoConfigured
+  ? createClient({
+      url: process.env.TURSO_DATABASE_URL!.trim(),
+      authToken: process.env.TURSO_AUTH_TOKEN!.trim(),
+    })
+  : null as any; // Will cause errors if used, but won't crash on import
 
-export const turso = createClient({
-  url: process.env.TURSO_DATABASE_URL.trim(),
-  authToken: process.env.TURSO_AUTH_TOKEN.trim(),
-});
+export { isTursoConfigured };
 
 // Helper function to execute queries
 export async function executeQuery<T = any>(

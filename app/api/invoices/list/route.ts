@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
     // Format invoices
     const now = Math.floor(Date.now() / 1000);
 
-    const invoices = result.rows.map(invoice => {
+    const invoices = result.rows.map((invoice: any) => {
       // Auto-update status to overdue if due_date passed
       let invoiceStatus = invoice.status as InvoiceStatus;
       if (

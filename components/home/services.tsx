@@ -30,6 +30,12 @@ const iconMap: Record<string, any> = {
 
 async function getServices() {
   try {
+    // Check if Turso is configured
+    if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
+      console.warn('Turso not configured, using fallback services');
+      return [];
+    }
+
     // Fetch active services from Turso
     const services = await getActiveServices();
     return services;
