@@ -137,7 +137,17 @@
   },
   "faq": {
     "title": "Často kladené otázky",
-    "subtitle": "Vše, co potřebujete vědět"
+    "subtitle": "Vše, co potřebujete vědět",
+    "q1": "Jak dlouho trvá vytvoření webu?",
+    "a1": "Základní web (3-5 stránek) dodáváme za 5-7 pracovních dní. Složitější projekty jako e-shopy trvají 4-6 týdnů podle rozsahu. Vždy vám dáme konkrétní termín při konzultaci.",
+    "q2": "Kolik stojí webové stránky?",
+    "a2": "Základní web začíná na 7 990 Kč jednorázově. Cena závisí na rozsahu a funkcích. Nabízíme transparentní ceník bez skrytých poplatků – víte přesně, co dostanete.",
+    "q3": "Poskytujete doménu a hosting?",
+    "a3": "Doména a hosting nejsou v ceně, ale pomůžeme vám s výběrem. Doporučujeme Vercel (hosting zdarma) a české registrátory domén. Celkové náklady jsou cca 300-500 Kč ročně.",
+    "q4": "Mohu si web spravovat sám?",
+    "a4": "Ano, naučíme vás upravovat texty a obrázky. Pro složitější úpravy nabízíme technickou podporu od 2 000 Kč/měsíc nebo jednorázové úpravy od 500 Kč/hodina.",
+    "q5": "Nabízíte následnou podporu?",
+    "a5": "První měsíc podpory je zdarma. Opravíme případné chyby a odpovíme na dotazy. Poté nabízíme měsíční paušál nebo platby za jednotlivé úpravy."
   },
   "contact": {
     "title": "Kontaktujte nás",
