@@ -76,7 +76,7 @@ export default async function HomePage() {
   // Now includes reviews since we have visible Google Reviews widget
   const serviceSchema = generateServiceSchema({
     serviceName: "Profesionální tvorba webových stránek",
-    description: "Rychlý vývoj moderních webových stránek pomocí Next.js s garancí rychlosti načítání pod 2 sekundy",
+    description: "Tvorba webových stránek pro živnostníky a firmy. Dodání za 5-7 dní, garantované načítání pod 2 sekundy, SEO optimalizace v ceně. Česká agentura.",
     serviceType: "Web Development",
     areaServed: "Česká republika",
     offers: {
@@ -91,12 +91,12 @@ export default async function HomePage() {
     },
   });
 
-  // SpecialAnnouncement schema for promotional offer (2025/2026 trend)
+  // SpecialAnnouncement schema for promotional offer
   const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
-    name: "AKČNÍ SLEVA: Web za 7 990 Kč",
-    text: "Speciální nabídka - tvorba webových stránek od 7 990 Kč místo 10 000 Kč. Moderní Next.js web s načítáním pod 2 sekundy a SEO optimalizací zdarma.",
-    datePosted: "2025-01-01",
-    expires: "2025-12-31",
+    name: "AKCE: Profesionální web od 7 990 Kč",
+    text: "Tvorba webových stránek od 7 990 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
+    datePosted: "2026-01-01",
+    expires: "2026-12-31",
     spatialCoverage: "Czech Republic",
   });
 

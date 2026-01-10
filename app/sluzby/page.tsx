@@ -35,8 +35,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč (AKCE 7 990 Kč)",
-  description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč), e-shopy na míru, SEO optimalizace. Web za 5-7 pracovních dní, Next.js místo WordPressu. Transparentní ceny.",
+  title: "Tvorba webových stránek | Od 7 990 Kč | E-shopy a SEO | Weblyx",
+  description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. E-shopy na míru, SEO optimalizace. Česká agentura.",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
@@ -48,8 +48,8 @@ export const metadata: Metadata = {
     "údržba webu"
   ],
   openGraph: {
-    title: "Tvorba webových stránek, e-shopů a SEO | Od 10 000 Kč (AKCE 7 990 Kč)",
-    description: "⚡ Rychlá tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 dní, Next.js místo WordPressu. Transparentní ceník.",
+    title: "Tvorba webových stránek | Od 7 990 Kč | Weblyx",
+    description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
     url: "https://www.weblyx.cz/sluzby",
     type: "website",
     images: [

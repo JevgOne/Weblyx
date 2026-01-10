@@ -7,8 +7,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, generateOrganizationSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
-  title: "O nás – moderní webová agentura zaměřená na rychlé a levné webové stránky",
-  description: "Weblyx je moderní webová agentura z Prahy, která spojuje rychlou tvorbu webu, moderní technologie a férové ceny. Pomáháme živnostníkům, malým firmám i rostoucím projektům získat web, který je rychlejší než konkurence a přitom nezruinuje rozpočet.",
+  title: "O nás – Weblyx | Česká webová agentura | Tvorba webů od 7 990 Kč",
+  description: "Weblyx je česká webová agentura. Od února 2024 jsme dokončili 15+ projektů pro živnostníky a firmy. Web za 5-7 dní, garantujeme načítání pod 2 sekundy. Férové ceny, žádné skryté poplatky.",
   keywords: [
     "o nás webová agentura",
     "webová agentura Praha",
@@ -40,7 +40,7 @@ export default function AboutPage() {
     {
       icon: Zap,
       title: "Rychlost",
-      description: "Využíváme AI technologie pro zrychlení vývoje. Jednoduchý web dodáme za 5-7 dní, bez kompromisů v kvalitě.",
+      description: "Díky moderním nástrojům a efektivním procesům dodáváme základní web za 5-7 dní, bez kompromisů v kvalitě.",
     },
     {
       icon: Heart,
@@ -61,8 +61,8 @@ export default function AboutPage() {
 
   const stats = [
     { value: "Únor 2024", label: "Rok založení" },
-    { value: "10+", label: "Projektů dokončeno" },
-    { value: "100%", label: "Spokojenost klientů" },
+    { value: "15+", label: "Projektů dokončeno" },
+    { value: "5.0 ★", label: "Google hodnocení" },
     { value: "< 2s", label: "Průměrná rychlost" },
   ];
 
@@ -79,8 +79,8 @@ export default function AboutPage() {
   ];
 
   const webpageSchema = generateWebPageSchema({
-    name: 'O nás',
-    description: 'Jsme moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
+    name: 'O nás – Weblyx',
+    description: 'Česká webová agentura. Od února 2024 jsme dokončili 15+ projektů. Web za 5-7 dní, férové ceny.',
     url: 'https://www.weblyx.cz/o-nas',
     breadcrumbs,
   });
@@ -97,11 +97,11 @@ export default function AboutPage() {
       <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-            Jsme moderní <span className="text-primary">webová agentura</span>
+            Česká <span className="text-primary">webová agentura</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Zaměřujeme se na tvorbu kvalitních webových stránek za konkurenceschopné ceny
-            s využitím AI technologií pro efektivnější vývoj.
+            Tvoříme rychlé a moderní weby pro živnostníky a firmy.
+            Férové ceny, dodání za 5-7 dní, žádné skryté poplatky.
           </p>
         </div>
       </section>
@@ -144,7 +144,7 @@ export default function AboutPage() {
                   Dnes pomáháme firmám, které jsou ve stejné situaci, jako jsme byli my: chtějí web, který dává smysl, vypadá profesionálně a funguje rychle – ale nechtějí platit statisíce nebo čekat měsíce. Každý nový web bereme trochu osobně, protože moc dobře víme, jak frustrující je hledat někoho, kdo vás opravdu poslouchá.
                 </p>
                 <p>
-                  Proto stavíme weby tak, jak bychom tehdy chtěli, aby někdo postavil ten náš – na míru, srozumitelně, bez bullshitu, s důrazem na výsledky a rychlost. Díky moderním technologiím a chytrému využití AI dokážeme vyvíjet rychle, držet férové ceny a tvořit weby, které se načítají pod 2 sekundy a jsou připravené růst spolu s vaším byznysem. ❤️‍🔥
+                  Proto stavíme weby tak, jak bychom tehdy chtěli, aby někdo postavil ten náš – na míru, srozumitelně, bez bullshitu, s důrazem na výsledky a rychlost. Díky moderním technologiím a efektivním procesům dokážeme vyvíjet rychle, držet férové ceny a tvořit weby, které se načítají pod 2 sekundy a jsou připravené růst spolu s vaším byznysem. ❤️‍🔥
                 </p>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function AboutPage() {
                   <ul className="list-disc list-inside space-y-1 ml-2">
                     <li>Weblyx = rychlost – dodání do 5–7 dní a web, který se neseká.</li>
                     <li>Weblyx = férovost – jasný ceník, žádné hvězdičky a skryté položky.</li>
-                    <li>Weblyx = moderní přístup – Next.js, React, AI, žádné zastaralé technologie.</li>
+                    <li>Weblyx = kvalita – moderní technologie, rychlé načítání, spokojení zákazníci.</li>
                   </ul>
                   <p>
                     Dlouhodobě chceme tvořit nejen jednotlivé weby, ale i dlouhodobé vztahy – být tým, který zná váš byznys, rozumí vašim cílům a pomáhá vám je online plnit. Ať už jste na začátku, nebo škálujete. 🌱📈
