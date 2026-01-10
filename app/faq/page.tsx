@@ -38,17 +38,14 @@ export default async function FAQPage() {
   let enabledFaqs: FAQItem[] = items.filter((faq) => faq.enabled);
 
   if (enabledFaqs.length === 0) {
-    // Fallback to translations - create FAQ items from messages
-    enabledFaqs = [
-      { id: '1', question: tFaq('q1'), answer: tFaq('a1'), enabled: true, order: 1 },
-      { id: '2', question: tFaq('q2'), answer: tFaq('a2'), enabled: true, order: 2 },
-      { id: '3', question: tFaq('q3'), answer: tFaq('a3'), enabled: true, order: 3 },
-      { id: '4', question: tFaq('q4'), answer: tFaq('a4'), enabled: true, order: 4 },
-      { id: '5', question: tFaq('q5'), answer: tFaq('a5'), enabled: true, order: 5 },
-      { id: '6', question: tFaq('q6'), answer: tFaq('a6'), enabled: true, order: 6 },
-      { id: '7', question: tFaq('q7'), answer: tFaq('a7'), enabled: true, order: 7 },
-      { id: '8', question: tFaq('q8'), answer: tFaq('a8'), enabled: true, order: 8 },
-    ];
+    // Fallback to translations - create FAQ items from messages (all 20 questions)
+    enabledFaqs = Array.from({ length: 20 }, (_, i) => ({
+      id: String(i + 1),
+      question: tFaq(`q${i + 1}`),
+      answer: tFaq(`a${i + 1}`),
+      enabled: true,
+      order: i + 1,
+    }));
   }
 
   // Generate FAQ Schema.org
