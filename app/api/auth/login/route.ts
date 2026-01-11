@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate session token
-    const sessionToken = generateSessionToken();
+    // Generate signed session token with user data
+    const sessionToken = generateSessionToken(user);
 
     // Set secure cookie
     const cookieStore = await cookies();

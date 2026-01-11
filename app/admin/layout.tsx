@@ -1,28 +1,28 @@
-"use client";
+import type { Metadata } from "next";
+import { AdminLayoutClient } from "./_components/AdminLayoutClient";
 
-import { usePathname } from "next/navigation";
-import { AdminAuthProvider } from "./_components/AdminAuthProvider";
-import { QueryProvider } from "./_components/QueryProvider";
-import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
+// Noindex for entire admin panel - prevent search engines from indexing
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+  title: {
+    template: '%s | Admin Panel',
+    default: 'Admin Panel',
+  },
+};
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
-  // Don't wrap login page with auth provider
-  if (pathname === "/admin/login") {
-    return <>{children}</>;
-  }
-
-  return (
-    <QueryProvider>
-      <AdminAuthProvider>
-        {children}
-        {/* <PWAInstallPrompt /> TEMP DISABLED */}
-      </AdminAuthProvider>
-    </QueryProvider>
-  );
+  return <AdminLayoutClient>{children}</AdminLayoutClient>;
 }

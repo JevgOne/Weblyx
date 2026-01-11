@@ -6,3 +6,4 @@ export { turso, executeQuery, executeOne, transaction } from '../turso';
 // Export domain-specific modules
 export * from './portfolio';
 export * from './reviews';
+export * from './eroweb';
