@@ -410,7 +410,7 @@ export function Pricing() {
         <div className="relative mb-12">
           {/* Scroll container */}
           <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-            <div className="flex gap-6 pb-8 px-4 min-w-min">
+            <div className="flex gap-6 pb-8 px-4">
               {plans.map((plan, index) => (
                 <div
                   key={plan.id}
