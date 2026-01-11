@@ -86,13 +86,8 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
     .filter(service => service.priceFrom !== null && service.priceFrom !== undefined)
     .sort((a, b) => a.order - b.order);
 
-  // Create all unique feature names from all services
-  const allFeatureNames = new Set<string>();
-  pricingServices.forEach(service => {
-    service.features.forEach(feature => allFeatureNames.add(feature));
-  });
-
   // Transform each service to pricing package format
+  // Each package only shows its OWN features (not a comparison matrix)
   return pricingServices.map((service) => ({
     id: service.id,
     title: service.title,
@@ -101,10 +96,10 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
     priceNote: "jednorázově",
     // Mark "Základní Web" as popular
     popular: service.title.toLowerCase().includes("základní"),
-    // Map features: included if present in this service's features array
-    features: Array.from(allFeatureNames).map(featureName => ({
+    // Only include features that belong to this service
+    features: service.features.map(featureName => ({
       name: featureName,
-      included: service.features.includes(featureName),
+      included: true, // All features shown are included
     })),
     cta: `Objednat ${service.title}`,
     ideal: service.description, // Use description as "ideal for" text
@@ -251,60 +246,65 @@ export default async function ServicesPage() {
           </div>
         </section>
 
-        {/* PRICING CARDS - Side-by-side with prominent pricing */}
+        {/* PRICING CARDS - Premium Professional Design */}
         <section className="py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-7xl">
             {/* Pricing cards grid */}
-            <div className="grid lg:grid-cols-3 gap-8 mb-20">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
               {PRICING_PACKAGES.map((pkg) => (
                 <Card
                   key={pkg.id}
-                  className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl ${
+                  className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 ${
                     pkg.popular
-                      ? "border-primary/50 shadow-xl scale-105 lg:scale-110 z-10"
-                      : "hover:border-primary/30"
+                      ? "border-2 border-primary/60 shadow-2xl shadow-primary/10 ring-2 ring-primary/10 lg:scale-[1.02]"
+                      : "border border-border/60 hover:border-primary/40 shadow-lg"
                   }`}
                 >
+                  {/* Gradient background overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br opacity-[0.02] transition-opacity duration-500 ${
+                    pkg.popular
+                      ? "from-primary via-transparent to-primary/50 group-hover:opacity-[0.05]"
+                      : "from-primary/30 via-transparent to-transparent group-hover:opacity-[0.04]"
+                  }`}></div>
+
                   {/* Popular badge */}
                   {pkg.popular && (
-                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1.5 text-xs font-semibold rounded-bl-lg flex items-center gap-1">
-                      <Sparkles className="h-3 w-3" />
+                    <div className="absolute -top-1 -right-1 bg-gradient-to-r from-primary to-primary/90 text-white px-4 py-2 text-xs font-bold rounded-bl-2xl shadow-lg flex items-center gap-1.5 z-10">
+                      <Sparkles className="h-3.5 w-3.5" />
                       NEJOBLÍBENĚJŠÍ
                     </div>
                   )}
 
-                  <CardHeader className="space-y-6 pt-8">
-                    {/* Package name and description */}
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-bold">{pkg.title}</h3>
-                      <p className="text-sm text-muted-foreground h-10">
+                  <CardHeader className="relative space-y-6 pt-10 pb-6 px-6">
+                    {/* Package name */}
+                    <div className="space-y-3">
+                      <h3 className="text-2xl font-bold tracking-tight">{pkg.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed min-h-[40px]">
                         {pkg.description}
                       </p>
                     </div>
 
-                    {/* LARGE PRICE - Very prominent */}
-                    <div className="space-y-1">
+                    {/* PRICE - Bold and prominent */}
+                    <div className="space-y-2">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-5xl md:text-6xl font-black text-primary">
+                        <span className={`text-5xl md:text-6xl font-black tracking-tight ${
+                          pkg.popular ? "text-primary" : "text-foreground"
+                        }`}>
                           {new Intl.NumberFormat('cs-CZ').format(pkg.price)}
                         </span>
-                        <span className="text-xl text-muted-foreground font-medium">
-                          Kč
-                        </span>
+                        <span className="text-xl text-muted-foreground font-semibold">Kč</span>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {pkg.priceNote}
-                      </p>
+                      <p className="text-sm text-muted-foreground font-medium">{pkg.priceNote}</p>
                     </div>
 
-                    {/* CTA Button - Prominent */}
+                    {/* CTA Button */}
                     <LeadButton
                       href="/poptavka"
                       size="lg"
-                      className={`w-full ${
+                      className={`w-full font-semibold transition-all duration-300 ${
                         pkg.popular
-                          ? "bg-primary hover:bg-primary/90 text-white shadow-lg"
-                          : ""
+                          ? "bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02]"
+                          : "hover:scale-[1.02]"
                       }`}
                       showArrow
                     >
@@ -312,45 +312,32 @@ export default async function ServicesPage() {
                     </LeadButton>
                   </CardHeader>
 
-                  <CardContent className="space-y-6 pb-8">
-                    {/* Key features - First 7 most important */}
-                    <div className="space-y-3">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        Zahrnuje:
+                  <CardContent className="relative space-y-6 pb-8 px-6">
+                    {/* Features list */}
+                    <div className="space-y-4">
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        Co dostanete:
                       </p>
                       <ul className="space-y-3">
-                        {pkg.features.slice(0, 7).map((feature, i) => (
-                          <li key={i} className="flex items-start gap-3">
-                            {feature.included === true || typeof feature.included === 'string' ? (
-                              <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                            ) : (
-                              <X className="h-5 w-5 text-muted-foreground/30 shrink-0 mt-0.5" />
-                            )}
-                            <div className="flex-1">
-                              <span className={`text-sm ${
-                                feature.included === true || typeof feature.included === 'string'
-                                  ? "text-foreground"
-                                  : "text-muted-foreground/50 line-through"
-                              }`}>
-                                {feature.name}
-                              </span>
-                              {typeof feature.included === 'string' && (
-                                <span className="text-sm font-semibold text-primary ml-2">
-                                  {feature.included}
-                                </span>
-                              )}
+                        {pkg.features.map((feature, i) => (
+                          <li key={i} className="flex items-start gap-3 group/item">
+                            <div className="mt-0.5 p-0.5 rounded-full bg-primary/10">
+                              <Check className="h-3.5 w-3.5 text-primary" />
                             </div>
+                            <span className="text-sm text-foreground/90 leading-relaxed group-hover/item:text-foreground transition-colors">
+                              {feature.name}
+                            </span>
                           </li>
                         ))}
                       </ul>
                     </div>
 
-                    {/* Ideal for */}
-                    <div className="pt-4 border-t">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    {/* Ideal for section */}
+                    <div className="pt-5 border-t border-border/50">
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2.5">
                         Ideální pro:
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground/90 leading-relaxed italic">
                         {pkg.ideal}
                       </p>
                     </div>
@@ -359,66 +346,19 @@ export default async function ServicesPage() {
               ))}
             </div>
 
-            {/* COMPARISON TABLE - Desktop only */}
-            <div className="hidden lg:block">
-              <h2 className="text-3xl font-bold text-center mb-8">
-                Detailní <span className="text-primary">porovnání balíčků</span>
-              </h2>
-              <Card>
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-transparent">
-                        <TableHead className="w-[300px] text-base font-bold">
-                          Funkce
-                        </TableHead>
-                        {PRICING_PACKAGES.map((pkg) => (
-                          <TableHead key={pkg.id} className="text-center">
-                            <div className="space-y-1">
-                              <p className="font-bold text-foreground">{pkg.title}</p>
-                              {pkg.popular && (
-                                <Badge variant="default" className="text-[10px] px-2 py-0">
-                                  POPULAR
-                                </Badge>
-                              )}
-                            </div>
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {/* Group features by extracting unique feature names */}
-                      {PRICING_PACKAGES[0].features.map((_, featureIndex) => {
-                        const featureName = PRICING_PACKAGES[0].features[featureIndex].name;
-
-                        return (
-                          <TableRow key={featureIndex}>
-                            <TableCell className="font-medium">
-                              {featureName}
-                            </TableCell>
-                            {PRICING_PACKAGES.map((pkg) => {
-                              const feature = pkg.features[featureIndex];
-                              const isIncluded = feature.included === true || typeof feature.included === 'string';
-
-                              return (
-                                <TableCell key={pkg.id} className="text-center">
-                                  {feature.included === true ? (
-                                    <Check className="h-5 w-5 text-primary mx-auto" />
-                                  ) : feature.included === false ? (
-                                    <X className="h-5 w-5 text-muted-foreground/30 mx-auto" />
-                                  ) : (
-                                    <span className="text-sm font-semibold text-primary">
-                                      {feature.included}
-                                    </span>
-                                  )}
-                                </TableCell>
-                              );
-                            })}
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+            {/* Info note - encouraging users to contact for custom solutions */}
+            <div className="text-center mt-12">
+              <Card className="max-w-2xl mx-auto border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                <CardContent className="p-8 space-y-4">
+                  <h3 className="text-xl font-bold">Nevíte si rady s výběrem?</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Každý projekt je jedinečný. Rádi vám připravíme nabídku přesně na míru
+                    vašim potřebám a rozpočtu. Všechny ceny jsou orientační a můžeme je
+                    přizpůsobit pomocí AI nástrojů a automatizace.
+                  </p>
+                  <LeadButton href="/poptavka" size="lg" className="mt-4">
+                    Nezávazná poptávka zdarma
+                  </LeadButton>
                 </CardContent>
               </Card>
             </div>
