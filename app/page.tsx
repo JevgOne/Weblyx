@@ -10,7 +10,6 @@ import { Reviews } from "@/components/home/reviews";
 import { TrustBadges } from "@/components/home/trust-badges";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
-import { CTASection } from "@/components/home/cta-section";
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
@@ -129,7 +128,6 @@ export default async function HomePage() {
         <TrustBadges />
         <Pricing />
         <FAQ />
-        <CTASection />
         <ContactWow />
       </main>
     </>
