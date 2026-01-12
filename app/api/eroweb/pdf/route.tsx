@@ -497,7 +497,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
 
         {/* Critical Findings */}
         {criticalFindings.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.section} wrap={false}>
             <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>
               Kritické problémy
             </Text>
@@ -516,7 +516,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
 
         {/* Warning Findings */}
         {warningFindings.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.section} wrap={false}>
             <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>Varování</Text>
             {warningFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#F59E0B' }]}>
@@ -533,7 +533,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
 
         {/* Opportunities */}
         {opportunityFindings.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.section} wrap={false}>
             <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>Příležitosti</Text>
             {opportunityFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#3B82F6' }]}>
