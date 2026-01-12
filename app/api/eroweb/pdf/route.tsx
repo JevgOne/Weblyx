@@ -62,18 +62,33 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 30,
     paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomWidth: 2,
+    borderBottomColor: '#14B8A6',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  logoMark: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#14B8A6',
+    marginRight: 4,
   },
   logo: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#7C3AED',
+    color: '#0F172A',
+  },
+  logoHighlight: {
+    color: '#14B8A6',
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#6B7280',
-    marginTop: 4,
+    marginTop: 6,
+    fontWeight: 'bold',
   },
   date: {
     fontSize: 12,
@@ -241,6 +256,72 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#6B7280',
   },
+  introSection: {
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  introText: {
+    fontSize: 11,
+    color: '#6B7280',
+    lineHeight: 1.6,
+    marginBottom: 8,
+  },
+  highlight: {
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  highlightText: {
+    fontSize: 11,
+    color: '#92400E',
+    fontWeight: 'bold',
+  },
+  nextSteps: {
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#86EFAC',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  stepItem: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    alignItems: 'flex-start',
+  },
+  stepNumber: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#22C55E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  stepNumberText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  stepContent: {
+    flex: 1,
+  },
+  stepTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#166534',
+    marginBottom: 4,
+  },
+  stepDescription: {
+    fontSize: 10,
+    color: '#6B7280',
+    lineHeight: 1.5,
+  },
   footer: {
     marginTop: 30,
     paddingTop: 20,
@@ -285,15 +366,15 @@ const getScoreLabel = (score: number): string => {
 };
 
 const businessTypeLabels: Record<string, string> = {
-  massage: 'Eroticke masaze',
-  privat: 'Privat / Klub',
+  massage: 'Erotické masáže',
+  privat: 'Privát / Klub',
   escort: 'Escort',
 };
 
 const categoryLabels: Record<string, { label: string; max: number }> = {
-  speed: { label: 'Rychlost', max: 20 },
-  mobile: { label: 'Mobilni verze', max: 15 },
-  security: { label: 'Zabezpeceni', max: 10 },
+  speed: { label: 'Rychlost načítání', max: 20 },
+  mobile: { label: 'Mobilní verze', max: 15 },
+  security: { label: 'Zabezpečení', max: 10 },
   seo: { label: 'SEO', max: 20 },
   geo: { label: 'GEO/AIEO', max: 15 },
   design: { label: 'Design', max: 20 },
@@ -314,8 +395,13 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.logo}>Weblyx.cz</Text>
-            <Text style={styles.subtitle}>EroWeb Analyza</Text>
+            <View style={styles.logoContainer}>
+              <Text style={styles.logoMark}>W</Text>
+              <Text style={styles.logo}>
+                Web<Text style={styles.logoHighlight}>lyx</Text>
+              </Text>
+            </View>
+            <Text style={styles.subtitle}>EroWeb Analýza • Technický Report</Text>
           </View>
           <Text style={styles.date}>
             {new Date(analysis.createdAt).toLocaleDateString('cs-CZ', {
@@ -335,6 +421,26 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
           </Text>
         </View>
 
+        {/* Introduction */}
+        <View style={styles.introSection}>
+          <Text style={styles.sectionTitle}>O této analýze</Text>
+          <Text style={styles.introText}>
+            Provedli jsme komplexní technickou analýzu vašeho webu zaměřenou na klíčové faktory,
+            které ovlivňují úspěšnost v online prostředí. Hodnotili jsme rychlost načítání,
+            mobilní optimalizaci, bezpečnost, SEO a moderní GEO/AIEO optimalizaci pro AI vyhledávače
+            jako ChatGPT nebo Perplexity.
+          </Text>
+          <Text style={styles.introText}>
+            V dnešní době již nestačí být pouze na Googlu - stále více uživatelů vyhledává služby
+            přes AI nástroje. Weby, které nejsou připraveny na tento trend, ztrácejí významnou část
+            potenciálních zákazníků.
+          </Text>
+          <Text style={styles.introText}>
+            Tato analýza vám poskytuje jasný obraz o současném stavu vašeho webu a konkrétní
+            doporučení, jak ho vylepšit a získat konkurenční výhodu.
+          </Text>
+        </View>
+
         {/* Score Section */}
         <View style={styles.scoreSection}>
           <View style={[styles.scoreCircle, { borderColor: scoreColor }]}>
@@ -347,7 +453,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
 
         {/* Categories */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Hodnoceni podle kategorii</Text>
+          <Text style={styles.sectionTitle}>Hodnocení podle kategorií</Text>
           {Object.entries(categoryLabels).map(([key, { label, max }]) => {
             const score = analysis.scores[key as keyof typeof analysis.scores] || 0;
             const percentage = (score / max) * 100;
@@ -376,7 +482,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {criticalFindings.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>
-              Kriticke problemy
+              Kritické problémy
             </Text>
             {criticalFindings.slice(0, 3).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#EF4444' }]}>
@@ -391,7 +497,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {/* Warning Findings */}
         {warningFindings.length > 0 && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>Varovani</Text>
+            <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>Varování</Text>
             {warningFindings.slice(0, 2).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#F59E0B' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
@@ -405,7 +511,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {/* Opportunities */}
         {opportunityFindings.length > 0 && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>Prilezitosti</Text>
+            <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>Příležitosti</Text>
             {opportunityFindings.slice(0, 2).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#3B82F6' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
@@ -418,37 +524,82 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {/* Recommendation */}
         {analysis.recommendation && (
           <View style={styles.recommendation}>
-            <Text style={styles.sectionTitle}>Nase doporuceni</Text>
+            <Text style={styles.sectionTitle}>Naše doporučení</Text>
             <Text style={styles.recommendationText}>{analysis.recommendation}</Text>
           </View>
         )}
 
         {/* Pricing */}
         <View style={styles.pricing}>
-          <Text style={styles.sectionTitle}>Cenik</Text>
+          <Text style={styles.sectionTitle}>Ceník</Text>
           <Text style={styles.pricingText}>
-            Cenik je individualni podle rozsahu praci a vasich specifickych pozadavku.
+            Ceník je individuální podle rozsahu prací a vašich specifických požadavků.
           </Text>
           <View style={styles.pricingBox}>
-            <Text style={styles.pricingLabel}>Orientacni cenovy rozsah:</Text>
-            <Text style={styles.pricingAmount}>30 000 - 149 990 Kc</Text>
+            <Text style={styles.pricingLabel}>Orientační cenový rozsah:</Text>
+            <Text style={styles.pricingAmount}>30 000 - 149 990 Kč</Text>
           </View>
           <Text style={styles.pricingNote}>
-            Radi vam pripravime nabidku presne na miru vasim potrebam a rozpoctu.
+            Rádi vám připravíme nabídku přesně na míru vašim potřebám a rozpočtu.
           </Text>
+        </View>
+
+        {/* Next Steps */}
+        <View style={styles.nextSteps}>
+          <Text style={styles.sectionTitle}>Další kroky</Text>
+
+          <View style={styles.stepItem}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>1</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepTitle}>Nezávazná konzultace</Text>
+              <Text style={styles.stepDescription}>
+                Domluvíme si krátký hovor (15-30 min), kde si projdeme výsledky analýzy a odpovíme
+                na vaše otázky. Zjistíme, jaké jsou vaše cíle a priority.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.stepItem}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>2</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepTitle}>Cenová nabídka na míru</Text>
+              <Text style={styles.stepDescription}>
+                Na základě konzultace připravíme konkrétní nabídku přesně pro vaše potřeby.
+                Rozepíšeme, co přesně provedeme a v jakém časovém horizontu.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.stepItem}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>3</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepTitle}>Realizace a výsledky</Text>
+              <Text style={styles.stepDescription}>
+                Po odsouhlasení začneme pracovat. Budete mít přehled o postupu a po dokončení
+                vám ukážeme konkrétní měřitelné výsledky - víc návštěvníků, lepší pozice,
+                vyšší konverze.
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            <Text style={styles.footerBold}>Weblyx.cz</Text> - Moderni weby pro moderni byznys
+            <Text style={styles.footerBold}>Weblyx.cz</Text> - Moderní weby pro moderní byznys
           </Text>
           <Text style={styles.footerText}>
             <Text style={styles.footerLink}>info@weblyx.cz</Text> |{' '}
             <Text style={styles.footerLink}>+420 702 110 166</Text> |{' '}
             <Text style={styles.footerLink}>weblyx.cz</Text>
           </Text>
-          <Text style={styles.footerSmall}>Altro Servis Group s.r.o. | ICO: 23673389</Text>
+          <Text style={styles.footerSmall}>Altro Servis Group s.r.o. | IČO: 23673389</Text>
         </View>
       </Page>
     </Document>
