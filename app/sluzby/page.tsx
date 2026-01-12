@@ -86,8 +86,13 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
     .filter(service => service.priceFrom !== null && service.priceFrom !== undefined)
     .sort((a, b) => a.order - b.order);
 
+  // Collect ALL unique features across all services for comparison table
+  const allFeatureNames = new Set<string>();
+  pricingServices.forEach(service => {
+    service.features.forEach(feature => allFeatureNames.add(feature));
+  });
+
   // Transform each service to pricing package format
-  // Each package only shows its OWN features (not a comparison matrix)
   return pricingServices.map((service) => ({
     id: service.id,
     title: service.title,
@@ -96,10 +101,11 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
     priceNote: "jednorázově",
     // Mark "Základní Web" as popular
     popular: service.title.toLowerCase().includes("základní"),
-    // Only include features that belong to this service
-    features: service.features.map(featureName => ({
+    // For cards: show only service's own features
+    // For table: show all features with true/false
+    features: Array.from(allFeatureNames).map(featureName => ({
       name: featureName,
-      included: true, // All features shown are included
+      included: service.features.includes(featureName),
     })),
     cta: `Objednat ${service.title}`,
     ideal: service.description, // Use description as "ideal for" text
@@ -249,12 +255,12 @@ export default async function ServicesPage() {
         {/* PRICING CARDS - Premium Professional Design */}
         <section className="py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-7xl">
-            {/* Pricing cards grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
+            {/* Pricing cards - Responsive flex layout */}
+            <div className="flex flex-wrap justify-center gap-6 lg:gap-8 mb-20">
               {PRICING_PACKAGES.map((pkg) => (
                 <Card
                   key={pkg.id}
-                  className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 ${
+                  className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-22px)] max-w-[380px] ${
                     pkg.popular
                       ? "border-2 border-primary/60 shadow-2xl shadow-primary/10 ring-2 ring-primary/10 lg:scale-[1.02]"
                       : "border border-border/60 hover:border-primary/40 shadow-lg"
@@ -319,7 +325,7 @@ export default async function ServicesPage() {
                         Co dostanete:
                       </p>
                       <ul className="space-y-3">
-                        {pkg.features.map((feature, i) => (
+                        {pkg.features.filter(f => f.included).slice(0, 8).map((feature, i) => (
                           <li key={i} className="flex items-start gap-3 group/item">
                             <div className="mt-0.5 p-0.5 rounded-full bg-primary/10">
                               <Check className="h-3.5 w-3.5 text-primary" />
@@ -346,18 +352,104 @@ export default async function ServicesPage() {
               ))}
             </div>
 
-            {/* Info note - encouraging users to contact for custom solutions */}
-            <div className="text-center mt-12">
-              <Card className="max-w-2xl mx-auto border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-                <CardContent className="p-8 space-y-4">
-                  <h3 className="text-xl font-bold">Nevíte si rady s výběrem?</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Každý projekt je jedinečný. Rádi vám připravíme nabídku přesně na míru
-                    vašim potřebám a rozpočtu. Všechny ceny jsou orientační a můžeme je
-                    přizpůsobit pomocí AI nástrojů a automatizace.
+            {/* COMPARISON TABLE - Desktop view for detailed comparison */}
+            <div className="hidden lg:block mt-16">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                  Detailní <span className="text-primary">porovnání balíčků</span>
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Přehledná tabulka všech funkcí a vlastností jednotlivých balíčků
+                </p>
+              </div>
+
+              <Card className="overflow-hidden border-border/60 shadow-lg">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent border-b-2 border-border">
+                        <TableHead className="w-[280px] text-base font-bold py-4 sticky left-0 bg-background z-10">
+                          Funkce / Vlastnost
+                        </TableHead>
+                        {PRICING_PACKAGES.map((pkg) => (
+                          <TableHead key={pkg.id} className="text-center min-w-[160px] py-4">
+                            <div className="space-y-2">
+                              <p className="font-bold text-foreground text-base">{pkg.title}</p>
+                              {pkg.popular && (
+                                <Badge className="bg-primary text-white text-[10px] px-2 py-0.5 font-bold">
+                                  NEJOBLÍBENĚJŠÍ
+                                </Badge>
+                              )}
+                            </div>
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {PRICING_PACKAGES[0]?.features.map((_, featureIndex) => {
+                        const featureName = PRICING_PACKAGES[0].features[featureIndex].name;
+
+                        return (
+                          <TableRow
+                            key={featureIndex}
+                            className="hover:bg-muted/30 transition-colors border-b border-border/40"
+                          >
+                            <TableCell className="font-medium py-4 sticky left-0 bg-background">
+                              {featureName}
+                            </TableCell>
+                            {PRICING_PACKAGES.map((pkg) => {
+                              const feature = pkg.features[featureIndex];
+
+                              return (
+                                <TableCell key={pkg.id} className="text-center py-4">
+                                  {feature?.included ? (
+                                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+                                      <Check className="h-5 w-5 text-primary" />
+                                    </div>
+                                  ) : (
+                                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-muted/30">
+                                      <X className="h-5 w-5 text-muted-foreground/40" />
+                                    </div>
+                                  )}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </Card>
+
+              {/* CTA below table */}
+              <div className="text-center mt-10">
+                <Card className="max-w-2xl mx-auto border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                  <CardContent className="p-8 space-y-4">
+                    <h3 className="text-xl font-bold">Nevíte si rady s výběrem?</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Každý projekt je jedinečný. Rádi vám připravíme nabídku přesně na míru
+                      vašim potřebám a rozpočtu.
+                    </p>
+                    <LeadButton href="/poptavka" size="lg" className="mt-4">
+                      Nezávazná poptávka zdarma
+                    </LeadButton>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Mobile: Simple info card instead of table */}
+            <div className="block lg:hidden mt-12">
+              <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                <CardContent className="p-6 space-y-3">
+                  <h3 className="text-lg font-bold">💡 Potřebujete porovnat balíčky?</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Detailní porovnávací tabulku najdete na větší obrazovce, nebo nám napište
+                    a my vám pomůžeme vybrat správný balíček.
                   </p>
-                  <LeadButton href="/poptavka" size="lg" className="mt-4">
-                    Nezávazná poptávka zdarma
+                  <LeadButton href="/poptavka" size="default" className="w-full mt-3">
+                    Nezávazná poptávka
                   </LeadButton>
                 </CardContent>
               </Card>
