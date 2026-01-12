@@ -130,9 +130,3 @@ async function ensureAdminSettingsTable() {
   });
 }
 
-/**
- * Export helper for auth module to check custom passwords
- */
-export async function getStoredPassword(userId: string): Promise<string | null> {
-  return getCustomPassword(userId);
-}
