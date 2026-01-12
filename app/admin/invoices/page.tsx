@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, FileText, Calendar, CheckCircle2, AlertCircle, Clock, Download, ExternalLink, Send, CreditCard, Loader2 } from "lucide-react";
+import { ArrowLeft, Search, Filter, FileText, Calendar, CheckCircle2, AlertCircle, Clock, Download, ExternalLink, Send, CreditCard, Loader2, Receipt } from "lucide-react";
 import type { InvoiceStatus, InvoiceType } from "@/types/payments";
 
 interface Invoice {
@@ -41,6 +41,7 @@ interface Invoice {
   paid_date: number | null;
   payment_id: string | null;
   pdf_url: string | null;
+  internal_notes: string | null;
   created_at: number;
   is_overdue: boolean;
   days_until_due: number;
@@ -185,6 +186,17 @@ export default function AdminInvoicesPage() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  // Get confirmation URL from internal_notes JSON
+  const getConfirmationUrl = (invoice: Invoice): string | null => {
+    if (!invoice.internal_notes) return null;
+    try {
+      const notes = JSON.parse(invoice.internal_notes);
+      return notes.confirmation_pdf_url || null;
+    } catch {
+      return null;
+    }
   };
 
   return (
@@ -457,6 +469,18 @@ export default function AdminInvoicesPage() {
                               title="Stáhnout fakturu"
                             >
                               <Download className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {/* Download payment confirmation for paid invoices */}
+                          {invoice.status === 'paid' && getConfirmationUrl(invoice) && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(getConfirmationUrl(invoice)!, '_blank')}
+                              title="Stáhnout potvrzení o zaplacení"
+                              className="text-green-600"
+                            >
+                              <Receipt className="h-4 w-4" />
                             </Button>
                           )}
                           {invoice.payment_id && (

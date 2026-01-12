@@ -162,6 +162,7 @@ export async function GET(request: NextRequest) {
         project_id: invoice.project_id,
         pdf_url: invoice.pdf_url,
         notes: invoice.notes,
+        internal_notes: invoice.internal_notes,
         created_at: invoice.created_at,
         updated_at: invoice.updated_at,
         is_overdue: invoiceStatus === 'overdue',
