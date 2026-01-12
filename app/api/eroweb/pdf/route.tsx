@@ -549,7 +549,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
 
         {/* Recommendation */}
         {analysis.recommendation && (
-          <View style={styles.recommendation}>
+          <View style={styles.recommendation} wrap={false}>
             <Text style={styles.sectionTitle}>Naše doporučení</Text>
             <Text style={styles.recommendationText}>{analysis.recommendation.slice(0, 600)}{analysis.recommendation.length > 600 ? '...' : ''}</Text>
           </View>
