@@ -31,18 +31,49 @@ const ADMIN_USERS = [
 ];
 
 /**
+ * Get custom password from DB if exists
+ */
+async function getCustomPassword(userId: string): Promise<string | null> {
+  try {
+    // Dynamic import to avoid circular dependencies
+    const { turso } = await import('@/lib/turso');
+
+    // Try to get custom password from DB
+    const result = await turso.execute({
+      sql: 'SELECT value FROM admin_settings WHERE key = ?',
+      args: [`password_${userId}`],
+    });
+
+    if (result.rows.length > 0) {
+      return result.rows[0].value as string;
+    }
+    return null;
+  } catch (error) {
+    // Table might not exist yet, return null
+    return null;
+  }
+}
+
+/**
  * Verify admin credentials
+ * Checks custom DB password first, then falls back to env password
  */
 export async function verifyAdminCredentials(
   email: string,
   password: string
 ): Promise<AdminUser | null> {
-  // Find matching admin user
-  const admin = ADMIN_USERS.find(
-    (user) => user.email === email && user.password === password
-  );
+  // Find matching admin user by email
+  const admin = ADMIN_USERS.find((user) => user.email === email);
 
-  if (admin) {
+  if (!admin) {
+    return null;
+  }
+
+  // Check for custom password in DB first
+  const customPassword = await getCustomPassword(admin.id);
+  const expectedPassword = customPassword || admin.password;
+
+  if (password === expectedPassword) {
     return {
       id: admin.id,
       email: admin.email,

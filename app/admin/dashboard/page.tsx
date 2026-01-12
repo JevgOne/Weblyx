@@ -467,6 +467,25 @@ export default function AdminDashboard() {
                 </Button>
               </CardContent>
             </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-zinc-500/10 to-zinc-600/10 border-zinc-300">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
+                    <Settings className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Nastavení ⚙️</CardTitle>
+                    <CardDescription>Změna hesla a účet</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/settings")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
