@@ -805,42 +805,10 @@ export async function generateInvoicePDF(
     color: COLORS.black,
   });
 
-  // =====================================================
-  // QR CODE for Payment
-  // =====================================================
+  // QR CODE disabled for now
+  // TODO: Re-enable when IBAN/SWIFT properly configured
 
-  // Generate QR code with SPAYD format
-  const qrCodeDataUrl = await generatePaymentQRCode(
-    invoiceData.company.iban,
-    invoiceData.company.swift,
-    invoiceData.amount_with_vat,
-    invoiceData.currency,
-    invoiceData.variable_symbol,
-    `Faktura ${invoiceData.invoice_number}`
-  );
-
-  // Embed QR code image
-  const qrImageBytes = Buffer.from(qrCodeDataUrl.split(',')[1], 'base64');
-  const qrImage = await pdfDoc.embedPng(qrImageBytes);
-  const qrDims = qrImage.scale(0.5); // Scale to 100x100px
-
-  page.drawImage(qrImage, {
-    x: width - 150, // Right side
-    y: y - 100,     // Below bank details
-    width: qrDims.width,
-    height: qrDims.height,
-  });
-
-  // Add "Zaplaťte skenováním" label
-  drawText('Zaplaťte skenováním:', {
-    x: width - 150,
-    y: y - 110,
-    size: 8,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
-
-  y -= 30;
+  y -= 20;
 
   // =====================================================
   // NOTES
@@ -940,4 +908,310 @@ export function generateInvoiceNumber(sequenceNumber: number): string {
   const seq = sequenceNumber.toString().padStart(3, '0');
 
   return `${year}${month}${day}-${seq}`;
+}
+
+// =====================================================
+// PAYMENT CONFIRMATION (Potvrzení o zaplacení)
+// =====================================================
+
+interface PaymentConfirmationData {
+  invoice_number: string;
+  variable_symbol: string;
+  company: CompanyInfo;
+  client_name: string;
+  client_ico: string | null;
+  amount_with_vat: number;
+  currency: string;
+  payment_date: number; // Unix timestamp
+  payment_method: string;
+}
+
+/**
+ * Generate payment confirmation PDF
+ * Czech: "Potvrzení o zaplacení faktury"
+ */
+export async function generatePaymentConfirmationPDF(
+  data: PaymentConfirmationData
+): Promise<Uint8Array> {
+  const pdfDoc = await PDFDocument.create();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const page = pdfDoc.addPage([595, 842]); // A4
+  const { width, height } = page.getSize();
+
+  const drawText = (text: string, options: any) => {
+    page.drawText(removeDiacritics(text), options);
+  };
+
+  let y = height - 50;
+
+  // =====================================================
+  // HEADER
+  // =====================================================
+
+  drawText('POTVRZENI O ZAPLACENI', {
+    x: 50,
+    y,
+    size: 24,
+    font: fontBold,
+    color: COLORS.teal,
+  });
+
+  y -= 15;
+
+  drawText('Payment Confirmation', {
+    x: 50,
+    y,
+    size: 12,
+    font,
+    color: COLORS.lightGray,
+  });
+
+  y -= 50;
+
+  // =====================================================
+  // CONFIRMATION BOX
+  // =====================================================
+
+  // Green confirmation box
+  page.drawRectangle({
+    x: 50,
+    y: y - 80,
+    width: width - 100,
+    height: 90,
+    color: rgb(0.9, 0.98, 0.9), // Light green
+    borderColor: rgb(0.2, 0.7, 0.3),
+    borderWidth: 2,
+  });
+
+  drawText('FAKTURA UHRAZENA', {
+    x: 200,
+    y: y - 30,
+    size: 18,
+    font: fontBold,
+    color: rgb(0.1, 0.5, 0.2),
+  });
+
+  drawText(`Castka: ${formatCurrency(data.amount_with_vat, data.currency)}`, {
+    x: 200,
+    y: y - 55,
+    size: 14,
+    font: fontBold,
+    color: COLORS.black,
+  });
+
+  drawText(`Datum uhrady: ${formatDate(data.payment_date)}`, {
+    x: 200,
+    y: y - 75,
+    size: 11,
+    font,
+    color: COLORS.darkGray,
+  });
+
+  y -= 120;
+
+  // =====================================================
+  // INVOICE DETAILS
+  // =====================================================
+
+  drawText('Udaje o fakture:', {
+    x: 50,
+    y,
+    size: 12,
+    font: fontBold,
+    color: COLORS.teal,
+  });
+
+  y -= 25;
+
+  const details = [
+    ['Cislo faktury:', data.invoice_number],
+    ['Variabilni symbol:', data.variable_symbol],
+    ['Zpusob platby:', getPaymentMethodLabel(data.payment_method)],
+  ];
+
+  for (const [label, value] of details) {
+    drawText(label, {
+      x: 50,
+      y,
+      size: 10,
+      font: fontBold,
+      color: COLORS.darkGray,
+    });
+
+    drawText(value, {
+      x: 180,
+      y,
+      size: 10,
+      font,
+      color: COLORS.black,
+    });
+
+    y -= 18;
+  }
+
+  y -= 30;
+
+  // =====================================================
+  // SUPPLIER INFO
+  // =====================================================
+
+  drawText('Dodavatel:', {
+    x: 50,
+    y,
+    size: 12,
+    font: fontBold,
+    color: COLORS.teal,
+  });
+
+  y -= 20;
+
+  drawText(data.company.name, {
+    x: 50,
+    y,
+    size: 10,
+    font: fontBold,
+    color: COLORS.black,
+  });
+
+  y -= 15;
+
+  drawText(`${data.company.street}, ${data.company.zip} ${data.company.city}`, {
+    x: 50,
+    y,
+    size: 9,
+    font,
+    color: COLORS.darkGray,
+  });
+
+  y -= 12;
+
+  drawText(`ICO: ${data.company.ico}`, {
+    x: 50,
+    y,
+    size: 9,
+    font,
+    color: COLORS.darkGray,
+  });
+
+  y -= 30;
+
+  // =====================================================
+  // CLIENT INFO
+  // =====================================================
+
+  drawText('Odberatel:', {
+    x: 50,
+    y,
+    size: 12,
+    font: fontBold,
+    color: COLORS.teal,
+  });
+
+  y -= 20;
+
+  drawText(data.client_name, {
+    x: 50,
+    y,
+    size: 10,
+    font: fontBold,
+    color: COLORS.black,
+  });
+
+  if (data.client_ico) {
+    y -= 15;
+    drawText(`ICO: ${data.client_ico}`, {
+      x: 50,
+      y,
+      size: 9,
+      font,
+      color: COLORS.darkGray,
+    });
+  }
+
+  y -= 50;
+
+  // =====================================================
+  // LEGAL NOTE
+  // =====================================================
+
+  page.drawRectangle({
+    x: 50,
+    y: y - 40,
+    width: width - 100,
+    height: 50,
+    color: rgb(0.95, 0.95, 0.95),
+  });
+
+  drawText('Tento doklad potvrzuje uhrazeni vyse uvedene faktury.', {
+    x: 60,
+    y: y - 15,
+    size: 9,
+    font,
+    color: COLORS.darkGray,
+  });
+
+  drawText('Doklad byl vygenerovan elektronicky a je platny bez podpisu.', {
+    x: 60,
+    y: y - 30,
+    size: 9,
+    font,
+    color: COLORS.darkGray,
+  });
+
+  // =====================================================
+  // FOOTER
+  // =====================================================
+
+  drawText(`${data.company.name} | ${data.company.email} | ${data.company.phone}`, {
+    x: 50,
+    y: 30,
+    size: 8,
+    font,
+    color: COLORS.lightGray,
+  });
+
+  drawText(data.company.website, {
+    x: width - 150,
+    y: 30,
+    size: 8,
+    font,
+    color: COLORS.teal,
+  });
+
+  // Generation timestamp
+  const now = new Date();
+  drawText(`Vygenerovano: ${now.toLocaleDateString('cs-CZ')} ${now.toLocaleTimeString('cs-CZ')}`, {
+    x: width - 200,
+    y: 50,
+    size: 7,
+    font,
+    color: COLORS.lightGray,
+  });
+
+  return pdfDoc.save();
+}
+
+/**
+ * Upload payment confirmation PDF to Vercel Blob
+ */
+export async function uploadPaymentConfirmationPDF(
+  pdfBytes: Uint8Array,
+  invoiceNumber: string
+): Promise<string> {
+  const filename = `payment-confirmations/${invoiceNumber}-potvrzeni.pdf`;
+
+  console.log('📤 Uploading payment confirmation to Vercel Blob:', filename);
+
+  const buffer = Buffer.from(pdfBytes);
+
+  const blob = await put(filename, buffer, {
+    access: 'public',
+    contentType: 'application/pdf',
+  });
+
+  console.log('✅ Payment confirmation uploaded:', blob.url);
+
+  return blob.url;
 }
