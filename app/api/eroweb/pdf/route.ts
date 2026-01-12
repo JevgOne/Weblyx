@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAnalysisById } from '@/lib/turso/eroweb';
+import puppeteer from 'puppeteer';
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,15 +26,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // For now, generate a simple HTML-based PDF
-    // In production, use @react-pdf/renderer or puppeteer
+    // Generate HTML content
     const htmlContent = generatePdfHtml(analysis);
 
-    // Return HTML for now - can be converted to PDF on client or with puppeteer
-    return new NextResponse(htmlContent, {
+    // Generate PDF using Puppeteer
+    const pdfBuffer = await generatePDF(htmlContent, analysis.domain);
+
+    // Return PDF (pass Uint8Array buffer property)
+    return new Response(pdfBuffer.buffer as ArrayBuffer, {
       headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Content-Disposition': `attachment; filename="eroweb-analyza-${analysis.domain}.html"`,
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="eroweb-analyza-${analysis.domain}.pdf"`,
       },
     });
   } catch (error: any) {
@@ -42,6 +45,54 @@ export async function GET(req: NextRequest) {
       { error: 'Failed to generate PDF', details: error.message },
       { status: 500 }
     );
+  }
+}
+
+async function generatePDF(htmlContent: string, domain: string): Promise<Uint8Array> {
+  let browser;
+
+  try {
+    // Launch Puppeteer browser
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu',
+      ],
+    });
+
+    const page = await browser.newPage();
+
+    // Set content
+    await page.setContent(htmlContent, {
+      waitUntil: 'networkidle0',
+    });
+
+    // Generate PDF
+    const pdf = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '20px',
+        right: '20px',
+        bottom: '20px',
+        left: '20px',
+      },
+    });
+
+    return new Uint8Array(pdf);
+  } catch (error: any) {
+    console.error('Puppeteer PDF generation error:', error);
+    throw new Error(`Failed to generate PDF: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
@@ -94,8 +145,8 @@ function generatePdfHtml(analysis: any): string {
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0F0F0F;
-      color: #FFFFFF;
+      background: #FFFFFF;
+      color: #1F2937;
       line-height: 1.6;
       padding: 40px;
     }
@@ -105,14 +156,14 @@ function generatePdfHtml(analysis: any): string {
       justify-content: space-between;
       align-items: flex-start;
       padding-bottom: 30px;
-      border-bottom: 1px solid #2A2A2A;
+      border-bottom: 1px solid #E5E7EB;
       margin-bottom: 30px;
     }
     .logo { font-size: 24px; font-weight: bold; color: #7C3AED; }
-    .date { color: #71717A; font-size: 14px; }
+    .date { color: #6B7280; font-size: 14px; }
     .domain-section {
-      background: #1A1A1A;
-      border: 1px solid #2A2A2A;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -122,15 +173,15 @@ function generatePdfHtml(analysis: any): string {
       font-weight: 600;
       margin-bottom: 8px;
     }
-    .domain-url { color: #A1A1AA; font-size: 14px; }
+    .domain-url { color: #6B7280; font-size: 14px; }
     .business-type {
       display: inline-block;
-      background: #252525;
-      border: 1px solid #2A2A2A;
+      background: #F3F4F6;
+      border: 1px solid #E5E7EB;
       border-radius: 4px;
       padding: 4px 8px;
       font-size: 12px;
-      color: #A1A1AA;
+      color: #6B7280;
       margin-top: 12px;
     }
     .score-section {
@@ -156,8 +207,8 @@ function generatePdfHtml(analysis: any): string {
       font-weight: 500;
     }
     .categories {
-      background: #1A1A1A;
-      border: 1px solid #2A2A2A;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -174,13 +225,13 @@ function generatePdfHtml(analysis: any): string {
     }
     .category-label {
       width: 120px;
-      color: #A1A1AA;
+      color: #6B7280;
       font-size: 14px;
     }
     .category-bar {
       flex: 1;
       height: 8px;
-      background: #252525;
+      background: #E5E7EB;
       border-radius: 4px;
       overflow: hidden;
       margin: 0 12px;
@@ -196,8 +247,8 @@ function generatePdfHtml(analysis: any): string {
       font-weight: 500;
     }
     .findings-section {
-      background: #1A1A1A;
-      border: 1px solid #2A2A2A;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -206,16 +257,17 @@ function generatePdfHtml(analysis: any): string {
       padding: 16px;
       border-radius: 8px;
       margin-bottom: 12px;
+      background: #FFFFFF;
     }
-    .finding-critical { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #EF4444; }
-    .finding-warning { background: rgba(245, 158, 11, 0.1); border-left: 4px solid #F59E0B; }
-    .finding-opportunity { background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3B82F6; }
-    .finding-title { font-weight: 500; margin-bottom: 4px; }
-    .finding-description { color: #A1A1AA; font-size: 14px; margin-bottom: 4px; }
-    .finding-impact { color: #71717A; font-size: 13px; }
+    .finding-critical { border-left: 4px solid #EF4444; }
+    .finding-warning { border-left: 4px solid #F59E0B; }
+    .finding-opportunity { border-left: 4px solid #3B82F6; }
+    .finding-title { font-weight: 500; margin-bottom: 4px; color: #1F2937; }
+    .finding-description { color: #6B7280; font-size: 14px; margin-bottom: 4px; }
+    .finding-impact { color: #9CA3AF; font-size: 13px; }
     .recommendation {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), #1A1A1A);
-      border: 1px solid rgba(124, 58, 237, 0.5);
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), #F9FAFB);
+      border: 1px solid rgba(124, 58, 237, 0.3);
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -223,8 +275,8 @@ function generatePdfHtml(analysis: any): string {
     .footer {
       text-align: center;
       padding-top: 30px;
-      border-top: 1px solid #2A2A2A;
-      color: #71717A;
+      border-top: 1px solid #E5E7EB;
+      color: #6B7280;
       font-size: 14px;
     }
     .footer a { color: #7C3AED; text-decoration: none; }
@@ -240,7 +292,7 @@ function generatePdfHtml(analysis: any): string {
     <header class="header">
       <div>
         <div class="logo">Weblyx.cz</div>
-        <div style="color: #A1A1AA; font-size: 14px;">EroWeb Analyza</div>
+        <div style="color: #6B7280; font-size: 14px;">EroWeb Analyza</div>
       </div>
       <div class="date">${new Date(createdAt).toLocaleDateString('cs-CZ', {
         day: 'numeric',
@@ -351,7 +403,7 @@ function generatePdfHtml(analysis: any): string {
         ? `
     <div class="recommendation">
       <div class="section-title">Nase doporuceni</div>
-      <p style="color: #A1A1AA; white-space: pre-wrap;">${recommendation}</p>
+      <p style="color: #6B7280; white-space: pre-wrap;">${recommendation}</p>
     </div>
     `
         : ''
