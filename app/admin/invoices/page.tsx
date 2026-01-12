@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, FileText, Calendar, CheckCircle2, AlertCircle, Clock, Download, ExternalLink, Send } from "lucide-react";
+import { ArrowLeft, Search, Filter, FileText, Calendar, CheckCircle2, AlertCircle, Clock, Download, ExternalLink, Send, CreditCard, Loader2 } from "lucide-react";
 import type { InvoiceStatus, InvoiceType } from "@/types/payments";
 
 interface Invoice {
@@ -84,9 +84,41 @@ export default function AdminInvoicesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [markingAsPaid, setMarkingAsPaid] = useState<string | null>(null);
 
   // Get payment_id from URL params if present
   const paymentIdFilter = searchParams.get('payment_id');
+
+  // Mark invoice as paid
+  const handleMarkAsPaid = async (invoiceId: string, invoiceNumber: string) => {
+    if (!confirm(`Opravdu chcete označit fakturu ${invoiceNumber} jako zaplacenou?`)) {
+      return;
+    }
+
+    setMarkingAsPaid(invoiceId);
+
+    try {
+      const response = await fetch('/api/invoices/confirm-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoice_id: invoiceId }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`Faktura ${invoiceNumber} byla označena jako zaplacená.\n\nPotvrzení: ${result.confirmation_pdf_url}`);
+        // Reload invoices
+        loadInvoices();
+      } else {
+        alert(`Chyba: ${result.error}`);
+      }
+    } catch (error: any) {
+      alert(`Chyba: ${error.message}`);
+    } finally {
+      setMarkingAsPaid(null);
+    }
+  };
 
   useEffect(() => {
     loadInvoices();
@@ -398,11 +430,31 @@ export default function AdminInvoicesPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          {/* Mark as paid button - only for unpaid invoices */}
+                          {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleMarkAsPaid(invoice.id, invoice.invoice_number)}
+                              disabled={markingAsPaid === invoice.id}
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            >
+                              {markingAsPaid === invoice.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <CreditCard className="h-4 w-4 mr-1" />
+                                  Zaplaceno
+                                </>
+                              )}
+                            </Button>
+                          )}
                           {invoice.pdf_url && (
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => window.open(invoice.pdf_url!, '_blank')}
+                              title="Stáhnout fakturu"
                             >
                               <Download className="h-4 w-4" />
                             </Button>
@@ -412,6 +464,7 @@ export default function AdminInvoicesPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => router.push(`/admin/payments?invoice_id=${invoice.id}`)}
+                              title="Zobrazit platbu"
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
