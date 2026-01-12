@@ -98,7 +98,7 @@ ${analysis.recommendation}
 
 💰 CENÍK
 Ceník je individuální podle rozsahu prací a požadavků.
-Orientační cenový rozsah: 49 990 - 149 990 Kč
+Orientační cenový rozsah: 30 000 - 149 990 Kč
 
 Rádi bychom vám pomohli vylepšit váš web a přivést více zákazníků.
 
@@ -464,7 +464,7 @@ Tým Weblyx
             <div className="bg-background/50 rounded-lg p-4 border border-border">
               <p className="text-sm text-muted-foreground mb-2">Orientační cenový rozsah:</p>
               <p className="text-3xl font-bold text-primary">
-                49 990 - 149 990 Kč
+                30 000 - 149 990 Kč
               </p>
             </div>
             <p className="text-sm text-muted-foreground">
