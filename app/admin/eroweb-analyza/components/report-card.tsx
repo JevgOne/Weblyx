@@ -112,24 +112,188 @@ S pozdravem,
 Tým Weblyx
 https://weblyx.cz`;
 
-  // Generate WhatsApp message (soft approach - no pricing, build interest first)
-  const whatsAppMessage = `Dobrý den,
+  // Generate WhatsApp message with GEO/AIEO expertise (randomized variations)
+  const getWhatsAppMessage = () => {
+    const domain = analysis.domain;
+    const businessType = BUSINESS_TYPE_LABELS[analysis.businessType];
+    const score = analysis.scores.total;
 
-jsem z Weblyx a dělám analýzy webů v oboru ${BUSINESS_TYPE_LABELS[analysis.businessType]}.
+    // Different message variations based on score (randomized)
+    const lowScoreMessages = [
+      // Variation 1: AI search focus
+      `Dobrý den,
 
-Narazil jsem na váš web *${analysis.domain}* a zajímalo mě, jak si stojí po technické stránce.
+jsem z Weblyx a specializujeme se na weby v oboru ${businessType}.
 
-${analysis.scores.total < 50
-  ? `Zjistil jsem několik věcí, které by mohly aktivně odrazovat potenciální klienty. Třeba by vás zajímalo, co konkrétně by se dalo vylepšit?`
-  : analysis.scores.total < 70
-  ? `Web funguje, ale vidím tam pár příležitostí, jak přitáhnout víc zákazníků. Můžu vám poslat kompletní rozbor zdarma, kdybyste měli zájem.`
-  : `Váš web je nad průměrem, ale i tak jsem našel pár drobností, které by mohly ještě zvýšit konverze. Kdyby vás to zajímalo, můžu poslat detaily.`}
+Při průzkumu trhu jsem narazil na váš web *${domain}* a udělal jsem rychlou analýzu z pohledu moderních AI vyhledávačů.
 
-Máte chvilku na nezávaznou konzultaci? 😊
+V poslední době se hodně mění, jak klienti hledají služby - ChatGPT, Perplexity a další AI nástroje začínají nahrazovat klasický Google. Většina konkurence na to ale vůbec není připravená.
+
+U vašeho webu jsem našel několik věcí, které by mohly aktivně odrazovat potenciální klienty - hlavně z pohledu těch nových AI vyhledávačů. Kdybyste měli zájem, můžu vám ukázat konkrétně co a proč to zákazníky odráží.
+
+Máte chvilku na nezávaznou konzultaci?
 
 S pozdravem,
 Tým Weblyx
-🌐 weblyx.cz`;
+🌐 weblyx.cz`,
+
+      // Variation 2: GEO/AIEO expertise focus
+      `Dobrý den,
+
+jsem z Weblyx a dělám analýzy webů pro ${businessType.toLowerCase()}.
+
+Narazil jsem na váš web *${domain}* a zajímalo mě, jak je připravený na nové AI vyhledávače.
+
+Možná jste si všimli, že stále méně lidí používá klasický Google - místo toho se ptají ChatGPT nebo Perplexity. To vyžaduje úplně jinou optimalizaci než tradiční SEO. Říká se tomu GEO/AIEO a většina webů v tomto oboru to nemá vůbec nastavené.
+
+Ve vašem případě jsem našel pár kritických míst, která by stála o dost klientů. Můžu vám poslat kompletní rozbor zdarma, kdyby vás to zajímalo.
+
+Máte chvilku si popovídat? 😊
+
+S pozdravem,
+Weblyx Team
+🌐 weblyx.cz`,
+
+      // Variation 3: Competitor angle
+      `Ahoj,
+
+jsem z Weblyx a dělám audity webů v oboru ${businessType.toLowerCase()}.
+
+Při analýze konkurence jsem narazil na *${domain}* a všiml si pár věcí, které by mohly výrazně snižovat počet klientů z vyhledávání.
+
+Dneska už nestačí jen klasické SEO - AI vyhledávače jako ChatGPT nebo Perplexity mění celou hru. Weby, které nejsou optimalizované pro tyto nástroje, prostě mizí z výsledků. A bohužel většina konkurence v tomto oboru na tom není o moc lépe.
+
+Mám pro vás konkrétní návrhy, co by se dalo vylepšit. Mohl bych vám poslat detailní rozbor?
+
+Dáte vědět, jestli by vás to zajímalo?
+
+Díky!
+Tým Weblyx
+🌐 weblyx.cz`
+    ];
+
+    const mediumScoreMessages = [
+      // Variation 1: Opportunity focus
+      `Dobrý den,
+
+jsem z Weblyx a specializujeme se na online marketing pro ${businessType.toLowerCase()}.
+
+Při průzkumu trhu jsem narazil na váš web *${domain}* a zaujal mě.
+
+Web funguje, ale není připravený na nové AI vyhledávače (ChatGPT, Perplexy atd.). Což je vlastně dobrá zpráva - konkurence taky spí, takže teď je ideální moment se před ní dostat s GEO/AIEO optimalizací.
+
+Vidím tam pár konkrétních příležitostí, jak přitáhnout víc zákazníků. Můžu vám poslat kompletní rozbor zdarma.
+
+Zajímalo by vás to?
+
+S pozdravem,
+Tým Weblyx
+🌐 weblyx.cz`,
+
+      // Variation 2: Modernization angle
+      `Dobrý den,
+
+jsem z Weblyx a dělám analýzy webů v oboru ${businessType}.
+
+Narazil jsem na *${domain}* a udělal jsem si na něm technickou analýzu.
+
+Váš web je celkem slušný, ale chybí mu optimalizace pro AI nástroje - ChatGPT Search, Perplexity a podobně. To je dneska klíčové, protože stále víc lidí hledá služby přes tyto platformy místo Google.
+
+Většina konkurence to taky nemá, takže kdo to udělá první, získá velkou výhodu. Mám pro vás pár konkrétních nápadů.
+
+Mohl bych vám poslat detailní rozbor?
+
+S pozdravem,
+Weblyx
+🌐 weblyx.cz`,
+
+      // Variation 3: Direct value
+      `Ahoj,
+
+jsem z Weblyx a analyzuji weby v oboru ${businessType.toLowerCase()}.
+
+Koukal jsem na *${domain}* a myslím, že bych vám mohl pomoct získat víc klientů z vyhledávání.
+
+S nástupem AI vyhledávačů (ChatGPT, Perplexity atd.) se hodně mění pravidla hry. Tradiční SEO už nestačí - potřebujete GEO/AIEO optimalizaci, kterou má zatím jen málokdo.
+
+Udělal jsem vám kompletní analýzu a mám tam pár dobrých nápadů. Můžu vám to poslat?
+
+Dáte vědět? 😊
+
+Díky,
+Tým Weblyx
+🌐 weblyx.cz`
+    ];
+
+    const highScoreMessages = [
+      // Variation 1: Refinement focus
+      `Dobrý den,
+
+jsem z Weblyx a dělám pokročilé analýzy webů pro ${businessType.toLowerCase()}.
+
+Narazil jsem na váš web *${domain}* a musím říct, že je nad průměrem.
+
+I přesto jsem našel pár míst, kde by lepší GEO optimalizace pro AI vyhledávače mohla výrazně zvýšit konverze. S nástupem ChatGPT Search a Perplexity se pravidla mění a málokt o to zatím stojí.
+
+Kdyby vás zajímaly detaily, můžu vám poslat kompletní rozbor.
+
+Máte zájem?
+
+S pozdravem,
+Tým Weblyx
+🌐 weblyx.cz`,
+
+      // Variation 2: Competitive edge
+      `Dobrý den,
+
+jsem z Weblyx a specializujeme se na optimalizaci webů v oboru ${businessType}.
+
+Při analýze trhu jsem narazil na *${domain}* - váš web je určitě mezi lepšími.
+
+Přesto jsem identifikoval několik drobností, které by mohly posunout vaši viditelnost v AI vyhledávačích (ChatGPT, Perplexity) ještě výš. Většina konkurence tyto nástroje ignoruje, což je pro vás příležitost.
+
+Mohl bych vám poslat detailní analýzu s konkrétními doporučeními?
+
+Dáte vědět? 😊
+
+S pozdravem,
+Weblyx Team
+🌐 weblyx.cz`,
+
+      // Variation 3: Future-proofing
+      `Ahoj,
+
+jsem z Weblyx a dělám audity webů pro ${businessType.toLowerCase()}.
+
+Koukal jsem na *${domain}* a líbí se mi, jak je web udělán.
+
+I tak jsem našel pár věcí, které by ho mohly ještě vyladit pro budoucnost - hlavně kvůli AI vyhledávačům jako ChatGPT nebo Perplexity, které postupně nahrazují klasický Google. GEO/AIEO optimalizace je dneska klíč.
+
+Mám pro vás pár konkrétních návrhů. Zajímal by vás detailní rozbor?
+
+Díky!
+Tým Weblyx
+🌐 weblyx.cz`
+    ];
+
+    // Select random variation based on score
+    let variations;
+    if (score < 50) {
+      variations = lowScoreMessages;
+    } else if (score < 70) {
+      variations = mediumScoreMessages;
+    } else {
+      variations = highScoreMessages;
+    }
+
+    // Use analysis ID as seed for consistent randomization per analysis
+    const seed = parseInt(analysis.id.split('_')[1] || '0', 10);
+    const index = seed % variations.length;
+
+    return variations[index];
+  };
+
+  const whatsAppMessage = getWhatsAppMessage();
 
   const copyToClipboard = async (text: string, type: 'email' | 'whatsapp') => {
     await navigator.clipboard.writeText(text);
