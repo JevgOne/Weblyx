@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
-import { EROWEB_PACKAGES, SCORE_COLORS, getScoreCategory, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
+import { SCORE_COLORS, getScoreCategory, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
 
 interface ReportCardProps {
   analysis: EroWebAnalysis;
@@ -75,10 +75,6 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf, onStatusChang
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
 
-  const recommendedPackage = analysis.recommendedPackage
-    ? EROWEB_PACKAGES[analysis.recommendedPackage]
-    : null;
-
   const scoreCategory = getScoreCategory(analysis.scores.total);
   const scoreColor = SCORE_COLORS[scoreCategory];
 
@@ -100,9 +96,9 @@ Vaš web dosáhl následujících výsledků:
 
 ${analysis.recommendation}
 
-💎 DOPORUČENÝ BALÍČEK: ${recommendedPackage?.name || 'N/A'}
-${recommendedPackage ? `Cena: ${recommendedPackage.priceMin.toLocaleString('cs-CZ')} - ${recommendedPackage.priceMax.toLocaleString('cs-CZ')} Kč` : ''}
-${recommendedPackage ? `Dodání: ${recommendedPackage.deliveryTime}` : ''}
+💰 CENÍK
+Ceník je individuální podle rozsahu prací a požadavků.
+Orientační cenový rozsah: 49 990 - 149 990 Kč
 
 Rádi bychom vám pomohli vylepšit váš web a přivést více zákazníků.
 
@@ -453,45 +449,30 @@ Tým Weblyx
         </Card>
       )}
 
-      {/* Recommended package */}
-      {recommendedPackage && (
-        <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/30 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-foreground text-lg flex items-center gap-2">
-              Doporučený balíček
-              {recommendedPackage.highlight && (
-                <Badge className="bg-primary text-white">
-                  {recommendedPackage.highlight}
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-foreground">
-                {recommendedPackage.name}
-              </h3>
+      {/* Pricing Info */}
+      <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/30 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-foreground text-lg flex items-center gap-2">
+            💰 Ceník
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Ceník je <strong className="text-foreground">individuální</strong> podle rozsahu prací a vašich specifických požadavků.
+            </p>
+            <div className="bg-background/50 rounded-lg p-4 border border-border">
+              <p className="text-sm text-muted-foreground mb-2">Orientační cenový rozsah:</p>
               <p className="text-3xl font-bold text-primary">
-                {recommendedPackage.priceMin.toLocaleString('cs-CZ')} - {recommendedPackage.priceMax.toLocaleString('cs-CZ')} Kč
+                49 990 - 149 990 Kč
               </p>
-              <p className="text-muted-foreground">
-                Dodání: {recommendedPackage.deliveryTime}
-              </p>
-              <div className="space-y-2">
-                <h4 className="font-medium text-foreground">Co obsahuje:</h4>
-                <ul className="space-y-1">
-                  {recommendedPackage.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                      <span className="text-green-600">✓</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <p className="text-sm text-muted-foreground">
+              Rádi vám připravíme nabídku přesně na míru vašim potřebám a rozpočtu.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Email Template Preview */}
       <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background">
