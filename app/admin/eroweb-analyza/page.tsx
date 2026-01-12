@@ -207,7 +207,7 @@ export default function EroWebAnalyzaPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar - Desktop */}
       <aside className="w-80 border-r border-border hidden lg:block">
         <HistorySidebar
@@ -228,7 +228,7 @@ export default function EroWebAnalyzaPage() {
             onClick={() => setIsMobileSidebarOpen(false)}
           />
           {/* Sidebar */}
-          <aside className="absolute left-0 top-0 h-full w-80 bg-background border-r border-border">
+          <aside className="absolute left-0 top-0 h-full w-80 bg-background border-r border-border overflow-y-auto">
             <HistorySidebar
               analyses={analyses}
               selectedId={currentAnalysis?.id}
@@ -241,9 +241,9 @@ export default function EroWebAnalyzaPage() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto">
+        <div className="p-4 sm:p-6 w-full">
+          <div className="max-w-4xl mx-auto space-y-6 w-full">
             {/* Header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">

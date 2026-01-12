@@ -303,28 +303,28 @@ Tým Weblyx
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full overflow-x-hidden">
       {/* Header with domain and overall score */}
-      <Card className="border-border shadow-lg hover:shadow-xl transition-shadow">
+      <Card className="border-border shadow-lg hover:shadow-xl transition-shadow w-full">
         <CardHeader className="pb-2">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Globe className="w-5 h-5 text-primary" />
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-2 min-w-0">
+                <Globe className="w-5 h-5 text-primary flex-shrink-0" />
                 <a
                   href={analysis.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-lg font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-1"
+                  className="text-lg font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-1 min-w-0 break-all"
                 >
-                  {analysis.domain}
-                  <ExternalLink className="w-4 h-4" />
+                  <span className="truncate">{analysis.domain}</span>
+                  <ExternalLink className="w-4 h-4 flex-shrink-0" />
                 </a>
               </div>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 <Badge
                   variant="outline"
-                  className="border-border text-muted-foreground"
+                  className="border-border text-muted-foreground flex-shrink-0"
                 >
                   {BUSINESS_TYPE_LABELS[analysis.businessType]}
                 </Badge>
@@ -336,7 +336,7 @@ Tým Weblyx
                     onValueChange={onStatusChange}
                   >
                     <SelectTrigger
-                      className="w-[180px] h-7 text-xs"
+                      className="w-full sm:w-[180px] h-7 text-xs"
                       style={{
                         borderColor: CONTACT_STATUS_COLORS[analysis.contactStatus],
                         color: CONTACT_STATUS_COLORS[analysis.contactStatus],
@@ -369,24 +369,24 @@ Tým Weblyx
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 mt-4">
+          <div className="flex flex-col sm:flex-row gap-2 mt-4 w-full">
             {onDownloadPdf && (
               <Button
                 onClick={onDownloadPdf}
                 variant="outline"
-                className="flex-1 border-border hover:bg-muted"
+                className="flex-1 border-border hover:bg-muted min-w-0"
               >
-                <Download className="w-4 h-4 mr-2" />
-                Stáhnout PDF
+                <Download className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="truncate">Stáhnout PDF</span>
               </Button>
             )}
             {onSendEmail && (
               <Button
                 onClick={onSendEmail}
-                className="flex-1 bg-primary hover:bg-primary/90"
+                className="flex-1 bg-primary hover:bg-primary/90 min-w-0"
               >
-                <Mail className="w-4 h-4 mr-2" />
-                Odeslat email
+                <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="truncate">Odeslat email</span>
               </Button>
             )}
           </div>
@@ -394,12 +394,12 @@ Tým Weblyx
       </Card>
 
       {/* Category scores */}
-      <Card className="border-border shadow-md">
+      <Card className="border-border shadow-md w-full">
         <CardHeader>
           <CardTitle className="text-foreground text-lg">Hodnocení po kategoriích</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
             {(Object.keys(CATEGORY_LABELS) as Array<keyof typeof CATEGORY_LABELS>).map((key) => {
               const Icon = CATEGORY_ICONS[key];
               const score = analysis.scores[key];
@@ -425,7 +425,7 @@ Tým Weblyx
 
       {/* Findings */}
       {analysis.findings && analysis.findings.length > 0 && (
-        <Card className="border-border shadow-md">
+        <Card className="border-border shadow-md w-full">
           <CardHeader>
             <CardTitle className="text-foreground text-lg">Zjištěné problémy</CardTitle>
           </CardHeader>
@@ -437,7 +437,7 @@ Tým Weblyx
 
       {/* Recommendation */}
       {analysis.recommendation && (
-        <Card className="border-border shadow-md">
+        <Card className="border-border shadow-md w-full">
           <CardHeader>
             <CardTitle className="text-foreground text-lg">Doporučení</CardTitle>
           </CardHeader>
@@ -450,7 +450,7 @@ Tým Weblyx
       )}
 
       {/* Pricing Info */}
-      <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/30 shadow-lg">
+      <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/30 shadow-lg w-full">
         <CardHeader>
           <CardTitle className="text-foreground text-lg flex items-center gap-2">
             💰 Ceník
@@ -475,7 +475,7 @@ Tým Weblyx
       </Card>
 
       {/* Email Template Preview */}
-      <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background">
+      <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background w-full">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-foreground text-lg flex items-center gap-2">
@@ -523,7 +523,7 @@ Tým Weblyx
       </Card>
 
       {/* WhatsApp Template Preview */}
-      <Card className="border-green-200 shadow-lg bg-gradient-to-br from-green-50 to-background">
+      <Card className="border-green-200 shadow-lg bg-gradient-to-br from-green-50 to-background w-full">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-foreground text-lg flex items-center gap-2">
