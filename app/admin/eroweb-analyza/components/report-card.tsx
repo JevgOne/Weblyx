@@ -3,6 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ScoreGauge, CategoryScoreBar } from './score-gauge';
 import { GroupedFindings } from './findings-list';
 import {
@@ -21,13 +28,14 @@ import {
   Check,
 } from 'lucide-react';
 import { useState } from 'react';
-import type { EroWebAnalysis } from '@/types/eroweb';
-import { EROWEB_PACKAGES, SCORE_COLORS, getScoreCategory } from '@/types/eroweb';
+import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
+import { EROWEB_PACKAGES, SCORE_COLORS, getScoreCategory, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
 
 interface ReportCardProps {
   analysis: EroWebAnalysis;
   onSendEmail?: () => void;
   onDownloadPdf?: () => void;
+  onStatusChange?: (status: ContactStatus) => void;
 }
 
 const BUSINESS_TYPE_LABELS = {
@@ -63,7 +71,7 @@ const CATEGORY_MAX_SCORES = {
   design: 20,
 };
 
-export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardProps) {
+export function ReportCard({ analysis, onSendEmail, onDownloadPdf, onStatusChange }: ReportCardProps) {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
 
@@ -148,12 +156,49 @@ Máte zájem o detailní rozbor? Napište mi! 😊
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
-              <Badge
-                variant="outline"
-                className="border-border text-muted-foreground"
-              >
-                {BUSINESS_TYPE_LABELS[analysis.businessType]}
-              </Badge>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge
+                  variant="outline"
+                  className="border-border text-muted-foreground"
+                >
+                  {BUSINESS_TYPE_LABELS[analysis.businessType]}
+                </Badge>
+
+                {/* Contact Status Dropdown */}
+                {onStatusChange && (
+                  <Select
+                    value={analysis.contactStatus}
+                    onValueChange={onStatusChange}
+                  >
+                    <SelectTrigger
+                      className="w-[180px] h-7 text-xs"
+                      style={{
+                        borderColor: CONTACT_STATUS_COLORS[analysis.contactStatus],
+                        color: CONTACT_STATUS_COLORS[analysis.contactStatus],
+                      }}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(['not_contacted', 'contacted', 'agreed', 'no_response'] as ContactStatus[]).map((status) => (
+                        <SelectItem
+                          key={status}
+                          value={status}
+                          className="text-sm"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: CONTACT_STATUS_COLORS[status] }}
+                            />
+                            {CONTACT_STATUS_LABELS[status]}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
             <ScoreGauge score={analysis.scores.total} size="lg" />
           </div>

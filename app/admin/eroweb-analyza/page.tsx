@@ -8,7 +8,7 @@ import { EmailComposer } from './components/email-composer';
 import { HistorySidebar } from './components/history-sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // Toast component not available - using console.log instead
-import type { EroWebAnalysis, AnalysisFormData } from '@/types/eroweb';
+import type { EroWebAnalysis, AnalysisFormData, ContactStatus } from '@/types/eroweb';
 
 type ViewState = 'form' | 'analyzing' | 'report';
 
@@ -174,6 +174,34 @@ export default function EroWebAnalyzaPage() {
     }
   };
 
+  const handleStatusChange = async (status: ContactStatus) => {
+    if (!currentAnalysis) return;
+
+    try {
+      const res = await fetch(`/api/eroweb/${currentAnalysis.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactStatus: status }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Zmena statusu selhala');
+      }
+
+      const { analysis } = await res.json();
+
+      // Update local state
+      setAnalyses((prev) =>
+        prev.map((a) => (a.id === currentAnalysis.id ? analysis : a))
+      );
+      setCurrentAnalysis(analysis);
+
+      console.log('✅ Status zmenen', `Novy status: ${status}`);
+    } catch (error: any) {
+      console.error('❌ Chyba pri zmene statusu:', error.message);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar - History */}
@@ -247,6 +275,7 @@ export default function EroWebAnalyzaPage() {
                       if (trigger instanceof HTMLElement) trigger.click();
                     }}
                     onDownloadPdf={handleDownloadPdf}
+                    onStatusChange={handleStatusChange}
                   />
                 </TabsContent>
 

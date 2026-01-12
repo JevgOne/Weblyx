@@ -9,6 +9,7 @@ import {
   getAnalysisById,
   updateContactInfo,
   updateNotes,
+  updateContactStatus,
   deleteAnalysis,
   markEmailSent,
   markEmailOpened,
@@ -51,6 +52,7 @@ const UpdateSchema = z.object({
   contactName: z.string().optional(),
   contactEmail: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
+  contactStatus: z.enum(['not_contacted', 'contacted', 'agreed', 'no_response']).optional(),
   markEmailSent: z.boolean().optional(),
   markEmailOpened: z.boolean().optional(),
 });
@@ -93,6 +95,11 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     // Update notes if provided
     if (data.notes !== undefined) {
       await updateNotes(id, data.notes);
+    }
+
+    // Update contact status if provided
+    if (data.contactStatus !== undefined) {
+      await updateContactStatus(id, data.contactStatus);
     }
 
     // Mark email sent

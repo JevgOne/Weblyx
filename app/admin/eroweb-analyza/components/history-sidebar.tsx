@@ -15,8 +15,8 @@ import {
   Trash2,
   ChevronRight,
 } from 'lucide-react';
-import type { EroWebAnalysis } from '@/types/eroweb';
-import { getScoreCategory, SCORE_COLORS } from '@/types/eroweb';
+import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
+import { getScoreCategory, SCORE_COLORS, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
 
 interface HistorySidebarProps {
   analyses: EroWebAnalysis[];
@@ -40,10 +40,13 @@ export function HistorySidebar({
   onNewAnalysis,
 }: HistorySidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<ContactStatus | 'all'>('all');
 
-  const filteredAnalyses = analyses.filter((a) =>
-    a.domain.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredAnalyses = analyses.filter((a) => {
+    const matchesSearch = a.domain.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = activeFilter === 'all' || a.contactStatus === activeFilter;
+    return matchesSearch && matchesFilter;
+  });
 
   // Group by date
   const groupedByDate = filteredAnalyses.reduce((groups, analysis) => {
@@ -71,6 +74,15 @@ export function HistorySidebar({
     return groups;
   }, {} as Record<string, EroWebAnalysis[]>);
 
+  // Count by status
+  const statusCounts = {
+    all: analyses.length,
+    not_contacted: analyses.filter(a => a.contactStatus === 'not_contacted').length,
+    contacted: analyses.filter(a => a.contactStatus === 'contacted').length,
+    agreed: analyses.filter(a => a.contactStatus === 'agreed').length,
+    no_response: analyses.filter(a => a.contactStatus === 'no_response').length,
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -90,6 +102,67 @@ export function HistorySidebar({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-background border-border text-foreground placeholder:text-muted-foreground"
           />
+        </div>
+      </div>
+
+      {/* Status Filter Tabs */}
+      <div className="border-b border-border bg-muted/30">
+        <div className="flex overflow-x-auto">
+          <button
+            onClick={() => setActiveFilter('all')}
+            className={cn(
+              'flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors border-b-2',
+              activeFilter === 'all'
+                ? 'border-primary text-primary bg-background'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            )}
+          >
+            Vše ({statusCounts.all})
+          </button>
+          <button
+            onClick={() => setActiveFilter('not_contacted')}
+            className={cn(
+              'flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors border-b-2',
+              activeFilter === 'not_contacted'
+                ? 'border-gray-500 text-gray-600 bg-background'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            )}
+          >
+            Nekontaktováno ({statusCounts.not_contacted})
+          </button>
+          <button
+            onClick={() => setActiveFilter('contacted')}
+            className={cn(
+              'flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors border-b-2',
+              activeFilter === 'contacted'
+                ? 'border-blue-500 text-blue-600 bg-background'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            )}
+          >
+            Kontaktováno ({statusCounts.contacted})
+          </button>
+          <button
+            onClick={() => setActiveFilter('agreed')}
+            className={cn(
+              'flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors border-b-2',
+              activeFilter === 'agreed'
+                ? 'border-green-500 text-green-600 bg-background'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            )}
+          >
+            Domluveno ({statusCounts.agreed})
+          </button>
+          <button
+            onClick={() => setActiveFilter('no_response')}
+            className={cn(
+              'flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors border-b-2',
+              activeFilter === 'no_response'
+                ? 'border-red-500 text-red-600 bg-background'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            )}
+          >
+            Neodpověděno ({statusCounts.no_response})
+          </button>
         </div>
       </div>
 
@@ -222,6 +295,20 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
               {analysis.contactName}
             </div>
           )}
+
+          {/* Contact Status Badge */}
+          <div className="mt-1">
+            <Badge
+              variant="outline"
+              className="text-xs px-2 py-0.5"
+              style={{
+                borderColor: CONTACT_STATUS_COLORS[analysis.contactStatus],
+                color: CONTACT_STATUS_COLORS[analysis.contactStatus],
+              }}
+            >
+              {CONTACT_STATUS_LABELS[analysis.contactStatus]}
+            </Badge>
+          </div>
         </div>
 
         {/* Arrow / Delete */}

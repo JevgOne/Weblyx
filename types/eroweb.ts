@@ -9,6 +9,8 @@ export type ScoreCategory = 'critical' | 'poor' | 'average' | 'good' | 'excellen
 
 export type AnalysisStatus = 'pending' | 'analyzing' | 'completed' | 'failed';
 
+export type ContactStatus = 'not_contacted' | 'contacted' | 'agreed' | 'no_response';
+
 export interface Finding {
   id: string;
   type: FindingType;
@@ -131,6 +133,9 @@ export interface EroWebAnalysis {
   // Contact info (optional)
   contactName: string | null;
   contactEmail: string | null;
+
+  // Contact status for CRM
+  contactStatus: ContactStatus;
 
   // Email tracking
   emailSent: boolean;
@@ -287,6 +292,20 @@ export const BUSINESS_TYPE_LABELS: Record<BusinessType, string> = {
   massage: 'erotické masáže',
   privat: 'privátní služby',
   escort: 'escort služby',
+};
+
+export const CONTACT_STATUS_LABELS: Record<ContactStatus, string> = {
+  not_contacted: 'Nekontaktováno',
+  contacted: 'Kontaktováno',
+  agreed: 'Domluveno',
+  no_response: 'Neodpověděno',
+};
+
+export const CONTACT_STATUS_COLORS: Record<ContactStatus, string> = {
+  not_contacted: '#6B7280', // gray-500
+  contacted: '#3B82F6',     // blue-500
+  agreed: '#10B981',        // green-500
+  no_response: '#EF4444',   // red-500
 };
 
 // Helper functions

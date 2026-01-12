@@ -8,6 +8,7 @@ import type {
   BusinessType,
   PackageType,
   AnalysisStatus,
+  ContactStatus,
   AnalysisFormData,
 } from '@/types/eroweb';
 
@@ -41,6 +42,7 @@ function mapRowToAnalysis(row: any): EroWebAnalysis {
     screenshotUrl: row.screenshot_url,
     contactName: row.contact_name,
     contactEmail: row.contact_email,
+    contactStatus: (row.contact_status || 'not_contacted') as ContactStatus,
     emailSent: Boolean(row.email_sent),
     emailSentAt: unixToDate(row.email_sent_at),
     emailOpened: Boolean(row.email_opened),
@@ -322,6 +324,21 @@ export async function updateNotes(id: string, notes: string): Promise<void> {
          updated_at = ?
      WHERE id = ?`,
     [notes, now, id]
+  );
+}
+
+/**
+ * Update contact status (CRM functionality)
+ */
+export async function updateContactStatus(id: string, status: ContactStatus): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+
+  await executeQuery(
+    `UPDATE eroweb_analyses
+     SET contact_status = ?,
+         updated_at = ?
+     WHERE id = ?`,
+    [status, now, id]
   );
 }
 
