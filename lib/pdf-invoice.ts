@@ -48,27 +48,62 @@ function removeDiacritics(text: string): string {
 
 /**
  * Generate SPAYD (Short Payment Descriptor) QR code for Czech banking
- * Standard format: SPD*1.0*ACC:IBAN*AM:amount*CC:CZK*MSG:message*X-VS:variable_symbol
+ * Standard format: SPD*1.0*ACC:IBAN+BIC*AM:amount*CC:CZK*MSG:message*X-VS:variable_symbol
+ *
+ * SPAYD 1.0 specification: https://qr-platba.cz/
  */
 async function generatePaymentQRCode(
   iban: string,
+  swift: string,
   amount: number, // in haléře
   currency: string,
   variableSymbol: string,
   message: string
 ): Promise<string> {
+  // Clean IBAN - remove spaces, "IBAN:" prefix, etc.
+  const cleanIban = iban.replace(/[\s-]/g, '').replace(/^IBAN:?/i, '').toUpperCase();
+
+  // Clean SWIFT/BIC
+  const cleanSwift = swift.replace(/[\s-]/g, '').toUpperCase();
+
   // Convert amount from haléře to currency (30000.00)
   const amountFormatted = (amount / 100).toFixed(2);
 
-  // Build SPAYD string
-  const spayd = [
+  // Clean message - remove diacritics and special chars for QR compatibility
+  const cleanMessage = message
+    .replace(/[áÁ]/g, 'a')
+    .replace(/[čČ]/g, 'c')
+    .replace(/[ďĎ]/g, 'd')
+    .replace(/[éÉěĚ]/g, 'e')
+    .replace(/[íÍ]/g, 'i')
+    .replace(/[ňŇ]/g, 'n')
+    .replace(/[óÓ]/g, 'o')
+    .replace(/[řŘ]/g, 'r')
+    .replace(/[šŠ]/g, 's')
+    .replace(/[ťŤ]/g, 't')
+    .replace(/[úÚůŮ]/g, 'u')
+    .replace(/[ýÝ]/g, 'y')
+    .replace(/[žŽ]/g, 'z')
+    .substring(0, 60); // Max 60 chars for MSG
+
+  // Build SPAYD string according to specification
+  // ACC format: IBAN+BIC (BIC is optional but recommended)
+  const spaydParts = [
     'SPD*1.0',
-    `ACC:${iban}`,
+    `ACC:${cleanIban}${cleanSwift ? '+' + cleanSwift : ''}`,
     `AM:${amountFormatted}`,
     `CC:${currency}`,
-    `MSG:${message}`,
     `X-VS:${variableSymbol}`,
-  ].join('*');
+  ];
+
+  // Add message only if not empty
+  if (cleanMessage) {
+    spaydParts.push(`MSG:${cleanMessage}`);
+  }
+
+  const spayd = spaydParts.join('*');
+
+  console.log('📱 Generated SPAYD:', spayd);
 
   // Generate QR code as Data URL
   const qrDataUrl = await QRCode.toDataURL(spayd, {
@@ -774,9 +809,10 @@ export async function generateInvoicePDF(
   // QR CODE for Payment
   // =====================================================
 
-  // Generate QR code
+  // Generate QR code with SPAYD format
   const qrCodeDataUrl = await generatePaymentQRCode(
     invoiceData.company.iban,
+    invoiceData.company.swift,
     invoiceData.amount_with_vat,
     invoiceData.currency,
     invoiceData.variable_symbol,
