@@ -8,6 +8,7 @@ import { EmailComposer } from './components/email-composer';
 import { HistorySidebar } from './components/history-sidebar';
 import { WebsiteFinder } from './components/website-finder';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Menu, X } from 'lucide-react';
 // Toast component not available - using console.log instead
 import type { EroWebAnalysis, AnalysisFormData, ContactStatus } from '@/types/eroweb';
 
@@ -20,6 +21,7 @@ export default function EroWebAnalyzaPage() {
   const [analysisStep, setAnalysisStep] = useState('');
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Load history on mount
   useEffect(() => {
@@ -90,6 +92,7 @@ export default function EroWebAnalyzaPage() {
   const handleSelectAnalysis = (analysis: EroWebAnalysis) => {
     setCurrentAnalysis(analysis);
     setViewState('report');
+    setIsMobileSidebarOpen(false); // Close mobile sidebar after selection
   };
 
   const handleDeleteAnalysis = async (id: string) => {
@@ -205,7 +208,7 @@ export default function EroWebAnalyzaPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Sidebar - History */}
+      {/* Sidebar - Desktop */}
       <aside className="w-80 border-r border-border hidden lg:block">
         <HistorySidebar
           analyses={analyses}
@@ -216,17 +219,48 @@ export default function EroWebAnalyzaPage() {
         />
       </aside>
 
+      {/* Sidebar - Mobile (Overlay) */}
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+          {/* Sidebar */}
+          <aside className="absolute left-0 top-0 h-full w-80 bg-background border-r border-border">
+            <HistorySidebar
+              analyses={analyses}
+              selectedId={currentAnalysis?.id}
+              onSelect={handleSelectAnalysis}
+              onDelete={handleDeleteAnalysis}
+              onNewAnalysis={handleNewAnalysis}
+            />
+          </aside>
+        </div>
+      )}
+
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         <div className="p-6">
           <div className="max-w-4xl mx-auto space-y-6">
             {/* Header */}
             <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">EroWeb Analyza</h1>
-                <p className="text-muted-foreground">
-                  Analyzujte weby konkurence a ziskejte nove klienty
-                </p>
+              <div className="flex items-center gap-3">
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                  className="lg:hidden p-2 hover:bg-muted rounded-lg transition-colors"
+                  aria-label="Toggle history"
+                >
+                  <Menu className="w-5 h-5 text-foreground" />
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">EroWeb Analyza</h1>
+                  <p className="text-muted-foreground">
+                    Analyzujte weby konkurence a ziskejte nove klienty
+                  </p>
+                </div>
               </div>
               {viewState === 'report' && (
                 <button
