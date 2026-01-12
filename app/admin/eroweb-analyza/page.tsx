@@ -7,7 +7,7 @@ import { ReportCard } from './components/report-card';
 import { EmailComposer } from './components/email-composer';
 import { HistorySidebar } from './components/history-sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/components/ui/use-toast';
+// Toast component not available - using console.log instead
 import type { EroWebAnalysis, AnalysisFormData } from '@/types/eroweb';
 
 type ViewState = 'form' | 'analyzing' | 'report';
@@ -19,7 +19,6 @@ export default function EroWebAnalyzaPage() {
   const [analysisStep, setAnalysisStep] = useState('');
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   // Load history on mount
   useEffect(() => {
@@ -78,16 +77,9 @@ export default function EroWebAnalyzaPage() {
       setAnalyses((prev) => [analysis, ...prev]);
       setViewState('report');
 
-      toast({
-        title: 'Analyza dokoncena',
-        description: `Skore: ${analysis.scores.total}/100`,
-      });
+      console.log('✅ Analyza dokoncena', `Skore: ${analysis.scores.total}/100`);
     } catch (error: any) {
-      toast({
-        title: 'Chyba',
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('❌ Chyba pri analyze:', error.message);
       setViewState('form');
     } finally {
       setIsLoading(false);
@@ -108,13 +100,10 @@ export default function EroWebAnalyzaPage() {
           setCurrentAnalysis(null);
           setViewState('form');
         }
-        toast({ title: 'Analyza smazana' });
+        console.log('✅ Analyza smazana');
       }
     } catch (error) {
-      toast({
-        title: 'Chyba pri mazani',
-        variant: 'destructive',
-      });
+      console.error('❌ Chyba pri mazani');
     }
   };
 
@@ -156,16 +145,9 @@ export default function EroWebAnalyzaPage() {
         prev ? { ...prev, emailSent: true, emailSentAt: new Date() } : null
       );
 
-      toast({
-        title: 'Email odeslan',
-        description: `Odeslan na ${to}`,
-      });
+      console.log('✅ Email odeslan', `Odeslan na ${to}`);
     } catch (error: any) {
-      toast({
-        title: 'Chyba',
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('❌ Chyba pri odeslani emailu:', error.message);
     }
   };
 
@@ -186,13 +168,9 @@ export default function EroWebAnalyzaPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast({ title: 'PDF stazeno' });
+      console.log('✅ PDF stazeno');
     } catch (error: any) {
-      toast({
-        title: 'Chyba',
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('❌ Chyba pri stahovani PDF:', error.message);
     }
   };
 

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+// ScrollArea component not available - using div instead
 import {
   Globe,
   Search,
@@ -94,7 +94,7 @@ export function HistorySidebar({
       </div>
 
       {/* List */}
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-auto">
         <div className="p-2">
           {Object.entries(groupedByDate).map(([dateKey, items]) => (
             <div key={dateKey} className="mb-4">
@@ -123,7 +123,7 @@ export function HistorySidebar({
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Footer with stats */}
       <div className="p-4 border-t border-[#2A2A2A]">

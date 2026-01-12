@@ -448,6 +448,25 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Globe className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>EroWeb Analýza 🔥</CardTitle>
+                    <CardDescription>Analýza pro adult industry</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="default" className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => router.push("/admin/eroweb-analyza")}>
+                  Otevřít
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
