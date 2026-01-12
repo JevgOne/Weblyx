@@ -72,23 +72,23 @@ export function HistorySidebar({
   }, {} as Record<string, EroWebAnalysis[]>);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="p-4 border-b border-[#2A2A2A]">
-        <h2 className="text-lg font-semibold text-white mb-3">Historie analyz</h2>
+      <div className="p-4 border-b border-border">
+        <h2 className="text-lg font-semibold text-foreground mb-3">Historie analyz</h2>
         <Button
           onClick={onNewAnalysis}
-          className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white mb-3"
+          className="w-full bg-primary hover:bg-primary/90 text-white mb-3"
         >
           Nova analyza
         </Button>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Hledat domenu..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-[#252525] border-[#2A2A2A] text-white placeholder:text-[#71717A]"
+            className="pl-9 bg-background border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -98,7 +98,7 @@ export function HistorySidebar({
         <div className="p-2">
           {Object.entries(groupedByDate).map(([dateKey, items]) => (
             <div key={dateKey} className="mb-4">
-              <div className="px-2 py-1 text-xs font-medium text-[#71717A] uppercase">
+              <div className="px-2 py-1 text-xs font-medium text-muted-foreground uppercase">
                 {dateKey}
               </div>
               <div className="space-y-1">
@@ -116,7 +116,7 @@ export function HistorySidebar({
           ))}
 
           {filteredAnalyses.length === 0 && (
-            <div className="text-center py-8 text-[#71717A]">
+            <div className="text-center py-8 text-muted-foreground">
               {searchQuery
                 ? 'Zadne vysledky nenalezeny'
                 : 'Zadna historie analyz'}
@@ -126,8 +126,8 @@ export function HistorySidebar({
       </div>
 
       {/* Footer with stats */}
-      <div className="p-4 border-t border-[#2A2A2A]">
-        <div className="flex items-center justify-between text-sm text-[#71717A]">
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>Celkem: {analyses.length}</span>
           <span>
             Odeslano:{' '}
@@ -156,8 +156,8 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
       className={cn(
         'group relative rounded-lg p-3 cursor-pointer transition-colors',
         isSelected
-          ? 'bg-[#7C3AED]/20 border border-[#7C3AED]/50'
-          : 'hover:bg-[#252525] border border-transparent'
+          ? 'bg-primary/10 border border-primary/50'
+          : 'hover:bg-muted border border-transparent'
       )}
       onClick={onSelect}
       onMouseEnter={() => setShowDelete(true)}
@@ -175,7 +175,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-white truncate">
+            <span className="text-sm font-medium text-foreground truncate">
               {analysis.domain}
             </span>
             <span className="text-xs">
@@ -183,7 +183,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
             </span>
           </div>
 
-          <div className="flex items-center gap-2 mt-1 text-xs text-[#71717A]">
+          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
             <Clock className="w-3 h-3" />
             <span>
               {new Date(analysis.createdAt).toLocaleTimeString('cs-CZ', {
@@ -218,7 +218,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
           </div>
 
           {analysis.contactName && (
-            <div className="text-xs text-[#A1A1AA] mt-1 truncate">
+            <div className="text-xs text-muted-foreground mt-1 truncate">
               {analysis.contactName}
             </div>
           )}
@@ -232,7 +232,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
                 e.stopPropagation();
                 onDelete();
               }}
-              className="p-1 rounded hover:bg-red-500/20 text-[#71717A] hover:text-red-500 transition-colors"
+              className="p-1 rounded hover:bg-red-500/20 text-muted-foreground hover:text-red-500 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -240,7 +240,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
             <ChevronRight
               className={cn(
                 'w-4 h-4 transition-colors',
-                isSelected ? 'text-[#7C3AED]' : 'text-[#71717A]'
+                isSelected ? 'text-primary' : 'text-muted-foreground'
               )}
             />
           )}
@@ -279,8 +279,8 @@ export function HistoryListCompact({
             className={cn(
               'w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors',
               analysis.id === selectedId
-                ? 'bg-[#7C3AED]/20'
-                : 'hover:bg-[#252525]'
+                ? 'bg-primary/10'
+                : 'hover:bg-muted'
             )}
           >
             <div
@@ -290,8 +290,8 @@ export function HistoryListCompact({
               {analysis.scores.total}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm text-white truncate">{analysis.domain}</div>
-              <div className="text-xs text-[#71717A]">
+              <div className="text-sm text-foreground truncate">{analysis.domain}</div>
+              <div className="text-xs text-muted-foreground">
                 {new Date(analysis.createdAt).toLocaleDateString('cs-CZ')}
               </div>
             </div>
@@ -300,7 +300,7 @@ export function HistoryListCompact({
       })}
 
       {analyses.length > maxItems && (
-        <div className="text-center text-xs text-[#71717A] py-2">
+        <div className="text-center text-xs text-muted-foreground py-2">
           + {analyses.length - maxItems} dalsich
         </div>
       )}

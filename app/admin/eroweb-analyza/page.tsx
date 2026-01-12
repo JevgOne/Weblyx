@@ -175,9 +175,9 @@ export default function EroWebAnalyzaPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#0F0F0F]">
+    <div className="flex h-screen bg-background">
       {/* Sidebar - History */}
-      <aside className="w-80 border-r border-[#2A2A2A] hidden lg:block">
+      <aside className="w-80 border-r border-border hidden lg:block">
         <HistorySidebar
           analyses={analyses}
           selectedId={currentAnalysis?.id}
@@ -194,8 +194,8 @@ export default function EroWebAnalyzaPage() {
             {/* Header */}
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-white">EroWeb Analyza</h1>
-                <p className="text-[#A1A1AA]">
+                <h1 className="text-2xl font-bold text-foreground">EroWeb Analyza</h1>
+                <p className="text-muted-foreground">
                   Analyzujte weby konkurence a ziskejte nove klienty
                 </p>
               </div>
@@ -223,16 +223,16 @@ export default function EroWebAnalyzaPage() {
 
             {viewState === 'report' && currentAnalysis && (
               <Tabs defaultValue="report" className="space-y-6">
-                <TabsList className="bg-[#1A1A1A] border border-[#2A2A2A]">
+                <TabsList className="bg-muted border border-border">
                   <TabsTrigger
                     value="report"
-                    className="data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-white"
                   >
                     Report
                   </TabsTrigger>
                   <TabsTrigger
                     value="email"
-                    className="data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-white"
                   >
                     Email
                   </TabsTrigger>
