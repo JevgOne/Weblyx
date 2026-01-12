@@ -65,6 +65,12 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     );
   }
 
+  // SECURITY: If not authenticated after loading, don't render children
+  // Redirect already happened in checkAuth(), just block rendering
+  if (!user) {
+    return null;
+  }
+
   return (
     <AdminAuthContext.Provider value={{ user, loading }}>
       {children}
