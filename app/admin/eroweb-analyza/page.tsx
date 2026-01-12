@@ -6,6 +6,7 @@ import { AnalysisProgress } from './components/analysis-progress';
 import { ReportCard } from './components/report-card';
 import { EmailComposer } from './components/email-composer';
 import { HistorySidebar } from './components/history-sidebar';
+import { WebsiteFinder } from './components/website-finder';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // Toast component not available - using console.log instead
 import type { EroWebAnalysis, AnalysisFormData, ContactStatus } from '@/types/eroweb';
@@ -239,7 +240,10 @@ export default function EroWebAnalyzaPage() {
 
             {/* Content based on state */}
             {viewState === 'form' && (
-              <AnalyzerForm onAnalyze={handleAnalyze} isLoading={isLoading} />
+              <>
+                <WebsiteFinder onWebsitesFound={loadHistory} />
+                <AnalyzerForm onAnalyze={handleAnalyze} isLoading={isLoading} />
+              </>
             )}
 
             {viewState === 'analyzing' && (
