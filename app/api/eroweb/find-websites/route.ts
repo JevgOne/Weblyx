@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
           url: website.url,
           businessType,
           contactName: website.title || undefined,
-          contactEmail: website.email || undefined,
+          contactEmail: undefined, // No email from search results
         });
 
         created.push(analysis.domain);
@@ -71,8 +71,7 @@ export async function POST(req: NextRequest) {
         source: w.source,
         businessType: w.businessType,
         title: w.title,
-        phone: w.phone,
-        email: w.email,
+        description: w.description,
       })),
       createdDomains: created,
       errorDomains: errors,

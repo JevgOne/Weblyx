@@ -200,11 +200,12 @@ export function WebsiteFinder({ onWebsitesFound }: WebsiteFinder) {
         )}
 
         <div className="text-xs text-muted-foreground space-y-1 mt-4 pt-4 border-t border-border">
-          <p className="font-medium">Zdroje:</p>
+          <p className="font-medium">Jak to funguje:</p>
           <ul className="list-disc list-inside space-y-0.5">
-            <li>erosservis.cz - katalog erotických služeb</li>
-            <li>eroticke-masaze.cz - seznam masáží</li>
-            <li>erotic-list.cz - adresář</li>
+            <li>Používá Brave Search API (legální, spolehlivé)</li>
+            <li>Vyhledá weby pro "erotické masáže", "escort", "privát" v ČR</li>
+            <li>Odfiltruje agregátory a katalogy</li>
+            <li>Přidá skutečné konkurenční weby k analýze</li>
           </ul>
         </div>
       </CardContent>
