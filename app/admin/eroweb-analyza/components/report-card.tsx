@@ -16,7 +16,11 @@ import {
   Search,
   Bot,
   Palette,
+  MessageCircle,
+  Copy,
+  Check,
 } from 'lucide-react';
+import { useState } from 'react';
 import type { EroWebAnalysis } from '@/types/eroweb';
 import { EROWEB_PACKAGES, SCORE_COLORS, getScoreCategory } from '@/types/eroweb';
 
@@ -60,6 +64,9 @@ const CATEGORY_MAX_SCORES = {
 };
 
 export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardProps) {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
+
   const recommendedPackage = analysis.recommendedPackage
     ? EROWEB_PACKAGES[analysis.recommendedPackage]
     : null;
@@ -67,20 +74,75 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
   const scoreCategory = getScoreCategory(analysis.scores.total);
   const scoreColor = SCORE_COLORS[scoreCategory];
 
+  // Generate email template
+  const emailSubject = `Analýza webu ${analysis.domain} - ${analysis.scores.total}/100 bodů`;
+  const emailBody = `Dobrý den,
+
+provedli jsme kompletní analýzu vašeho webu ${analysis.domain} a máme pro vás zajímavé výsledky.
+
+📊 CELKOVÉ HODNOCENÍ: ${analysis.scores.total}/100 bodů
+
+Vaš web dosáhl následujících výsledků:
+• Rychlost: ${analysis.scores.speed}/${CATEGORY_MAX_SCORES.speed} bodů
+• Mobilní verze: ${analysis.scores.mobile}/${CATEGORY_MAX_SCORES.mobile} bodů
+• Zabezpečení: ${analysis.scores.security}/${CATEGORY_MAX_SCORES.security} bodů
+• SEO: ${analysis.scores.seo}/${CATEGORY_MAX_SCORES.seo} bodů
+• GEO/AIEO: ${analysis.scores.geo}/${CATEGORY_MAX_SCORES.geo} bodů
+• Design: ${analysis.scores.design}/${CATEGORY_MAX_SCORES.design} bodů
+
+${analysis.recommendation}
+
+💎 DOPORUČENÝ BALÍČEK: ${recommendedPackage?.name || 'N/A'}
+${recommendedPackage ? `Cena: ${recommendedPackage.priceMin.toLocaleString('cs-CZ')} - ${recommendedPackage.priceMax.toLocaleString('cs-CZ')} Kč` : ''}
+${recommendedPackage ? `Dodání: ${recommendedPackage.deliveryTime}` : ''}
+
+Rádi bychom vám pomohli vylepšit váš web a přivést více zákazníků.
+
+Máte zájem o nezávaznou konzultaci?
+
+S pozdravem,
+Tým Weblyx
+https://weblyx.cz`;
+
+  // Generate WhatsApp message
+  const whatsAppMessage = `🔍 *Analýza webu ${analysis.domain}*
+
+📊 Celkové hodnocení: *${analysis.scores.total}/100 bodů*
+
+${analysis.scores.total < 50 ? '⚠️ Váš web má značné rezervy.' : analysis.scores.total < 70 ? '👍 Solidní základ s prostorem ke zlepšení.' : '✅ Nadprůměrný výkon!'}
+
+💎 Doporučený balíček: *${recommendedPackage?.name || 'N/A'}*
+💰 Cena: ${recommendedPackage ? `${recommendedPackage.priceMin.toLocaleString('cs-CZ')} - ${recommendedPackage.priceMax.toLocaleString('cs-CZ')} Kč` : 'N/A'}
+
+Máte zájem o detailní rozbor? Napište mi! 😊
+
+🌐 weblyx.cz`;
+
+  const copyToClipboard = async (text: string, type: 'email' | 'whatsapp') => {
+    await navigator.clipboard.writeText(text);
+    if (type === 'email') {
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } else {
+      setCopiedWhatsApp(true);
+      setTimeout(() => setCopiedWhatsApp(false), 2000);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header with domain and overall score */}
-      <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
+      <Card className="border-border shadow-lg hover:shadow-xl transition-shadow">
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Globe className="w-5 h-5 text-[#7C3AED]" />
+                <Globe className="w-5 h-5 text-primary" />
                 <a
                   href={analysis.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-lg font-semibold text-white hover:text-[#7C3AED] transition-colors flex items-center gap-1"
+                  className="text-lg font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-1"
                 >
                   {analysis.domain}
                   <ExternalLink className="w-4 h-4" />
@@ -88,7 +150,7 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
               </div>
               <Badge
                 variant="outline"
-                className="border-[#2A2A2A] text-[#A1A1AA]"
+                className="border-border text-muted-foreground"
               >
                 {BUSINESS_TYPE_LABELS[analysis.businessType]}
               </Badge>
@@ -102,7 +164,7 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
               <Button
                 onClick={onDownloadPdf}
                 variant="outline"
-                className="border-[#2A2A2A] text-white hover:bg-[#252525]"
+                className="flex-1 border-border hover:bg-muted"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Stáhnout PDF
@@ -111,7 +173,7 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
             {onSendEmail && (
               <Button
                 onClick={onSendEmail}
-                className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white"
+                className="flex-1 bg-primary hover:bg-primary/90"
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Odeslat email
@@ -122,9 +184,9 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
       </Card>
 
       {/* Category scores */}
-      <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
+      <Card className="border-border shadow-md">
         <CardHeader>
-          <CardTitle className="text-white text-lg">Hodnocení po kategoriích</CardTitle>
+          <CardTitle className="text-foreground text-lg">Hodnocení po kategoriích</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -135,9 +197,9 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
 
               return (
                 <div key={key} className="space-y-2">
-                  <div className="flex items-center gap-2 text-[#A1A1AA]">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Icon className="w-4 h-4" />
-                    <span className="text-sm">{CATEGORY_LABELS[key]}</span>
+                    <span className="text-sm font-medium">{CATEGORY_LABELS[key]}</span>
                   </div>
                   <CategoryScoreBar
                     label=""
@@ -153,9 +215,9 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
 
       {/* Findings */}
       {analysis.findings && analysis.findings.length > 0 && (
-        <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
+        <Card className="border-border shadow-md">
           <CardHeader>
-            <CardTitle className="text-white text-lg">Zjištěné problémy</CardTitle>
+            <CardTitle className="text-foreground text-lg">Zjištěné problémy</CardTitle>
           </CardHeader>
           <CardContent>
             <GroupedFindings findings={analysis.findings} />
@@ -165,12 +227,12 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
 
       {/* Recommendation */}
       {analysis.recommendation && (
-        <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
+        <Card className="border-border shadow-md">
           <CardHeader>
-            <CardTitle className="text-white text-lg">Doporučení</CardTitle>
+            <CardTitle className="text-foreground text-lg">Doporučení</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[#A1A1AA] whitespace-pre-wrap">
+            <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
               {analysis.recommendation}
             </p>
           </CardContent>
@@ -179,12 +241,12 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
 
       {/* Recommended package */}
       {recommendedPackage && (
-        <Card className="bg-gradient-to-br from-[#7C3AED]/20 to-[#1A1A1A] border-[#7C3AED]/50">
+        <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/30 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-white text-lg flex items-center gap-2">
+            <CardTitle className="text-foreground text-lg flex items-center gap-2">
               Doporučený balíček
               {recommendedPackage.highlight && (
-                <Badge className="bg-[#7C3AED] text-white">
+                <Badge className="bg-primary text-white">
                   {recommendedPackage.highlight}
                 </Badge>
               )}
@@ -192,21 +254,21 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-white">
+              <h3 className="text-2xl font-bold text-foreground">
                 {recommendedPackage.name}
               </h3>
-              <p className="text-3xl font-bold text-[#7C3AED]">
+              <p className="text-3xl font-bold text-primary">
                 {recommendedPackage.priceMin.toLocaleString('cs-CZ')} - {recommendedPackage.priceMax.toLocaleString('cs-CZ')} Kč
               </p>
-              <p className="text-[#A1A1AA]">
+              <p className="text-muted-foreground">
                 Dodání: {recommendedPackage.deliveryTime}
               </p>
               <div className="space-y-2">
-                <h4 className="font-medium text-white">Co obsahuje:</h4>
+                <h4 className="font-medium text-foreground">Co obsahuje:</h4>
                 <ul className="space-y-1">
                   {recommendedPackage.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[#A1A1AA]">
-                      <span className="text-[#10B981]">✓</span>
+                    <li key={i} className="flex items-start gap-2 text-muted-foreground">
+                      <span className="text-green-600">✓</span>
                       {feature}
                     </li>
                   ))}
@@ -216,6 +278,94 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf }: ReportCardP
           </CardContent>
         </Card>
       )}
+
+      {/* Email Template Preview */}
+      <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-foreground text-lg flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-600" />
+              Návrh emailu
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => copyToClipboard(emailBody, 'email')}
+              className="gap-2"
+            >
+              {copiedEmail ? (
+                <>
+                  <Check className="w-4 h-4 text-green-600" />
+                  Zkopírováno!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  Zkopírovat
+                </>
+              )}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Předmět:</p>
+              <p className="font-semibold text-foreground bg-background px-3 py-2 rounded border border-border">
+                {emailSubject}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Tělo emailu:</p>
+              <div className="bg-background px-4 py-3 rounded border border-border">
+                <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
+                  {emailBody}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* WhatsApp Template Preview */}
+      <Card className="border-green-200 shadow-lg bg-gradient-to-br from-green-50 to-background">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-foreground text-lg flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-green-600" />
+              Návrh WhatsApp zprávy
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => copyToClipboard(whatsAppMessage, 'whatsapp')}
+              className="gap-2"
+            >
+              {copiedWhatsApp ? (
+                <>
+                  <Check className="w-4 h-4 text-green-600" />
+                  Zkopírováno!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  Zkopírovat
+                </>
+              )}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-background px-4 py-3 rounded-lg border border-border shadow-sm">
+            <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
+              {whatsAppMessage}
+            </pre>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            💡 Zkopírujte zprávu a odešlete ji přímo přes WhatsApp Web nebo mobilní aplikaci.
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
