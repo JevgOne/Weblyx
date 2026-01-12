@@ -571,7 +571,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         </View>
 
         {/* Next Steps */}
-        <View style={styles.nextSteps}>
+        <View style={styles.nextSteps} wrap={false}>
           <Text style={styles.sectionTitle}>Další kroky</Text>
 
           <View style={styles.stepItem}>
