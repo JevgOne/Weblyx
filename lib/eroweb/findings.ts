@@ -402,25 +402,8 @@ function generateDesignFindings(details: AnalysisDetails, businessType: Business
     ));
   }
 
-  if (details.imageQuality === 'low') {
-    findings.push(createFinding(
-      'critical',
-      'design',
-      'Nekvalitní fotografie',
-      'Obrázky jsou rozmazané, mají nízké rozlišení nebo kompresní artefakty.',
-      'V oboru erotických služeb jsou kvalitní fotky klíčové pro konverze',
-      10
-    ));
-  } else if (details.imageQuality === 'medium') {
-    findings.push(createFinding(
-      'warning',
-      'design',
-      'Fotografie by mohly být lepší',
-      'Kvalita obrázků je průměrná - profesionální focení by pomohlo.',
-      'Lepší fotky = více zákazníků',
-      5
-    ));
-  }
+  // Note: Image quality check removed for erotic websites
+  // Blurred faces are intentional for privacy protection, not a quality issue
 
   if (!details.hasBookingSystem) {
     findings.push(createFinding(
