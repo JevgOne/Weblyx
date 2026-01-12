@@ -358,11 +358,11 @@ const getScoreColor = (score: number): string => {
 };
 
 const getScoreLabel = (score: number): string => {
-  if (score <= 30) return 'Kriticky stav';
-  if (score <= 50) return 'Podprumerny';
-  if (score <= 70) return 'Prumerny';
-  if (score <= 85) return 'Dobry';
-  return 'Vyborny';
+  if (score <= 30) return 'Kritický stav';
+  if (score <= 50) return 'Podprůměrný';
+  if (score <= 70) return 'Průměrný';
+  if (score <= 85) return 'Dobrý';
+  return 'Vynikající';
 };
 
 const businessTypeLabels: Record<string, string> = {
@@ -425,19 +425,13 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         <View style={styles.introSection}>
           <Text style={styles.sectionTitle}>O této analýze</Text>
           <Text style={styles.introText}>
-            Provedli jsme komplexní technickou analýzu vašeho webu zaměřenou na klíčové faktory,
-            které ovlivňují úspěšnost v online prostředí. Hodnotili jsme rychlost načítání,
-            mobilní optimalizaci, bezpečnost, SEO a moderní GEO/AIEO optimalizaci pro AI vyhledávače
-            jako ChatGPT nebo Perplexity.
+            Provedli jsme komplexní technickou analýzu vašeho webu zaměřenou na klíčové faktory, které rozhodují o úspěchu v online prostředí. Hodnotili jsme rychlost načítání, mobilní optimalizaci, bezpečnost, SEO a zejména moderní GEO/AIEO optimalizaci pro AI vyhledávače jako ChatGPT nebo Perplexity.
           </Text>
           <Text style={styles.introText}>
-            V dnešní době již nestačí být pouze na Googlu - stále více uživatelů vyhledává služby
-            přes AI nástroje. Weby, které nejsou připraveny na tento trend, ztrácejí významnou část
-            potenciálních zákazníků.
+            V dnešní době již nestačí být pouze na Googlu. Stále více uživatelů vyhledává služby přes AI nástroje, a weby, které nejsou na tento trend připraveny, ztrácejí významnou část potenciálních zákazníků. Jsme jedni z mála v ČR, kdo se na GEO/AIEO optimalizaci specializuje.
           </Text>
           <Text style={styles.introText}>
-            Tato analýza vám poskytuje jasný obraz o současném stavu vašeho webu a konkrétní
-            doporučení, jak ho vylepšit a získat konkurenční výhodu.
+            Tato analýza vám poskytuje jasný obraz o současném stavu vašeho webu a konkrétní doporučení, jak získat konkurenční výhodu a oslovit zákazníky tam, kde vás dnes hledají.
           </Text>
         </View>
 
@@ -484,13 +478,16 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
             <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>
               Kritické problémy
             </Text>
-            {criticalFindings.slice(0, 3).map((f, i) => (
+            {criticalFindings.slice(0, 2).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#EF4444' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
-                <Text style={styles.findingDescription}>{f.description}</Text>
+                <Text style={styles.findingDescription}>{f.description.slice(0, 200)}{f.description.length > 200 ? '...' : ''}</Text>
                 {f.impact && <Text style={styles.findingImpact}>Dopad: {f.impact}</Text>}
               </View>
             ))}
+            {criticalFindings.length > 2 && (
+              <Text style={styles.findingImpact}>+ dalších {criticalFindings.length - 2} problémů</Text>
+            )}
           </View>
         )}
 
@@ -498,13 +495,16 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {warningFindings.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>Varování</Text>
-            {warningFindings.slice(0, 2).map((f, i) => (
+            {warningFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#F59E0B' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
-                <Text style={styles.findingDescription}>{f.description}</Text>
+                <Text style={styles.findingDescription}>{f.description.slice(0, 200)}{f.description.length > 200 ? '...' : ''}</Text>
                 {f.impact && <Text style={styles.findingImpact}>Dopad: {f.impact}</Text>}
               </View>
             ))}
+            {warningFindings.length > 1 && (
+              <Text style={styles.findingImpact}>+ dalších {warningFindings.length - 1} varování</Text>
+            )}
           </View>
         )}
 
@@ -512,12 +512,15 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {opportunityFindings.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>Příležitosti</Text>
-            {opportunityFindings.slice(0, 2).map((f, i) => (
+            {opportunityFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#3B82F6' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
-                <Text style={styles.findingDescription}>{f.description}</Text>
+                <Text style={styles.findingDescription}>{f.description.slice(0, 200)}{f.description.length > 200 ? '...' : ''}</Text>
               </View>
             ))}
+            {opportunityFindings.length > 1 && (
+              <Text style={styles.findingImpact}>+ dalších {opportunityFindings.length - 1} příležitostí</Text>
+            )}
           </View>
         )}
 
@@ -525,7 +528,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {analysis.recommendation && (
           <View style={styles.recommendation}>
             <Text style={styles.sectionTitle}>Naše doporučení</Text>
-            <Text style={styles.recommendationText}>{analysis.recommendation}</Text>
+            <Text style={styles.recommendationText}>{analysis.recommendation.slice(0, 600)}{analysis.recommendation.length > 600 ? '...' : ''}</Text>
           </View>
         )}
 
@@ -533,14 +536,14 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         <View style={styles.pricing}>
           <Text style={styles.sectionTitle}>Ceník</Text>
           <Text style={styles.pricingText}>
-            Ceník je individuální podle rozsahu prací a vašich specifických požadavků.
+            Cena se odvíjí od rozsahu prací a specifických požadavků vašeho projektu. Typický rozsah optimalizací se pohybuje v těchto rozpětích:
           </Text>
           <View style={styles.pricingBox}>
             <Text style={styles.pricingLabel}>Orientační cenový rozsah:</Text>
             <Text style={styles.pricingAmount}>30 000 - 149 990 Kč</Text>
           </View>
           <Text style={styles.pricingNote}>
-            Rádi vám připravíme nabídku přesně na míru vašim potřebám a rozpočtu.
+            Rádi vám připravíme nabídku přesně na míru – s ohledem na vaše priority, rozpočet a očekávané výsledky.
           </Text>
         </View>
 
@@ -555,8 +558,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>Nezávazná konzultace</Text>
               <Text style={styles.stepDescription}>
-                Domluvíme si krátký hovor (15-30 min), kde si projdeme výsledky analýzy a odpovíme
-                na vaše otázky. Zjistíme, jaké jsou vaše cíle a priority.
+                Probereme s vámi výsledky analýzy, zodpovíme vaše otázky a navrhneme optimální řešení přesně pro vaše potřeby a cíle.
               </Text>
             </View>
           </View>
@@ -568,8 +570,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>Cenová nabídka na míru</Text>
               <Text style={styles.stepDescription}>
-                Na základě konzultace připravíme konkrétní nabídku přesně pro vaše potřeby.
-                Rozepíšeme, co přesně provedeme a v jakém časovém horizontu.
+                Připravíme pro vás detailní nabídku s konkrétními kroky, termíny a transparentní cenou. Žádné skryté poplatky, vše jasně a srozumitelně.
               </Text>
             </View>
           </View>
@@ -581,9 +582,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>Realizace a výsledky</Text>
               <Text style={styles.stepDescription}>
-                Po odsouhlasení začneme pracovat. Budete mít přehled o postupu a po dokončení
-                vám ukážeme konkrétní měřitelné výsledky - víc návštěvníků, lepší pozice,
-                vyšší konverze.
+                Po odsouhlasení zahájíme práce s pravidelnými reporty průběhu. Naším cílem jsou měřitelné výsledky - více návštěvníků, lepší konverze, vyšší tržby.
               </Text>
             </View>
           </View>
@@ -592,7 +591,7 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            <Text style={styles.footerBold}>Weblyx.cz</Text> - Moderní weby pro moderní byznys
+            <Text style={styles.footerBold}>Weblyx.cz</Text> - Weby, které prodávají. Ve všech vyhledávačích.
           </Text>
           <Text style={styles.footerText}>
             <Text style={styles.footerLink}>info@weblyx.cz</Text> |{' '}
