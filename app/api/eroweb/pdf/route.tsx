@@ -206,6 +206,41 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     lineHeight: 1.6,
   },
+  pricing: {
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#7C3AED',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  pricingText: {
+    fontSize: 11,
+    color: '#6B7280',
+    marginBottom: 12,
+  },
+  pricingBox: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  pricingLabel: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    marginBottom: 6,
+  },
+  pricingAmount: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#7C3AED',
+  },
+  pricingNote: {
+    fontSize: 10,
+    color: '#6B7280',
+  },
   footer: {
     marginTop: 30,
     paddingTop: 20,
@@ -387,6 +422,21 @@ function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
             <Text style={styles.recommendationText}>{analysis.recommendation}</Text>
           </View>
         )}
+
+        {/* Pricing */}
+        <View style={styles.pricing}>
+          <Text style={styles.sectionTitle}>Cenik</Text>
+          <Text style={styles.pricingText}>
+            Cenik je individualni podle rozsahu praci a vasich specifickych pozadavku.
+          </Text>
+          <View style={styles.pricingBox}>
+            <Text style={styles.pricingLabel}>Orientacni cenovy rozsah:</Text>
+            <Text style={styles.pricingAmount}>30 000 - 149 990 Kc</Text>
+          </View>
+          <Text style={styles.pricingNote}>
+            Radi vam pripravime nabidku presne na miru vasim potrebam a rozpoctu.
+          </Text>
+        </View>
 
         {/* Footer */}
         <View style={styles.footer}>
