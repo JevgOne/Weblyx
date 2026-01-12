@@ -45,8 +45,8 @@ export function generateRecommendation(
     recommendation += `Hlavní oblasti ke zlepšení: ${weakAreas.join(', ')}.\n\n`;
   }
 
-  // Package recommendation
-  recommendation += `Pro váš typ podnikání (${businessLabel}) doporučujeme balíček **${pkg.name}** za ${formatPriceRange(pkg.priceMin, pkg.priceMax)}.`;
+  // Individual pricing approach (no specific packages)
+  recommendation += `Ceník je individuální podle rozsahu prací. Pro váš typ podnikání (${businessLabel}) připravíme nabídku přesně na míru.`;
 
   return recommendation;
 }

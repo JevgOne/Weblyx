@@ -12,6 +12,7 @@
     "sync-google-reviews": "TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\" TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\" GOOGLE_PLACES_API_KEY=\"$GOOGLE_PLACES_API_KEY\" GOOGLE_PLACE_ID=\"$GOOGLE_PLACE_ID\" tsx scripts/sync-google-reviews.ts"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
     "@google/generative-ai": "^0.24.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@libsql/client": "^0.15.15",
