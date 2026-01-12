@@ -112,18 +112,23 @@ S pozdravem,
 Tým Weblyx
 https://weblyx.cz`;
 
-  // Generate WhatsApp message
-  const whatsAppMessage = `🔍 *Analýza webu ${analysis.domain}*
+  // Generate WhatsApp message (soft approach - no pricing, build interest first)
+  const whatsAppMessage = `Dobrý den,
 
-📊 Celkové hodnocení: *${analysis.scores.total}/100 bodů*
+jsem z Weblyx a dělám analýzy webů v oboru ${BUSINESS_TYPE_LABELS[analysis.businessType]}.
 
-${analysis.scores.total < 50 ? '⚠️ Váš web má značné rezervy.' : analysis.scores.total < 70 ? '👍 Solidní základ s prostorem ke zlepšení.' : '✅ Nadprůměrný výkon!'}
+Narazil jsem na váš web *${analysis.domain}* a zajímalo mě, jak si stojí po technické stránce.
 
-💎 Doporučený balíček: *${recommendedPackage?.name || 'N/A'}*
-💰 Cena: ${recommendedPackage ? `${recommendedPackage.priceMin.toLocaleString('cs-CZ')} - ${recommendedPackage.priceMax.toLocaleString('cs-CZ')} Kč` : 'N/A'}
+${analysis.scores.total < 50
+  ? `Zjistil jsem několik věcí, které by mohly aktivně odrazovat potenciální klienty. Třeba by vás zajímalo, co konkrétně by se dalo vylepšit?`
+  : analysis.scores.total < 70
+  ? `Web funguje, ale vidím tam pár příležitostí, jak přitáhnout víc zákazníků. Můžu vám poslat kompletní rozbor zdarma, kdybyste měli zájem.`
+  : `Váš web je nad průměrem, ale i tak jsem našel pár drobností, které by mohly ještě zvýšit konverze. Kdyby vás to zajímalo, můžu poslat detaily.`}
 
-Máte zájem o detailní rozbor? Napište mi! 😊
+Máte chvilku na nezávaznou konzultaci? 😊
 
+S pozdravem,
+Tým Weblyx
 🌐 weblyx.cz`;
 
   const copyToClipboard = async (text: string, type: 'email' | 'whatsapp') => {
