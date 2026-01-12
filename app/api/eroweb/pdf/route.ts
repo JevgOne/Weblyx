@@ -3,7 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAnalysisById } from '@/lib/turso/eroweb';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 
 export async function GET(req: NextRequest) {
   try {
@@ -52,18 +53,30 @@ async function generatePDF(htmlContent: string, domain: string): Promise<Uint8Ar
   let browser;
 
   try {
+    // Determine if running on Vercel (production) or locally
+    const isProduction = process.env.VERCEL === '1';
+
     // Launch Puppeteer browser
     browser = await puppeteer.launch({
+      args: isProduction
+        ? chromium.args
+        : [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu',
+          ],
+      executablePath: isProduction
+        ? await chromium.executablePath()
+        : process.platform === 'win32'
+        ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        : process.platform === 'darwin'
+        ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        : '/usr/bin/google-chrome',
       headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu',
-      ],
     });
 
     const page = await browser.newPage();
