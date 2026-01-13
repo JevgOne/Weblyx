@@ -4,6 +4,7 @@ import { GoPay } from '@/lib/gopay';
 import type { PaymentStatus } from '@/types/payments';
 import { sendEmail, EMAIL_CONFIG } from '@/lib/email/resend-client';
 import { generatePaymentCancellationEmail, generatePaymentRefundEmail } from '@/lib/email/templates';
+import { generatePaymentConfirmationEmail } from '@/lib/email/payment-confirmation';
 
 /**
  * POST /api/payments/webhook
@@ -238,6 +239,38 @@ export async function POST(request: NextRequest) {
         } catch (error: any) {
           console.error('⚠️ Failed to update lead:', error.message);
           // Don't fail the webhook if lead update fails
+        }
+      }
+
+      // Send payment confirmation email to customer
+      if (payment.payer_email) {
+        try {
+          console.log('📧 Sending payment confirmation email to:', payment.payer_email);
+
+          const emailHtml = generatePaymentConfirmationEmail({
+            customerName: (payment.payer_name as string) || 'Vážený zákazníku',
+            invoiceNumber: payment.variable_symbol?.toString() || 'N/A',
+            amount: GoPay.halereToCzk(payment.amount as number),
+            currency: 'CZK',
+            paymentDate: new Date(),
+            variableSymbol: payment.variable_symbol?.toString(),
+          });
+
+          const emailResult = await sendEmail({
+            to: payment.payer_email.toString(),
+            subject: `✅ Potvrzení platby - Faktura ${payment.variable_symbol}`,
+            html: emailHtml,
+            from: EMAIL_CONFIG.from,
+          });
+
+          if (emailResult.success) {
+            console.log('✅ Payment confirmation email sent to:', payment.payer_email);
+          } else {
+            console.error('⚠️ Failed to send payment confirmation email:', emailResult.error);
+          }
+        } catch (emailError: any) {
+          console.error('⚠️ Payment confirmation email error:', emailError.message);
+          // Don't fail the webhook if email fails
         }
       }
     }

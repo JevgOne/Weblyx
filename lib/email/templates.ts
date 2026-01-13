@@ -39,6 +39,15 @@ export interface PaymentRefundData {
   customerEmail?: string;
 }
 
+export interface PaymentConfirmationData {
+  customerName: string;
+  invoiceNumber: string;
+  amount: number;
+  currency: string;
+  paymentDate: Date;
+  variableSymbol?: string;
+}
+
 /**
  * Generate HTML email for new contact form submission
  */
