@@ -252,16 +252,16 @@ export async function POST(request: NextRequest) {
       // Send cancellation email notification
       try {
         const emailHtml = generatePaymentCancellationEmail({
-          paymentId: payment.id.toString(),
-          orderId: payment.order_number || payment.id.toString(),
-          amount: payment.amount / 100, // Convert from haléře to CZK
-          currency: payment.currency || 'CZK',
-          customerEmail: payment.payer_email,
+          paymentId: payment.id?.toString() || 'unknown',
+          orderId: payment.order_number?.toString() || payment.id?.toString() || 'unknown',
+          amount: Number(payment.amount) / 100, // Convert from haléře to CZK
+          currency: payment.currency?.toString() || 'CZK',
+          customerEmail: payment.payer_email?.toString(),
         });
 
         const emailResult = await sendEmail({
           to: EMAIL_CONFIG.adminEmail,
-          subject: `❌ Platba zrušena - Objednávka #${payment.order_number || payment.id}`,
+          subject: `❌ Platba zrušena - Objednávka #${payment.order_number?.toString() || payment.id || 'unknown'}`,
           html: emailHtml,
         });
 
@@ -287,16 +287,16 @@ export async function POST(request: NextRequest) {
       // Send refund confirmation email
       try {
         const emailHtml = generatePaymentRefundEmail({
-          paymentId: payment.id.toString(),
-          orderId: payment.order_number || payment.id.toString(),
-          amount: payment.amount / 100, // Convert from haléře to CZK
-          currency: payment.currency || 'CZK',
-          customerEmail: payment.payer_email,
+          paymentId: payment.id?.toString() || 'unknown',
+          orderId: payment.order_number?.toString() || payment.id?.toString() || 'unknown',
+          amount: Number(payment.amount) / 100, // Convert from haléře to CZK
+          currency: payment.currency?.toString() || 'CZK',
+          customerEmail: payment.payer_email?.toString(),
         });
 
         const emailResult = await sendEmail({
           to: EMAIL_CONFIG.adminEmail,
-          subject: `💰 Platba vrácena - Objednávka #${payment.order_number || payment.id}`,
+          subject: `💰 Platba vrácena - Objednávka #${payment.order_number?.toString() || payment.id || 'unknown'}`,
           html: emailHtml,
         });
 

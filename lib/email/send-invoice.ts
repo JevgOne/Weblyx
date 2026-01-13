@@ -1,4 +1,8 @@
-import { resend, EMAIL_CONFIG } from './resend-client';
+import { sendEmail, EMAIL_CONFIG } from './resend-client';
+import { Resend } from 'resend';
+
+// Create Resend instance for direct API calls (needed for attachments)
+const resend = new Resend(process.env.RESEND_API_KEY || '');
 
 interface SendInvoiceEmailParams {
   to: string;
