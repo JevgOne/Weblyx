@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 import { GoPay } from '@/lib/gopay';
 import { generateInvoicePDF, uploadInvoicePDF, generateInvoiceNumber } from '@/lib/pdf-invoice';
+import { sendInvoiceEmail } from '@/lib/email/send-invoice';
 import type { CreateInvoiceInput, InvoiceItem } from '@/types/payments';
 
 /**
@@ -219,6 +220,34 @@ export async function POST(request: NextRequest) {
 
     const invoice = invoiceResult.rows[0];
 
+    // Send invoice email automatically if client_email is provided
+    let emailSent = false;
+    if (input.client_email) {
+      console.log('📧 Sending invoice email to:', input.client_email);
+      const emailResult = await sendInvoiceEmail({
+        to: input.client_email,
+        invoiceNumber: nextInvoiceNumber,
+        clientName: input.client_name,
+        amountCzk: GoPay.halereToCzk(amountWithVat),
+        dueDate: new Date(dueDate * 1000),
+        pdfUrl,
+        pdfBytes, // Pass PDF bytes to avoid re-fetching
+      });
+
+      if (emailResult.success) {
+        emailSent = true;
+        console.log('✅ Invoice email sent successfully');
+
+        // Update invoice status to 'sent' if email was sent successfully
+        await turso.execute({
+          sql: 'UPDATE invoices SET status = ? WHERE invoice_number = ?',
+          args: ['sent', nextInvoiceNumber],
+        });
+      } else {
+        console.warn('⚠️ Failed to send invoice email:', emailResult.error);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       invoice: {
@@ -226,7 +255,7 @@ export async function POST(request: NextRequest) {
         invoice_number: invoice.invoice_number,
         variable_symbol: invoice.variable_symbol,
         invoice_type: invoice.invoice_type,
-        status: invoice.status,
+        status: emailSent ? 'sent' : invoice.status,
         client_name: invoice.client_name,
         amount_without_vat: invoice.amount_without_vat,
         vat_rate: invoice.vat_rate,
@@ -240,6 +269,7 @@ export async function POST(request: NextRequest) {
         created_at: invoice.created_at,
       },
       pdf_url: pdfUrl,
+      email_sent: emailSent,
     });
 
   } catch (error: any) {

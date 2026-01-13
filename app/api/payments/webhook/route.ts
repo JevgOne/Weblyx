@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 import { GoPay } from '@/lib/gopay';
 import type { PaymentStatus } from '@/types/payments';
+import { sendEmail, EMAIL_CONFIG } from '@/lib/email/resend-client';
+import { generatePaymentCancellationEmail, generatePaymentRefundEmail } from '@/lib/email/templates';
 
 /**
  * POST /api/payments/webhook
@@ -247,7 +249,30 @@ export async function POST(request: NextRequest) {
         status: goPayStatus,
       });
 
-      // TODO: Send cancellation email notification
+      // Send cancellation email notification
+      try {
+        const emailHtml = generatePaymentCancellationEmail({
+          paymentId: payment.id.toString(),
+          orderId: payment.order_number || payment.id.toString(),
+          amount: payment.amount / 100, // Convert from haléře to CZK
+          currency: payment.currency || 'CZK',
+          customerEmail: payment.payer_email,
+        });
+
+        const emailResult = await sendEmail({
+          to: EMAIL_CONFIG.adminEmail,
+          subject: `❌ Platba zrušena - Objednávka #${payment.order_number || payment.id}`,
+          html: emailHtml,
+        });
+
+        if (emailResult.success) {
+          console.log("✅ Cancellation email sent for payment:", payment.id);
+        } else {
+          console.error("⚠️ Failed to send cancellation email:", emailResult.error);
+        }
+      } catch (emailError) {
+        console.error("⚠️ Cancellation email error:", emailError);
+      }
     }
 
     // Handle REFUNDED status
@@ -257,8 +282,32 @@ export async function POST(request: NextRequest) {
         status: goPayStatus,
       });
 
-      // TODO: Update invoice status
-      // TODO: Send refund confirmation email
+      // TODO: Update invoice status (implement when invoice system is complete)
+
+      // Send refund confirmation email
+      try {
+        const emailHtml = generatePaymentRefundEmail({
+          paymentId: payment.id.toString(),
+          orderId: payment.order_number || payment.id.toString(),
+          amount: payment.amount / 100, // Convert from haléře to CZK
+          currency: payment.currency || 'CZK',
+          customerEmail: payment.payer_email,
+        });
+
+        const emailResult = await sendEmail({
+          to: EMAIL_CONFIG.adminEmail,
+          subject: `💰 Platba vrácena - Objednávka #${payment.order_number || payment.id}`,
+          html: emailHtml,
+        });
+
+        if (emailResult.success) {
+          console.log("✅ Refund email sent for payment:", payment.id);
+        } else {
+          console.error("⚠️ Failed to send refund email:", emailResult.error);
+        }
+      } catch (emailError) {
+        console.error("⚠️ Refund email error:", emailError);
+      }
     }
 
     // Always return 200 OK to acknowledge webhook receipt

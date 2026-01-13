@@ -3,6 +3,8 @@ import { turso } from "@/lib/turso";
 import { Lead } from "@/types/cms";
 import { validateHoneypot, validateSubmissionTime } from "@/lib/security/honeypot";
 import { nanoid } from "nanoid";
+import { sendEmail, EMAIL_CONFIG } from "@/lib/email/resend-client";
+import { generateContactFormEmail } from "@/lib/email/templates";
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,14 +73,35 @@ export async function POST(request: NextRequest) {
 
     console.log("✅ New lead created in Turso:", { leadId, name, email, companyName, projectType });
 
-    // TODO: Send email notification
-    // Example with Resend:
-    // await resend.emails.send({
-    //   from: 'Weblyx <info@weblyx.cz>',
-    //   to: 'info@weblyx.cz',
-    //   subject: `Nová poptávka od ${name}`,
-    //   html: `...`
-    // });
+    // Send email notification to admin
+    try {
+      const emailHtml = generateContactFormEmail({
+        name,
+        email,
+        phone: phone || undefined,
+        companyName,
+        projectType,
+        description,
+        leadId,
+      });
+
+      const emailResult = await sendEmail({
+        to: EMAIL_CONFIG.adminEmail,
+        subject: `📬 Nová poptávka od ${name} (${companyName})`,
+        html: emailHtml,
+        replyTo: email,
+      });
+
+      if (emailResult.success) {
+        console.log("✅ Admin notification email sent successfully");
+      } else {
+        console.error("⚠️ Failed to send admin notification:", emailResult.error);
+        // Don't fail the request if email fails - lead is already saved
+      }
+    } catch (emailError) {
+      console.error("⚠️ Email notification error:", emailError);
+      // Continue - lead is saved, email is not critical
+    }
 
     return NextResponse.json(
       {

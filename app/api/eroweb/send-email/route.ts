@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getAnalysisById, markEmailSent } from '@/lib/turso/eroweb';
+import { sendEmail, EMAIL_CONFIG } from '@/lib/email/resend-client';
 
 const SendEmailSchema = z.object({
   analysisId: z.string().min(1),
@@ -26,32 +27,63 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // TODO: Integrate with email service (Resend, SendGrid, etc.)
-    // For now, we'll simulate sending and log the email
-    console.log('=== EMAIL TO SEND ===');
-    console.log('To:', to);
-    console.log('Subject:', subject);
-    console.log('Body:', body.substring(0, 500) + '...');
-    console.log('=====================');
+    // Send email with analysis results using Resend
+    console.log('📧 Sending EroWeb analysis email to:', to);
 
-    // In production, you would:
-    // 1. Use Resend, SendGrid, or similar email service
-    // 2. Attach the PDF report
-    // 3. Track opens with pixel tracking
-
-    /*
-    // Example with Resend:
-    import { Resend } from 'resend';
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    await resend.emails.send({
-      from: 'Weblyx <info@weblyx.cz>',
-      to: [to],
+    const emailResult = await sendEmail({
+      to: to,
       subject: subject,
-      text: body,
-      // attachments: [{ filename: 'report.pdf', content: pdfBuffer }],
+      html: `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); padding: 32px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">
+                Analýza vašeho webu
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px;">
+              ${body.split('\n').map(line => `<p style="margin: 0 0 12px 0; font-size: 16px; color: #374151; line-height: 1.6;">${line}</p>`).join('')}
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f9fafb; padding: 24px; text-align: center; border-radius: 0 0 8px 8px;">
+              <p style="margin: 0; font-size: 14px; color: #6B7280;">
+                <strong>Weblyx.cz</strong> - Profesionální tvorba webů
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `.trim(),
+      text: body, // Plain text fallback
+      replyTo: EMAIL_CONFIG.adminEmail,
     });
-    */
+
+    if (!emailResult.success) {
+      console.error('❌ Failed to send EroWeb analysis email:', emailResult.error);
+      return NextResponse.json(
+        { error: 'Failed to send email', details: emailResult.error },
+        { status: 500 }
+      );
+    }
+
+    console.log('✅ EroWeb analysis email sent successfully to:', to);
 
     // Mark email as sent in database
     await markEmailSent(analysisId);

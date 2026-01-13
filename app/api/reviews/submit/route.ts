@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createReview } from '@/lib/turso/reviews';
+import { sendEmail, EMAIL_CONFIG } from '@/lib/email/resend-client';
+import { generateReviewSubmissionEmail } from '@/lib/email/templates';
 
 export const runtime = 'nodejs';
 
@@ -98,8 +100,31 @@ export async function POST(request: NextRequest) {
       featured: false,
     });
 
-    // TODO: Send email notification to admin about new review
-    // You can add email sending here using Resend or similar
+    // Send email notification to admin about new review
+    try {
+      const emailHtml = generateReviewSubmissionEmail({
+        authorName: body.authorName.trim(),
+        authorRole: body.authorRole?.trim(),
+        rating: Number(body.rating),
+        text: body.text.trim(),
+        reviewId: review.id,
+      });
+
+      const emailResult = await sendEmail({
+        to: EMAIL_CONFIG.adminEmail,
+        subject: `⭐ Nová recenze od ${body.authorName.trim()} (${body.rating}/5)`,
+        html: emailHtml,
+      });
+
+      if (emailResult.success) {
+        console.log("✅ Admin notification email sent for review:", review.id);
+      } else {
+        console.error("⚠️ Failed to send review notification:", emailResult.error);
+      }
+    } catch (emailError) {
+      console.error("⚠️ Email notification error:", emailError);
+      // Continue - review is saved, email is not critical
+    }
 
     return NextResponse.json({
       success: true,

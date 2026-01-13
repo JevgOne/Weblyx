@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, MapPin, Send, Phone } from "lucide-react";
+import { Mail, MapPin, Send, Phone, CheckCircle2, XCircle } from "lucide-react";
 import { HoneypotInput } from "@/components/security/HoneypotInput";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -97,16 +97,33 @@ export function Contact({ isMainPage = false }: ContactProps) {
     validateField(name, value);
   };
 
-  // 🎉 Confetti animation
+  // 🎉 MEGA Confetti animation - Extra visible!
   const celebrateSuccess = () => {
-    const duration = 3000;
+    const duration = 5000; // Longer duration
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    const defaults = {
+      startVelocity: 45, // Faster
+      spread: 360,
+      ticks: 100, // More ticks = longer fall
+      zIndex: 9999, // On top of everything
+      gravity: 0.8,
+      shapes: ['circle', 'square'] as any,
+      colors: ['#14B8A6', '#0D9488', '#2DD4BF', '#5EEAD4', '#99F6E4'] // Teal colors
+    };
 
     function randomInRange(min: number, max: number) {
       return Math.random() * (max - min) + min;
     }
 
+    // Initial burst from center
+    confetti({
+      ...defaults,
+      particleCount: 150,
+      spread: 100,
+      origin: { x: 0.5, y: 0.5 },
+    });
+
+    // Continuous confetti from sides
     const interval: NodeJS.Timeout = setInterval(function() {
       const timeLeft = animationEnd - Date.now();
 
@@ -114,9 +131,9 @@ export function Contact({ isMainPage = false }: ContactProps) {
         return clearInterval(interval);
       }
 
-      const particleCount = 50 * (timeLeft / duration);
+      const particleCount = 80 * (timeLeft / duration);
 
-      // Fire confetti from two positions
+      // Fire confetti from three positions
       confetti({
         ...defaults,
         particleCount,
@@ -125,9 +142,14 @@ export function Contact({ isMainPage = false }: ContactProps) {
       confetti({
         ...defaults,
         particleCount,
+        origin: { x: 0.5, y: Math.random() - 0.2 }
+      });
+      confetti({
+        ...defaults,
+        particleCount,
         origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
       });
-    }, 250);
+    }, 200);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -415,16 +437,34 @@ export function Contact({ isMainPage = false }: ContactProps) {
                     )}
                   </div>
 
-                  {/* Success/Error Messages */}
+                  {/* Success/Error Messages - BIG and VISIBLE! */}
                   {submitStatus.type && (
                     <div
-                      className={`p-4 rounded-lg ${
+                      className={`p-6 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-4 duration-500 ${
                         submitStatus.type === "success"
-                          ? "bg-primary/10 text-primary border border-primary/20"
-                          : "bg-red-50 text-red-800 border border-red-200"
+                          ? "bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-500"
+                          : "bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-500"
                       }`}
                     >
-                      {submitStatus.message}
+                      <div className="flex items-start gap-4">
+                        {submitStatus.type === "success" ? (
+                          <CheckCircle2 className="w-8 h-8 text-teal-600 flex-shrink-0 animate-in zoom-in duration-500" />
+                        ) : (
+                          <XCircle className="w-8 h-8 text-red-600 flex-shrink-0" />
+                        )}
+                        <div className="flex-1">
+                          <h3 className={`text-xl font-bold mb-2 ${
+                            submitStatus.type === "success" ? "text-teal-900" : "text-red-900"
+                          }`}>
+                            {submitStatus.type === "success" ? "🎉 Úspěch!" : "❌ Chyba"}
+                          </h3>
+                          <p className={`text-base leading-relaxed ${
+                            submitStatus.type === "success" ? "text-teal-800" : "text-red-800"
+                          }`}>
+                            {submitStatus.message}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
 

@@ -157,6 +157,12 @@ export default function NewInvoicePage() {
       if (result.success) {
         console.log("✅ Invoice created:", result.invoice);
 
+        // Show success message
+        const emailStatus = result.email_sent
+          ? "Faktura byla vytvořena a odeslána na email!"
+          : "Faktura byla vytvořena!";
+        alert(emailStatus);
+
         // Open PDF in new tab
         if (result.pdf_url) {
           window.open(result.pdf_url, '_blank');
@@ -317,9 +323,13 @@ export default function NewInvoicePage() {
                 <Input
                   id="client_email"
                   type="email"
+                  placeholder="klient@example.com"
                   value={formData.client_email}
                   onChange={(e) => setFormData({ ...formData, client_email: e.target.value })}
                 />
+                <p className="text-xs text-muted-foreground">
+                  📧 Faktura bude automaticky odeslána na tento email
+                </p>
               </div>
 
               <div className="space-y-2">
