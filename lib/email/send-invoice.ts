@@ -1,8 +1,19 @@
 import { sendEmail, EMAIL_CONFIG } from './resend-client';
 import { Resend } from 'resend';
 
-// Create Resend instance for direct API calls (needed for attachments)
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+// Lazy initialize Resend client (needed for attachments)
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendClient) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY not configured');
+    }
+    resendClient = new Resend(apiKey);
+  }
+  return resendClient;
+}
 
 interface SendInvoiceEmailParams {
   to: string;
@@ -221,6 +232,7 @@ Web: weblyx.cz
     `.trim();
 
     // Send email with Resend
+    const resend = getResendClient();
     const result = await resend.emails.send({
       from: EMAIL_CONFIG.from,
       to,
