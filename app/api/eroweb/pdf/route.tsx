@@ -494,12 +494,12 @@ const premiumFeatures: PremiumFeature[] = [
   },
   {
     id: 'quick-exit',
-    name: { cs: 'Quick Exit Button', en: 'Quick Exit Button' },
+    name: { cs: 'Quick Exit Tlačítko', en: 'Quick Exit Button' },
     description: {
       cs: 'Diskrétní tlačítko pro okamžité přepnutí na neutrální stránku - zvyšuje pocit bezpečí',
       en: 'Discreet button for instant switch to neutral page - increases feeling of safety'
     },
-    impact: '+40% mobile bookings',
+    impact: '+40% mobilních rezervací',
     conversionBoost: 40,
     monthlyValue: 32000,
   },
@@ -516,20 +516,20 @@ const premiumFeatures: PremiumFeature[] = [
   },
   {
     id: 'mood-selector',
-    name: { cs: 'Choose Your Mood', en: 'Choose Your Mood' },
+    name: { cs: 'Výběr Nálady', en: 'Choose Your Mood' },
     description: {
       cs: 'Rychlá volba nálady (Chci vypnout hlavu/Chci teasing/Chci něžnost) - doporučí správnou masáž',
       en: 'Quick mood selection (I want to switch off/I want teasing/I want tenderness) - recommends the right massage'
     },
-    impact: '+50% instant bookings',
+    impact: '+50% okamžitých rezervací',
     conversionBoost: 50,
     monthlyValue: 42000,
   },
   {
     id: 'live-availability',
-    name: { cs: 'Live Dostupnost', en: 'Live Availability' },
+    name: { cs: 'Živá Dostupnost', en: 'Live Availability' },
     description: {
-      cs: 'Kalendář s nejbližšími volnými termíny "dnes/zítra" + smart doporučení podle délky session',
+      cs: 'Kalendář s nejbližšími volnými termíny "dnes/zítra" + chytré doporučení podle délky masáže',
       en: 'Calendar with nearest available slots "today/tomorrow" + smart recommendations by session length'
     },
     impact: '+45% rezervací',
@@ -540,7 +540,7 @@ const premiumFeatures: PremiumFeature[] = [
     id: 'verified-reviews',
     name: { cs: 'Ověřené VIBE Recenze', en: 'Verified VIBE Reviews' },
     description: {
-      cs: 'Recenze pouze od skutečných klientů s VIBE hodnocením - trustworthy a sexy zároveň',
+      cs: 'Recenze pouze od skutečných klientů s VIBE hodnocením - důvěryhodné a sexy zároveň',
       en: 'Reviews only from real clients with VIBE ratings - trustworthy and sexy at the same time'
     },
     impact: '+30% důvěry',
@@ -549,9 +549,9 @@ const premiumFeatures: PremiumFeature[] = [
   },
   {
     id: 'session-builder',
-    name: { cs: 'Session Builder', en: 'Session Builder' },
+    name: { cs: 'Průvodce Rezervací', en: 'Session Builder' },
     description: {
-      cs: 'Krok za krokem sestavení masáže: délka → typ → extras → masérka → termín',
+      cs: 'Krok za krokem sestavení masáže: délka → typ → doplňky → masérka → termín',
       en: 'Step by step massage composition: length → type → extras → masseuse → date'
     },
     impact: '+35% dokončených rezervací',
@@ -560,23 +560,23 @@ const premiumFeatures: PremiumFeature[] = [
   },
   {
     id: 'preference-card',
-    name: { cs: 'Preference Card', en: 'Preference Card' },
+    name: { cs: 'Karta Preferencí', en: 'Preference Card' },
     description: {
-      cs: 'Před booking: preference komunikace, tempo, tlak, boundaries - klient se cítí bezpečně',
+      cs: 'Před rezervací: preference komunikace, tempo, tlak, hranice - klient se cítí bezpečně',
       en: 'Before booking: communication preferences, tempo, pressure, boundaries - client feels safe'
     },
-    impact: '+25% returning clients',
+    impact: '+25% vracejících se klientů',
     conversionBoost: 25,
     monthlyValue: 22000,
   },
   {
     id: 'vip-zone',
-    name: { cs: 'VIP/Membership Zóna', en: 'VIP/Membership Zone' },
+    name: { cs: 'VIP Členská Zóna', en: 'VIP/Membership Zone' },
     description: {
-      cs: '1-klik rezervace, historie návštěv, oblíbené masérky, priorita v časech, credit system',
+      cs: 'Rezervace jedním kliknutím, historie návštěv, oblíbené masérky, priorita v časech, kreditní systém',
       en: '1-click booking, visit history, favorite masseuses, time priority, credit system'
     },
-    impact: '+60% loyalty',
+    impact: '+60% věrnosti klientů',
     conversionBoost: 60,
     monthlyValue: 48000,
   },
@@ -587,7 +587,7 @@ const premiumFeatures: PremiumFeature[] = [
       cs: 'Masáže popsané jako "rituály" s příběhem a atmosférou - ne seznam služeb',
       en: 'Massages described as "rituals" with story and atmosphere - not service list'
     },
-    impact: '+28% premium bookings',
+    impact: '+28% prémiových rezervací',
     conversionBoost: 28,
     monthlyValue: 24000,
   },
@@ -828,7 +828,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         <View style={styles.section} wrap={false}>
           <Text style={styles.sectionTitle}>🔥 TOP Features, které vám CHYBÍ (a konkurence to taky NEMÁ!)</Text>
           <Text style={styles.introText} style={{ marginBottom: 16 }}>
-            Vybrali jsme pro Vás {selectedFeatures.length} klíčové prvky, které by měly největší dopad na Vaše revenue:
+            Vybrali jsme pro Vás {selectedFeatures.length} klíčové prvky, které by měly největší dopad na Vaše tržby:
           </Text>
           {selectedFeatures.map((feature, idx) => (
             <View key={feature.id} style={styles.featureCard}>
@@ -952,7 +952,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>🎯 Začneme a uvidíte výsledky</Text>
               <Text style={styles.stepDescription}>
-                Žádné dlouhé čekání. První změny uvidíte během 2 týdnů. Průběžně vás budeme informovat a ukážeme měřitelné výsledky - více dotazů, rezervací, tržeb.
+                Žádné dlouhé čekání. První změny uvidíte během 2 týdnů. Průběžně Vás budeme informovat a ukážeme měřitelné výsledky - více dotazů, rezervací, tržeb.
               </Text>
             </View>
           </View>
