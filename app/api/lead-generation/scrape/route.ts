@@ -13,45 +13,15 @@ import { scrapeAndImportLeads } from '@/lib/lead-scraper';
  *  WARNING: This may violate Google's Terms of Service. Use at your own risk.
  */
 export async function POST(request: NextRequest) {
-  try {
-    // Note: Puppeteer scraping works on all environments
-    // For production, consider using Google Places API for better reliability
+  // DISABLED: This endpoint violated Google's Terms of Service
+  // Google has suspended accounts due to automated scraping
+  // Use Google Places API instead for legitimate data access
 
-    const body = await request.json();
-    const { searchQuery, maxResults = 20 } = body;
-
-    if (!searchQuery) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Missing searchQuery parameter',
-        },
-        { status: 400 }
-      );
-    }
-
-    console.log(`🤖 Starting lead scraper for: "${searchQuery}"`);
-
-    // Run scraper
-    const result = await scrapeAndImportLeads({
-      searchQuery,
-      maxResults: Math.min(maxResults, 50), // Limit to max 50
-      headless: true,
-    });
-
-    return NextResponse.json({
-      success: true,
-      result,
-      message: `Scraped ${result.scraped} leads, found ${result.withEmails} emails, imported ${result.imported} to database`,
-    });
-  } catch (error: any) {
-    console.error('POST /api/lead-generation/scrape error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Failed to scrape leads',
-      },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'This endpoint has been permanently disabled due to TOS violations',
+    },
+    { status: 403 }
+  );
 }
