@@ -26,7 +26,6 @@ export default function LeadGenerationPage() {
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isImporting, setIsImporting] = useState(false);
-  const [isScraping, setIsScraping] = useState(false);
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -150,61 +149,6 @@ export default function LeadGenerationPage() {
     window.open('/api/lead-generation/import?template=true', '_blank');
   };
 
-  const handleScrapeLeads = async () => {
-    const searchQuery = prompt('Zadejte vyhledávací dotaz (např. "pekárna Praha"):');
-
-    if (!searchQuery) {
-      return;
-    }
-
-    const maxResults = prompt('Kolik leadů chcete získat? (max 50):', '20');
-    const maxResultsNum = parseInt(maxResults || '20');
-
-    if (isNaN(maxResultsNum) || maxResultsNum < 1) {
-      alert('Neplatný počet leadů');
-      return;
-    }
-
-    setIsScraping(true);
-
-    try {
-      const response = await fetch('/api/lead-generation/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          searchQuery,
-          maxResults: Math.min(maxResultsNum, 50),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert(
-          `✅ Scraping hotový!\n\n` +
-          `Scraplováno: ${data.result.scraped} leadů\n` +
-          `S emailem: ${data.result.withEmails}\n` +
-          `Importováno: ${data.result.imported}\n\n` +
-          `Poznámka: Může trvat 5-10 minut podle počtu leadů.`
-        );
-
-        // Refresh leads
-        const refreshResponse = await fetch('/api/lead-generation');
-        const refreshData = await refreshResponse.json();
-        if (refreshData.success) {
-          setLeads(refreshData.leads);
-        }
-      } else {
-        alert(`❌ Chyba: ${data.error}`);
-      }
-    } catch (error) {
-      console.error('Failed to scrape leads:', error);
-      alert('❌ Chyba při scrapování leadů');
-    } finally {
-      setIsScraping(false);
-    }
-  };
-
   if (!user) {
     return null;
   }
@@ -236,15 +180,6 @@ export default function LeadGenerationPage() {
           <Button variant="outline" onClick={handleCSVImport} disabled={isImporting}>
             <Upload className="h-4 w-4 mr-2" />
             {isImporting ? 'Importuji...' : 'Importovat CSV'}
-          </Button>
-          <Button
-            variant="default"
-            onClick={handleScrapeLeads}
-            disabled={isScraping}
-            className="bg-gradient-to-r from-primary to-primary/90"
-          >
-            <Bot className="h-4 w-4 mr-2" />
-            {isScraping ? 'Scrapuji...' : '🤖 Scrape Leads'}
           </Button>
           <Button asChild variant="outline">
             <Link href="/admin/lead-generation/stats">
