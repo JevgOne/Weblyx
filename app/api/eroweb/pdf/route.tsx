@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const analysisId = searchParams.get('id');
+    const lang = searchParams.get('lang') || 'cs'; // Default to Czech
 
     if (!analysisId) {
       return NextResponse.json(
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate PDF using React PDF
-    const pdfDoc = <EroWebPDFDocument analysis={analysis} />;
+    const pdfDoc = <EroWebPDFDocument analysis={analysis} language={lang as 'cs' | 'en'} />;
     const pdfBlob = await pdf(pdfDoc).toBlob();
     const pdfBuffer = await pdfBlob.arrayBuffer();
 
@@ -60,7 +61,7 @@ export async function GET(req: NextRequest) {
     return new Response(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="eroweb-analyza-${analysis.domain}.pdf"`,
+        'Content-Disposition': `attachment; filename="eroweb-analysis-${analysis.domain}-${lang}.pdf"`,
       },
     });
   } catch (error: any) {
@@ -404,9 +405,9 @@ const categoryLabels: Record<string, { label: string; max: number }> = {
 };
 
 // PDF Document Component
-function EroWebPDFDocument({ analysis }: { analysis: EroWebAnalysis }) {
+function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnalysis; language?: 'cs' | 'en' }) {
   const scoreColor = getScoreColor(analysis.scores.total);
-  const scoreLabel = getScoreLabel(analysis.scores.total);
+  const scoreLabel = language === 'cs' ? getScoreLabel(analysis.scores.total) : getScoreLabelEn(analysis.scores.total);
 
   const criticalFindings = (analysis.findings || []).filter((f) => f.type === 'critical');
   const warningFindings = (analysis.findings || []).filter((f) => f.type === 'warning');

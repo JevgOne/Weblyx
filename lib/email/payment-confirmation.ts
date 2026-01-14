@@ -108,7 +108,7 @@ export function generatePaymentConfirmationEmail(data: PaymentConfirmationData):
                 </p>
               </div>
               <p style="margin: 24px 0 0 0; font-size: 16px; color: #374151; line-height: 1.6;">
-                V případě jakýchkoliv dotazů nás neváhejte kontaktovat na <a href="mailto:info@weblyx.cz" style="color: #14B8A6; text-decoration: none;">info@weblyx.cz</a>.
+                V případě jakýchkoli dotazů nás neváhejte kontaktovat na <a href="mailto:info@weblyx.cz" style="color: #14B8A6; text-decoration: none;">info@weblyx.cz</a>.
               </p>
               <p style="margin: 16px 0 0 0; font-size: 16px; color: #374151;">
                 Děkujeme za Vaši důvěru!

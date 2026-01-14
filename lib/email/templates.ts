@@ -78,7 +78,7 @@ export function generateContactFormEmail(data: ContactFormData): string {
           <tr>
             <td style="padding: 32px;">
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #374151;">
-                Přišla vám nová poptávka přes kontaktní formulář na webu Weblyx.
+                Přišla Vám nová poptávka přes kontaktní formulář na webu Weblyx.
               </p>
 
               <!-- Lead Details -->
@@ -219,7 +219,7 @@ export function generateReviewSubmissionEmail(data: ReviewSubmissionData): strin
           <tr>
             <td style="padding: 32px;">
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #374151;">
-                Někdo právě odeslal novou recenzi na vašem webu. Zkontrolujte ji a schvalte ke zveřejnění.
+                Někdo právě odeslal novou recenzi na Vašem webu. Zkontrolujte ji a schvalte ke zveřejnění.
               </p>
 
               <!-- Review Details -->

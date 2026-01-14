@@ -171,7 +171,7 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams) {
             <h3>💳 Platební údaje</h3>
             <p><strong>Číslo účtu:</strong> 6424423004/5500</p>
             <p><strong>Variabilní symbol:</strong> ${invoiceNumber.replace('-', '')}</p>
-            <p style="margin-bottom: 0;"><strong>Poznámka:</strong> Prosím uveďte variabilní symbol pro správné párování platby.</p>
+            <p style="margin-bottom: 0;"><strong>Poznámka:</strong> Prosím, uveďte variabilní symbol pro správné párování platby.</p>
           </div>
 
           <p>Faktura je připojena k tomuto emailu ve formátu PDF. Můžete ji také stáhnout z našeho systému:</p>
@@ -180,7 +180,7 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams) {
             <a href="${pdfUrl}" class="cta-button">📄 Stáhnout fakturu</a>
           </div>
 
-          <p style="margin-top: 30px;">V případě jakýchkoliv dotazů nás neváhejte kontaktovat.</p>
+          <p style="margin-top: 30px;">V případě jakýchkoli dotazů nás neváhejte kontaktovat.</p>
 
           <div class="footer">
             <p><strong>Weblyx</strong></p>

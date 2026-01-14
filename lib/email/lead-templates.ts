@@ -485,7 +485,7 @@ export function generateClientThankYouEmail(data: {
                 děkujeme, že jste nám odeslali poptávku na <strong>${projectTypeCz}</strong> pro projekt <strong>${data.companyName}</strong>.
               </p>
               <p style="margin: 0 0 30px 0; font-size: 16px; color: #374151; line-height: 1.6;">
-                Váš požadavek jsme přijali a budeme vás kontaktovat nejpozději do 24 hodin.
+                Váš požadavek jsme přijali a budeme Vás kontaktovat nejpozději do 24 hodin.
               </p>
               <p style="margin: 0; font-size: 16px; color: #374151; line-height: 1.6;">
                 S pozdravem,<br>
@@ -517,7 +517,7 @@ Dobrý den ${data.clientName},
 
 děkujeme, že jste nám odeslali poptávku na ${projectTypeCz} pro projekt ${data.companyName}.
 
-Váš požadavek jsme přijali a budeme vás kontaktovat nejpozději do 24 hodin.
+Váš požadavek jsme přijali a budeme Vás kontaktovat nejpozději do 24 hodin.
 
 S pozdravem,
 Tým Weblyx

@@ -26,10 +26,12 @@ import {
   MessageCircle,
   Copy,
   Check,
+  Languages,
 } from 'lucide-react';
 import { useState } from 'react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
 import { SCORE_COLORS, getScoreCategory, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
+import { getWhatsAppMessage } from './whatsapp-messages';
 
 interface ReportCardProps {
   analysis: EroWebAnalysis;
@@ -74,19 +76,23 @@ const CATEGORY_MAX_SCORES = {
 export function ReportCard({ analysis, onSendEmail, onDownloadPdf, onStatusChange }: ReportCardProps) {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
+  const [language, setLanguage] = useState<'cs' | 'en'>('cs');
 
   const scoreCategory = getScoreCategory(analysis.scores.total);
   const scoreColor = SCORE_COLORS[scoreCategory];
 
   // Generate email template
-  const emailSubject = `Analýza webu ${analysis.domain} - ${analysis.scores.total}/100 bodů`;
-  const emailBody = `Dobrý den,
+  const emailSubject = language === 'cs'
+    ? `Analýza webu ${analysis.domain} - ${analysis.scores.total}/100 bodů`
+    : `Website Analysis ${analysis.domain} - ${analysis.scores.total}/100 points`;
+
+  const emailBody = language === 'cs' ? `Dobrý den,
 
 provedli jsme kompletní analýzu vašeho webu ${analysis.domain} a máme pro vás zajímavé výsledky.
 
 📊 CELKOVÉ HODNOCENÍ: ${analysis.scores.total}/100 bodů
 
-Vaš web dosáhl následujících výsledků:
+Váš web dosáhl následujících výsledků:
 • Rychlost: ${analysis.scores.speed}/${CATEGORY_MAX_SCORES.speed} bodů
 • Mobilní verze: ${analysis.scores.mobile}/${CATEGORY_MAX_SCORES.mobile} bodů
 • Zabezpečení: ${analysis.scores.security}/${CATEGORY_MAX_SCORES.security} bodů
@@ -100,196 +106,53 @@ ${analysis.recommendation}
 Ceník je individuální podle rozsahu prací a požadavků.
 Orientační cenový rozsah: 30 000 - 149 990 Kč
 
-Rádi bychom vám pomohli vylepšit váš web a přivést více zákazníků.
+Rádi bychom Vám pomohli vylepšit Váš web a přivést více zákazníků.
 
 Máte zájem o nezávaznou konzultaci?
 
 S pozdravem,
 Tým Weblyx
+https://weblyx.cz` : `Hello,
+
+we have completed a comprehensive analysis of your website ${analysis.domain} and have interesting results for you.
+
+📊 OVERALL RATING: ${analysis.scores.total}/100 points
+
+Your website achieved the following results:
+• Speed: ${analysis.scores.speed}/${CATEGORY_MAX_SCORES.speed} points
+• Mobile version: ${analysis.scores.mobile}/${CATEGORY_MAX_SCORES.mobile} points
+• Security: ${analysis.scores.security}/${CATEGORY_MAX_SCORES.security} points
+• SEO: ${analysis.scores.seo}/${CATEGORY_MAX_SCORES.seo} points
+• GEO/AIEO: ${analysis.scores.geo}/${CATEGORY_MAX_SCORES.geo} points
+• Design: ${analysis.scores.design}/${CATEGORY_MAX_SCORES.design} points
+
+${analysis.recommendation}
+
+💰 PRICING
+Pricing is individual based on the scope of work and requirements.
+Indicative price range: €1,200 - €6,000
+
+We would be happy to help you improve your website and bring more customers.
+
+Would you be interested in a free consultation?
+
+Best regards,
+Weblyx Team
 https://weblyx.cz`;
 
-  // Generate WhatsApp message with GEO/AIEO expertise (randomized variations)
-  const getWhatsAppMessage = () => {
-    const domain = analysis.domain;
-    const businessType = BUSINESS_TYPE_LABELS[analysis.businessType];
-    const score = analysis.scores.total;
-
-    // Different message variations based on score (randomized)
-    const lowScoreMessages = [
-      // Variation 1: AI search focus
-      `Dobrý den,
-
-jsem z Weblyx a specializujeme se na weby v oboru ${businessType}.
-
-Při průzkumu trhu jsem narazil na váš web *${domain}* a udělal jsem rychlou analýzu z pohledu moderních AI vyhledávačů.
-
-V poslední době se hodně mění, jak klienti hledají služby - ChatGPT, Perplexity a další AI nástroje začínají nahrazovat klasický Google. Většina konkurence na to ale vůbec není připravená.
-
-U vašeho webu jsem našel několik věcí, které by mohly aktivně odrazovat potenciální klienty - hlavně z pohledu těch nových AI vyhledávačů. Kdybyste měli zájem, můžu vám ukázat konkrétně co a proč to zákazníky odráží.
-
-Máte chvilku na nezávaznou konzultaci?
-
-S pozdravem,
-Tým Weblyx
-🌐 weblyx.cz`,
-
-      // Variation 2: GEO/AIEO expertise focus
-      `Dobrý den,
-
-jsem z Weblyx a dělám analýzy webů pro ${businessType.toLowerCase()}.
-
-Narazil jsem na váš web *${domain}* a zajímalo mě, jak je připravený na nové AI vyhledávače.
-
-Možná jste si všimli, že stále méně lidí používá klasický Google - místo toho se ptají ChatGPT nebo Perplexity. To vyžaduje úplně jinou optimalizaci než tradiční SEO. Říká se tomu GEO/AIEO a většina webů v tomto oboru to nemá vůbec nastavené.
-
-Ve vašem případě jsem našel pár kritických míst, která by stála o dost klientů. Můžu vám poslat kompletní rozbor zdarma, kdyby vás to zajímalo.
-
-Máte chvilku si popovídat? 😊
-
-S pozdravem,
-Weblyx Team
-🌐 weblyx.cz`,
-
-      // Variation 3: Competitor angle
-      `Ahoj,
-
-jsem z Weblyx a dělám audity webů v oboru ${businessType.toLowerCase()}.
-
-Při analýze konkurence jsem narazil na *${domain}* a všiml si pár věcí, které by mohly výrazně snižovat počet klientů z vyhledávání.
-
-Dneska už nestačí jen klasické SEO - AI vyhledávače jako ChatGPT nebo Perplexity mění celou hru. Weby, které nejsou optimalizované pro tyto nástroje, prostě mizí z výsledků. A bohužel většina konkurence v tomto oboru na tom není o moc lépe.
-
-Mám pro vás konkrétní návrhy, co by se dalo vylepšit. Mohl bych vám poslat detailní rozbor?
-
-Dáte vědět, jestli by vás to zajímalo?
-
-Díky!
-Tým Weblyx
-🌐 weblyx.cz`
-    ];
-
-    const mediumScoreMessages = [
-      // Variation 1: Opportunity focus
-      `Dobrý den,
-
-jsem z Weblyx a specializujeme se na online marketing pro ${businessType.toLowerCase()}.
-
-Při průzkumu trhu jsem narazil na váš web *${domain}* a zaujal mě.
-
-Web funguje, ale není připravený na nové AI vyhledávače (ChatGPT, Perplexy atd.). Což je vlastně dobrá zpráva - konkurence taky spí, takže teď je ideální moment se před ní dostat s GEO/AIEO optimalizací.
-
-Vidím tam pár konkrétních příležitostí, jak přitáhnout víc zákazníků. Můžu vám poslat kompletní rozbor zdarma.
-
-Zajímalo by vás to?
-
-S pozdravem,
-Tým Weblyx
-🌐 weblyx.cz`,
-
-      // Variation 2: Modernization angle
-      `Dobrý den,
-
-jsem z Weblyx a dělám analýzy webů v oboru ${businessType}.
-
-Narazil jsem na *${domain}* a udělal jsem si na něm technickou analýzu.
-
-Váš web je celkem slušný, ale chybí mu optimalizace pro AI nástroje - ChatGPT Search, Perplexity a podobně. To je dneska klíčové, protože stále víc lidí hledá služby přes tyto platformy místo Google.
-
-Většina konkurence to taky nemá, takže kdo to udělá první, získá velkou výhodu. Mám pro vás pár konkrétních nápadů.
-
-Mohl bych vám poslat detailní rozbor?
-
-S pozdravem,
-Weblyx
-🌐 weblyx.cz`,
-
-      // Variation 3: Direct value
-      `Ahoj,
-
-jsem z Weblyx a analyzuji weby v oboru ${businessType.toLowerCase()}.
-
-Koukal jsem na *${domain}* a myslím, že bych vám mohl pomoct získat víc klientů z vyhledávání.
-
-S nástupem AI vyhledávačů (ChatGPT, Perplexity atd.) se hodně mění pravidla hry. Tradiční SEO už nestačí - potřebujete GEO/AIEO optimalizaci, kterou má zatím jen málokdo.
-
-Udělal jsem vám kompletní analýzu a mám tam pár dobrých nápadů. Můžu vám to poslat?
-
-Dáte vědět? 😊
-
-Díky,
-Tým Weblyx
-🌐 weblyx.cz`
-    ];
-
-    const highScoreMessages = [
-      // Variation 1: Refinement focus
-      `Dobrý den,
-
-jsem z Weblyx a dělám pokročilé analýzy webů pro ${businessType.toLowerCase()}.
-
-Narazil jsem na váš web *${domain}* a musím říct, že je nad průměrem.
-
-I přesto jsem našel pár míst, kde by lepší GEO optimalizace pro AI vyhledávače mohla výrazně zvýšit konverze. S nástupem ChatGPT Search a Perplexity se pravidla mění a málokt o to zatím stojí.
-
-Kdyby vás zajímaly detaily, můžu vám poslat kompletní rozbor.
-
-Máte zájem?
-
-S pozdravem,
-Tým Weblyx
-🌐 weblyx.cz`,
-
-      // Variation 2: Competitive edge
-      `Dobrý den,
-
-jsem z Weblyx a specializujeme se na optimalizaci webů v oboru ${businessType}.
-
-Při analýze trhu jsem narazil na *${domain}* - váš web je určitě mezi lepšími.
-
-Přesto jsem identifikoval několik drobností, které by mohly posunout vaši viditelnost v AI vyhledávačích (ChatGPT, Perplexity) ještě výš. Většina konkurence tyto nástroje ignoruje, což je pro vás příležitost.
-
-Mohl bych vám poslat detailní analýzu s konkrétními doporučeními?
-
-Dáte vědět? 😊
-
-S pozdravem,
-Weblyx Team
-🌐 weblyx.cz`,
-
-      // Variation 3: Future-proofing
-      `Ahoj,
-
-jsem z Weblyx a dělám audity webů pro ${businessType.toLowerCase()}.
-
-Koukal jsem na *${domain}* a líbí se mi, jak je web udělán.
-
-I tak jsem našel pár věcí, které by ho mohly ještě vyladit pro budoucnost - hlavně kvůli AI vyhledávačům jako ChatGPT nebo Perplexity, které postupně nahrazují klasický Google. GEO/AIEO optimalizace je dneska klíč.
-
-Mám pro vás pár konkrétních návrhů. Zajímal by vás detailní rozbor?
-
-Díky!
-Tým Weblyx
-🌐 weblyx.cz`
-    ];
-
-    // Select random variation based on score
-    let variations;
-    if (score < 50) {
-      variations = lowScoreMessages;
-    } else if (score < 70) {
-      variations = mediumScoreMessages;
-    } else {
-      variations = highScoreMessages;
-    }
-
-    // Use analysis ID as seed for consistent randomization per analysis
-    const seed = parseInt(analysis.id.split('_')[1] || '0', 10);
-    const index = seed % variations.length;
-
-    return variations[index];
-  };
-
-  const whatsAppMessage = getWhatsAppMessage();
+  // Generate WhatsApp message using imported function
+  const businessType = BUSINESS_TYPE_LABELS[analysis.businessType];
+  const businessTypeEn = analysis.businessType === 'massage' ? 'erotic massage' :
+                         analysis.businessType === 'privat' ? 'private club' : 'escort services';
+
+  const whatsAppMessage = getWhatsAppMessage({
+    domain: analysis.domain,
+    businessType,
+    businessTypeEn,
+    score: analysis.scores.total,
+    analysisId: analysis.id,
+    language,
+  });
 
   const copyToClipboard = async (text: string, type: 'email' | 'whatsapp') => {
     await navigator.clipboard.writeText(text);
@@ -299,6 +162,25 @@ Tým Weblyx
     } else {
       setCopiedWhatsApp(true);
       setTimeout(() => setCopiedWhatsApp(false), 2000);
+    }
+  };
+
+  const handleDownloadPdfWithLang = async () => {
+    try {
+      const res = await fetch(`/api/eroweb/pdf?id=${analysis.id}&lang=${language}`);
+      if (!res.ok) throw new Error('PDF generation failed');
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `eroweb-analysis-${analysis.domain}-${language}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error: any) {
+      console.error('PDF download failed:', error.message);
     }
   };
 
@@ -372,12 +254,17 @@ Tým Weblyx
           <div className="flex flex-col sm:flex-row gap-2 mt-4 w-full">
             {onDownloadPdf && (
               <Button
-                onClick={onDownloadPdf}
+                onClick={() => {
+                  // Call with language parameter
+                  if (typeof onDownloadPdf === 'function') {
+                    handleDownloadPdfWithLang();
+                  }
+                }}
                 variant="outline"
                 className="flex-1 border-border hover:bg-muted min-w-0"
               >
                 <Download className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span className="truncate">Stáhnout PDF</span>
+                <span className="truncate">Stáhnout PDF ({language.toUpperCase()})</span>
               </Button>
             )}
             {onSendEmail && (
@@ -473,6 +360,28 @@ Tým Weblyx
           </div>
         </CardContent>
       </Card>
+
+      {/* Language Toggle */}
+      <div className="flex items-center justify-center gap-2 py-4">
+        <Button
+          variant={language === 'cs' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setLanguage('cs')}
+          className="gap-2"
+        >
+          <Languages className="w-4 h-4" />
+          Čeština
+        </Button>
+        <Button
+          variant={language === 'en' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setLanguage('en')}
+          className="gap-2"
+        >
+          <Languages className="w-4 h-4" />
+          English
+        </Button>
+      </div>
 
       {/* Email Template Preview */}
       <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background w-full">
