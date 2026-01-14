@@ -6,7 +6,6 @@ import { AnalysisProgress } from './components/analysis-progress';
 import { ReportCard } from './components/report-card';
 import { EmailComposer } from './components/email-composer';
 import { HistorySidebar } from './components/history-sidebar';
-import { WebsiteFinder } from './components/website-finder';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Menu, X } from 'lucide-react';
 // Toast component not available - using console.log instead
@@ -274,10 +273,7 @@ export default function EroWebAnalyzaPage() {
 
             {/* Content based on state */}
             {viewState === 'form' && (
-              <>
-                <WebsiteFinder onWebsitesFound={loadHistory} />
-                <AnalyzerForm onAnalyze={handleAnalyze} isLoading={isLoading} />
-              </>
+              <AnalyzerForm onAnalyze={handleAnalyze} isLoading={isLoading} />
             )}
 
             {viewState === 'analyzing' && (
