@@ -38,24 +38,63 @@ const seoContent: Record<Locale, SEOContent> = {
   cs: {
     title: 'Tvorba webových stránek od 10 000 Kč (AKCE 7 990 Kč) | Web za týden | Weblyx',
     titleTemplate: '%s | Weblyx',
-    description: 'Rychlá tvorba webů od 10 000 Kč (AKCE 7 990 Kč). Web za 5-7 pracovních dní, načítání pod 2s, SEO zdarma. Next.js místo WordPressu. Nezávazná konzultace zdarma.',
+    description: 'Profesionální tvorba webů pro živnostníky a firmy. Moderní webové stránky od 10 000 Kč (AKCE 7 990 Kč). Dodání za 5-7 dní, rychlost načítání pod 2s, SEO optimalizace v ceně. Česká webová agentura s garancí kvality.',
     keywords: [
+      // Core keywords
       'tvorba webových stránek',
       'tvorba webu',
-      'webové stránky cena',
+      'webové stránky na míru',
+      'profesionální webové stránky',
+      'tvorba webových stránek cena',
+      'webová agentura',
+      'webdesign agentura',
+
+      // Price & value keywords
       'kolik stojí webové stránky',
+      'kolik stojí web',
+      'cena webových stránek',
+      'levné webové stránky',
       'férové ceny webové stránky',
+      'webové stránky od 10000 Kč',
+
+      // Speed & quality keywords
       'rychlá tvorba webu',
+      'rychlé webové stránky',
+      'moderní webové stránky',
+      'responzivní webové stránky',
+      'mobilní web',
+      'rychlý web',
+      'nejrychlejší webové stránky',
+
+      // Time-based keywords
       'web za týden',
       'web do týdne',
-      'web od 10 000 Kč',
-      'nejrychlejší webové stránky',
-      'web pod 2 sekundy',
-      'Next.js web',
+      'jak dlouho trvá tvorba webu',
+      'rychlé dodání webu',
+
+      // Target audience keywords
       'web pro živnostníky',
-      'e-shop na míru',
+      'web pro malé firmy',
+      'firemní webové stránky',
+      'prezentační web',
+
+      // Technical keywords
       'SEO optimalizace',
       'webdesign',
+      'responzivní design',
+      'Next.js web',
+      'moderní technologie web',
+
+      // Service-specific keywords
+      'e-shop na míru',
+      'tvorba e-shopu',
+      'redesign webu',
+      'webové řešení',
+
+      // Location keywords (national)
+      'česká webová agentura',
+      'webové stránky česká republika',
+      'tvorba webu online',
     ],
     siteName: 'Weblyx',
     siteUrl: 'https://www.weblyx.cz',
