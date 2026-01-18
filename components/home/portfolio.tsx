@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
 import { getAllPortfolio } from "@/lib/turso/portfolio";
 import { getPageContent } from "@/lib/firestore-pages";
 import { PortfolioProject } from "@/types/homepage";
@@ -70,10 +69,7 @@ export async function Portfolio() {
           {projects.map((project) => (
             <Link
               key={project.id}
-              href={project.projectUrl || '#'}
-              target={project.projectUrl ? '_blank' : undefined}
-              rel={project.projectUrl ? 'noopener noreferrer' : undefined}
-              className={project.projectUrl ? '' : 'pointer-events-none'}
+              href={`/portfolio/${project.id}`}
             >
               <Card className="group overflow-hidden hover:shadow-elegant transition-all duration-300 cursor-pointer h-full flex flex-col">
 
@@ -96,14 +92,11 @@ export async function Portfolio() {
                     </div>
                   </div>
                 )}
-                {project.projectUrl && (
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button variant="secondary" size="sm">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      {t("viewWebsite")}
-                    </Button>
-                  </div>
-                )}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Button variant="secondary" size="sm">
+                    Zobrazit detail
+                  </Button>
+                </div>
               </div>
               <CardContent className="p-6 space-y-4 flex-1 flex flex-col">
                 <div className="space-y-2">
