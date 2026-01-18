@@ -75,9 +75,9 @@ export async function Portfolio() {
               rel={project.projectUrl ? 'noopener noreferrer' : undefined}
               className={project.projectUrl ? '' : 'pointer-events-none'}
             >
-              <Card className="group overflow-hidden hover:shadow-elegant transition-all duration-300 cursor-pointer h-full">
+              <Card className="group overflow-hidden hover:shadow-elegant transition-all duration-300 cursor-pointer h-full flex flex-col">
 
-              <div className="aspect-video bg-gradient-primary relative overflow-hidden">
+              <div className="aspect-video bg-gradient-primary relative overflow-hidden flex-shrink-0">
                 {project.imageUrl ? (
                   <Image
                     src={project.imageUrl}
@@ -105,7 +105,7 @@ export async function Portfolio() {
                   </div>
                 )}
               </div>
-              <CardContent className="p-6 space-y-4">
+              <CardContent className="p-6 space-y-4 flex-1 flex flex-col">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="text-xs">
@@ -119,7 +119,7 @@ export async function Portfolio() {
 
                 {/* PageSpeed Scores */}
                 {(project.pagespeedMobile || project.pagespeedDesktop) && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {project.pagespeedMobile && (
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
                         <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -143,15 +143,20 @@ export async function Portfolio() {
                   </div>
                 )}
 
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm line-clamp-3 flex-shrink-0">
                   {project.description}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech, i) => (
+                <div className="flex flex-wrap gap-2 mt-auto">
+                  {project.technologies.slice(0, 5).map((tech, i) => (
                     <Badge key={i} variant="outline" className="text-xs">
                       {tech}
                     </Badge>
                   ))}
+                  {project.technologies.length > 5 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{project.technologies.length - 5}
+                    </Badge>
+                  )}
                 </div>
               </CardContent>
               </Card>
