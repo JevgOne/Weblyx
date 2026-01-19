@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { useRouter } from "next/navigation";
 
 interface AdminUser {
+  id: string;
   email: string;
   name: string;
 }

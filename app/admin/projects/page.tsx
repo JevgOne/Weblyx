@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Plus, Calendar, DollarSign, User } from "lucide-react";
+import { ArrowLeft, Search, Plus, Calendar, DollarSign, User, UserCheck, UserX } from "lucide-react";
 
 // Mock data
 const mockProjects = [
@@ -130,6 +130,58 @@ export default function AdminProjectsPage() {
       return matchesSearch && matchesStatus;
     });
   }, [projects, searchTerm, statusFilter]);
+
+  const handleAssignProject = async (projectId: string) => {
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}/assign`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || 'Chyba při přiřazení projektu');
+        return;
+      }
+
+      const result = await response.json();
+
+      // Update local state
+      setProjects(projects.map(p =>
+        p.id === projectId
+          ? { ...p, assignedTo: result.assignedTo }
+          : p
+      ));
+
+      console.log('✅ Projekt přiřazen');
+    } catch (error) {
+      console.error('❌ Error assigning project:', error);
+      alert('Chyba při přiřazení projektu');
+    }
+  };
+
+  const handleUnassignProject = async (projectId: string) => {
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}/assign`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to unassign project');
+      }
+
+      // Update local state
+      setProjects(projects.map(p =>
+        p.id === projectId
+          ? { ...p, assignedTo: null }
+          : p
+      ));
+
+      console.log('✅ Projekt uvolněn');
+    } catch (error) {
+      console.error('❌ Error unassigning project:', error);
+      alert('Chyba při uvolnění projektu');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -262,8 +314,8 @@ export default function AdminProjectsPage() {
                 <TableHead>Typ</TableHead>
                 <TableHead>Stav</TableHead>
                 <TableHead>Priorita</TableHead>
+                <TableHead>Přiřazeno</TableHead>
                 <TableHead>Deadline</TableHead>
-                <TableHead>Cena / Zaplaceno</TableHead>
                 <TableHead>Progress</TableHead>
                 <TableHead className="text-right">Akce</TableHead>
               </TableRow>
@@ -354,20 +406,45 @@ export default function AdminProjectsPage() {
                       </span>
                     </TableCell>
                     <TableCell>
+                      {project.assignedTo ? (
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="gap-1">
+                            <UserCheck className="h-3 w-3" />
+                            {project.assignedTo.name}
+                          </Badge>
+                          {user && project.assignedTo.id === user.id && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUnassignProject(project.id);
+                              }}
+                              className="h-6 px-2"
+                            >
+                              <UserX className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAssignProject(project.id);
+                          }}
+                          className="gap-1"
+                        >
+                          <UserCheck className="h-3 w-3" />
+                          Vzít
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-1 text-sm">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
                         {new Date(project.deadline).toLocaleDateString("cs-CZ")}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="h-3 w-3 text-muted-foreground" />
-                          {project.priceTotal.toLocaleString()} Kč
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Zaplaceno: {project.pricePaid.toLocaleString()} Kč
-                        </div>
                       </div>
                     </TableCell>
                     <TableCell>

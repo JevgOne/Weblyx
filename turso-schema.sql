@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS projects (
     progress INTEGER DEFAULT 0, -- 0-100
     tags TEXT, -- JSON array
     notes TEXT,
+    assigned_to TEXT, -- Admin user ID who is assigned to this project
     created_at INTEGER NOT NULL DEFAULT (unixepoch()),
     updated_at INTEGER NOT NULL DEFAULT (unixepoch())
 );
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 CREATE INDEX IF NOT EXISTS idx_projects_priority ON projects(priority);
 CREATE INDEX IF NOT EXISTS idx_projects_deadline ON projects(deadline);
+CREATE INDEX IF NOT EXISTS idx_projects_assigned_to ON projects(assigned_to);
 
 -- Project Todos
 CREATE TABLE IF NOT EXISTS project_todos (

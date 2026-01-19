@@ -7,7 +7,8 @@ import { ReportCard } from './components/report-card';
 import { EmailComposer } from './components/email-composer';
 import { HistorySidebar } from './components/history-sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 // Toast component not available - using console.log instead
 import type { EroWebAnalysis, AnalysisFormData, ContactStatus } from '@/types/eroweb';
 
@@ -259,6 +260,15 @@ export default function EroWebAnalyzaPage() {
             {/* Header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
+                {/* Back to Admin Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => router.push('/admin/dashboard')}
+                  className="shrink-0"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
