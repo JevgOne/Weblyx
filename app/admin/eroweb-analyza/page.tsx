@@ -59,11 +59,18 @@ export default function EroWebAnalyzaPage() {
     const progressPromise = simulateAnalysisProgress();
 
     try {
+      // Add timeout wrapper (60 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
       const res = await fetch('/api/eroweb/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       // Wait for progress animation to finish
       await progressPromise;
@@ -81,7 +88,13 @@ export default function EroWebAnalyzaPage() {
 
       console.log('✅ Analyza dokoncena', `Skore: ${analysis.scores.total}/100`);
     } catch (error: any) {
-      console.error('❌ Chyba pri analyze:', error.message);
+      if (error.name === 'AbortError') {
+        console.error('❌ Analyza trvala prilis dlouho (60s timeout)');
+        alert('Analyza trvala příliš dlouho. Web může být nedostupný nebo PageSpeed API nepracuje. Zkuste to prosím později.');
+      } else {
+        console.error('❌ Chyba pri analyze:', error.message);
+        alert(`Chyba: ${error.message}`);
+      }
       setViewState('form');
     } finally {
       setIsLoading(false);

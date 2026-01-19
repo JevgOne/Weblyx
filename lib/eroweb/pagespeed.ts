@@ -34,11 +34,18 @@ export async function getPageSpeedMetrics(
   });
 
   try {
+    // Add timeout to prevent hanging (40 seconds for PageSpeed API)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 40000);
+
     const response = await fetch(`${PAGESPEED_API_URL}?${params}`, {
       headers: {
         'Accept': 'application/json',
       },
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -68,8 +75,12 @@ export async function getPageSpeedMetrics(
       performanceScore: Math.round((categories?.performance?.score || 0) * 100),
     };
 
-  } catch (error) {
-    console.error('PageSpeed API fetch error:', error);
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('PageSpeed API timeout (40s) - using mock data');
+    } else {
+      console.error('PageSpeed API fetch error:', error);
+    }
     return getMockMetrics();
   }
 }

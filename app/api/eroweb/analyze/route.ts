@@ -2,6 +2,9 @@
 // POST /api/eroweb/analyze - Run full website analysis
 
 import { NextRequest, NextResponse } from 'next/server';
+
+// Increase timeout for this route (Vercel Pro: max 60s, Hobby: max 10s)
+export const maxDuration = 60; // seconds
 import { z } from 'zod';
 import {
   createAnalysis,

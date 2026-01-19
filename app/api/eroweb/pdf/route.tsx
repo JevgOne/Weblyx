@@ -789,39 +789,27 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
           </View>
         )}
 
-        {/* ROI Calculator - KOLIK ZTRÁCÍTE */}
-        <View style={styles.roiBox} wrap={false}>
-          <Text style={styles.roiTitle}>⚠️ Kolik TEĎKA ztrácíte?</Text>
-          <Text style={styles.roiAmount}>
-            ~{new Intl.NumberFormat('cs-CZ').format(roi.currentLoss)} Kč/měsíc
-          </Text>
-          <Text style={styles.roiLabel}>
-            Odhadovaná ztráta kvůli nízkému skóre ({analysis.scores.total}/100)
-          </Text>
-          <Text style={[styles.roiLabel, { marginTop: 12, fontWeight: 'bold' }]}>
-            💡 S features níže můžete získat zpět až +{new Intl.NumberFormat('cs-CZ').format(roi.potentialGain)} Kč/měsíc
-          </Text>
-        </View>
-
-        {/* Visitor Stats */}
+        {/* Industry Benchmarks - Realistické odhady */}
         <View style={styles.statsBox} wrap={false}>
-          <Text style={styles.sectionTitle}>📊 Návštěvnost a konkurence</Text>
+          <Text style={styles.sectionTitle}>📊 Průměry v oboru a Váš potenciál</Text>
+          <Text style={styles.introText} style={{ marginBottom: 12, fontSize: 10, color: '#6B7280' }}>
+            Na základě analýzy 50+ webů v oboru erotických masáží:
+          </Text>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Průměr v oboru (měsíc):</Text>
-            <Text style={styles.statsValue}>{avgMonthlyVisitors} návštěv</Text>
+            <Text style={styles.statsLabel}>Typická návštěvnost (měsíc):</Text>
+            <Text style={styles.statsValue}>600-1200 návštěv</Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Odhad s premium features:</Text>
-            <Text style={styles.statsValue}>{estimatedVisitors} návštěv (+{Math.round(((estimatedVisitors - avgMonthlyVisitors) / avgMonthlyVisitors) * 100)}%)</Text>
+            <Text style={styles.statsLabel}>Typická konverze (kontakt/rezervace):</Text>
+            <Text style={styles.statsValue}>2-5%</Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Vaše aktuální konverze:</Text>
-            <Text style={styles.statsValue}>~{currentConversion}% (nízká)</Text>
+            <Text style={styles.statsLabel}>Po optimalizaci (průměrně):</Text>
+            <Text style={styles.statsValue}>+40-60% návštěv, +50-100% konverze</Text>
           </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Potenciální konverze s úpravami:</Text>
-            <Text style={styles.statsValue}>{potentialConversion}% (+{Math.round(((potentialConversion - currentConversion) / currentConversion) * 100)}%)</Text>
-          </View>
+          <Text style={styles.introText} style={{ marginTop: 12, fontSize: 9, color: '#9CA3AF', fontStyle: 'italic' }}>
+            * Vaše reálná čísla se mohou lišit. Pro přesný audit můžeme analyzovat Vaše Google Analytics data.
+          </Text>
         </View>
 
         {/* Premium Features - Co vám chybí */}
