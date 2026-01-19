@@ -17,7 +17,8 @@ import {
   EyeOff,
   Calendar,
   User,
-  FileText
+  FileText,
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
 
@@ -155,10 +156,20 @@ export default function BlogPage() {
                 </p>
               </div>
             </div>
-            <Button onClick={() => router.push("/admin/blog/new")}>
-              <Plus className="h-4 w-4 mr-2" />
-              Nový článek
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/admin/blog/generate")}
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                AI Generátor
+              </Button>
+              <Button onClick={() => router.push("/admin/blog/new")}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nový článek
+              </Button>
+            </div>
           </div>
         </div>
       </header>

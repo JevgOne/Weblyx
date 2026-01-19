@@ -12,6 +12,7 @@
     "sync-google-reviews": "TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\" TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\" GOOGLE_PLACES_API_KEY=\"$GOOGLE_PLACES_API_KEY\" GOOGLE_PLACE_ID=\"$GOOGLE_PLACE_ID\" tsx scripts/sync-google-reviews.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
     "@fontsource/inter": "^5.2.8",
     "@google/generative-ai": "^0.24.1",
     "@hello-pangea/dnd": "^18.0.1",
@@ -50,6 +51,7 @@
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "resend": "^6.5.2",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
