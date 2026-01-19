@@ -86,6 +86,14 @@ export default function AdminLeadsPage() {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<any>(null);
 
+  // Custom pulse animation for new leads
+  const pulseAnimation = `
+    @keyframes strongPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(0.98); }
+    }
+  `;
+
   useEffect(() => {
     const loadLeads = async () => {
       // Načíst leady z API
@@ -211,7 +219,9 @@ export default function AdminLeadsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: pulseAnimation }} />
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 md:py-4">
@@ -226,10 +236,13 @@ export default function AdminLeadsPage() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-xl md:text-2xl font-bold">Poptávky</h1>
                   {newLeadsCount > 0 && (
-                    <Badge variant="destructive" className="animate-pulse text-base px-3 py-1 font-bold">
+                    <Badge
+                      variant="destructive"
+                      className="animate-pulse text-lg px-4 py-2 font-bold shadow-lg shadow-red-500/50 border-2 border-red-600"
+                    >
                       🚨 {newLeadsCount} NOVÝCH!
                     </Badge>
                   )}
@@ -346,13 +359,18 @@ export default function AdminLeadsPage() {
                 filteredLeads.map((lead) => (
                   <TableRow
                     key={lead.id}
-                    className={`cursor-pointer hover:bg-muted/50 ${
-                      lead.status === 'new' ? 'bg-red-50 dark:bg-red-950/30 border-l-4 border-l-red-500 animate-pulse' : ''
+                    className={`cursor-pointer hover:bg-muted/50 transition-all ${
+                      lead.status === 'new'
+                        ? 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-950/20 border-l-8 border-l-red-600 shadow-md shadow-red-200/50 dark:shadow-red-900/30 animate-pulse'
+                        : ''
                     }`}
                   >
                     <TableCell>
                       <div>
                         <div className="flex items-center gap-2">
+                          {lead.status === 'new' && (
+                            <span className="text-red-600 font-bold text-lg">🚨</span>
+                          )}
                           <span className="font-medium">{lead.name}</span>
                           {lead.aiDesignSuggestion && (
                             <Badge variant="secondary" className="gap-1">
@@ -419,15 +437,15 @@ export default function AdminLeadsPage() {
                         </Button>
                         {lead.status === 'new' ? (
                           <Button
-                            size="sm"
+                            size="default"
                             variant="destructive"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleTakeLead(lead);
                             }}
-                            className="gap-1 animate-pulse"
+                            className="gap-2 animate-pulse font-bold shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-600/60 transition-all"
                           >
-                            <UserCheck className="h-3 w-3" />
+                            <UserCheck className="h-4 w-4" />
                             Vzít poptávku
                           </Button>
                         ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
@@ -474,15 +492,22 @@ export default function AdminLeadsPage() {
             filteredLeads.map((lead) => (
               <Card
                 key={lead.id}
-                className={`p-4 ${
-                  lead.status === 'new' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-950/30 animate-pulse' : ''
+                className={`p-4 transition-all ${
+                  lead.status === 'new'
+                    ? 'border-4 border-red-600 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-950/20 shadow-lg shadow-red-300/50 dark:shadow-red-900/30 animate-pulse'
+                    : ''
                 }`}
               >
                 <div className="space-y-3">
                   {/* Header */}
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">{lead.name}</h3>
+                      <div className="flex items-center gap-2">
+                        {lead.status === 'new' && (
+                          <span className="text-red-600 font-bold text-xl">🚨</span>
+                        )}
+                        <h3 className="font-semibold text-lg">{lead.name}</h3>
+                      </div>
                       {lead.company && (
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <Building2 className="h-3 w-3" />
@@ -547,13 +572,13 @@ export default function AdminLeadsPage() {
                     </Button>
                     {lead.status === 'new' ? (
                       <Button
-                        size="sm"
+                        size="default"
                         variant="destructive"
-                        className="flex-1 gap-1 animate-pulse"
+                        className="flex-1 gap-2 animate-pulse font-bold shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-600/60 transition-all"
                         onClick={() => handleTakeLead(lead)}
                       >
-                        <UserCheck className="h-3 w-3" />
-                        Vzít
+                        <UserCheck className="h-4 w-4" />
+                        Vzít poptávku
                       </Button>
                     ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
                       <Button
@@ -600,6 +625,7 @@ export default function AdminLeadsPage() {
           </p>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   );
 }
