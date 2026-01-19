@@ -132,9 +132,15 @@ export default function AdminProjectsPage() {
   }, [projects, searchTerm, statusFilter]);
 
   const handleAssignProject = async (projectId: string) => {
+    if (!user) return;
+
     try {
       const response = await fetch(`/api/admin/projects/${projectId}/assign`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminId: user.id, // Assign to current user
+        }),
       });
 
       if (!response.ok) {
@@ -158,6 +164,9 @@ export default function AdminProjectsPage() {
       alert('Chyba při přiřazení projektu');
     }
   };
+
+  // Count unassigned projects
+  const unassignedCount = projects.filter(p => !p.assignedTo).length;
 
   const handleUnassignProject = async (projectId: string) => {
     try {
@@ -186,26 +195,34 @@ export default function AdminProjectsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+      <header className="border-b bg-card sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => router.push("/admin/dashboard")}
+                className="shrink-0"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">Projekty</h1>
-                <p className="text-sm text-muted-foreground">
-                  Správa všech projektů a jejich stavu
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl md:text-2xl font-bold">Projekty</h1>
+                  {unassignedCount > 0 && (
+                    <Badge variant="destructive" className="animate-pulse">
+                      🚨 {unassignedCount} nepřiřazeno
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  Správa všech projektů ({projects.length} celkem)
                 </p>
               </div>
             </div>
 
-            <Button className="gap-2">
+            <Button className="gap-2 w-full sm:w-auto">
               <Plus className="h-4 w-4" />
               Nový projekt
             </Button>
@@ -215,15 +232,28 @@ export default function AdminProjectsPage() {
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-4 mb-6">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 mb-6">
+          <Card className={unassignedCount > 0 ? "border-red-500 bg-red-50 dark:bg-red-950" : ""}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
+                Nepřiřazené 🚨
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className={`text-xl md:text-2xl font-bold ${unassignedCount > 0 ? "text-red-600" : ""}`}>
+                {unassignedCount}
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                 Aktivní projekty
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-xl md:text-2xl font-bold">
                 {projects.filter((p) => p.status === "in_progress").length}
               </div>
             </CardContent>
@@ -231,25 +261,12 @@ export default function AdminProjectsPage() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Nezaplacené
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {projects.filter((p) => p.status === "unpaid").length}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                 Dokončené
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-xl md:text-2xl font-bold">
                 {projects.filter((p) => p.status === "delivered").length}
               </div>
             </CardContent>
@@ -257,13 +274,13 @@ export default function AdminProjectsPage() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                 Celková hodnota
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {projects.reduce((sum, p) => sum + p.priceTotal, 0).toLocaleString()} Kč
+              <div className="text-lg md:text-2xl font-bold">
+                {projects.reduce((sum, p) => sum + (p.priceTotal || 0), 0).toLocaleString()} Kč
               </div>
             </CardContent>
           </Card>
@@ -408,9 +425,10 @@ export default function AdminProjectsPage() {
                     <TableCell>
                       {project.assignedTo ? (
                         <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="gap-1">
+                          <Badge variant="secondary" className="gap-1 text-xs">
                             <UserCheck className="h-3 w-3" />
-                            {project.assignedTo.name}
+                            <span className="hidden sm:inline">{project.assignedTo.name}</span>
+                            <span className="sm:hidden">{project.assignedTo.name.slice(0, 1)}</span>
                           </Badge>
                           {user && project.assignedTo.id === user.id && (
                             <Button
@@ -420,7 +438,7 @@ export default function AdminProjectsPage() {
                                 e.stopPropagation();
                                 handleUnassignProject(project.id);
                               }}
-                              className="h-6 px-2"
+                              className="h-6 px-1 sm:px-2"
                             >
                               <UserX className="h-3 w-3" />
                             </Button>
@@ -429,15 +447,15 @@ export default function AdminProjectsPage() {
                       ) : (
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="destructive"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleAssignProject(project.id);
                           }}
-                          className="gap-1"
+                          className="gap-1 animate-pulse text-xs"
                         >
                           <UserCheck className="h-3 w-3" />
-                          Vzít
+                          <span className="hidden sm:inline">Vzít</span>
                         </Button>
                       )}
                     </TableCell>

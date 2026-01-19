@@ -3,9 +3,20 @@ import { turso } from '@/lib/turso';
 import { verifySessionToken } from '@/lib/auth/simple-auth';
 import { cookies } from 'next/headers';
 
+// Helper to get admin user by ID
+function getAdminById(adminId: string): { id: string; email: string; name: string } | null {
+  const ADMIN_USERS = [
+    { id: 'admin-1', email: 'admin@weblyx.cz', name: 'Admin' },
+    { id: 'admin-2', email: 'zvin.a@seznam.cz', name: 'Zen' },
+    { id: 'admin-3', email: 'filip@weblyx.com', name: 'Filip' },
+  ];
+
+  return ADMIN_USERS.find(u => u.id === adminId) || null;
+}
+
 /**
  * POST /api/admin/projects/[id]/assign
- * Assign project to current admin user
+ * Assign project to specified admin user (or current user if not specified)
  */
 export async function POST(
   request: NextRequest,
@@ -35,6 +46,19 @@ export async function POST(
 
     const projectId = params.id;
 
+    // Get target admin ID from request body (or use current user)
+    const body = await request.json().catch(() => ({}));
+    const targetAdminId = body.adminId || user.id;
+
+    // Validate that target admin exists
+    const targetAdmin = getAdminById(targetAdminId);
+    if (!targetAdmin) {
+      return NextResponse.json(
+        { error: 'Invalid admin ID - admin does not exist' },
+        { status: 400 }
+      );
+    }
+
     // Check if project exists
     const projectResult = await turso.execute({
       sql: 'SELECT * FROM projects WHERE id = ?',
@@ -48,34 +72,20 @@ export async function POST(
       );
     }
 
-    const project = projectResult.rows[0];
-
-    // Check if already assigned to someone else
-    if (project.assigned_to && project.assigned_to !== user.id) {
-      return NextResponse.json(
-        { error: 'Project is already assigned to another admin' },
-        { status: 409 }
-      );
-    }
-
-    // Assign project to current user
+    // Assign project to target admin
     await turso.execute({
       sql: `UPDATE projects
             SET assigned_to = ?,
                 updated_at = unixepoch()
             WHERE id = ?`,
-      args: [user.id, projectId],
+      args: [targetAdminId, projectId],
     });
 
-    console.log(`✅ Project ${projectId} assigned to ${user.email}`);
+    console.log(`✅ Project ${projectId} assigned to ${targetAdmin.email} by ${user.email}`);
 
     return NextResponse.json({
       success: true,
-      assignedTo: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
+      assignedTo: targetAdmin,
     });
 
   } catch (error: any) {
