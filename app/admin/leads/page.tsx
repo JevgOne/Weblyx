@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles, User } from "lucide-react";
+import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles, User, UserCheck } from "lucide-react";
 import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
 import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
 import { NotificationPermission } from "@/components/admin/NotificationPermission";
@@ -166,24 +166,76 @@ export default function AdminLeadsPage() {
     );
   };
 
+  // Count new leads (ALARM)
+  const newLeadsCount = leads.filter(l => l.status === 'new').length;
+
+  // Handle "Vzít poptávku" - convert lead to project and assign to current user
+  const handleTakeLead = async (lead: any) => {
+    if (!user) return;
+
+    if (!confirm(`Chcete převést poptávku "${lead.name}" na projekt a přiřadit si ji?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/admin/leads/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: lead.id,
+          adminId: user.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || 'Chyba při převodu poptávky');
+        return;
+      }
+
+      const result = await response.json();
+
+      // Remove from leads list (or update status to converted)
+      setLeads(prevLeads => prevLeads.map(l =>
+        l.id === lead.id ? { ...l, status: 'converted' } : l
+      ));
+
+      alert(`✅ Poptávka převedena na projekt!\n\nMůžete ji najít v Projekty → ID: ${result.project.id}`);
+
+      // Refresh leads
+      fetchLeads();
+    } catch (error) {
+      console.error('❌ Error taking lead:', error);
+      alert('Chyba při převodu poptávky');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-4">
+      <header className="border-b bg-card sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => router.push("/admin/dashboard")}
+                className="shrink-0"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">Poptávky (Leads)</h1>
-                <p className="text-sm text-muted-foreground">
-                  Správa poptávek od potenciálních klientů
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl md:text-2xl font-bold">Poptávky</h1>
+                  {newLeadsCount > 0 && (
+                    <Badge variant="destructive" className="animate-pulse text-base px-3 py-1 font-bold">
+                      🚨 {newLeadsCount} NOVÝCH!
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  {leads.length} celkem · {newLeadsCount} čeká na převzetí
                 </p>
               </div>
             </div>
@@ -292,7 +344,12 @@ export default function AdminLeadsPage() {
                 </TableRow>
               ) : (
                 filteredLeads.map((lead) => (
-                  <TableRow key={lead.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow
+                    key={lead.id}
+                    className={`cursor-pointer hover:bg-muted/50 ${
+                      lead.status === 'new' ? 'bg-red-50 dark:bg-red-950/30 border-l-4 border-l-red-500 animate-pulse' : ''
+                    }`}
+                  >
                     <TableCell>
                       <div>
                         <div className="flex items-center gap-2">
@@ -360,7 +417,20 @@ export default function AdminLeadsPage() {
                         <Button size="sm" variant="ghost" onClick={() => handleViewDetail(lead)}>
                           Detail
                         </Button>
-                        {(lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
+                        {lead.status === 'new' ? (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTakeLead(lead);
+                            }}
+                            className="gap-1 animate-pulse"
+                          >
+                            <UserCheck className="h-3 w-3" />
+                            Vzít poptávku
+                          </Button>
+                        ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
                           <Button
                             size="sm"
                             onClick={() => handleConvertLead(lead)}
@@ -402,7 +472,12 @@ export default function AdminLeadsPage() {
             </Card>
           ) : (
             filteredLeads.map((lead) => (
-              <Card key={lead.id} className="p-4">
+              <Card
+                key={lead.id}
+                className={`p-4 ${
+                  lead.status === 'new' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-950/30 animate-pulse' : ''
+                }`}
+              >
                 <div className="space-y-3">
                   {/* Header */}
                   <div className="flex items-start justify-between">
@@ -470,7 +545,17 @@ export default function AdminLeadsPage() {
                     >
                       Detail
                     </Button>
-                    {(lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
+                    {lead.status === 'new' ? (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="flex-1 gap-1 animate-pulse"
+                        onClick={() => handleTakeLead(lead)}
+                      >
+                        <UserCheck className="h-3 w-3" />
+                        Vzít
+                      </Button>
+                    ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
                       <Button
                         size="sm"
                         className="flex-1 gap-1"
