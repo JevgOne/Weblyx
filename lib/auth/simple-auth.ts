@@ -28,6 +28,12 @@ const ADMIN_USERS = [
     password: process.env.ADMIN_PASSWORD_2 || 'Muzaisthebest',
     name: 'Admin 2',
   },
+  {
+    id: 'admin-3',
+    email: 'filip@weblyx.com',
+    password: 'weblyxisthebest',
+    name: 'Filip',
+  },
 ];
 
 /**
