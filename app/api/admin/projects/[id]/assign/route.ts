@@ -9,9 +9,11 @@ import { cookies } from 'next/headers';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
+
     // Verify admin session
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get('admin-session')?.value;
@@ -91,9 +93,11 @@ export async function POST(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
+
     // Verify admin session
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get('admin-session')?.value;

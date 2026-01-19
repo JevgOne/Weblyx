@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { AnalyzerForm } from './components/analyzer-form';
 import { AnalysisProgress } from './components/analysis-progress';
 import { ReportCard } from './components/report-card';
@@ -15,6 +16,7 @@ import type { EroWebAnalysis, AnalysisFormData, ContactStatus } from '@/types/er
 type ViewState = 'form' | 'analyzing' | 'report';
 
 export default function EroWebAnalyzaPage() {
+  const router = useRouter();
   const [viewState, setViewState] = useState<ViewState>('form');
   const [analyses, setAnalyses] = useState<EroWebAnalysis[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<EroWebAnalysis | null>(null);
