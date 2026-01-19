@@ -5,7 +5,8 @@ import { NextResponse } from 'next/server';
  * Requires GOOGLE_PLACES_API_KEY in .env
  */
 
-export const revalidate = 3600; // Cache for 1 hour
+// Make this route dynamic (not pre-rendered during build)
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
