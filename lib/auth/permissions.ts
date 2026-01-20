@@ -73,6 +73,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'dashboard',
     'leads',
     'projects',
+    'blog',
     'web_analyzer',
     'eroweb',
     'settings',
@@ -111,9 +112,9 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, { cs: string; en: string; ru: s
     ru: 'Полный административный доступ',
   },
   specialist: {
-    cs: 'Přístup k poptávkám, projektům a analýzám',
-    en: 'Access to leads, projects and analysis tools',
-    ru: 'Доступ к заявкам, проектам и аналитике',
+    cs: 'Přístup k poptávkám, projektům, blogu a analýzám',
+    en: 'Access to leads, projects, blog and analysis tools',
+    ru: 'Доступ к заявкам, проектам, блогу и аналитике',
   },
 };
 

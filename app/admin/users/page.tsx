@@ -336,7 +336,7 @@ export default function AdminUsersPage() {
                           <SelectItem value="specialist">
                             <div className="flex flex-col">
                               <span>Specialista</span>
-                              <span className="text-xs text-muted-foreground">Poptávky, Projekty, Analýzy</span>
+                              <span className="text-xs text-muted-foreground">Poptávky, Projekty, Blog, Analýzy</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="admin">
@@ -545,7 +545,7 @@ export default function AdminUsersPage() {
                     <SelectItem value="specialist">
                       <div className="flex flex-col">
                         <span>Specialista</span>
-                        <span className="text-xs text-muted-foreground">Poptávky, Projekty, Analýzy</span>
+                        <span className="text-xs text-muted-foreground">Poptávky, Projekty, Blog, Analýzy</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="admin">
