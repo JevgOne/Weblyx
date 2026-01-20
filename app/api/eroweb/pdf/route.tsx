@@ -663,7 +663,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
                 <Text style={styles.logoWeb}>Web</Text>
                 <Text style={styles.logoLyx}>lyx</Text>
               </View>
-              <Text style={styles.subtitle}>✨ EroWeb Analýza • Business Report 2026</Text>
+              <Text style={styles.subtitle}>EroWeb Analýza • Business Report 2026</Text>
             </View>
             <Text style={styles.date}>
               {new Date(analysis.createdAt).toLocaleDateString('cs-CZ', {
@@ -679,7 +679,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         <View style={{ paddingHorizontal: 40 }}>
 
         {/* Domain Section */}
-        <View style={styles.domainSection}>
+        <View style={styles.domainSection} wrap={false}>
           <Text style={styles.domainTitle}>{analysis.domain}</Text>
           <Text style={styles.domainUrl}>{analysis.url}</Text>
           <Text style={styles.businessType}>
@@ -688,16 +688,16 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         </View>
 
         {/* Introduction */}
-        <View style={styles.introSection}>
-          <Text style={styles.sectionTitle}>✨ Proč jsme vás kontaktovali?</Text>
+        <View style={styles.introSection} wrap={false}>
+          <Text style={styles.sectionTitle}>Proč jsme vás kontaktovali?</Text>
           <Text style={styles.introText}>
-            Protože vidíme obrovský potenciál! 🚀 Analyzovali jsme váš web a zjistili, kde přesně ztrácíte zákazníky – a hlavně, jak to napravit.
+            Analyzovali jsme váš web a vidíme obrovský potenciál. Zjistili jsme přesně, kde ztrácíte zákazníky – a jak to napravit.
           </Text>
           <Text style={styles.introText}>
-            💡 V oboru erotických masáží dnes rozhoduje rychlost. Klient otevře 3–5 webů konkurence a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, nemá WhatsApp tlačítko nebo vypadá zastarale na mobilu – odchází ke konkurenci.
+            V oboru erotických masáží rozhoduje rychlost. Klient navštíví 3–5 konkurenčních webů a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.
           </Text>
           <Text style={styles.introText}>
-            🎯 A tady je klíč: Většina vaší konkurence to dělá špatně. To je vaše šance! S několika konkrétními úpravami můžete být výrazně viditelnější, získat více dotazů a rezervací.
+            Dobrá zpráva: Většina konkurence má stejné problémy. S cílenými úpravami můžete být viditelněj­ší a získat výrazně více rezervací.
           </Text>
         </View>
 
@@ -712,8 +712,8 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         </View>
 
         {/* Categories */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📊 Hodnocení podle kategorií</Text>
+        <View style={styles.section} wrap={false}>
+          <Text style={styles.sectionTitle}>Hodnocení podle kategorií</Text>
           {Object.entries(categoryLabels).map(([key, { label, max }]) => {
             const score = analysis.scores[key as keyof typeof analysis.scores] || 0;
             const percentage = (score / max) * 100;
@@ -742,7 +742,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {criticalFindings.length > 0 && (
           <View style={styles.section} wrap={false}>
             <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>
-              🚨 Kritické problémy (řešte ASAP!)
+              KRITICKÉ PROBLÉMY (řešte okamžitě!)
             </Text>
             {criticalFindings.slice(0, 2).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#EF4444' }]}>
@@ -760,7 +760,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {/* Warning Findings */}
         {warningFindings.length > 0 && (
           <View style={styles.section} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>⚠️ Varování (vylepšit brzy)</Text>
+            <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>VAROVÁNÍ (doporučujeme vylepšit)</Text>
             {warningFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#F59E0B' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
@@ -777,7 +777,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {/* Opportunities */}
         {opportunityFindings.length > 0 && (
           <View style={styles.section} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>🎯 Příležitosti (konkurenční výhoda!)</Text>
+            <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>PŘÍLEŽITOSTI (konkurenční výhoda)</Text>
             {opportunityFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#3B82F6' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
@@ -792,35 +792,35 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Industry Benchmarks - Realistické odhady */}
         <View style={styles.statsBox} wrap={false}>
-          <Text style={styles.sectionTitle}>📊 Průměry v oboru a váš potenciál</Text>
-          <Text style={styles.introText} style={{ marginBottom: 12, fontSize: 10, color: '#6B7280' }}>
-            Na základě analýzy 50+ webů v oboru erotických masáží:
+          <Text style={styles.sectionTitle}>Srovnání s průměrem v oboru</Text>
+          <Text style={[styles.introText, { marginBottom: 12, fontSize: 10, color: '#6B7280' }]}>
+            Data z analýzy 50+ webů erotických masáží:
           </Text>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Typická návštěvnost (měsíc):</Text>
-            <Text style={styles.statsValue}>600–1200 návštěv</Text>
+            <Text style={styles.statsLabel}>Návštěvnost (měsíčně):</Text>
+            <Text style={styles.statsValue}>600–1 200 návštěv</Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Typická konverze (kontakt/rezervace):</Text>
+            <Text style={styles.statsLabel}>Konverze (kontakt/rezervace):</Text>
             <Text style={styles.statsValue}>2–5 %</Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Po optimalizaci (průměrně):</Text>
+            <Text style={styles.statsLabel}>Po optimalizaci:</Text>
             <Text style={styles.statsValue}>+40–60 % návštěv, +50–100 % konverze</Text>
           </View>
           <Text style={[styles.introText, { marginTop: 12, fontSize: 9, color: '#9CA3AF' }]}>
-            * Vaše reálná čísla se mohou lišit. Pro přesný audit můžeme analyzovat vaše Google Analytics data.
+            Poznámka: Vaše čísla se mohou lišit. Pro přesný audit můžeme analyzovat data z Google Analytics.
           </Text>
         </View>
 
         {/* Premium Features - Co vám chybí */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>🔥 TOP funkce, které vám chybí (a konkurence je také nemá!)</Text>
-          <Text style={styles.introText} style={{ marginBottom: 16 }}>
-            Vybrali jsme pro vás {selectedFeatures.length} klíčové prvky, které by měly největší dopad na vaše tržby:
+          <Text style={styles.sectionTitle}>TOP funkce, které vám chybí</Text>
+          <Text style={[styles.introText, { marginBottom: 16 }]}>
+            Vybrali jsme {selectedFeatures.length} klíčové prvky s největším dopadem na tržby:
           </Text>
           {selectedFeatures.map((feature, idx) => (
-            <View key={feature.id} style={styles.featureCard}>
+            <View key={feature.id} style={styles.featureCard} wrap={false}>
               <Text style={styles.featureName}>
                 {idx + 1}. {feature.name[language]}
               </Text>
@@ -836,112 +836,112 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Business Impact Section */}
         <View style={styles.recommendation} wrap={false}>
-          <Text style={styles.sectionTitle}>💰 Co vám to přinese?</Text>
+          <Text style={styles.sectionTitle}>Očekávané výsledky optimalizace</Text>
           <Text style={styles.recommendationText}>
-            Naši klienti v oboru erotických masáží po optimalizaci webu zaznamenali:
+            Naši klienti v oboru po optimalizaci zaznamenali:
           </Text>
           <Text style={styles.recommendationText}>
-            🔥 +45 % více online rezervací
+            • +45 % více online rezervací
           </Text>
           <Text style={styles.recommendationText}>
-            📱 +60 % dotazů přes WhatsApp (po přidání tlačítka)
+            • +60 % dotazů přes WhatsApp (po přidání tlačítka)
           </Text>
           <Text style={styles.recommendationText}>
-            ⚡ –70 % okamžitých odchodů díky rychlejšímu načítání
+            • –70 % okamžitých odchodů díky rychlejšímu načítání
           </Text>
           <Text style={styles.recommendationText}>
-            🎯 +80 % viditelnosti v AI vyhledávačích (ChatGPT, Perplexity)
+            • +80 % viditelnosti v AI vyhledávačích (ChatGPT, Perplexity)
           </Text>
         </View>
 
         {/* Specific Recommendations */}
         <View style={styles.recommendation} wrap={false}>
-          <Text style={styles.sectionTitle}>🔥 Funkce, které konkurence nemá (váš klíč k úspěchu!)</Text>
+          <Text style={styles.sectionTitle}>Funkce, které konkurence nemá</Text>
           <Text style={styles.recommendationText}>
-            1. 🤖 GEO/AIEO optimalizace – buďte viditelní v ChatGPT a Perplexity! 80 % mladých klientů tam hledá
+            1. GEO/AIEO optimalizace – viditelnost v ChatGPT a Perplexity (80 % mladých klientů hledá zde)
           </Text>
           <Text style={styles.recommendationText}>
-            2. 💬 AI Chatbot 24/7 – odpovídá okamžitě i v noci, rezervuje termíny, neztratíte jediného klienta
+            2. AI Chatbot 24/7 – okamžité odpovědi a automatická rezervace termínů
           </Text>
           <Text style={styles.recommendationText}>
-            3. 📊 Live dashboard – vidíte v reálném čase, kdo je na webu, odkud přišel, co ho zajímá
+            3. Live dashboard – sledování návštěvníků v reálném čase
           </Text>
           <Text style={styles.recommendationText}>
-            4. 🌍 Auto-translate (CZ/EN/DE/UKR/RU) – stránka se přepne podle IP adresy návštěvníka
+            4. Auto-translate (CZ/EN/DE/UKR/RU) – automatický přepis podle IP adresy
           </Text>
           <Text style={styles.recommendationText}>
-            5. 📅 Smart kalendář – automaticky nabízí nejbližší volné termíny, posílá SMS připomínky
+            5. Smart kalendář – nabídka volných termínů + SMS připomínky
           </Text>
           <Text style={styles.recommendationText}>
-            6. 🔔 Push notifikace – pošlete speciální akce přímo do mobilu klientů (i když nejsou na webu!)
+            6. Push notifikace – zasílání akcí přímo do mobilu klientů
           </Text>
           <Text style={styles.recommendationText}>
-            7. ⚡ Rychlé načítání pod 2 sekundy – váš web se načte rychleji než konkurence (Google vás odměňuje)
+            7. Rychlé načítání pod 2 sekundy – lepší pozice v Google vyhledávání
           </Text>
         </View>
 
         {/* Original Recommendation */}
         {analysis.recommendation && (
           <View style={styles.recommendation} wrap={false}>
-            <Text style={styles.sectionTitle}>📊 Technický rozbor</Text>
-            <Text style={styles.recommendationText}>{analysis.recommendation.slice(0, 600)}{analysis.recommendation.length > 600 ? '...' : ''}</Text>
+            <Text style={styles.sectionTitle}>Technický rozbor</Text>
+            <Text style={styles.recommendationText}>{analysis.recommendation.slice(0, 450)}{analysis.recommendation.length > 450 ? '...' : ''}</Text>
           </View>
         )}
 
         {/* Pricing */}
-        <View style={styles.pricing}>
-          <Text style={styles.sectionTitle}>💰 Kolik to stojí?</Text>
+        <View style={styles.pricing} wrap={false}>
+          <Text style={styles.sectionTitle}>Investice</Text>
           <Text style={styles.pricingText}>
-            Cena je vždy na míru podle toho, co potřebujete. Žádné drahé balíčky, které nevyužijete. Platíte jen za to, co vám reálně přinese klienty.
+            Cena vždy na míru podle vašich potřeb. Platíte jen za to, co vám reálně přinese zákazníky.
           </Text>
-          <View style={styles.pricingBox}>
-            <Text style={styles.pricingLabel}>📊 Typický projekt (kompletní optimalizace):</Text>
+          <View style={styles.pricingBox} wrap={false}>
+            <Text style={styles.pricingLabel}>Typický projekt (kompletní optimalizace):</Text>
             <Text style={styles.pricingAmount}>30 000–149 990 Kč</Text>
           </View>
           <Text style={styles.pricingNote}>
-            ✨ Zahrnuje: analýzu, design, vývoj, GEO/AIEO optimalizaci, testování a spuštění.
+            Zahrnuje: analýzu, design, vývoj, GEO/AIEO optimalizaci, testování a spuštění.
           </Text>
           <Text style={styles.pricingNote}>
-            🚀 ROI: Průměrně se investice vrátí za 2–4 měsíce díky zvýšenému počtu rezervací.
+            ROI: Investice se průměrně vrátí za 2–4 měsíce díky zvýšeným rezervacím.
           </Text>
         </View>
 
         {/* Next Steps */}
         <View style={styles.nextSteps} wrap={false}>
-          <Text style={styles.sectionTitle}>🚀 Co teď?</Text>
+          <Text style={styles.sectionTitle}>Jak budeme pokračovat?</Text>
 
-          <View style={styles.stepItem}>
+          <View style={styles.stepItem} wrap={false}>
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>1</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>📞 Zavolejte nebo napište (15 minut, nezávazně)</Text>
+              <Text style={styles.stepTitle}>Nezávazná konzultace (15 minut)</Text>
               <Text style={styles.stepDescription}>
-                Probereme s vámi konkrétně, co by vašemu webu pomohlo nejvíc. Žádný prodejní tlak, jen praktické rady. I když se nakonec nerozhodnete pro spolupráci, budete mít jasno.
+                Probereme, co by vašemu webu pomohlo nejvíc. Bez prodejního tlaku, jen praktické rady.
               </Text>
             </View>
           </View>
 
-          <View style={styles.stepItem}>
+          <View style={styles.stepItem} wrap={false}>
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>2</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>💰 Dostanete nabídku přesně na míru (0 Kč)</Text>
+              <Text style={styles.stepTitle}>Nabídka přesně na míru (zdarma)</Text>
               <Text style={styles.stepDescription}>
-                Připravíme detailní plán s konkrétními kroky, cenami a termíny. Transparentně. Budete přesně vědět, co dostanete a za kolik.
+                Detailní plán s konkrétními kroky, cenami a termíny. Transparentně.
               </Text>
             </View>
           </View>
 
-          <View style={styles.stepItem}>
+          <View style={styles.stepItem} wrap={false}>
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>3</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>🎯 Začneme a uvidíte výsledky</Text>
+              <Text style={styles.stepTitle}>Realizace a měřitelné výsledky</Text>
               <Text style={styles.stepDescription}>
-                Žádné dlouhé čekání. První změny uvidíte během 2 týdnů. Průběžně vás budeme informovat a ukážeme měřitelné výsledky – více dotazů, rezervací, tržeb.
+                První změny během 2 týdnů. Průběžné reporty s měřitelnými výsledky.
               </Text>
             </View>
           </View>
@@ -950,15 +950,15 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            <Text style={styles.footerBold}>⚡ Weblyx.cz</Text> - Weby, které prodávají. I v AI vyhledávačích.
+            <Text style={styles.footerBold}>Weblyx.cz</Text> – Weby, které prodávají. I v AI vyhledávačích.
           </Text>
           <Text style={styles.footerText}>
-            📧 <Text style={styles.footerLink}>info@weblyx.cz</Text> |
-            📱 <Text style={styles.footerLink}>+420 702 110 166</Text> |
-            🌐 <Text style={styles.footerLink}>weblyx.cz</Text>
+            E-mail: <Text style={styles.footerLink}>info@weblyx.cz</Text> |
+            Tel: <Text style={styles.footerLink}>+420 702 110 166</Text> |
+            Web: <Text style={styles.footerLink}>weblyx.cz</Text>
           </Text>
           <Text style={styles.footerText}>
-            💬 Nejrychlejší odpověď: WhatsApp nebo email. Reagujeme do 2 hodin.
+            Nejrychlejší odpověď: WhatsApp nebo e-mail. Reagujeme do 2 hodin.
           </Text>
           <Text style={styles.footerSmall}>Altro Servis Group s.r.o. | IČO: 23673389 | Praha, Česká republika</Text>
         </View>
