@@ -57,6 +57,7 @@ interface Admin {
   role: UserRole;
   active: number;
   created_at: number;
+  isLegacy?: boolean;
 }
 
 export default function AdminUsersPage() {
@@ -439,23 +440,35 @@ export default function AdminUsersPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={admin.active ? 'outline' : 'destructive'}>
-                          {admin.active ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={admin.active ? 'outline' : 'destructive'}>
+                            {admin.active ? 'Active' : 'Inactive'}
+                          </Badge>
+                          {admin.isLegacy && (
+                            <Badge variant="secondary" className="text-xs">
+                              ENV
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
-                        {new Date(admin.created_at * 1000).toLocaleDateString('cs-CZ')}
+                        {admin.created_at > 0
+                          ? new Date(admin.created_at * 1000).toLocaleDateString('cs-CZ')
+                          : '-'
+                        }
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openEditDialog(admin)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          {isOwner(user?.role) && (
+                          {!admin.isLegacy && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openEditDialog(admin)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {isOwner(user?.role) && !admin.isLegacy && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -476,22 +489,6 @@ export default function AdminUsersPage() {
           </CardContent>
         </Card>
 
-        {/* Legacy Users Info */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-base">Legacy Users (Environment Variables)</CardTitle>
-            <CardDescription>
-              These users are configured via environment variables and cannot be managed here.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>• admin@weblyx.cz (ADMIN_EMAIL)</p>
-              <p>• zvin.a@seznam.cz (ADMIN_EMAIL_2)</p>
-              <p>• filip@weblyx.com (hardcoded)</p>
-            </div>
-          </CardContent>
-        </Card>
       </main>
 
       {/* Edit Dialog */}

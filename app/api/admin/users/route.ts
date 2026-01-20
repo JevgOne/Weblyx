@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   verifySessionToken,
   getAllDbAdmins,
+  getLegacyAdmins,
   createDbAdmin,
   AdminUser,
 } from '@/lib/auth/simple-auth';
@@ -64,19 +65,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const admins = await getAllDbAdmins();
+    // Get both legacy and database users
+    const dbAdmins = await getAllDbAdmins();
+    const legacyAdmins = getLegacyAdmins();
 
-    // Don't return password_hash
-    const safeAdmins = admins.map(admin => ({
+    // Don't return password_hash from DB users
+    const safeDbAdmins = dbAdmins.map(admin => ({
       id: admin.id,
       email: admin.email,
       name: admin.name,
       role: admin.role || 'admin',
       active: admin.active,
       created_at: admin.created_at,
+      isLegacy: false,
     }));
 
-    return NextResponse.json({ admins: safeAdmins });
+    // Filter out legacy users that already exist in DB (by email)
+    const dbEmails = new Set(safeDbAdmins.map(a => a.email.toLowerCase()));
+    const uniqueLegacyAdmins = legacyAdmins.filter(
+      a => !dbEmails.has(a.email.toLowerCase())
+    );
+
+    // Combine: legacy users first, then DB users
+    const allAdmins = [...uniqueLegacyAdmins, ...safeDbAdmins];
+
+    return NextResponse.json({ admins: allAdmins });
   } catch (error: any) {
     console.error('Error fetching admins:', error);
     return NextResponse.json(

@@ -111,6 +111,29 @@ export async function getDbAdminById(id: string): Promise<DbAdminUser | null> {
 }
 
 /**
+ * Get all legacy admin users (without passwords)
+ */
+export function getLegacyAdmins(): Array<{
+  id: string;
+  email: string;
+  name: string;
+  role: 'owner' | 'admin' | 'specialist';
+  active: number;
+  created_at: number;
+  isLegacy: boolean;
+}> {
+  return LEGACY_ADMIN_USERS.map(user => ({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    active: 1,
+    created_at: 0, // Legacy users don't have creation date
+    isLegacy: true,
+  }));
+}
+
+/**
  * Get all admin users from database
  */
 export async function getAllDbAdmins(): Promise<DbAdminUser[]> {
