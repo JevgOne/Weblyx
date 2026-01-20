@@ -624,6 +624,29 @@ const businessTypeLabels: Record<string, string> = {
   escort: 'Escort',
 };
 
+// Business type specific texts
+const businessTypeTexts: Record<string, {
+  industry: string;
+  dataSource: string;
+  clientAction: string;
+}> = {
+  massage: {
+    industry: 'erotických masáží',
+    dataSource: '50+ webů erotických masáží',
+    clientAction: 'Klient navštíví 3–5 konkurenčních salonů',
+  },
+  privat: {
+    industry: 'klubů a privátů',
+    dataSource: '50+ webů klubů a privátů',
+    clientAction: 'Klient navštíví 3–5 konkurenčních klubů',
+  },
+  escort: {
+    industry: 'escort služeb',
+    dataSource: '50+ escort webů',
+    clientAction: 'Klient navštíví 3–5 konkurenčních agentur',
+  },
+};
+
 const categoryLabels: Record<string, { label: string; max: number }> = {
   speed: { label: 'Rychlost načítání', max: 20 },
   mobile: { label: 'Mobilní verze', max: 15 },
@@ -637,6 +660,9 @@ const categoryLabels: Record<string, { label: string; max: number }> = {
 function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnalysis; language?: 'cs' | 'en' }) {
   const scoreColor = getScoreColor(analysis.scores.total);
   const scoreLabel = language === 'cs' ? getScoreLabel(analysis.scores.total) : getScoreLabelEn(analysis.scores.total);
+
+  // Get business type specific texts
+  const btTexts = businessTypeTexts[analysis.businessType] || businessTypeTexts['massage'];
 
   const criticalFindings = (analysis.findings || []).filter((f) => f.type === 'critical');
   const warningFindings = (analysis.findings || []).filter((f) => f.type === 'warning');
@@ -694,7 +720,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             Analyzovali jsme váš web a vidíme obrovský potenciál. Zjistili jsme přesně, kde ztrácíte zákazníky – a jak to napravit.
           </Text>
           <Text style={styles.introText}>
-            Ve vašem oboru rozhoduje rychlost. Klient navštíví 3–5 konkurenčních webů a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.
+            V oboru {btTexts.industry} rozhoduje rychlost. {btTexts.clientAction} a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.
           </Text>
           <Text style={styles.introText}>
             Dobrá zpráva: Většina konkurence má stejné problémy. S cílenými úpravami můžete být viditelněj­ší a získat výrazně více rezervací.
@@ -794,7 +820,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         <View style={styles.statsBox} wrap={false}>
           <Text style={styles.sectionTitle}>Srovnání s průměrem v oboru</Text>
           <Text style={[styles.introText, { marginBottom: 12, fontSize: 10, color: '#6B7280' }]}>
-            Data z analýzy 50+ podobných webů ve vašem oboru:
+            Data z analýzy {btTexts.dataSource}:
           </Text>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Návštěvnost (měsíčně):</Text>
@@ -840,7 +866,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         <View style={styles.recommendation} wrap={false}>
           <Text style={styles.sectionTitle}>Očekávané výsledky optimalizace</Text>
           <Text style={styles.recommendationText}>
-            Naši klienti v oboru po optimalizaci zaznamenali:
+            Naši klienti v oboru {btTexts.industry} po optimalizaci zaznamenali:
           </Text>
           <Text style={styles.recommendationText}>
             • +45 % více online rezervací
