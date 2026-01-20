@@ -77,46 +77,44 @@ export async function GET(req: NextRequest) {
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#FFFFFF',
-    padding: 40,
     fontFamily: 'Roboto',
+  },
+  // NEW: Top banner with gradient effect
+  headerBanner: {
+    backgroundColor: '#14B8A6',
+    padding: 30,
+    marginBottom: 25,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 30,
-    paddingBottom: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: '#14B8A6',
+    alignItems: 'center',
   },
   logoContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    alignItems: 'baseline',
   },
-  logoMark: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#14B8A6',
-    marginRight: 4,
-  },
-  logo: {
+  logoWeb: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#0F172A',
+    color: '#FFFFFF',
   },
-  logoHighlight: {
-    color: '#14B8A6',
+  logoLyx: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FDB912', // Gold accent matching logo
   },
   subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 6,
-    fontWeight: 'bold',
+    fontSize: 11,
+    color: '#FFFFFF',
+    marginTop: 8,
+    fontWeight: 500,
+    opacity: 0.9,
   },
   date: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 11,
+    color: '#FFFFFF',
+    fontWeight: 500,
   },
   domainSection: {
     backgroundColor: '#F9FAFB',
@@ -657,25 +655,28 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoMark}>W</Text>
-              <Text style={styles.logo}>
-                Web<Text style={styles.logoHighlight}>lyx</Text>
-              </Text>
+        {/* Header Banner */}
+        <View style={styles.headerBanner}>
+          <View style={styles.header}>
+            <View>
+              <View style={styles.logoContainer}>
+                <Text style={styles.logoWeb}>Web</Text>
+                <Text style={styles.logoLyx}>lyx</Text>
+              </View>
+              <Text style={styles.subtitle}>✨ EroWeb Analýza • Business Report 2026</Text>
             </View>
-            <Text style={styles.subtitle}>✨ EroWeb Analýza • Business Report 2026</Text>
+            <Text style={styles.date}>
+              {new Date(analysis.createdAt).toLocaleDateString('cs-CZ', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </Text>
           </View>
-          <Text style={styles.date}>
-            {new Date(analysis.createdAt).toLocaleDateString('cs-CZ', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </Text>
         </View>
+
+        {/* Content padding wrapper */}
+        <View style={{ paddingHorizontal: 40 }}>
 
         {/* Domain Section */}
         <View style={styles.domainSection}>
@@ -961,6 +962,8 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
           </Text>
           <Text style={styles.footerSmall}>Altro Servis Group s.r.o. | IČO: 23673389 | Praha, Česká republika</Text>
         </View>
+
+        </View>{/* End of padding wrapper */}
       </Page>
     </Document>
   );

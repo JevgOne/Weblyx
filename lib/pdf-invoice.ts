@@ -297,18 +297,27 @@ export async function generateInvoicePDF(
     color: COLORS.tealDark,
   });
 
-  // WEBLYX logo text
-  drawText('WEBLYX', {
+  // WEBLYX logo styling (matching /Users/zen/Desktop/logo.svg)
+  // "Web" in white, "lyx" in white/accent
+  drawText('Web', {
     x: 50,
-    y: height - 35,
-    size: 20,
+    y: height - 40,
+    size: 24,
     font: fontBold,
     color: COLORS.white,
   });
 
+  drawText('lyx', {
+    x: 95,
+    y: height - 40,
+    size: 24,
+    font: fontBold,
+    color: COLORS.accent, // Gold accent like gradient in logo
+  });
+
   drawText('Web Development & Design', {
     x: 50,
-    y: height - 55,
+    y: height - 60,
     size: 9,
     font,
     color: COLORS.white,
