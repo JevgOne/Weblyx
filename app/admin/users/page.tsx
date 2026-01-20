@@ -459,15 +459,13 @@ export default function AdminUsersPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          {!admin.isLegacy && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openEditDialog(admin)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEditDialog(admin)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
                           {isOwner(user?.role) && !admin.isLegacy && (
                             <Button
                               variant="ghost"

@@ -29,6 +29,7 @@ const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'weblyx-admin-secret-2024
 
 /**
  * Legacy admin users configuration (fallback)
+ * Only owner account - other users should be added via admin panel
  */
 const LEGACY_ADMIN_USERS = [
   {
@@ -37,20 +38,6 @@ const LEGACY_ADMIN_USERS = [
     password: process.env.ADMIN_PASSWORD || 'admin123',
     name: 'Owner',
     role: 'owner' as const,
-  },
-  {
-    id: 'admin-2',
-    email: process.env.ADMIN_EMAIL_2 || 'zvin.a@seznam.cz',
-    password: process.env.ADMIN_PASSWORD_2 || 'Muzaisthebest',
-    name: 'Admin',
-    role: 'admin' as const,
-  },
-  {
-    id: 'admin-3',
-    email: 'filip@weblyx.com',
-    password: 'weblyxisthebest',
-    name: 'Filip',
-    role: 'admin' as const,
   },
 ];
 
