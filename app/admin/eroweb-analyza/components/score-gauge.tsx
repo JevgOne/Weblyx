@@ -1,7 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { getScoreCategory, SCORE_COLORS, SCORE_LABELS } from '@/types/eroweb';
+import { getScoreCategory, SCORE_COLORS } from '@/types/eroweb';
+import { useAdminTranslation } from '@/lib/admin-i18n';
 
 interface ScoreGaugeProps {
   score: number;
@@ -16,9 +17,19 @@ export function ScoreGauge({
   showLabel = true,
   animated = true,
 }: ScoreGaugeProps) {
+  const { t } = useAdminTranslation();
   const category = getScoreCategory(score);
   const color = SCORE_COLORS[category];
-  const label = SCORE_LABELS[category];
+
+  // Get localized label from translations
+  const categoryToLabelKey: Record<string, keyof typeof t.eroweb.scoreLabels> = {
+    critical: 'critical',
+    poor: 'poor',
+    average: 'average',
+    good: 'good',
+    excellent: 'excellent',
+  };
+  const label = t.eroweb.scoreLabels?.[categoryToLabelKey[category]] || category;
 
   const sizes = {
     sm: { width: 60, fontSize: 'text-lg', strokeWidth: 4, labelSize: 'text-xs' },
@@ -60,7 +71,7 @@ export function ScoreGauge({
         </svg>
         {/* Score number */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={cn('font-bold text-white', fontSize)}>
+          <span className={cn('font-bold text-foreground', fontSize)}>
             {score}
           </span>
         </div>
@@ -100,9 +111,9 @@ export function CategoryScoreBar({
     <div className="space-y-1">
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium text-white">{score}/{maxScore}</span>
+        <span className="font-medium text-foreground">{score}/{maxScore}</span>
       </div>
-      <div className="h-2 bg-[#252525] rounded-full overflow-hidden">
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{

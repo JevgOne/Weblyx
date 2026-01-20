@@ -28,10 +28,11 @@ import {
   Check,
   Languages,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
-import { SCORE_COLORS, getScoreCategory, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
+import { SCORE_COLORS, getScoreCategory, CONTACT_STATUS_COLORS } from '@/types/eroweb';
 import { getWhatsAppMessage } from './whatsapp-messages';
+import { useAdminTranslation } from '@/lib/admin-i18n';
 
 interface ReportCardProps {
   analysis: EroWebAnalysis;
@@ -40,12 +41,6 @@ interface ReportCardProps {
   onStatusChange?: (status: ContactStatus) => void;
 }
 
-const BUSINESS_TYPE_LABELS = {
-  massage: 'Erotické masáže',
-  privat: 'Privát / Klub',
-  escort: 'Escort',
-};
-
 const CATEGORY_ICONS = {
   speed: Zap,
   mobile: Smartphone,
@@ -53,15 +48,6 @@ const CATEGORY_ICONS = {
   seo: Search,
   geo: Bot,
   design: Palette,
-};
-
-const CATEGORY_LABELS = {
-  speed: 'Rychlost',
-  mobile: 'Mobilní verze',
-  security: 'Zabezpečení',
-  seo: 'SEO',
-  geo: 'GEO/AIEO',
-  design: 'Design',
 };
 
 const CATEGORY_MAX_SCORES = {
@@ -73,32 +59,48 @@ const CATEGORY_MAX_SCORES = {
   design: 20,
 };
 
+const CATEGORY_KEYS = ['speed', 'mobile', 'security', 'seo', 'geo', 'design'] as const;
+type CategoryKey = typeof CATEGORY_KEYS[number];
+
 export function ReportCard({ analysis, onSendEmail, onDownloadPdf, onStatusChange }: ReportCardProps) {
+  const { t, locale } = useAdminTranslation();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
-  const [language, setLanguage] = useState<'cs' | 'en'>('cs');
+  const [language, setLanguage] = useState<'cs' | 'en' | 'de' | 'ru'>('cs');
+
+  // Sync language with locale on mount
+  useEffect(() => {
+    if (['cs', 'en', 'de', 'ru'].includes(locale)) {
+      setLanguage(locale as 'cs' | 'en' | 'de' | 'ru');
+    }
+  }, [locale]);
 
   const scoreCategory = getScoreCategory(analysis.scores.total);
   const scoreColor = SCORE_COLORS[scoreCategory];
 
-  // Generate email template
-  const emailSubject = language === 'cs'
-    ? `Analýza webu ${analysis.domain} - ${analysis.scores.total}/100 bodů`
-    : `Website Analysis ${analysis.domain} - ${analysis.scores.total}/100 points`;
+  // Get business type label from translations
+  const businessTypeLabel = t.eroweb.businessTypes[analysis.businessType as keyof typeof t.eroweb.businessTypes];
 
-  const emailBody = language === 'cs' ? `Dobrý den,
+  // Generate email template based on selected language
+  const getEmailContent = () => {
+    const scores = analysis.scores;
+
+    if (language === 'cs') {
+      return {
+        subject: `Analýza webu ${analysis.domain} - ${scores.total}/100 bodů`,
+        body: `Dobrý den,
 
 provedli jsme kompletní analýzu vašeho webu ${analysis.domain} a máme pro vás zajímavé výsledky.
 
-📊 CELKOVÉ HODNOCENÍ: ${analysis.scores.total}/100 bodů
+📊 CELKOVÉ HODNOCENÍ: ${scores.total}/100 bodů
 
 Váš web dosáhl následujících výsledků:
-• Rychlost: ${analysis.scores.speed}/${CATEGORY_MAX_SCORES.speed} bodů
-• Mobilní verze: ${analysis.scores.mobile}/${CATEGORY_MAX_SCORES.mobile} bodů
-• Zabezpečení: ${analysis.scores.security}/${CATEGORY_MAX_SCORES.security} bodů
-• SEO: ${analysis.scores.seo}/${CATEGORY_MAX_SCORES.seo} bodů
-• GEO/AIEO: ${analysis.scores.geo}/${CATEGORY_MAX_SCORES.geo} bodů
-• Design: ${analysis.scores.design}/${CATEGORY_MAX_SCORES.design} bodů
+• Rychlost: ${scores.speed}/${CATEGORY_MAX_SCORES.speed} bodů
+• Mobilní verze: ${scores.mobile}/${CATEGORY_MAX_SCORES.mobile} bodů
+• Zabezpečení: ${scores.security}/${CATEGORY_MAX_SCORES.security} bodů
+• SEO: ${scores.seo}/${CATEGORY_MAX_SCORES.seo} bodů
+• GEO/AIEO: ${scores.geo}/${CATEGORY_MAX_SCORES.geo} bodů
+• Design: ${scores.design}/${CATEGORY_MAX_SCORES.design} bodů
 
 ${analysis.recommendation}
 
@@ -112,19 +114,86 @@ Máte zájem o nezávaznou konzultaci?
 
 S pozdravem,
 Tým Weblyx
-https://weblyx.cz` : `Hello,
+https://weblyx.cz`,
+      };
+    } else if (language === 'de') {
+      return {
+        subject: `Website-Analyse ${analysis.domain} - ${scores.total}/100 Punkte`,
+        body: `Guten Tag,
+
+wir haben eine vollständige Analyse Ihrer Website ${analysis.domain} durchgeführt und haben interessante Ergebnisse für Sie.
+
+📊 GESAMTBEWERTUNG: ${scores.total}/100 Punkte
+
+Ihre Website hat folgende Ergebnisse erzielt:
+• Geschwindigkeit: ${scores.speed}/${CATEGORY_MAX_SCORES.speed} Punkte
+• Mobil: ${scores.mobile}/${CATEGORY_MAX_SCORES.mobile} Punkte
+• Sicherheit: ${scores.security}/${CATEGORY_MAX_SCORES.security} Punkte
+• SEO: ${scores.seo}/${CATEGORY_MAX_SCORES.seo} Punkte
+• GEO/AIEO: ${scores.geo}/${CATEGORY_MAX_SCORES.geo} Punkte
+• Design: ${scores.design}/${CATEGORY_MAX_SCORES.design} Punkte
+
+${analysis.recommendation}
+
+💰 PREISE
+Die Preise richten sich nach dem Arbeitsumfang und Ihren Anforderungen.
+Geschätzte Preisspanne: €1.200 - €6.000
+
+Wir würden Ihnen gerne helfen, Ihre Website zu verbessern und mehr Kunden zu gewinnen.
+
+Haben Sie Interesse an einer kostenlosen Beratung?
+
+Mit freundlichen Grüßen,
+Weblyx Team
+https://weblyx.cz`,
+      };
+    } else if (language === 'ru') {
+      return {
+        subject: `Анализ сайта ${analysis.domain} - ${scores.total}/100 баллов`,
+        body: `Добрый день,
+
+мы провели полный анализ вашего сайта ${analysis.domain} и получили интересные результаты для вас.
+
+📊 ОБЩАЯ ОЦЕНКА: ${scores.total}/100 баллов
+
+Ваш сайт достиг следующих результатов:
+• Скорость: ${scores.speed}/${CATEGORY_MAX_SCORES.speed} баллов
+• Мобильная версия: ${scores.mobile}/${CATEGORY_MAX_SCORES.mobile} баллов
+• Безопасность: ${scores.security}/${CATEGORY_MAX_SCORES.security} баллов
+• SEO: ${scores.seo}/${CATEGORY_MAX_SCORES.seo} баллов
+• GEO/AIEO: ${scores.geo}/${CATEGORY_MAX_SCORES.geo} баллов
+• Дизайн: ${scores.design}/${CATEGORY_MAX_SCORES.design} баллов
+
+${analysis.recommendation}
+
+💰 СТОИМОСТЬ
+Стоимость рассчитывается индивидуально в зависимости от объема работ.
+Ориентировочный диапазон: €1 200 - €6 000
+
+Мы будем рады помочь вам улучшить ваш сайт и привлечь больше клиентов.
+
+Заинтересованы в бесплатной консультации?
+
+С уважением,
+Команда Weblyx
+https://weblyx.cz`,
+      };
+    } else {
+      return {
+        subject: `Website Analysis ${analysis.domain} - ${scores.total}/100 points`,
+        body: `Hello,
 
 we have completed a comprehensive analysis of your website ${analysis.domain} and have interesting results for you.
 
-📊 OVERALL RATING: ${analysis.scores.total}/100 points
+📊 OVERALL RATING: ${scores.total}/100 points
 
 Your website achieved the following results:
-• Speed: ${analysis.scores.speed}/${CATEGORY_MAX_SCORES.speed} points
-• Mobile version: ${analysis.scores.mobile}/${CATEGORY_MAX_SCORES.mobile} points
-• Security: ${analysis.scores.security}/${CATEGORY_MAX_SCORES.security} points
-• SEO: ${analysis.scores.seo}/${CATEGORY_MAX_SCORES.seo} points
-• GEO/AIEO: ${analysis.scores.geo}/${CATEGORY_MAX_SCORES.geo} points
-• Design: ${analysis.scores.design}/${CATEGORY_MAX_SCORES.design} points
+• Speed: ${scores.speed}/${CATEGORY_MAX_SCORES.speed} points
+• Mobile: ${scores.mobile}/${CATEGORY_MAX_SCORES.mobile} points
+• Security: ${scores.security}/${CATEGORY_MAX_SCORES.security} points
+• SEO: ${scores.seo}/${CATEGORY_MAX_SCORES.seo} points
+• GEO/AIEO: ${scores.geo}/${CATEGORY_MAX_SCORES.geo} points
+• Design: ${scores.design}/${CATEGORY_MAX_SCORES.design} points
 
 ${analysis.recommendation}
 
@@ -138,17 +207,19 @@ Would you be interested in a free consultation?
 
 Best regards,
 Weblyx Team
-https://weblyx.cz`;
+https://weblyx.cz`,
+      };
+    }
+  };
 
-  // Generate WhatsApp message using imported function
-  const businessType = BUSINESS_TYPE_LABELS[analysis.businessType];
-  const businessTypeEn = analysis.businessType === 'massage' ? 'erotic massage' :
-                         analysis.businessType === 'privat' ? 'private club' : 'escort services';
+  const emailContent = getEmailContent();
 
+  // Generate WhatsApp message
   const whatsAppMessage = getWhatsAppMessage({
     domain: analysis.domain,
-    businessType,
-    businessTypeEn,
+    businessType: businessTypeLabel,
+    businessTypeEn: analysis.businessType === 'massage' ? 'erotic massage' :
+                    analysis.businessType === 'privat' ? 'private club' : 'escort services',
     score: analysis.scores.total,
     analysisId: analysis.id,
     language,
@@ -185,8 +256,17 @@ https://weblyx.cz`;
       document.body.removeChild(a);
     } catch (error: any) {
       console.error('PDF download failed:', error);
-      alert(`❌ Chyba při stahování PDF:\n\n${error.message}\n\nZkuste to prosím znovu nebo kontaktujte podporu.`);
+      const errorMsg = locale === 'ru' ? 'Ошибка при загрузке PDF' :
+                       locale === 'de' ? 'Fehler beim PDF-Download' :
+                       locale === 'en' ? 'PDF download error' : 'Chyba při stahování PDF';
+      alert(`❌ ${errorMsg}:\n\n${error.message}`);
     }
+  };
+
+  // Get price range based on language
+  const getPriceRange = () => {
+    if (language === 'cs') return '30 000 - 149 990 Kč';
+    return '€1,200 - €6,000';
   };
 
   return (
@@ -213,7 +293,7 @@ https://weblyx.cz`;
                   variant="outline"
                   className="border-border text-muted-foreground flex-shrink-0"
                 >
-                  {BUSINESS_TYPE_LABELS[analysis.businessType]}
+                  {businessTypeLabel}
                 </Badge>
 
                 {/* Contact Status Dropdown */}
@@ -243,7 +323,7 @@ https://weblyx.cz`;
                               className="w-2 h-2 rounded-full"
                               style={{ backgroundColor: CONTACT_STATUS_COLORS[status] }}
                             />
-                            {CONTACT_STATUS_LABELS[status]}
+                            {t.eroweb.contactStatus[status]}
                           </div>
                         </SelectItem>
                       ))}
@@ -259,17 +339,12 @@ https://weblyx.cz`;
           <div className="flex flex-col sm:flex-row gap-2 mt-4 w-full">
             {onDownloadPdf && (
               <Button
-                onClick={() => {
-                  // Call with language parameter
-                  if (typeof onDownloadPdf === 'function') {
-                    handleDownloadPdfWithLang();
-                  }
-                }}
+                onClick={handleDownloadPdfWithLang}
                 variant="outline"
                 className="flex-1 border-border hover:bg-muted min-w-0"
               >
                 <Download className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span className="truncate">Stáhnout PDF ({language.toUpperCase()})</span>
+                <span className="truncate">{t.eroweb.downloadPdf} ({language.toUpperCase()})</span>
               </Button>
             )}
             {onSendEmail && (
@@ -278,7 +353,7 @@ https://weblyx.cz`;
                 className="flex-1 bg-primary hover:bg-primary/90 min-w-0"
               >
                 <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span className="truncate">Odeslat email</span>
+                <span className="truncate">{t.eroweb.sendEmail}</span>
               </Button>
             )}
           </div>
@@ -288,20 +363,21 @@ https://weblyx.cz`;
       {/* Category scores */}
       <Card className="border-border shadow-md w-full">
         <CardHeader>
-          <CardTitle className="text-foreground text-lg">Hodnocení po kategoriích</CardTitle>
+          <CardTitle className="text-foreground text-lg">{t.eroweb.categoryScores}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
-            {(Object.keys(CATEGORY_LABELS) as Array<keyof typeof CATEGORY_LABELS>).map((key) => {
+            {CATEGORY_KEYS.map((key) => {
               const Icon = CATEGORY_ICONS[key];
               const score = analysis.scores[key];
               const maxScore = CATEGORY_MAX_SCORES[key];
+              const categoryLabel = t.eroweb.categories[key as keyof typeof t.eroweb.categories];
 
               return (
                 <div key={key} className="space-y-2">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{CATEGORY_LABELS[key]}</span>
+                    <span className="text-sm font-medium">{categoryLabel}</span>
                   </div>
                   <CategoryScoreBar
                     label=""
@@ -319,7 +395,7 @@ https://weblyx.cz`;
       {analysis.findings && analysis.findings.length > 0 && (
         <Card className="border-border shadow-md w-full">
           <CardHeader>
-            <CardTitle className="text-foreground text-lg">Zjištěné problémy</CardTitle>
+            <CardTitle className="text-foreground text-lg">{t.eroweb.findings}</CardTitle>
           </CardHeader>
           <CardContent>
             <GroupedFindings findings={analysis.findings} />
@@ -331,7 +407,7 @@ https://weblyx.cz`;
       {analysis.recommendation && (
         <Card className="border-border shadow-md w-full">
           <CardHeader>
-            <CardTitle className="text-foreground text-lg">Doporučení</CardTitle>
+            <CardTitle className="text-foreground text-lg">{t.eroweb.recommendation}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
@@ -345,72 +421,69 @@ https://weblyx.cz`;
       <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/30 shadow-lg w-full">
         <CardHeader>
           <CardTitle className="text-foreground text-lg flex items-center gap-2">
-            💰 Ceník
+            💰 {t.eroweb.pricing}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <p className="text-muted-foreground">
-              Ceník je <strong className="text-foreground">individuální</strong> podle rozsahu prací a vašich specifických požadavků.
+              {t.eroweb.pricingIndividual}
             </p>
             <div className="bg-background/50 rounded-lg p-4 border border-border">
-              <p className="text-sm text-muted-foreground mb-2">Orientační cenový rozsah:</p>
+              <p className="text-sm text-muted-foreground mb-2">{t.eroweb.pricingRange}</p>
               <p className="text-3xl font-bold text-primary">
-                30 000 - 149 990 Kč
+                {getPriceRange()}
               </p>
             </div>
             <p className="text-sm text-muted-foreground">
-              Rádi vám připravíme nabídku přesně na míru vašim potřebám a rozpočtu.
+              {t.eroweb.pricingNote}
             </p>
           </div>
         </CardContent>
       </Card>
 
       {/* Language Toggle */}
-      <div className="flex items-center justify-center gap-2 py-4">
-        <Button
-          variant={language === 'cs' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setLanguage('cs')}
-          className="gap-2"
-        >
-          <Languages className="w-4 h-4" />
-          Čeština
-        </Button>
-        <Button
-          variant={language === 'en' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setLanguage('en')}
-          className="gap-2"
-        >
-          <Languages className="w-4 h-4" />
-          English
-        </Button>
+      <div className="flex flex-col items-center gap-2 py-4">
+        <span className="text-sm text-muted-foreground">{t.eroweb.languageLabel || 'Report language'}</span>
+        <div className="flex flex-wrap justify-center gap-2">
+          {(['cs', 'en', 'de', 'ru'] as const).map((lang) => (
+            <Button
+              key={lang}
+              variant={language === lang ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setLanguage(lang)}
+              className="gap-2"
+            >
+              <Languages className="w-4 h-4" />
+              {t.eroweb.languages?.[lang] || lang.toUpperCase()}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Email Template Preview */}
-      <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background w-full">
+      <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-blue-50 to-background dark:from-blue-950/20 w-full">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-foreground text-lg flex items-center gap-2">
               <Mail className="w-5 h-5 text-blue-600" />
-              Návrh emailu
+              {t.eroweb.emailTemplate}
             </CardTitle>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => copyToClipboard(emailBody, 'email')}
+              onClick={() => copyToClipboard(emailContent.body, 'email')}
               className="gap-2"
             >
               {copiedEmail ? (
                 <>
                   <Check className="w-4 h-4 text-green-600" />
-                  Zkopírováno!
+                  {t.common.copied}
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" />
-                  Zkopírovat
+                  {t.common.copy}
                 </>
               )}
             </Button>
@@ -419,16 +492,16 @@ https://weblyx.cz`;
         <CardContent>
           <div className="space-y-4">
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Předmět:</p>
+              <p className="text-xs text-muted-foreground mb-1">{t.eroweb.subject}</p>
               <p className="font-semibold text-foreground bg-background px-3 py-2 rounded border border-border">
-                {emailSubject}
+                {emailContent.subject}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Tělo emailu:</p>
+              <p className="text-xs text-muted-foreground mb-1">{t.eroweb.body}</p>
               <div className="bg-background px-4 py-3 rounded border border-border">
                 <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
-                  {emailBody}
+                  {emailContent.body}
                 </pre>
               </div>
             </div>
@@ -437,12 +510,12 @@ https://weblyx.cz`;
       </Card>
 
       {/* WhatsApp Template Preview */}
-      <Card className="border-green-200 shadow-lg bg-gradient-to-br from-green-50 to-background w-full">
+      <Card className="border-green-200 shadow-lg bg-gradient-to-br from-green-50 to-background dark:from-green-950/20 w-full">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-foreground text-lg flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-green-600" />
-              Návrh WhatsApp zprávy
+              {t.eroweb.whatsappTemplate}
             </CardTitle>
             <Button
               variant="outline"
@@ -453,12 +526,12 @@ https://weblyx.cz`;
               {copiedWhatsApp ? (
                 <>
                   <Check className="w-4 h-4 text-green-600" />
-                  Zkopírováno!
+                  {t.common.copied}
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" />
-                  Zkopírovat
+                  {t.common.copy}
                 </>
               )}
             </Button>
@@ -471,7 +544,7 @@ https://weblyx.cz`;
             </pre>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            💡 Zkopírujte zprávu a odešlete ji přímo přes WhatsApp Web nebo mobilní aplikaci.
+            💡 {t.eroweb.copyTip}
           </p>
         </CardContent>
       </Card>

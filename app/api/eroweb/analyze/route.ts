@@ -25,6 +25,7 @@ import { generateFindings } from '@/lib/eroweb/findings';
 import { generateRecommendation } from '@/lib/eroweb/recommendations';
 import { getRecommendedPackage } from '@/types/eroweb';
 import type { BusinessType } from '@/types/eroweb';
+import type { FindingLocale } from '@/lib/eroweb/finding-translations';
 
 // Validation schema
 const AnalyzeSchema = z.object({
@@ -32,6 +33,7 @@ const AnalyzeSchema = z.object({
   businessType: z.enum(['massage', 'privat', 'escort']),
   contactName: z.string().optional(),
   contactEmail: z.string().email().optional().or(z.literal('')),
+  language: z.enum(['cs', 'en', 'de', 'ru']).optional().default('cs'),
 });
 
 // Rate limit: 20 analyses per day
@@ -50,7 +52,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { url, businessType, contactName, contactEmail } = validationResult.data;
+    const { url, businessType, contactName, contactEmail, language } = validationResult.data;
+    const lang = language as FindingLocale;
 
     // Check rate limit
     const todayCount = await getTodayAnalysisCount();
@@ -105,8 +108,8 @@ export async function POST(req: NextRequest) {
       // Calculate scores
       const scores = calculateAllScores(details);
 
-      // Generate findings
-      const findings = generateFindings(details, businessType);
+      // Generate findings (with language support)
+      const findings = generateFindings(details, businessType, lang);
 
       // Determine recommended package
       const recommendedPackage = getRecommendedPackage(
@@ -115,11 +118,12 @@ export async function POST(req: NextRequest) {
         details.hasBookingSystem
       );
 
-      // Generate recommendation text
+      // Generate recommendation text (with language support)
       const recommendation = generateRecommendation(
         scores,
         businessType,
-        recommendedPackage
+        recommendedPackage,
+        lang
       );
 
       // Save results

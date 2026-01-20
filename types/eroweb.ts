@@ -156,6 +156,7 @@ export interface AnalysisFormData {
   businessType: BusinessType;
   contactName?: string;
   contactEmail?: string;
+  language?: 'cs' | 'en' | 'de' | 'ru';
 }
 
 // Package pricing

@@ -46,6 +46,7 @@ export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
       ...formData,
       contactName: contactName || undefined,
       contactEmail: contactEmail || undefined,
+      language: locale as 'cs' | 'en' | 'de' | 'ru',
     });
   };
 

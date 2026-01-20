@@ -9,7 +9,7 @@ export interface WhatsAppMessageParams {
   businessTypeEn: string;
   score: number;
   analysisId: string;
-  language: 'cs' | 'en';
+  language: 'cs' | 'en' | 'de' | 'ru';
 }
 
 export function getWhatsAppMessage(params: WhatsAppMessageParams): string {
@@ -329,14 +329,133 @@ Weblyx Team
 🌐 weblyx.cz`
   ];
 
+  // German low score messages
+  const lowScoreMessagesDe = [
+    `Guten Tag,
+
+ich bin von Weblyx und wir spezialisieren uns auf Websites in der ${businessTypeEn}-Branche.
+
+Bei der Marktforschung bin ich auf Ihre Website *${domain}* gestoßen und habe eine schnelle Analyse aus der Perspektive moderner KI-Suchmaschinen durchgeführt.
+
+In letzter Zeit verändert sich viel, wie Kunden Dienstleistungen suchen - ChatGPT, Perplexity und andere KI-Tools beginnen das klassische Google zu ersetzen. Der Großteil der Konkurrenz ist darauf jedoch überhaupt nicht vorbereitet.
+
+Auf Ihrer Website habe ich mehrere Dinge gefunden, die potenzielle Kunden aktiv abschrecken könnten. Wenn Sie interessiert sind, kann ich Ihnen genau zeigen, was und warum es Kunden abschreckt.
+
+Haben Sie einen Moment für eine unverbindliche Beratung?
+
+Mit freundlichen Grüßen,
+Weblyx Team
+🌐 weblyx.cz`,
+  ];
+
+  const mediumScoreMessagesDe = [
+    `Guten Tag,
+
+ich bin von Weblyx und wir spezialisieren uns auf Online-Marketing für ${businessTypeEn}.
+
+Bei der Marktforschung bin ich auf Ihre Website *${domain}* gestoßen und sie hat meine Aufmerksamkeit erregt.
+
+Die Website funktioniert, ist aber nicht auf neue KI-Suchmaschinen (ChatGPT, Perplexity usw.) vorbereitet. Was eigentlich eine gute Nachricht ist - die Konkurrenz schläft auch, also ist jetzt der ideale Moment, sich mit GEO/AIEO-Optimierung vor ihnen zu positionieren.
+
+Ich sehe einige spezifische Möglichkeiten, mehr Kunden anzuziehen. Ich kann Ihnen eine vollständige Analyse kostenlos zusenden.
+
+Wären Sie interessiert?
+
+Mit freundlichen Grüßen,
+Weblyx Team
+🌐 weblyx.cz`,
+  ];
+
+  const highScoreMessagesDe = [
+    `Guten Tag,
+
+ich bin von Weblyx und führe fortgeschrittene Website-Analysen für ${businessTypeEn} durch.
+
+Ich bin auf Ihre Website *${domain}* gestoßen und muss sagen, sie ist überdurchschnittlich.
+
+Trotzdem habe ich ein paar Stellen gefunden, an denen eine bessere GEO-Optimierung für KI-Suchmaschinen die Konversionen deutlich steigern könnte. Mit dem Aufkommen von ChatGPT Search und Perplexity ändern sich die Regeln und nur wenige kümmern sich bisher darum.
+
+Wenn Sie an den Details interessiert sind, kann ich Ihnen eine vollständige Analyse zusenden.
+
+Sind Sie interessiert?
+
+Mit freundlichen Grüßen,
+Weblyx Team
+🌐 weblyx.cz`,
+  ];
+
+  // Russian low score messages
+  const lowScoreMessagesRu = [
+    `Добрый день,
+
+я из Weblyx, мы специализируемся на сайтах в индустрии ${businessTypeEn}.
+
+При исследовании рынка я наткнулся на ваш сайт *${domain}* и провел быстрый анализ с точки зрения современных AI-поисковиков.
+
+В последнее время многое меняется в том, как клиенты ищут услуги - ChatGPT, Perplexity и другие AI-инструменты начинают заменять классический Google. Однако большинство конкурентов к этому совершенно не готовы.
+
+На вашем сайте я нашел несколько вещей, которые могут активно отпугивать потенциальных клиентов. Если вам интересно, я могу показать конкретно что и почему это отпугивает клиентов.
+
+Есть ли у вас время на бесплатную консультацию?
+
+С уважением,
+Команда Weblyx
+🌐 weblyx.cz`,
+  ];
+
+  const mediumScoreMessagesRu = [
+    `Добрый день,
+
+я из Weblyx, мы специализируемся на онлайн-маркетинге для ${businessTypeEn}.
+
+При исследовании рынка я наткнулся на ваш сайт *${domain}*, и он привлек мое внимание.
+
+Сайт работает, но не готов к новым AI-поисковикам (ChatGPT, Perplexity и т.д.). Что на самом деле хорошая новость - конкуренты тоже спят, так что сейчас идеальный момент опередить их с GEO/AIEO оптимизацией.
+
+Я вижу несколько конкретных возможностей привлечь больше клиентов. Могу бесплатно отправить вам полный анализ.
+
+Вам было бы интересно?
+
+С уважением,
+Команда Weblyx
+🌐 weblyx.cz`,
+  ];
+
+  const highScoreMessagesRu = [
+    `Добрый день,
+
+я из Weblyx, занимаюсь продвинутым анализом сайтов для ${businessTypeEn}.
+
+Я наткнулся на ваш сайт *${domain}* и должен сказать, что он выше среднего.
+
+Тем не менее, я нашел несколько мест, где лучшая GEO-оптимизация для AI-поисковиков могла бы значительно увеличить конверсии. С появлением ChatGPT Search и Perplexity правила меняются, и мало кто пока обращает на это внимание.
+
+Если вам интересны детали, я могу отправить вам полный анализ.
+
+Заинтересованы?
+
+С уважением,
+Команда Weblyx
+🌐 weblyx.cz`,
+  ];
+
   // Select variation based on score and language
   let variations;
   if (score < 50) {
-    variations = language === 'cs' ? lowScoreMessagesCz : lowScoreMessagesEn;
+    if (language === 'cs') variations = lowScoreMessagesCz;
+    else if (language === 'de') variations = lowScoreMessagesDe;
+    else if (language === 'ru') variations = lowScoreMessagesRu;
+    else variations = lowScoreMessagesEn;
   } else if (score < 70) {
-    variations = language === 'cs' ? mediumScoreMessagesCz : mediumScoreMessagesEn;
+    if (language === 'cs') variations = mediumScoreMessagesCz;
+    else if (language === 'de') variations = mediumScoreMessagesDe;
+    else if (language === 'ru') variations = mediumScoreMessagesRu;
+    else variations = mediumScoreMessagesEn;
   } else {
-    variations = language === 'cs' ? highScoreMessagesCz : highScoreMessagesEn;
+    if (language === 'cs') variations = highScoreMessagesCz;
+    else if (language === 'de') variations = highScoreMessagesDe;
+    else if (language === 'ru') variations = highScoreMessagesRu;
+    else variations = highScoreMessagesEn;
   }
 
   // Use analysis ID as seed for consistent randomization per analysis

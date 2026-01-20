@@ -173,6 +173,39 @@ export const adminTranslations = {
       analysisFailed: 'Analýza selhala',
       timeout: 'Analýza trvala příliš dlouho (60s timeout)',
       tryAgain: 'Zkuste to prosím znovu',
+
+      // Score labels
+      scoreLabels: {
+        critical: 'Kritický stav',
+        poor: 'Podprůměrný',
+        average: 'Průměrný',
+        good: 'Dobrý',
+        excellent: 'Výborný',
+      },
+
+      // Finding types
+      findingTypes: {
+        critical: 'Kritické',
+        warning: 'Varování',
+        opportunity: 'Příležitost',
+      },
+      findingLabels: {
+        criticalProblems: 'Kritické problémy',
+        warnings: 'Varování',
+        opportunities: 'Příležitosti',
+        noProblems: 'Žádné problémy nenalezeny',
+        impact: 'Dopad',
+        moreFindings: 'dalších zjištění',
+      },
+
+      // Language selection
+      languageLabel: 'Jazyk reportu',
+      languages: {
+        cs: 'Čeština',
+        en: 'English',
+        de: 'Deutsch',
+        ru: 'Русский',
+      },
     },
 
     // Leads
@@ -415,6 +448,39 @@ export const adminTranslations = {
       analysisFailed: 'Analysis failed',
       timeout: 'Analysis timed out (60s limit)',
       tryAgain: 'Please try again',
+
+      // Score labels
+      scoreLabels: {
+        critical: 'Critical',
+        poor: 'Below Average',
+        average: 'Average',
+        good: 'Good',
+        excellent: 'Excellent',
+      },
+
+      // Finding types
+      findingTypes: {
+        critical: 'Critical',
+        warning: 'Warning',
+        opportunity: 'Opportunity',
+      },
+      findingLabels: {
+        criticalProblems: 'Critical Problems',
+        warnings: 'Warnings',
+        opportunities: 'Opportunities',
+        noProblems: 'No problems found',
+        impact: 'Impact',
+        moreFindings: 'more findings',
+      },
+
+      // Language selection
+      languageLabel: 'Report language',
+      languages: {
+        cs: 'Čeština',
+        en: 'English',
+        de: 'Deutsch',
+        ru: 'Русский',
+      },
     },
 
     // Leads
@@ -657,6 +723,39 @@ export const adminTranslations = {
       analysisFailed: 'Ошибка анализа',
       timeout: 'Превышено время ожидания (60 сек.)',
       tryAgain: 'Попробуйте еще раз',
+
+      // Score labels
+      scoreLabels: {
+        critical: 'Критический',
+        poor: 'Ниже среднего',
+        average: 'Средний',
+        good: 'Хороший',
+        excellent: 'Отличный',
+      },
+
+      // Finding types
+      findingTypes: {
+        critical: 'Критическое',
+        warning: 'Предупреждение',
+        opportunity: 'Возможность',
+      },
+      findingLabels: {
+        criticalProblems: 'Критические проблемы',
+        warnings: 'Предупреждения',
+        opportunities: 'Возможности',
+        noProblems: 'Проблем не обнаружено',
+        impact: 'Влияние',
+        moreFindings: 'ещё проблем',
+      },
+
+      // Language selection
+      languageLabel: 'Язык отчёта',
+      languages: {
+        cs: 'Čeština',
+        en: 'English',
+        de: 'Deutsch',
+        ru: 'Русский',
+      },
     },
 
     // Leads
@@ -899,6 +998,39 @@ export const adminTranslations = {
       analysisFailed: 'Analyse fehlgeschlagen',
       timeout: 'Zeitüberschreitung bei der Analyse (60 Sek.)',
       tryAgain: 'Bitte versuchen Sie es erneut',
+
+      // Score labels
+      scoreLabels: {
+        critical: 'Kritisch',
+        poor: 'Unterdurchschnittlich',
+        average: 'Durchschnittlich',
+        good: 'Gut',
+        excellent: 'Ausgezeichnet',
+      },
+
+      // Finding types
+      findingTypes: {
+        critical: 'Kritisch',
+        warning: 'Warnung',
+        opportunity: 'Chance',
+      },
+      findingLabels: {
+        criticalProblems: 'Kritische Probleme',
+        warnings: 'Warnungen',
+        opportunities: 'Chancen',
+        noProblems: 'Keine Probleme gefunden',
+        impact: 'Auswirkung',
+        moreFindings: 'weitere Probleme',
+      },
+
+      // Language selection
+      languageLabel: 'Berichtssprache',
+      languages: {
+        cs: 'Čeština',
+        en: 'English',
+        de: 'Deutsch',
+        ru: 'Русский',
+      },
     },
 
     // Leads

@@ -361,7 +361,10 @@ export function HistoryListCompact({
   onSelect,
   maxItems = 5,
 }: HistoryListCompactProps) {
+  const { t, locale } = useAdminTranslation();
   const displayAnalyses = analyses.slice(0, maxItems);
+  const dateLocale = locale === 'cs' ? 'cs-CZ' : locale === 'ru' ? 'ru-RU' : locale === 'de' ? 'de-DE' : 'en-US';
+  const moreLabel = locale === 'cs' ? 'dalších' : locale === 'ru' ? 'ещё' : locale === 'de' ? 'weitere' : 'more';
 
   return (
     <div className="space-y-2">
@@ -389,7 +392,7 @@ export function HistoryListCompact({
             <div className="flex-1 min-w-0">
               <div className="text-sm text-foreground truncate">{analysis.domain}</div>
               <div className="text-xs text-muted-foreground">
-                {new Date(analysis.createdAt).toLocaleDateString('cs-CZ')}
+                {new Date(analysis.createdAt).toLocaleDateString(dateLocale)}
               </div>
             </div>
           </button>
@@ -398,7 +401,7 @@ export function HistoryListCompact({
 
       {analyses.length > maxItems && (
         <div className="text-center text-xs text-muted-foreground py-2">
-          + {analyses.length - maxItems} dalsich
+          + {analyses.length - maxItems} {moreLabel}
         </div>
       )}
     </div>

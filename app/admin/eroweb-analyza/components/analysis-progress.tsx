@@ -11,39 +11,45 @@ import {
   FileText,
   Check,
 } from 'lucide-react';
-
-const STEPS = [
-  { id: 'fetch', label: 'Nacitani webu', icon: Globe },
-  { id: 'speed', label: 'Analyza rychlosti', icon: Zap },
-  { id: 'seo', label: 'Kontrola SEO', icon: Search },
-  { id: 'geo', label: 'Analyza GEO/AIEO', icon: Bot },
-  { id: 'design', label: 'Hodnoceni designu', icon: Palette },
-  { id: 'report', label: 'Generovani reportu', icon: FileText },
-];
+import { useAdminTranslation } from '@/lib/admin-i18n';
 
 interface AnalysisProgressProps {
   currentStep: string;
   completedSteps: string[];
 }
 
+const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  fetch: Globe,
+  speed: Zap,
+  seo: Search,
+  geo: Bot,
+  design: Palette,
+  report: FileText,
+};
+
+const STEP_IDS = ['fetch', 'speed', 'seo', 'geo', 'design', 'report'] as const;
+
 export function AnalysisProgress({ currentStep, completedSteps }: AnalysisProgressProps) {
+  const { t } = useAdminTranslation();
+
   return (
-    <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
+    <Card className="bg-card border-border">
       <CardContent className="py-6">
         <div className="space-y-4">
-          {STEPS.map((step) => {
-            const isCompleted = completedSteps.includes(step.id);
-            const isCurrent = currentStep === step.id;
-            const Icon = step.icon;
+          {STEP_IDS.map((stepId) => {
+            const isCompleted = completedSteps.includes(stepId);
+            const isCurrent = currentStep === stepId;
+            const Icon = STEP_ICONS[stepId];
+            const label = t.eroweb.steps[stepId as keyof typeof t.eroweb.steps];
 
             return (
-              <div key={step.id} className="flex items-center gap-4">
+              <div key={stepId} className="flex items-center gap-4">
                 <div
                   className={cn(
                     'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
-                    isCompleted && 'bg-[#10B981] text-white',
-                    isCurrent && 'bg-[#7C3AED] text-white animate-pulse',
-                    !isCompleted && !isCurrent && 'bg-[#252525] text-[#71717A]'
+                    isCompleted && 'bg-green-500 text-white',
+                    isCurrent && 'bg-primary text-white animate-pulse',
+                    !isCompleted && !isCurrent && 'bg-muted text-muted-foreground'
                   )}
                 >
                   {isCompleted ? (
@@ -55,12 +61,12 @@ export function AnalysisProgress({ currentStep, completedSteps }: AnalysisProgre
                 <span
                   className={cn(
                     'text-sm transition-colors',
-                    isCompleted && 'text-white',
-                    isCurrent && 'text-white font-medium',
-                    !isCompleted && !isCurrent && 'text-[#71717A]'
+                    isCompleted && 'text-foreground',
+                    isCurrent && 'text-foreground font-medium',
+                    !isCompleted && !isCurrent && 'text-muted-foreground'
                   )}
                 >
-                  {step.label}
+                  {label}
                   {isCurrent && '...'}
                 </span>
               </div>
@@ -74,10 +80,12 @@ export function AnalysisProgress({ currentStep, completedSteps }: AnalysisProgre
 
 // Simple loading indicator for inline use
 export function AnalysisLoadingInline() {
+  const { t } = useAdminTranslation();
+
   return (
-    <div className="flex items-center gap-3 text-[#A1A1AA]">
-      <div className="w-5 h-5 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
-      <span>Analyzuji web...</span>
+    <div className="flex items-center gap-3 text-muted-foreground">
+      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <span>{t.eroweb.analyzing}</span>
     </div>
   );
 }

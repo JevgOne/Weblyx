@@ -1,8 +1,17 @@
 // EroWeb Findings Generator
-// Generates actionable findings based on analysis details
+// Generates actionable findings based on analysis details with i18n support
 
 import type { AnalysisDetails, Finding, FindingType, BusinessType } from '@/types/eroweb';
-import { BUSINESS_TYPE_LABELS } from '@/types/eroweb';
+import {
+  FindingLocale,
+  SPEED_FINDINGS,
+  MOBILE_FINDINGS,
+  SECURITY_FINDINGS,
+  SEO_FINDINGS,
+  GEO_FINDINGS,
+  DESIGN_FINDINGS,
+  BUSINESS_TYPE_LABELS_I18N,
+} from './finding-translations';
 
 let findingIdCounter = 0;
 
@@ -28,59 +37,64 @@ function createFinding(
 /**
  * Generate speed-related findings
  */
-function generateSpeedFindings(details: AnalysisDetails): Finding[] {
+function generateSpeedFindings(details: AnalysisDetails, lang: FindingLocale): Finding[] {
   const findings: Finding[] = [];
 
   // LCP issues
   if (details.lcp > 6000) {
+    const t = SPEED_FINDINGS.lcp_critical[lang];
     findings.push(createFinding(
       'critical',
       'speed',
-      'Web se načítá přes 6 sekund',
-      `Největší obsahový prvek (LCP) se načítá ${(details.lcp / 1000).toFixed(1)} sekund. Google doporučuje pod 2.5 sekundy.`,
-      '53% návštěvníků odejde před načtením stránky',
+      t.title,
+      t.description(details.lcp),
+      t.impact,
       10
     ));
   } else if (details.lcp > 4000) {
+    const t = SPEED_FINDINGS.lcp_warning[lang];
     findings.push(createFinding(
       'warning',
       'speed',
-      'Pomalé načítání hlavního obsahu',
-      `LCP je ${(details.lcp / 1000).toFixed(1)} sekund. Optimální je pod 2.5 sekundy.`,
-      'Pomalé načítání snižuje konverze o 20-30%',
+      t.title,
+      t.description(details.lcp),
+      t.impact,
       7
     ));
   }
 
   // TTFB issues
   if (details.ttfb > 1800) {
+    const t = SPEED_FINDINGS.ttfb_slow[lang];
     findings.push(createFinding(
       'warning',
       'speed',
-      'Pomalá odezva serveru',
-      `Server odpovídá za ${(details.ttfb / 1000).toFixed(1)} sekund (TTFB). Doporučeno pod 0.8 sekundy.`,
-      'Může signalizovat přetížený nebo špatně nakonfigurovaný hosting',
+      t.title,
+      t.description(details.ttfb),
+      t.impact,
       6
     ));
   }
 
   // PageSpeed score
   if (details.pageSpeedScore < 50) {
+    const t = SPEED_FINDINGS.pagespeed_critical[lang];
     findings.push(createFinding(
       'critical',
       'speed',
-      `Google PageSpeed skóre pouze ${details.pageSpeedScore}/100`,
-      'Nízké skóre negativně ovlivňuje pozice ve vyhledávání a uživatelskou zkušenost.',
-      'Google upřednostňuje rychlé weby v mobilním vyhledávání',
+      t.title(details.pageSpeedScore),
+      t.description,
+      t.impact,
       9
     ));
   } else if (details.pageSpeedScore < 70) {
+    const t = SPEED_FINDINGS.pagespeed_warning[lang];
     findings.push(createFinding(
       'warning',
       'speed',
-      `PageSpeed skóre ${details.pageSpeedScore}/100 - prostor pro zlepšení`,
-      'Optimalizací obrázků a kódu lze dosáhnout skóre 90+.',
-      'Rychlejší web = více konverzí',
+      t.title(details.pageSpeedScore),
+      t.description,
+      t.impact,
       5
     ));
   }
@@ -91,49 +105,53 @@ function generateSpeedFindings(details: AnalysisDetails): Finding[] {
 /**
  * Generate mobile-related findings
  */
-function generateMobileFindings(details: AnalysisDetails): Finding[] {
+function generateMobileFindings(details: AnalysisDetails, lang: FindingLocale): Finding[] {
   const findings: Finding[] = [];
 
   if (!details.hasViewportMeta) {
+    const t = MOBILE_FINDINGS.no_viewport[lang];
     findings.push(createFinding(
       'critical',
       'mobile',
-      'Web není optimalizován pro mobily',
-      'Chybí viewport meta tag - web se na mobilech zobrazuje jako desktop verze.',
-      '70%+ návštěvníků přichází z mobilních zařízení',
+      t.title,
+      t.description,
+      t.impact,
       10
     ));
   }
 
   if (details.hasHorizontalScroll) {
+    const t = MOBILE_FINDINGS.horizontal_scroll[lang];
     findings.push(createFinding(
       'warning',
       'mobile',
-      'Horizontální scrollování na mobilu',
-      'Některé prvky přesahují šířku obrazovky, což zhoršuje použitelnost.',
-      'Frustruje uživatele a snižuje čas strávený na webu',
+      t.title,
+      t.description,
+      t.impact,
       6
     ));
   }
 
   if (!details.touchTargetsOk) {
+    const t = MOBILE_FINDINGS.small_touch_targets[lang];
     findings.push(createFinding(
       'warning',
       'mobile',
-      'Tlačítka jsou příliš malá pro dotyk',
-      'Interaktivní prvky mají méně než 48px, což ztěžuje ovládání na mobilu.',
-      'Uživatelé mohou kliknout na špatný odkaz',
+      t.title,
+      t.description,
+      t.impact,
       5
     ));
   }
 
   if (!details.textReadable) {
+    const t = MOBILE_FINDINGS.text_not_readable[lang];
     findings.push(createFinding(
       'warning',
       'mobile',
-      'Text je na mobilu špatně čitelný',
-      'Font je příliš malý nebo má špatný kontrast.',
-      'Nutí uživatele přibližovat, což zhoršuje UX',
+      t.title,
+      t.description,
+      t.impact,
       4
     ));
   }
@@ -144,38 +162,41 @@ function generateMobileFindings(details: AnalysisDetails): Finding[] {
 /**
  * Generate security-related findings
  */
-function generateSecurityFindings(details: AnalysisDetails): Finding[] {
+function generateSecurityFindings(details: AnalysisDetails, lang: FindingLocale): Finding[] {
   const findings: Finding[] = [];
 
   if (!details.hasHttps) {
+    const t = SECURITY_FINDINGS.no_https[lang];
     findings.push(createFinding(
       'critical',
       'security',
-      'Web nemá HTTPS zabezpečení',
-      'Prohlížeče označují web jako "Nezabezpečený" - odrazuje zákazníky.',
-      'Ztráta důvěry a negativní vliv na SEO',
+      t.title,
+      t.description,
+      t.impact,
       10
     ));
   }
 
   if (details.hasMixedContent) {
+    const t = SECURITY_FINDINGS.mixed_content[lang];
     findings.push(createFinding(
       'warning',
       'security',
-      'Smíšený obsah (HTTP na HTTPS stránce)',
-      'Některé obrázky nebo skripty se načítají přes nezabezpečené HTTP.',
-      'Může způsobit varování v prohlížeči',
+      t.title,
+      t.description,
+      t.impact,
       5
     ));
   }
 
   if (!details.hasSecurityHeaders && details.hasHttps) {
+    const t = SECURITY_FINDINGS.no_security_headers[lang];
     findings.push(createFinding(
       'opportunity',
       'security',
-      'Chybí bezpečnostní hlavičky',
-      'Security headers (CSP, X-Frame-Options) nejsou nastaveny.',
-      'Zvýšené riziko útoků (XSS, clickjacking)',
+      t.title,
+      t.description,
+      t.impact,
       3
     ));
   }
@@ -186,110 +207,121 @@ function generateSecurityFindings(details: AnalysisDetails): Finding[] {
 /**
  * Generate SEO-related findings
  */
-function generateSeoFindings(details: AnalysisDetails): Finding[] {
+function generateSeoFindings(details: AnalysisDetails, lang: FindingLocale): Finding[] {
   const findings: Finding[] = [];
 
   if (!details.title) {
+    const t = SEO_FINDINGS.no_title[lang];
     findings.push(createFinding(
       'critical',
       'seo',
-      'Chybí title tag',
-      'Stránka nemá definovaný title - Google zobrazí náhodný text.',
-      'Výrazně snižuje CTR ve výsledcích vyhledávání',
+      t.title,
+      t.description,
+      t.impact,
       10
     ));
   } else if (details.titleLength > 70) {
+    const t = SEO_FINDINGS.title_too_long[lang];
     findings.push(createFinding(
       'warning',
       'seo',
-      `Title tag je příliš dlouhý (${details.titleLength} znaků)`,
-      'Optimální délka je 50-60 znaků. Delší text bude oříznut.',
-      'Oříznutý title snižuje atraktivitu ve výsledcích',
+      t.title(details.titleLength),
+      t.description,
+      t.impact,
       4
     ));
   } else if (details.titleLength < 30) {
+    const t = SEO_FINDINGS.title_too_short[lang];
     findings.push(createFinding(
       'warning',
       'seo',
-      `Title tag je příliš krátký (${details.titleLength} znaků)`,
-      'Nevyužíváte plný potenciál pro klíčová slova.',
-      'Méně informací = nižší CTR',
+      t.title(details.titleLength),
+      t.description,
+      t.impact,
       3
     ));
   }
 
   if (!details.metaDescription) {
+    const t = SEO_FINDINGS.no_meta_description[lang];
     findings.push(createFinding(
       'critical',
       'seo',
-      'Chybí meta description',
-      'Google zobrazuje náhodný text z webu místo vašeho popisu.',
-      'Nemůžete ovlivnit, co zákazníci vidí ve výsledcích',
+      t.title,
+      t.description,
+      t.impact,
       9
     ));
   }
 
   if (!details.h1 || details.h1Count === 0) {
+    const t = SEO_FINDINGS.no_h1[lang];
     findings.push(createFinding(
       'warning',
       'seo',
-      'Chybí H1 nadpis',
-      'Hlavní nadpis stránky není definován nebo není označen jako H1.',
-      'Google neví, o čem stránka je',
+      t.title,
+      t.description,
+      t.impact,
       6
     ));
   } else if (details.h1Count > 1) {
+    const t = SEO_FINDINGS.multiple_h1[lang];
     findings.push(createFinding(
       'warning',
       'seo',
-      `Více H1 nadpisů na stránce (${details.h1Count})`,
-      'Měl by být pouze jeden H1 nadpis - hlavní téma stránky.',
-      'Matoucí pro vyhledávače',
+      t.title(details.h1Count),
+      t.description,
+      t.impact,
       4
     ));
   }
 
   if (details.totalImages > 0) {
     const altRatio = details.imagesWithAlt / details.totalImages;
+    const missingAlt = details.totalImages - details.imagesWithAlt;
     if (altRatio < 0.5) {
+      const t = SEO_FINDINGS.images_no_alt_critical[lang];
       findings.push(createFinding(
         'critical',
         'seo',
-        `Obrázky bez alt textů (${Math.round((1 - altRatio) * 100)}%)`,
-        `${details.totalImages - details.imagesWithAlt} z ${details.totalImages} obrázků nemá alt text.`,
-        'Google nemůže indexovat obrázky, ztrácíte image search traffic',
+        t.title(Math.round((1 - altRatio) * 100)),
+        t.description(missingAlt, details.totalImages),
+        t.impact,
         8
       ));
     } else if (altRatio < 0.9) {
+      const t = SEO_FINDINGS.images_no_alt_warning[lang];
       findings.push(createFinding(
         'warning',
         'seo',
-        'Některé obrázky nemají alt text',
-        `${details.totalImages - details.imagesWithAlt} obrázků bez popisu.`,
-        'Ztrácíte potenciální návštěvníky z Google Images',
+        t.title,
+        t.description(missingAlt),
+        t.impact,
         4
       ));
     }
   }
 
   if (!details.hasSitemap) {
+    const t = SEO_FINDINGS.no_sitemap[lang];
     findings.push(createFinding(
       'warning',
       'seo',
-      'Chybí sitemap.xml',
-      'Google má problém najít všechny stránky webu.',
-      'Některé stránky nemusí být indexovány',
+      t.title,
+      t.description,
+      t.impact,
       5
     ));
   }
 
   if (!details.hasStructuredData) {
+    const t = SEO_FINDINGS.no_structured_data[lang];
     findings.push(createFinding(
       'opportunity',
       'seo',
-      'Chybí strukturovaná data (Schema.org)',
-      'Web nemá JSON-LD schema markup pro rich snippets.',
-      'Přidání LocalBusiness schema zvýší viditelnost v lokálním vyhledávání',
+      t.title,
+      t.description,
+      t.impact,
       6
     ));
   }
@@ -300,74 +332,80 @@ function generateSeoFindings(details: AnalysisDetails): Finding[] {
 /**
  * Generate GEO-related findings (AI Engine Optimization)
  */
-function generateGeoFindings(details: AnalysisDetails, businessType: BusinessType): Finding[] {
+function generateGeoFindings(details: AnalysisDetails, businessType: BusinessType, lang: FindingLocale): Finding[] {
   const findings: Finding[] = [];
-  const businessLabel = BUSINESS_TYPE_LABELS[businessType];
+  const businessLabel = BUSINESS_TYPE_LABELS_I18N[lang][businessType];
 
   if (!details.hasFaqSection && !details.hasQaFormat) {
+    const t = GEO_FINDINGS.no_faq[lang];
     findings.push(createFinding(
       'warning',
       'geo',
-      'Chybí FAQ sekce',
-      'AI asistenti (ChatGPT, Perplexity) potřebují strukturované odpovědi na časté dotazy.',
-      'FAQ sekce s 10+ otázkami může zvýšit citovanost v AI odpovědích o 40%',
+      t.title,
+      t.description,
+      t.impact,
       7
     ));
   }
 
   if (!details.hasLocalBusinessSchema) {
+    const t = GEO_FINDINGS.no_local_business_schema[lang];
     findings.push(createFinding(
       'warning',
       'geo',
-      'Chybí LocalBusiness schema',
-      'AI vyhledávače nedokáží ověřit důvěryhodnost a lokaci vašeho podniku.',
-      'Přidání schema s otevírací dobou a ceníkem zvýší citovanost v AI',
+      t.title,
+      t.description,
+      t.impact,
       6
     ));
   }
 
   if (!details.hasAddress && !details.hasOpeningHours) {
+    const t = GEO_FINDINGS.no_business_info[lang];
     findings.push(createFinding(
       'warning',
       'geo',
-      'Chybí konkrétní informace o podniku',
-      'Web neobsahuje adresu ani otevírací dobu.',
-      'AI asistenti nemohou odpovědět na dotazy typu "kde najdu" nebo "kdy máte otevřeno"',
+      t.title,
+      t.description,
+      t.impact,
       5
     ));
   }
 
   if (!details.hasPricing) {
+    const t = GEO_FINDINGS.no_pricing[lang];
     findings.push(createFinding(
       'opportunity',
       'geo',
-      'Ceník není strukturovaný',
-      'Přehledný ceník s konkrétními cenami pomáhá AI odpovídat na cenové dotazy.',
-      `Zákazníci hledající "${businessLabel} cena" vás nenajdou`,
+      t.title,
+      t.description,
+      t.impact(businessLabel),
       4
     ));
   }
 
   const currentYear = new Date().getFullYear();
   if (details.contentYear < currentYear - 2) {
+    const t = GEO_FINDINGS.outdated_content[lang];
     findings.push(createFinding(
       'warning',
       'geo',
-      'Obsah působí zastarale',
-      `Copyright nebo datum aktualizace je z roku ${details.contentYear || 'neznámý'}.`,
-      'AI preferuje aktuální obsah při generování odpovědí',
+      t.title,
+      t.description(details.contentYear),
+      t.impact,
       4
     ));
   }
 
   // Always add GEO opportunity for adult industry
   if (!details.hasLocalBusinessSchema || !details.hasFaqSection) {
+    const t = GEO_FINDINGS.geo_opportunity[lang];
     findings.push(createFinding(
       'opportunity',
       'geo',
-      'Optimalizace pro AI vyhledávače (GEO)',
-      'V roce 2025 přes 400 milionů lidí používá ChatGPT týdně. Optimalizace pro AI je nový standard.',
-      'Weby optimalizované pro GEO mají až 40% vyšší citovanost',
+      t.title,
+      t.description,
+      t.impact,
       8
     ));
   }
@@ -378,83 +416,87 @@ function generateGeoFindings(details: AnalysisDetails, businessType: BusinessTyp
 /**
  * Generate design-related findings
  */
-function generateDesignFindings(details: AnalysisDetails, businessType: BusinessType): Finding[] {
+function generateDesignFindings(details: AnalysisDetails, businessType: BusinessType, lang: FindingLocale): Finding[] {
   const findings: Finding[] = [];
   const currentYear = new Date().getFullYear();
 
   if (details.copyrightYear && details.copyrightYear < currentYear - 5) {
+    const t = DESIGN_FINDINGS.design_outdated_critical[lang];
     findings.push(createFinding(
       'critical',
       'design',
-      `Design vypadá jako z roku ${details.copyrightYear}`,
-      'Vizuální styl webu je zastaralý a neodpovídá moderním standardům.',
-      'První dojem odrazuje moderní zákazníky hledající kvalitní služby',
+      t.title(details.copyrightYear),
+      t.description,
+      t.impact,
       9
     ));
   } else if (details.copyrightYear && details.copyrightYear < currentYear - 3) {
+    const t = DESIGN_FINDINGS.design_outdated_warning[lang];
     findings.push(createFinding(
       'warning',
       'design',
-      'Design by zasloužil modernizaci',
-      'Web funguje, ale vizuálně zaostává za konkurencí.',
-      'Modernější vzhled zvyšuje důvěryhodnost',
+      t.title,
+      t.description,
+      t.impact,
       5
     ));
   }
 
-  // Note: Image quality check removed for erotic websites
-  // Blurred faces are intentional for privacy protection, not a quality issue
-
   if (!details.hasBookingSystem) {
+    const t = DESIGN_FINDINGS.no_booking[lang];
     findings.push(createFinding(
       'warning',
       'design',
-      'Chybí online rezervace',
-      'Klienti musí volat pro objednání - mnoho raději odejde ke konkurenci.',
-      'Online rezervace může zvýšit počet zákazníků o 25-40%',
+      t.title,
+      t.description,
+      t.impact,
       7
     ));
   }
 
   if (!details.hasWhatsApp && !details.hasPhone) {
+    const t = DESIGN_FINDINGS.no_contact[lang];
     findings.push(createFinding(
       'critical',
       'design',
-      'Chybí kontaktní možnosti',
-      'Web nemá viditelné telefonní číslo ani WhatsApp.',
-      'Zákazníci nemohou kontaktovat - kritická chyba',
+      t.title,
+      t.description,
+      t.impact,
       10
     ));
   } else if (!details.hasWhatsApp) {
+    const t = DESIGN_FINDINGS.no_whatsapp[lang];
     findings.push(createFinding(
       'opportunity',
       'design',
-      'Přidejte WhatsApp tlačítko',
-      'Mnoho klientů preferuje diskrétní komunikaci přes WhatsApp.',
-      'WhatsApp tlačítko může zvýšit konverze o 25%',
+      t.title,
+      t.description,
+      t.impact,
       5
     ));
   }
 
   if (!details.hasPricing) {
+    const t = DESIGN_FINDINGS.pricing_unclear[lang];
     findings.push(createFinding(
       'warning',
       'design',
-      'Ceník není přehledný',
-      'Zákazníci nevědí, co mohou očekávat - mnoho odejde.',
-      'Transparentní ceny budují důvěru',
+      t.title,
+      t.description,
+      t.impact,
       6
     ));
   }
 
   // CMS detection
   if (details.cmsDetected === 'wordpress') {
+    const t = DESIGN_FINDINGS.wordpress_detected[lang];
     findings.push(createFinding(
       'opportunity',
       'design',
-      'Web běží na WordPress',
-      'WordPress je náchylný k bezpečnostním problémům a bývá pomalý.',
-      'Moderní technologie (Next.js) jsou rychlejší a bezpečnější',
+      t.title,
+      t.description,
+      t.impact,
       4
     ));
   }
@@ -465,17 +507,21 @@ function generateDesignFindings(details: AnalysisDetails, businessType: Business
 /**
  * Generate all findings for an analysis
  */
-export function generateFindings(details: AnalysisDetails, businessType: BusinessType): Finding[] {
+export function generateFindings(
+  details: AnalysisDetails,
+  businessType: BusinessType,
+  language: FindingLocale = 'cs'
+): Finding[] {
   // Reset counter for each analysis
   findingIdCounter = 0;
 
   const allFindings: Finding[] = [
-    ...generateSpeedFindings(details),
-    ...generateMobileFindings(details),
-    ...generateSecurityFindings(details),
-    ...generateSeoFindings(details),
-    ...generateGeoFindings(details, businessType),
-    ...generateDesignFindings(details, businessType),
+    ...generateSpeedFindings(details, language),
+    ...generateMobileFindings(details, language),
+    ...generateSecurityFindings(details, language),
+    ...generateSeoFindings(details, language),
+    ...generateGeoFindings(details, businessType, language),
+    ...generateDesignFindings(details, businessType, language),
   ];
 
   // Sort by priority (highest first)

@@ -82,7 +82,7 @@ export default function EroWebAnalyzaPage() {
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error || 'Analyza selhala');
+        throw new Error(error.error || t.eroweb.analysisFailed);
       }
 
       const analysis = await res.json();
@@ -91,14 +91,14 @@ export default function EroWebAnalyzaPage() {
       setAnalyses((prev) => [analysis, ...prev]);
       setViewState('report');
 
-      console.log('✅ Analyza dokoncena', `Skore: ${analysis.scores.total}/100`);
+      console.log('✅ Analysis completed', `Score: ${analysis.scores.total}/100`);
     } catch (error: any) {
       if (error.name === 'AbortError') {
-        console.error('❌ Analyza trvala prilis dlouho (60s timeout)');
-        alert('Analyza trvala příliš dlouho. Web může být nedostupný nebo PageSpeed API nepracuje. Zkuste to prosím později.');
+        console.error('❌ Analysis timeout (60s)');
+        alert(t.eroweb.timeout + ' ' + t.eroweb.tryAgain);
       } else {
-        console.error('❌ Chyba pri analyze:', error.message);
-        alert(`Chyba: ${error.message}`);
+        console.error('❌ Analysis error:', error.message);
+        alert(`${t.eroweb.analysisFailed}: ${error.message}`);
       }
       setViewState('form');
     } finally {
@@ -121,10 +121,10 @@ export default function EroWebAnalyzaPage() {
           setCurrentAnalysis(null);
           setViewState('form');
         }
-        console.log('✅ Analyza smazana');
+        console.log('✅ Analysis deleted');
       }
     } catch (error) {
-      console.error('❌ Chyba pri mazani');
+      console.error('❌ Delete error');
     }
   };
 
@@ -151,7 +151,7 @@ export default function EroWebAnalyzaPage() {
       });
 
       if (!res.ok) {
-        throw new Error('Odeslani selhalo');
+        throw new Error('Email send failed');
       }
 
       // Update local state
@@ -166,9 +166,9 @@ export default function EroWebAnalyzaPage() {
         prev ? { ...prev, emailSent: true, emailSentAt: new Date() } : null
       );
 
-      console.log('✅ Email odeslan', `Odeslan na ${to}`);
+      console.log('✅ Email sent', `Sent to ${to}`);
     } catch (error: any) {
-      console.error('❌ Chyba pri odeslani emailu:', error.message);
+      console.error('❌ Email send error:', error.message);
     }
   };
 
@@ -177,7 +177,7 @@ export default function EroWebAnalyzaPage() {
 
     try {
       const res = await fetch(`/api/eroweb/pdf?id=${currentAnalysis.id}`);
-      if (!res.ok) throw new Error('Generovani PDF selhalo');
+      if (!res.ok) throw new Error('PDF generation failed');
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
@@ -189,9 +189,9 @@ export default function EroWebAnalyzaPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      console.log('✅ PDF stazeno');
+      console.log('✅ PDF downloaded');
     } catch (error: any) {
-      console.error('❌ Chyba pri stahovani PDF:', error.message);
+      console.error('❌ PDF download error:', error.message);
     }
   };
 
@@ -206,7 +206,7 @@ export default function EroWebAnalyzaPage() {
       });
 
       if (!res.ok) {
-        throw new Error('Zmena statusu selhala');
+        throw new Error('Status change failed');
       }
 
       const { analysis } = await res.json();
@@ -217,9 +217,9 @@ export default function EroWebAnalyzaPage() {
       );
       setCurrentAnalysis(analysis);
 
-      console.log('✅ Status zmenen', `Novy status: ${status}`);
+      console.log('✅ Status changed', `New status: ${status}`);
     } catch (error: any) {
-      console.error('❌ Chyba pri zmene statusu:', error.message);
+      console.error('❌ Status change error:', error.message);
     }
   };
 

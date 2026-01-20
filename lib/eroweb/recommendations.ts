@@ -1,5 +1,5 @@
 // EroWeb Recommendation Generator
-// Generates personalized recommendations based on analysis results
+// Generates personalized recommendations based on analysis results with i18n support
 
 import type {
   AnalysisScores,
@@ -10,11 +10,19 @@ import type {
 } from '@/types/eroweb';
 import {
   getScoreCategory,
-  SCORE_DESCRIPTIONS,
   EROWEB_PACKAGES,
-  BUSINESS_TYPE_LABELS,
   formatPriceRange
 } from '@/types/eroweb';
+import {
+  RecommendationLocale,
+  SCORE_DESCRIPTIONS_I18N,
+  WEAK_AREA_LABELS_I18N,
+  RECOMMENDATION_TEXTS_I18N,
+  PACKAGE_NAMES_I18N,
+  PACKAGE_FEATURES_I18N,
+  COMPARISON_TABLE_I18N,
+} from './recommendation-translations';
+import { BUSINESS_TYPE_LABELS_I18N } from './finding-translations';
 
 /**
  * Generate recommendation text based on analysis
@@ -22,31 +30,33 @@ import {
 export function generateRecommendation(
   scores: AnalysisScores,
   businessType: BusinessType,
-  recommendedPackage: PackageType
+  recommendedPackage: PackageType,
+  language: RecommendationLocale = 'cs'
 ): string {
   const category = getScoreCategory(scores.total);
-  const baseDescription = SCORE_DESCRIPTIONS[category];
-  const pkg = EROWEB_PACKAGES[recommendedPackage];
-  const businessLabel = BUSINESS_TYPE_LABELS[businessType];
+  const baseDescription = SCORE_DESCRIPTIONS_I18N[language][category];
+  const businessLabel = BUSINESS_TYPE_LABELS_I18N[language][businessType];
+  const t = RECOMMENDATION_TEXTS_I18N[language];
+  const weakLabels = WEAK_AREA_LABELS_I18N[language];
 
   let recommendation = baseDescription + '\n\n';
 
   // Add specific recommendations based on weak areas
   const weakAreas: string[] = [];
 
-  if (scores.speed < 10) weakAreas.push('rychlost načítání');
-  if (scores.mobile < 8) weakAreas.push('mobilní optimalizace');
-  if (scores.security < 5) weakAreas.push('zabezpečení');
-  if (scores.seo < 10) weakAreas.push('SEO');
-  if (scores.geo < 8) weakAreas.push('optimalizace pro AI vyhledávače');
-  if (scores.design < 10) weakAreas.push('design a UX');
+  if (scores.speed < 10) weakAreas.push(weakLabels.speed);
+  if (scores.mobile < 8) weakAreas.push(weakLabels.mobile);
+  if (scores.security < 5) weakAreas.push(weakLabels.security);
+  if (scores.seo < 10) weakAreas.push(weakLabels.seo);
+  if (scores.geo < 8) weakAreas.push(weakLabels.geo);
+  if (scores.design < 10) weakAreas.push(weakLabels.design);
 
   if (weakAreas.length > 0) {
-    recommendation += `Hlavní oblasti ke zlepšení: ${weakAreas.join(', ')}.\n\n`;
+    recommendation += `${t.mainAreasToImprove}: ${weakAreas.join(', ')}.\n\n`;
   }
 
   // Individual pricing approach (no specific packages)
-  recommendation += `Ceník je individuální podle rozsahu prací. Pro váš typ podnikání (${businessLabel}) připravíme nabídku přesně na míru.`;
+  recommendation += `${t.pricingIndividual} (${businessLabel}) ${t.customOffer}`;
 
   return recommendation;
 }
@@ -57,110 +67,99 @@ export function generateRecommendation(
 export function generatePackageRecommendationText(
   recommendedPackage: PackageType,
   scores: AnalysisScores,
-  businessType: BusinessType
+  businessType: BusinessType,
+  language: RecommendationLocale = 'cs'
 ): string {
   const pkg = EROWEB_PACKAGES[recommendedPackage];
-  const category = getScoreCategory(scores.total);
+  const pkgName = PACKAGE_NAMES_I18N[language][recommendedPackage];
+  const features = PACKAGE_FEATURES_I18N[recommendedPackage][language];
+  const t = RECOMMENDATION_TEXTS_I18N[language];
 
-  const header = `🎯 NAŠE DOPORUČENÍ: ${pkg.name}`;
+  const header = `${t.ourRecommendation}: ${pkgName}`;
   const divider = '━'.repeat(42);
 
   let text = `${header}\n\n`;
 
   if (recommendedPackage === 'basic') {
-    text += `Vzhledem ke stavu vašeho současného webu doporučujeme
-začít s balíčkem ${pkg.name}.
+    text += `${t.basicIntro}
+${pkgName}.
 
 ${divider}
-💰 CENA: ${formatPriceRange(pkg.priceMin, pkg.priceMax)} (jednorázově)
-⏱️ DODÁNÍ: ${pkg.deliveryTime}
+${t.price}: ${formatPriceRange(pkg.priceMin, pkg.priceMax)} (${t.oneTime})
+${t.delivery}: ${pkg.deliveryTime}
 ${divider}
 
-Co získáte:
-${pkg.features.map(f => `• ${f}`).join('\n')}
+${t.whatYouGet}:
+${features.map(f => `• ${f}`).join('\n')}
 
-Proč investovat:
+${t.whyInvest}:
 ${divider}
-Váš současný web vás stojí zákazníky každý den.
-Za jednorázovou investici získáte web, který bude
-pracovat pro vás 24/7.
+${t.basicWhyInvest}
 
-Srovnání s konkurencí:
-• Běžná agentura: 40 000 - 80 000 Kč
+${t.comparisonWithCompetition}:
+• ${t.regularAgency}: 40 000 - 80 000 Kč
 • Weblyx: ${formatPriceRange(pkg.priceMin, pkg.priceMax)}
-• ÚSPORA: až 70%
+• ${t.savings}: 70%
 
-💡 TIP: Pokud plánujete růst nebo máte více dívek,
-zvažte rovnou EroWeb PREMIUM s online rezervacemi
-a profily - ušetříte za pozdější upgrade.`;
+${t.tip}: ${t.basicTip}`;
 
   } else if (recommendedPackage === 'premium') {
-    text += `Pro váš typ podnikání doporučujeme kompletní řešení
-${pkg.name} s rezervačním systémem a profily.
+    text += `${t.premiumIntro}
+${pkgName} ${t.premiumSuffix}
 
 ${divider}
-💰 CENA: ${formatPriceRange(pkg.priceMin, pkg.priceMax)} (jednorázově)
-⏱️ DODÁNÍ: ${pkg.deliveryTime}
+${t.price}: ${formatPriceRange(pkg.priceMin, pkg.priceMax)} (${t.oneTime})
+${t.delivery}: ${pkg.deliveryTime}
 ${divider}
 
-Co získáte navíc oproti běžným webům:
-${pkg.features.slice(0, 12).map(f => `• ✅ ${f}`).join('\n')}
+${t.whatYouGetExtra}:
+${features.slice(0, 12).map(f => `• ✅ ${f}`).join('\n')}
 
-Proč PREMIUM:
+${t.whyInvest}:
 ${divider}
-Online rezervace zvyšují počet zákazníků o 25-40%.
-Mnoho klientů preferuje rezervaci bez telefonování -
-zejména u diskrétních služeb.
+${t.premiumWhyInvest}
 
-Optimalizace pro AI vyhledávače (GEO) zajistí,
-že vás doporučí ChatGPT a další AI asistenti,
-které dnes používá přes 400 milionů lidí týdně.
+${t.premiumGeo}
 
-Srovnání s konkurencí:
-• Běžná agentura: 80 000 - 150 000 Kč
+${t.comparisonWithCompetition}:
+• ${t.regularAgency}: 80 000 - 150 000 Kč
 • Weblyx: ${formatPriceRange(pkg.priceMin, pkg.priceMax)}
-• ÚSPORA: až 60%
+• ${t.savings}: 60%
 
-ROI (návratnost investice):
+${t.roi}:
 ${divider}
-Při průměrné útratě 2 500 Kč na klienta stačí
-získat 20-24 nových zákazníků a investice se vrátí.
-S online rezervacemi to může být otázka 1-2 měsíců.`;
+${t.premiumRoi}`;
 
   } else if (recommendedPackage === 'enterprise') {
-    text += `Pro vaši velikost operace doporučujeme kompletní
-řešení ${pkg.name} s mobilní aplikací.
+    text += `${t.enterpriseIntro}
+${pkgName} ${t.enterpriseSuffix}
 
 ${divider}
-💰 CENA: ${formatPriceRange(pkg.priceMin, pkg.priceMax)} (jednorázově)
-⏱️ DODÁNÍ: ${pkg.deliveryTime}
+${t.price}: ${formatPriceRange(pkg.priceMin, pkg.priceMax)} (${t.oneTime})
+${t.delivery}: ${pkg.deliveryTime}
 ${divider}
 
-Co získáte:
-${pkg.features.map(f => `• ✅ ${f}`).join('\n')}
+${t.whatYouGet}:
+${features.map(f => `• ✅ ${f}`).join('\n')}
 
-Proč ENTERPRISE:
+${t.whyInvest}:
 ${divider}
-PWA mobilní aplikace umožňuje:
-• Každé dívce vlastní přístup a přehled rezervací
-• Push notifikace o nových rezervacích
-• Dashboard pro management s přehledem výkonnosti
-• Statistiky a reporty
+${t.enterpriseWhyInvest}:
+• ${t.enterpriseFeature1}
+• ${t.enterpriseFeature2}
+• ${t.enterpriseFeature3}
+• ${t.enterpriseFeature4}
 
-S více než 10 dívkami potřebujete systém, který
-škáluje. ENTERPRISE řeší správu personálu,
-rezervace a komunikaci na jednom místě.
+${t.enterpriseScaling}
 
-Srovnání s konkurencí:
-• Vlastní vývoj: 300 000 - 500 000 Kč
+${t.comparisonWithCompetition}:
+• ${t.enterpriseCustomDev}: 300 000 - 500 000 Kč
 • Weblyx ENTERPRISE: ${formatPriceRange(pkg.priceMin, pkg.priceMax)}
-• ÚSPORA: až 70%
+• ${t.savings}: 70%
 
-ROI (návratnost investice):
+${t.roi}:
 ${divider}
-S optimalizovaným systémem a aplikací můžete
-zvýšit kapacitu o 20-30% bez dodatečného stresu.
-Investice se vrátí během 2-4 měsíců.`;
+${t.enterpriseRoi}`;
   }
 
   return text;
@@ -169,32 +168,33 @@ Investice se vrátí během 2-4 měsíců.`;
 /**
  * Generate comparison table text
  */
-export function generateComparisonTable(): string {
+export function generateComparisonTable(language: RecommendationLocale = 'cs'): string {
   const basic = EROWEB_PACKAGES.basic;
   const premium = EROWEB_PACKAGES.premium;
   const enterprise = EROWEB_PACKAGES.enterprise;
+  const t = COMPARISON_TABLE_I18N[language];
 
   return `
-SROVNÁNÍ BALÍČKŮ
+${t.title}
 ${'━'.repeat(60)}
 
-| Funkce                    | BASIC      | PREMIUM    | ENTERPRISE |
+| ${t.feature}                    | BASIC      | PREMIUM    | ENTERPRISE |
 |---------------------------|------------|------------|------------|
-| Cena                      | od ${(basic.priceMin/1000).toFixed(0)}k Kč  | od ${(premium.priceMin/1000).toFixed(0)}k Kč  | od ${(enterprise.priceMin/1000).toFixed(0)}k Kč |
-| Počet stránek             | 5-7        | 10-15      | 15+        |
-| Responzivní design        | ✅         | ✅         | ✅         |
-| Rychlost pod 2s           | ✅         | ✅         | ✅         |
-| Online rezervace          | ❌         | ✅         | ✅         |
-| Profily dívek             | ❌         | ✅         | ✅         |
-| Admin panel               | ❌         | ✅         | ✅         |
-| Mobilní aplikace (PWA)    | ❌         | ❌         | ✅         |
-| Oddělené účty pro dívky   | ❌         | ❌         | ✅         |
-| Push notifikace           | ❌         | ❌         | ✅         |
-| SEO optimalizace          | Základní   | Kompletní  | Kompletní  |
-| GEO/AIEO                  | ❌         | ✅         | ✅         |
-| Vícejazyčnost             | ❌         | 2 jazyky   | 3 jazyky   |
-| Podpora po spuštění       | 14 dní     | 30 dní     | 60 dní     |
-| Dodání                    | 5-7 dní    | 2-4 týdny  | 4-6 týdnů  |
+| ${t.price}                      | od ${(basic.priceMin/1000).toFixed(0)}k Kč  | od ${(premium.priceMin/1000).toFixed(0)}k Kč  | od ${(enterprise.priceMin/1000).toFixed(0)}k Kč |
+| ${t.pagesCount}             | 5-7        | 10-15      | 15+        |
+| ${t.responsiveDesign}        | ✅         | ✅         | ✅         |
+| ${t.speedUnder2s}           | ✅         | ✅         | ✅         |
+| ${t.onlineBooking}          | ❌         | ✅         | ✅         |
+| ${t.girlProfiles}             | ❌         | ✅         | ✅         |
+| ${t.adminPanel}               | ❌         | ✅         | ✅         |
+| ${t.mobileApp}    | ❌         | ❌         | ✅         |
+| ${t.separateAccounts}   | ❌         | ❌         | ✅         |
+| ${t.pushNotifications}           | ❌         | ❌         | ✅         |
+| ${t.seoOptimization}          | ${t.basic}   | ${t.complete}  | ${t.complete}  |
+| ${t.geoAieo}                  | ❌         | ✅         | ✅         |
+| ${t.multilingual}             | ❌         | 2 ${t.languages}   | 3 ${t.languages}   |
+| ${t.supportAfterLaunch}       | 14 ${t.days}     | 30 ${t.days}     | 60 ${t.days}     |
+| ${t.delivery}                    | 5-7 ${t.days}    | 2-4 ${t.weeks}  | 4-6 ${t.weeks}  |
 `;
 }
 
@@ -203,14 +203,18 @@ ${'━'.repeat(60)}
  */
 export function getUpgradeBenefits(
   currentPackage: PackageType,
-  targetPackage: PackageType
+  targetPackage: PackageType,
+  language: RecommendationLocale = 'cs'
 ): string[] {
-  const current = EROWEB_PACKAGES[currentPackage];
-  const target = EROWEB_PACKAGES[targetPackage];
+  const currentFeatures = new Set(PACKAGE_FEATURES_I18N[currentPackage][language]);
+  const targetFeatures = PACKAGE_FEATURES_I18N[targetPackage][language];
 
-  // Features in target but not in current
-  const currentFeatures = new Set(current.features);
-  return target.features.filter(f => !currentFeatures.has(f) && !f.startsWith('Vše z'));
+  // Filter out features that start with "Everything from" / "Vše z" etc
+  const prefixes = ['Vše z', 'Everything from', 'Alles aus', 'Всё из'];
+  return targetFeatures.filter(f =>
+    !currentFeatures.has(f) &&
+    !prefixes.some(prefix => f.startsWith(prefix))
+  );
 }
 
 /**
