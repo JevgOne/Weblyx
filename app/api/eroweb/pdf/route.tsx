@@ -593,7 +593,8 @@ const premiumFeatures: PremiumFeature[] = [
 
 // Select random features based on analysis ID (seed)
 function selectRandomFeatures(analysisId: string, count: number = 2): PremiumFeature[] {
-  const seed = parseInt(analysisId.split('_')[1] || '0', 10);
+  // Safe parsing - handle undefined/empty analysisId
+  const seed = analysisId ? parseInt(analysisId.split('_')[1] || '0', 10) : 0;
   const shuffled = [...premiumFeatures].sort((a, b) => {
     const aHash = seed + a.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const bHash = seed + b.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
