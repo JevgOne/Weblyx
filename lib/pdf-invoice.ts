@@ -176,15 +176,20 @@ interface InvoicePDFData {
 }
 
 // =====================================================
-// COLORS (Weblyx Brand)
+// COLORS (Weblyx Brand - Enhanced)
 // =====================================================
 
 const COLORS = {
-  teal: rgb(0.078, 0.722, 0.651), // #14B8A6
-  darkGray: rgb(0.2, 0.2, 0.2),
-  lightGray: rgb(0.5, 0.5, 0.5),
+  teal: rgb(0.078, 0.722, 0.651), // #14B8A6 - Primary brand
+  tealDark: rgb(0.055, 0.580, 0.525), // #0E9488 - Darker teal
+  tealLight: rgb(0.8, 0.95, 0.93), // #CCF2ED - Light teal background
+  darkGray: rgb(0.15, 0.15, 0.15),
+  mediumGray: rgb(0.4, 0.4, 0.4),
+  lightGray: rgb(0.6, 0.6, 0.6),
+  veryLightGray: rgb(0.95, 0.95, 0.95),
   black: rgb(0, 0, 0),
   white: rgb(1, 1, 1),
+  accent: rgb(0.992, 0.729, 0.114), // #FDB912 - Gold accent
 };
 
 // =====================================================
@@ -268,143 +273,201 @@ export async function generateInvoicePDF(
     page.drawText(removeDiacritics(text), options);
   };
 
-  let y = height - 50; // Start from top with margin
+  let y = height - 40; // Start from top with margin
 
   // =====================================================
-  // HEADER - Invoice Type
+  // HEADER - Colored Banner with Invoice Type
   // =====================================================
 
-  const invoiceTypeLabel = getInvoiceTypeLabel(invoiceData.invoice_type);
-
-  drawText(invoiceTypeLabel, {
-    x: 50,
-    y,
-    size: 24,
-    font: fontBold,
+  // Top banner - teal gradient effect (simulated with two rectangles)
+  page.drawRectangle({
+    x: 0,
+    y: height - 100,
+    width: width,
+    height: 100,
     color: COLORS.teal,
   });
 
-  y -= 40;
+  // Add subtle "shadow" effect
+  page.drawRectangle({
+    x: 0,
+    y: height - 102,
+    width: width,
+    height: 2,
+    color: COLORS.tealDark,
+  });
+
+  // WEBLYX logo text
+  drawText('WEBLYX', {
+    x: 50,
+    y: height - 35,
+    size: 20,
+    font: fontBold,
+    color: COLORS.white,
+  });
+
+  drawText('Web Development & Design', {
+    x: 50,
+    y: height - 55,
+    size: 9,
+    font,
+    color: COLORS.white,
+  });
+
+  // Invoice type label - large, on the right
+  const invoiceTypeLabel = getInvoiceTypeLabel(invoiceData.invoice_type);
+  const labelWidth = fontBold.widthOfTextAtSize(removeDiacritics(invoiceTypeLabel), 28);
+
+  drawText(invoiceTypeLabel, {
+    x: width - labelWidth - 50,
+    y: height - 50,
+    size: 28,
+    font: fontBold,
+    color: COLORS.white,
+  });
+
+  y = height - 130; // Continue below banner
 
   // =====================================================
-  // INVOICE METADATA
+  // INVOICE METADATA - In a light box
   // =====================================================
+
+  const metadataHeight = invoiceData.delivery_date ? 110 : 95;
+
+  // Background box for metadata
+  page.drawRectangle({
+    x: 40,
+    y: y - metadataHeight + 10,
+    width: width - 80,
+    height: metadataHeight,
+    color: COLORS.veryLightGray,
+  });
+
+  y -= 15;
+
+  // Two-column layout for metadata
+  const col1X = 60;
+  const col2X = 320;
+
+  // Left column
+  let yLeft = y;
 
   // Invoice number
-  drawText('Číslo faktury:', {
-    x: 50,
-    y,
-    size: 10,
+  drawText('Cislo faktury:', {
+    x: col1X,
+    y: yLeft,
+    size: 9,
     font: fontBold,
-    color: COLORS.darkGray,
+    color: COLORS.mediumGray,
   });
 
   drawText(invoiceData.invoice_number, {
-    x: 150,
-    y,
-    size: 10,
-    font,
+    x: col1X + 110,
+    y: yLeft,
+    size: 9,
+    font: fontBold,
     color: COLORS.black,
   });
 
-  y -= 15;
+  yLeft -= 18;
 
   // Variable symbol
-  drawText('Variabilní symbol:', {
-    x: 50,
-    y,
-    size: 10,
+  drawText('Variabilni symbol:', {
+    x: col1X,
+    y: yLeft,
+    size: 9,
     font: fontBold,
-    color: COLORS.darkGray,
+    color: COLORS.mediumGray,
   });
 
   drawText(invoiceData.variable_symbol, {
-    x: 150,
-    y,
-    size: 10,
+    x: col1X + 110,
+    y: yLeft,
+    size: 9,
     font,
     color: COLORS.black,
   });
 
-  y -= 15;
-
-  // Issue date
-  drawText('Datum vystavení:', {
-    x: 50,
-    y,
-    size: 10,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
-
-  drawText(formatDate(invoiceData.issue_date), {
-    x: 150,
-    y,
-    size: 10,
-    font,
-    color: COLORS.black,
-  });
-
-  y -= 15;
-
-  // Due date
-  drawText('Datum splatnosti:', {
-    x: 50,
-    y,
-    size: 10,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
-
-  drawText(formatDate(invoiceData.due_date), {
-    x: 150,
-    y,
-    size: 10,
-    font,
-    color: COLORS.black,
-  });
-
-  y -= 15;
-
-  // Delivery date (DUZP)
-  if (invoiceData.delivery_date) {
-    drawText('Datum zdan. plnění:', {
-      x: 50,
-      y,
-      size: 10,
-      font: fontBold,
-      color: COLORS.darkGray,
-    });
-
-    drawText(formatDate(invoiceData.delivery_date), {
-      x: 150,
-      y,
-      size: 10,
-      font,
-      color: COLORS.black,
-    });
-
-    y -= 15;
-  }
+  yLeft -= 18;
 
   // Payment method
-  drawText('Způsob platby:', {
-    x: 50,
-    y,
-    size: 10,
+  drawText('Zpusob platby:', {
+    x: col1X,
+    y: yLeft,
+    size: 9,
     font: fontBold,
-    color: COLORS.darkGray,
+    color: COLORS.mediumGray,
   });
 
   drawText(getPaymentMethodLabel(invoiceData.payment_method), {
-    x: 150,
-    y,
-    size: 10,
+    x: col1X + 110,
+    y: yLeft,
+    size: 9,
     font,
     color: COLORS.black,
   });
 
-  y -= 50;  // More spacing before company info
+  // Right column
+  let yRight = y;
+
+  // Issue date
+  drawText('Datum vystaveni:', {
+    x: col2X,
+    y: yRight,
+    size: 9,
+    font: fontBold,
+    color: COLORS.mediumGray,
+  });
+
+  drawText(formatDate(invoiceData.issue_date), {
+    x: col2X + 110,
+    y: yRight,
+    size: 9,
+    font,
+    color: COLORS.black,
+  });
+
+  yRight -= 18;
+
+  // Due date
+  drawText('Datum splatnosti:', {
+    x: col2X,
+    y: yRight,
+    size: 9,
+    font: fontBold,
+    color: COLORS.mediumGray,
+  });
+
+  drawText(formatDate(invoiceData.due_date), {
+    x: col2X + 110,
+    y: yRight,
+    size: 9,
+    font,
+    color: COLORS.black,
+  });
+
+  yRight -= 18;
+
+  // Delivery date (DUZP)
+  if (invoiceData.delivery_date) {
+    drawText('Datum zdan. plneni:', {
+      x: col2X,
+      y: yRight,
+      size: 9,
+      font: fontBold,
+      color: COLORS.mediumGray,
+    });
+
+    drawText(formatDate(invoiceData.delivery_date), {
+      x: col2X + 110,
+      y: yRight,
+      size: 9,
+      font,
+      color: COLORS.black,
+    });
+  }
+
+  y -= metadataHeight + 20;  // More spacing before company info
 
   // =====================================================
   // COMPANY INFO (DODAVATEL)
@@ -805,8 +868,47 @@ export async function generateInvoicePDF(
     color: COLORS.black,
   });
 
-  // QR CODE disabled for now
-  // TODO: Re-enable when IBAN/SWIFT properly configured
+  y -= 30;
+
+  // =====================================================
+  // QR CODE - Payment QR Code
+  // =====================================================
+
+  try {
+    const qrCode = await generatePaymentQRCode(
+      invoiceData.company.iban,
+      invoiceData.company.swift,
+      invoiceData.amount_with_vat,
+      invoiceData.currency,
+      invoiceData.variable_symbol,
+      `Faktura ${invoiceData.invoice_number}`
+    );
+
+    // Embed QR code image
+    const qrImage = await pdfDoc.embedPng(qrCode);
+    const qrDims = qrImage.scale(0.6); // Scale to 120x120
+
+    // Draw QR code on the right side
+    page.drawImage(qrImage, {
+      x: width - qrDims.width - 60,
+      y: y - 180,
+      width: qrDims.width,
+      height: qrDims.height,
+    });
+
+    // QR code label
+    drawText('Platba QR kodem', {
+      x: width - qrDims.width - 60,
+      y: y - 195,
+      size: 8,
+      font: fontBold,
+      color: COLORS.teal,
+    });
+
+  } catch (error) {
+    console.error('Failed to generate QR code:', error);
+    // Continue without QR code if it fails
+  }
 
   y -= 20;
 
