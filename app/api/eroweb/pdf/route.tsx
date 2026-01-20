@@ -648,13 +648,13 @@ const businessTypeTexts: Record<string, {
   },
 };
 
-const categoryLabels: Record<string, { label: string; max: number }> = {
-  speed: { label: 'Rychlost načítání', max: 20 },
-  mobile: { label: 'Mobilní verze', max: 15 },
-  security: { label: 'Zabezpečení', max: 10 },
-  seo: { label: 'SEO', max: 20 },
-  geo: { label: 'GEO/AIEO', max: 15 },
-  design: { label: 'Design', max: 20 },
+const categoryLabels: Record<string, { label: { cs: string; en: string }; max: number }> = {
+  speed: { label: { cs: 'Rychlost načítání', en: 'Loading Speed' }, max: 20 },
+  mobile: { label: { cs: 'Mobilní verze', en: 'Mobile Version' }, max: 15 },
+  security: { label: { cs: 'Zabezpečení', en: 'Security' }, max: 10 },
+  seo: { label: { cs: 'SEO', en: 'SEO' }, max: 20 },
+  geo: { label: { cs: 'GEO/AIEO', en: 'GEO/AIEO' }, max: 15 },
+  design: { label: { cs: 'Design', en: 'Design' }, max: 20 },
 };
 
 // PDF Document Component
@@ -758,7 +758,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
             return (
               <View key={key} style={styles.categoryRow}>
-                <Text style={styles.categoryLabel}>{label}</Text>
+                <Text style={styles.categoryLabel}>{label[language]}</Text>
                 <View style={styles.categoryBarContainer}>
                   <View
                     style={[
