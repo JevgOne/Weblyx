@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AdminAuthProvider } from "./AdminAuthProvider";
 import { QueryProvider } from "./QueryProvider";
+import { AdminLanguageProvider } from "@/lib/admin-i18n";
 
 export function AdminLayoutClient({
   children,
@@ -13,14 +14,20 @@ export function AdminLayoutClient({
 
   // Don't wrap login page with auth provider
   if (pathname === "/admin/login") {
-    return <>{children}</>;
+    return (
+      <AdminLanguageProvider>
+        {children}
+      </AdminLanguageProvider>
+    );
   }
 
   return (
-    <QueryProvider>
-      <AdminAuthProvider>
-        {children}
-      </AdminAuthProvider>
-    </QueryProvider>
+    <AdminLanguageProvider>
+      <QueryProvider>
+        <AdminAuthProvider>
+          {children}
+        </AdminAuthProvider>
+      </QueryProvider>
+    </AdminLanguageProvider>
   );
 }

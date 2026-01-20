@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useAdminTranslation } from '@/lib/admin-i18n';
 // ScrollArea component not available - using div instead
 import {
   Globe,
@@ -16,7 +17,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
-import { getScoreCategory, SCORE_COLORS, CONTACT_STATUS_LABELS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
+import { getScoreCategory, SCORE_COLORS, CONTACT_STATUS_COLORS } from '@/types/eroweb';
 
 interface HistorySidebarProps {
   analyses: EroWebAnalysis[];
@@ -39,6 +40,7 @@ export function HistorySidebar({
   onDelete,
   onNewAnalysis,
 }: HistorySidebarProps) {
+  const { t, locale } = useAdminTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<ContactStatus | 'all'>('all');
 
@@ -47,6 +49,14 @@ export function HistorySidebar({
     const matchesFilter = activeFilter === 'all' || a.contactStatus === activeFilter;
     return matchesSearch && matchesFilter;
   });
+
+  // Localized date labels
+  const dateLabels = {
+    today: locale === 'cs' ? 'Dnes' : locale === 'ru' ? 'Сегодня' : 'Today',
+    yesterday: locale === 'cs' ? 'Včera' : locale === 'ru' ? 'Вчера' : 'Yesterday',
+  };
+
+  const dateLocale = locale === 'cs' ? 'cs-CZ' : locale === 'ru' ? 'ru-RU' : 'en-US';
 
   // Group by date
   const groupedByDate = filteredAnalyses.reduce((groups, analysis) => {
@@ -57,11 +67,11 @@ export function HistorySidebar({
 
     let dateKey: string;
     if (date.toDateString() === today.toDateString()) {
-      dateKey = 'Dnes';
+      dateKey = dateLabels.today;
     } else if (date.toDateString() === yesterday.toDateString()) {
-      dateKey = 'Vcera';
+      dateKey = dateLabels.yesterday;
     } else {
-      dateKey = date.toLocaleDateString('cs-CZ', {
+      dateKey = date.toLocaleDateString(dateLocale, {
         day: 'numeric',
         month: 'long',
       });
@@ -87,17 +97,17 @@ export function HistorySidebar({
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-foreground mb-3">Historie analyz</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3">{t.eroweb.history}</h2>
         <Button
           onClick={onNewAnalysis}
           className="w-full bg-primary hover:bg-primary/90 text-white mb-3"
         >
-          Nova analyza
+          {t.eroweb.newAnalysis}
         </Button>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Hledat domenu..."
+            placeholder={t.common.search + '...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-background border-border text-foreground placeholder:text-muted-foreground"
@@ -117,7 +127,7 @@ export function HistorySidebar({
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             )}
           >
-            Vše ({statusCounts.all})
+            {t.common.all} ({statusCounts.all})
           </button>
           <button
             onClick={() => setActiveFilter('not_contacted')}
@@ -128,7 +138,7 @@ export function HistorySidebar({
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             )}
           >
-            Nekontaktováno ({statusCounts.not_contacted})
+            {t.eroweb.contactStatus.not_contacted} ({statusCounts.not_contacted})
           </button>
           <button
             onClick={() => setActiveFilter('contacted')}
@@ -139,7 +149,7 @@ export function HistorySidebar({
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             )}
           >
-            Kontaktováno ({statusCounts.contacted})
+            {t.eroweb.contactStatus.contacted} ({statusCounts.contacted})
           </button>
           <button
             onClick={() => setActiveFilter('agreed')}
@@ -150,7 +160,7 @@ export function HistorySidebar({
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             )}
           >
-            Domluveno ({statusCounts.agreed})
+            {t.eroweb.contactStatus.agreed} ({statusCounts.agreed})
           </button>
           <button
             onClick={() => setActiveFilter('no_response')}
@@ -161,7 +171,7 @@ export function HistorySidebar({
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             )}
           >
-            Neodpověděno ({statusCounts.no_response})
+            {t.eroweb.contactStatus.no_response} ({statusCounts.no_response})
           </button>
         </div>
       </div>
@@ -190,9 +200,7 @@ export function HistorySidebar({
 
           {filteredAnalyses.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              {searchQuery
-                ? 'Zadne vysledky nenalezeny'
-                : 'Zadna historie analyz'}
+              {t.eroweb.noAnalyses}
             </div>
           )}
         </div>
@@ -201,9 +209,9 @@ export function HistorySidebar({
       {/* Footer with stats */}
       <div className="p-4 border-t border-border">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Celkem: {analyses.length}</span>
+          <span>{t.common.total}: {analyses.length}</span>
           <span>
-            Odeslano:{' '}
+            {locale === 'cs' ? 'Odesláno' : locale === 'ru' ? 'Отправлено' : 'Sent'}:{' '}
             {analyses.filter((a) => a.emailSent).length}
           </span>
         </div>
@@ -220,9 +228,11 @@ interface HistoryItemProps {
 }
 
 function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemProps) {
+  const { t, locale } = useAdminTranslation();
   const [showDelete, setShowDelete] = useState(false);
   const scoreCategory = getScoreCategory(analysis.scores.total);
   const scoreColor = SCORE_COLORS[scoreCategory];
+  const dateLocale = locale === 'cs' ? 'cs-CZ' : locale === 'ru' ? 'ru-RU' : 'en-US';
 
   return (
     <div
@@ -259,7 +269,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
           <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
             <Clock className="w-3 h-3" />
             <span>
-              {new Date(analysis.createdAt).toLocaleTimeString('cs-CZ', {
+              {new Date(analysis.createdAt).toLocaleTimeString(dateLocale, {
                 hour: '2-digit',
                 minute: '2-digit',
               })}
@@ -278,12 +288,12 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
                 {analysis.emailOpened ? (
                   <>
                     <MailOpen className="w-3 h-3 mr-1" />
-                    Precteno
+                    {locale === 'cs' ? 'Přečteno' : locale === 'ru' ? 'Прочитано' : 'Read'}
                   </>
                 ) : (
                   <>
                     <Mail className="w-3 h-3 mr-1" />
-                    Odeslano
+                    {locale === 'cs' ? 'Odesláno' : locale === 'ru' ? 'Отправлено' : 'Sent'}
                   </>
                 )}
               </Badge>
@@ -306,7 +316,7 @@ function HistoryItem({ analysis, isSelected, onSelect, onDelete }: HistoryItemPr
                 color: CONTACT_STATUS_COLORS[analysis.contactStatus],
               }}
             >
-              {CONTACT_STATUS_LABELS[analysis.contactStatus]}
+              {t.eroweb.contactStatus[analysis.contactStatus]}
             </Badge>
           </div>
         </div>

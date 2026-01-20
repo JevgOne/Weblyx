@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Loader2, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { useAdminTranslation } from '@/lib/admin-i18n';
 import type { BusinessType, AnalysisFormData } from '@/types/eroweb';
 
 interface AnalyzerFormProps {
@@ -28,6 +29,7 @@ interface AnalyzerFormProps {
 }
 
 export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
+  const { t, locale } = useAdminTranslation();
   const [formData, setFormData] = useState<AnalysisFormData>({
     url: '',
     businessType: 'massage',
@@ -58,23 +60,32 @@ export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
     setFormData({ ...formData, url });
   };
 
+  // Localized labels
+  const contactLabel = locale === 'cs' ? 'Přidat kontaktní údaje (volitelné)' :
+                       locale === 'ru' ? 'Добавить контактные данные (опционально)' :
+                       'Add contact details (optional)';
+  const contactNameLabel = locale === 'cs' ? 'Jméno kontaktu' :
+                           locale === 'ru' ? 'Имя контакта' : 'Contact Name';
+  const contactNamePlaceholder = locale === 'cs' ? 'Jan Novák' :
+                                 locale === 'ru' ? 'Иван Иванов' : 'John Doe';
+
   return (
     <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
       <CardHeader>
-        <CardTitle className="text-white">Nova analyza</CardTitle>
+        <CardTitle className="text-white">{t.eroweb.newAnalysis}</CardTitle>
         <CardDescription className="text-[#A1A1AA]">
-          Zadejte URL webu k analyze
+          {t.eroweb.urlLabel}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {/* URL Input */}
           <div className="space-y-2">
-            <Label htmlFor="url" className="text-white">URL webu *</Label>
+            <Label htmlFor="url" className="text-white">{t.eroweb.urlLabel} *</Label>
             <Input
               id="url"
               type="url"
-              placeholder="https://example.com"
+              placeholder={t.eroweb.urlPlaceholder}
               value={formData.url}
               onChange={handleUrlChange}
               className="bg-[#252525] border-[#2A2A2A] text-white placeholder:text-[#71717A]"
@@ -84,7 +95,7 @@ export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
 
           {/* Business Type */}
           <div className="space-y-2">
-            <Label className="text-white">Typ podniku *</Label>
+            <Label className="text-white">{t.eroweb.businessTypeLabel} *</Label>
             <Select
               value={formData.businessType}
               onValueChange={(v) => setFormData({ ...formData, businessType: v as BusinessType })}
@@ -93,9 +104,9 @@ export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-[#1A1A1A] border-[#2A2A2A]">
-                <SelectItem value="massage">🧖‍♀️ Eroticke masaze</SelectItem>
-                <SelectItem value="privat">🏠 Privat / Klub</SelectItem>
-                <SelectItem value="escort">💎 Escort</SelectItem>
+                <SelectItem value="massage">🧖‍♀️ {t.eroweb.businessTypes.massage}</SelectItem>
+                <SelectItem value="privat">🏠 {t.eroweb.businessTypes.privat}</SelectItem>
+                <SelectItem value="escort">💎 {t.eroweb.businessTypes.escort}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -108,23 +119,23 @@ export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
               className="flex items-center gap-2 text-sm text-[#A1A1AA] hover:text-white transition-colors"
             >
               {showContactFields ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              Pridat kontaktni udaje (volitelne)
+              {contactLabel}
             </button>
 
             {showContactFields && (
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="contactName" className="text-white">Jmeno kontaktu</Label>
+                  <Label htmlFor="contactName" className="text-white">{contactNameLabel}</Label>
                   <Input
                     id="contactName"
-                    placeholder="Jan Novak"
+                    placeholder={contactNamePlaceholder}
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                     className="bg-[#252525] border-[#2A2A2A] text-white placeholder:text-[#71717A]"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="contactEmail" className="text-white">Email</Label>
+                  <Label htmlFor="contactEmail" className="text-white">{t.common.email}</Label>
                   <Input
                     id="contactEmail"
                     type="email"
@@ -147,12 +158,12 @@ export function AnalyzerForm({ onAnalyze, isLoading }: AnalyzerFormProps) {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzuji...
+                {t.eroweb.analyzing}
               </>
             ) : (
               <>
                 <Search className="mr-2 h-4 w-4" />
-                Spustit analyzu
+                {t.eroweb.analyzeButton}
               </>
             )}
           </Button>

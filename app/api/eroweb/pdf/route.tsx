@@ -690,10 +690,12 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
                 <Text style={styles.logoWeb}>Web</Text>
                 <Text style={styles.logoLyx}>lyx</Text>
               </View>
-              <Text style={styles.subtitle}>EroWeb Analýza • Business Report 2026</Text>
+              <Text style={styles.subtitle}>
+                {language === 'cs' ? 'EroWeb Analýza • Business Report 2026' : 'EroWeb Analysis • Business Report 2026'}
+              </Text>
             </View>
             <Text style={styles.date}>
-              {new Date(analysis.createdAt).toLocaleDateString('cs-CZ', {
+              {new Date(analysis.createdAt).toLocaleDateString(language === 'cs' ? 'cs-CZ' : 'en-US', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',

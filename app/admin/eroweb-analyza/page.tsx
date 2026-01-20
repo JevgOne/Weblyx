@@ -10,6 +10,7 @@ import { HistorySidebar } from './components/history-sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Menu, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAdminTranslation } from '@/lib/admin-i18n';
 // Toast component not available - using console.log instead
 import type { EroWebAnalysis, AnalysisFormData, ContactStatus } from '@/types/eroweb';
 
@@ -17,6 +18,7 @@ type ViewState = 'form' | 'analyzing' | 'report';
 
 export default function EroWebAnalyzaPage() {
   const router = useRouter();
+  const { t } = useAdminTranslation();
   const [viewState, setViewState] = useState<ViewState>('form');
   const [analyses, setAnalyses] = useState<EroWebAnalysis[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<EroWebAnalysis | null>(null);
@@ -280,9 +282,9 @@ export default function EroWebAnalyzaPage() {
                   <Menu className="w-5 h-5 text-foreground" />
                 </button>
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">EroWeb Analyza</h1>
+                  <h1 className="text-2xl font-bold text-foreground">{t.eroweb.title}</h1>
                   <p className="text-muted-foreground">
-                    Analyzujte weby konkurence a ziskejte nove klienty
+                    {t.eroweb.subtitle}
                   </p>
                 </div>
               </div>
@@ -291,7 +293,7 @@ export default function EroWebAnalyzaPage() {
                   onClick={handleNewAnalysis}
                   className="text-sm text-[#7C3AED] hover:text-[#6D28D9] transition-colors"
                 >
-                  + Nova analyza
+                  {t.eroweb.newAnalysis}
                 </button>
               )}
             </div>
@@ -315,13 +317,13 @@ export default function EroWebAnalyzaPage() {
                     value="report"
                     className="data-[state=active]:bg-primary data-[state=active]:text-white"
                   >
-                    Report
+                    {t.eroweb.report}
                   </TabsTrigger>
                   <TabsTrigger
                     value="email"
                     className="data-[state=active]:bg-primary data-[state=active]:text-white"
                   >
-                    Email
+                    {t.eroweb.emailTab}
                   </TabsTrigger>
                 </TabsList>
 
