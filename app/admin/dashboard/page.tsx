@@ -28,6 +28,7 @@ import {
   Receipt,
   UserCog,
   History,
+  ClipboardList,
 } from "lucide-react";
 import { useAdminTranslation, LanguageSelector } from "@/lib/admin-i18n";
 import { ROLE_NAMES, isAdminOrHigher } from "@/lib/auth/permissions";
@@ -457,24 +458,53 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                    <Globe className="h-6 w-6 text-white" />
+            {/* EroWeb - only for Owner/Admin */}
+            {can('eroweb') && (
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200">
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Globe className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle>{t.dashboard.erowebTitle}</CardTitle>
+                      <CardDescription>{t.dashboard.erowebDesc}</CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle>{t.dashboard.erowebTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.erowebDesc}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="default" className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => router.push("/admin/eroweb-analyza")}>
+                    {t.common.open}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Tasks - available to all roles */}
+            {can('tasks') && (
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200">
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                      <ClipboardList className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle>{isAdminOrHigher(user?.role) ? 'Úkoly' : 'Moje úkoly'}</CardTitle>
+                      <CardDescription>
+                        {isAdminOrHigher(user?.role)
+                          ? 'Správa úkolů pro specialisty'
+                          : 'Vaše přiřazené úkoly'}
+                      </CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="default" className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => router.push("/admin/eroweb-analyza")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="default" className="w-full bg-green-600 hover:bg-green-700" onClick={() => router.push("/admin/tasks")}>
+                    {t.common.open}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-zinc-500/10 to-zinc-600/10 border-zinc-300">
               <CardHeader>

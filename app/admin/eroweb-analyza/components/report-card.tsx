@@ -30,7 +30,17 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  ClipboardList,
+  Loader2,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useState, useEffect } from 'react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
 import { SCORE_COLORS, getScoreCategory, CONTACT_STATUS_COLORS } from '@/types/eroweb';
@@ -74,6 +84,11 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf, onStatusChang
   const [copiedKw, setCopiedKw] = useState(false);
   const [kwExpanded, setKwExpanded] = useState(false);
   const [language, setLanguage] = useState<'cs' | 'en' | 'de' | 'ru'>('cs');
+
+  // Task creation
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [taskCreating, setTaskCreating] = useState(false);
+  const [taskDescription, setTaskDescription] = useState('');
 
   // Sync language with locale on mount
   useEffect(() => {
@@ -415,6 +430,45 @@ Odpověz strukturovaně v češtině. U každého keyword uveď:
     setTimeout(() => setCopiedKw(false), 2000);
   };
 
+  // Create task from analysis
+  const createTaskFromAnalysis = async () => {
+    if (!taskDescription.trim()) return;
+
+    setTaskCreating(true);
+    try {
+      const res = await fetch('/api/admin/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Redesign: ${analysis.domain}`,
+          description: taskDescription,
+          domain: analysis.domain,
+          priority: analysis.scores.total < 40 ? 'high' : 'medium',
+          source_analysis_id: analysis.id,
+        }),
+      });
+
+      if (res.ok) {
+        setTaskDialogOpen(false);
+        setTaskDescription('');
+        alert(locale === 'cs' ? '✅ Úkol vytvořen!' : '✅ Task created!');
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to create task:', error);
+    } finally {
+      setTaskCreating(false);
+    }
+  };
+
+  // Pre-fill task description with brief
+  const openTaskDialog = () => {
+    setTaskDescription(getBriefPrompt());
+    setTaskDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 w-full overflow-x-hidden">
       {/* Header with domain and overall score */}
@@ -502,6 +556,60 @@ Odpověz strukturovaně v češtině. U každého keyword uveď:
                 <span className="truncate">{t.eroweb.sendEmail}</span>
               </Button>
             )}
+            {/* Create Task Button */}
+            <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={openTaskDialog}
+                  variant="outline"
+                  className="flex-1 border-green-500 text-green-600 hover:bg-green-50 min-w-0"
+                >
+                  <ClipboardList className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="truncate">
+                    {locale === 'cs' ? 'Vytvořit úkol' : 'Create Task'}
+                  </span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {locale === 'cs' ? 'Vytvořit úkol pro specialistu' : 'Create Task for Specialist'}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Globe className="w-4 h-4" />
+                    <span className="font-medium">{analysis.domain}</span>
+                    <Badge variant="outline">{businessTypeLabel}</Badge>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">
+                      {locale === 'cs' ? 'Brief / Zadání pro specialistu' : 'Brief / Task Description'}
+                    </label>
+                    <Textarea
+                      className="min-h-[400px] mt-2 font-mono text-sm"
+                      value={taskDescription}
+                      onChange={(e) => setTaskDescription(e.target.value)}
+                      placeholder={locale === 'cs' ? 'Zadání pro specialistu...' : 'Task description...'}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setTaskDialogOpen(false)}>
+                      {locale === 'cs' ? 'Zrušit' : 'Cancel'}
+                    </Button>
+                    <Button
+                      onClick={createTaskFromAnalysis}
+                      disabled={taskCreating || !taskDescription.trim()}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {taskCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                      <ClipboardList className="w-4 h-4 mr-2" />
+                      {locale === 'cs' ? 'Vytvořit úkol' : 'Create Task'}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>
