@@ -340,7 +340,7 @@ Weblyx Team
   }
 
   // Use analysis ID as seed for consistent randomization per analysis
-  const seed = parseInt(analysisId.split('_')[1] || '0', 10);
+  const seed = analysisId ? parseInt(analysisId.split('_')[1] || '0', 10) : 0;
   const index = seed % variations.length;
 
   return variations[index];
