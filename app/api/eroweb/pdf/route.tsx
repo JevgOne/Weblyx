@@ -627,24 +627,24 @@ const businessTypeLabels: Record<string, string> = {
 
 // Business type specific texts
 const businessTypeTexts: Record<string, {
-  industry: string;
-  dataSource: string;
-  clientAction: string;
+  industry: { cs: string; en: string };
+  dataSource: { cs: string; en: string };
+  clientAction: { cs: string; en: string };
 }> = {
   massage: {
-    industry: 'erotických masáží',
-    dataSource: '50+ webů erotických masáží',
-    clientAction: 'Klient navštíví 3–5 konkurenčních salonů',
+    industry: { cs: 'erotických masáží', en: 'erotic massage' },
+    dataSource: { cs: '50+ webů erotických masáží', en: '50+ erotic massage websites' },
+    clientAction: { cs: 'Klient navštíví 3–5 konkurenčních salonů', en: 'Client visits 3–5 competing salons' },
   },
   privat: {
-    industry: 'klubů a privátů',
-    dataSource: '50+ webů klubů a privátů',
-    clientAction: 'Klient navštíví 3–5 konkurenčních klubů',
+    industry: { cs: 'klubů a privátů', en: 'clubs and privates' },
+    dataSource: { cs: '50+ webů klubů a privátů', en: '50+ club and private websites' },
+    clientAction: { cs: 'Klient navštíví 3–5 konkurenčních klubů', en: 'Client visits 3–5 competing clubs' },
   },
   escort: {
-    industry: 'escort služeb',
-    dataSource: '50+ escort webů',
-    clientAction: 'Klient navštíví 3–5 konkurenčních agentur',
+    industry: { cs: 'escort služeb', en: 'escort services' },
+    dataSource: { cs: '50+ escort webů', en: '50+ escort websites' },
+    clientAction: { cs: 'Klient navštíví 3–5 konkurenčních agentur', en: 'Client visits 3–5 competing agencies' },
   },
 };
 
@@ -716,15 +716,23 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Introduction */}
         <View style={styles.introSection} wrap={false}>
-          <Text style={styles.sectionTitle}>Proč jsme vás kontaktovali?</Text>
-          <Text style={styles.introText}>
-            Analyzovali jsme váš web a vidíme obrovský potenciál. Zjistili jsme přesně, kde ztrácíte zákazníky – a jak to napravit.
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'Proč jsme vás kontaktovali?' : 'Why did we contact you?'}
           </Text>
           <Text style={styles.introText}>
-            V oboru {btTexts.industry} rozhoduje rychlost. {btTexts.clientAction} a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.
+            {language === 'cs'
+              ? 'Analyzovali jsme váš web a vidíme obrovský potenciál. Zjistili jsme přesně, kde ztrácíte zákazníky – a jak to napravit.'
+              : 'We analyzed your website and see huge potential. We identified exactly where you lose customers – and how to fix it.'}
           </Text>
           <Text style={styles.introText}>
-            Dobrá zpráva: Většina konkurence má stejné problémy. S cílenými úpravami můžete být viditelněj­ší a získat výrazně více rezervací.
+            {language === 'cs'
+              ? `V oboru ${btTexts.industry.cs} rozhoduje rychlost. ${btTexts.clientAction.cs} a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.`
+              : `In the ${btTexts.industry.en} industry, speed matters. ${btTexts.clientAction.en} and decides within 30 seconds. If your site loads slowly, lacks WhatsApp button, or mobile version isn't optimal – the customer leaves.`}
+          </Text>
+          <Text style={styles.introText}>
+            {language === 'cs'
+              ? 'Dobrá zpráva: Většina konkurence má stejné problémy. S cílenými úpravami můžete být viditelněj­ší a získat výrazně více rezervací.'
+              : 'Good news: Most competitors have the same issues. With targeted improvements, you can be more visible and get significantly more bookings.'}
           </Text>
         </View>
 
@@ -740,7 +748,9 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Categories */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>Hodnocení podle kategorií</Text>
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'Hodnocení podle kategorií' : 'Category ratings'}
+          </Text>
           {Object.entries(categoryLabels).map(([key, { label, max }]) => {
             const score = analysis.scores[key as keyof typeof analysis.scores] || 0;
             const percentage = (score / max) * 100;
@@ -769,17 +779,25 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {criticalFindings.length > 0 && (
           <View style={styles.section} wrap={false}>
             <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>
-              KRITICKÉ PROBLÉMY (řešte okamžitě!)
+              {language === 'cs' ? 'KRITICKÉ PROBLÉMY (řešte okamžitě!)' : 'CRITICAL ISSUES (fix immediately!)'}
             </Text>
             {criticalFindings.slice(0, 2).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#EF4444' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
                 <Text style={styles.findingDescription}>{f.description.slice(0, 200)}{f.description.length > 200 ? '...' : ''}</Text>
-                {f.impact && <Text style={styles.findingImpact}>Dopad: {f.impact}</Text>}
+                {f.impact && (
+                  <Text style={styles.findingImpact}>
+                    {language === 'cs' ? 'Dopad' : 'Impact'}: {f.impact}
+                  </Text>
+                )}
               </View>
             ))}
             {criticalFindings.length > 2 && (
-              <Text style={styles.findingImpact}>+ dalších {criticalFindings.length - 2} problémů</Text>
+              <Text style={styles.findingImpact}>
+                {language === 'cs'
+                  ? `+ dalších ${criticalFindings.length - 2} problémů`
+                  : `+ ${criticalFindings.length - 2} more issues`}
+              </Text>
             )}
           </View>
         )}
@@ -787,16 +805,26 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {/* Warning Findings */}
         {warningFindings.length > 0 && (
           <View style={styles.section} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>VAROVÁNÍ (doporučujeme vylepšit)</Text>
+            <Text style={[styles.sectionTitle, { color: '#F59E0B' }]}>
+              {language === 'cs' ? 'VAROVÁNÍ (doporučujeme vylepšit)' : 'WARNINGS (recommend improvement)'}
+            </Text>
             {warningFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#F59E0B' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
                 <Text style={styles.findingDescription}>{f.description.slice(0, 200)}{f.description.length > 200 ? '...' : ''}</Text>
-                {f.impact && <Text style={styles.findingImpact}>Dopad: {f.impact}</Text>}
+                {f.impact && (
+                  <Text style={styles.findingImpact}>
+                    {language === 'cs' ? 'Dopad' : 'Impact'}: {f.impact}
+                  </Text>
+                )}
               </View>
             ))}
             {warningFindings.length > 1 && (
-              <Text style={styles.findingImpact}>+ dalších {warningFindings.length - 1} varování</Text>
+              <Text style={styles.findingImpact}>
+                {language === 'cs'
+                  ? `+ dalších ${warningFindings.length - 1} varování`
+                  : `+ ${warningFindings.length - 1} more warnings`}
+              </Text>
             )}
           </View>
         )}
@@ -804,7 +832,9 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {/* Opportunities */}
         {opportunityFindings.length > 0 && (
           <View style={styles.section} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>PŘÍLEŽITOSTI (konkurenční výhoda)</Text>
+            <Text style={[styles.sectionTitle, { color: '#3B82F6' }]}>
+              {language === 'cs' ? 'PŘÍLEŽITOSTI (konkurenční výhoda)' : 'OPPORTUNITIES (competitive advantage)'}
+            </Text>
             {opportunityFindings.slice(0, 1).map((f, i) => (
               <View key={i} style={[styles.finding, { borderLeftColor: '#3B82F6' }]}>
                 <Text style={styles.findingTitle}>{f.title}</Text>
@@ -812,39 +842,65 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
               </View>
             ))}
             {opportunityFindings.length > 1 && (
-              <Text style={styles.findingImpact}>+ dalších {opportunityFindings.length - 1} příležitostí</Text>
+              <Text style={styles.findingImpact}>
+                {language === 'cs'
+                  ? `+ dalších ${opportunityFindings.length - 1} příležitostí`
+                  : `+ ${opportunityFindings.length - 1} more opportunities`}
+              </Text>
             )}
           </View>
         )}
 
         {/* Industry Benchmarks - Realistické odhady */}
         <View style={styles.statsBox} wrap={false}>
-          <Text style={styles.sectionTitle}>Srovnání s průměrem v oboru</Text>
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'Srovnání s průměrem v oboru' : 'Industry benchmark comparison'}
+          </Text>
           <Text style={[styles.introText, { marginBottom: 12, fontSize: 10, color: '#6B7280' }]}>
-            Data z analýzy {btTexts.dataSource}:
+            {language === 'cs'
+              ? `Data z analýzy ${btTexts.dataSource.cs}:`
+              : `Data from analyzing ${btTexts.dataSource.en}:`}
           </Text>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Návštěvnost (měsíčně):</Text>
-            <Text style={styles.statsValue}>600–1 200 návštěv</Text>
+            <Text style={styles.statsLabel}>
+              {language === 'cs' ? 'Návštěvnost (měsíčně):' : 'Traffic (monthly):'}
+            </Text>
+            <Text style={styles.statsValue}>
+              {language === 'cs' ? '600–1 200 návštěv' : '600–1,200 visits'}
+            </Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Konverze (kontakt/rezervace):</Text>
+            <Text style={styles.statsLabel}>
+              {language === 'cs' ? 'Konverze (kontakt/rezervace):' : 'Conversion (contact/booking):'}
+            </Text>
             <Text style={styles.statsValue}>2–5 %</Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Po optimalizaci:</Text>
-            <Text style={styles.statsValue}>+40–60 % návštěv, +50–100 % konverze</Text>
+            <Text style={styles.statsLabel}>
+              {language === 'cs' ? 'Po optimalizaci:' : 'After optimization:'}
+            </Text>
+            <Text style={styles.statsValue}>
+              {language === 'cs'
+                ? '+40–60 % návštěv, +50–100 % konverze'
+                : '+40–60% traffic, +50–100% conversion'}
+            </Text>
           </View>
           <Text style={[styles.introText, { marginTop: 12, fontSize: 9, color: '#9CA3AF' }]}>
-            Poznámka: Vaše čísla se mohou lišit. Pro přesný audit můžeme analyzovat data z Google Analytics.
+            {language === 'cs'
+              ? 'Poznámka: Vaše čísla se mohou lišit. Pro přesný audit můžeme analyzovat data z Google Analytics.'
+              : 'Note: Your numbers may vary. For accurate audit, we can analyze data from Google Analytics.'}
           </Text>
         </View>
 
         {/* Premium Features - Co vám chybí */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>TOP funkce, které vám chybí</Text>
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'TOP funkce, které vám chybí' : 'TOP missing features'}
+          </Text>
           <Text style={[styles.introText, { marginBottom: 16 }]}>
-            Vybrali jsme {selectedFeatures.length} klíčové prvky s největším dopadem na tržby:
+            {language === 'cs'
+              ? `Vybrali jsme ${selectedFeatures.length} klíčové prvky s největším dopadem na tržby:`
+              : `We selected ${selectedFeatures.length} key features with biggest impact on revenue:`}
           </Text>
           {selectedFeatures.map((feature, idx) => (
             <View key={feature.id} style={styles.featureCard} wrap={false}>
@@ -865,54 +921,82 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Business Impact Section */}
         <View style={styles.recommendation} wrap={false}>
-          <Text style={styles.sectionTitle}>Očekávané výsledky optimalizace</Text>
-          <Text style={styles.recommendationText}>
-            Naši klienti v oboru {btTexts.industry} po optimalizaci zaznamenali:
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'Očekávané výsledky optimalizace' : 'Expected optimization results'}
           </Text>
           <Text style={styles.recommendationText}>
-            • +45 % více online rezervací
+            {language === 'cs'
+              ? `Naši klienti v oboru ${btTexts.industry.cs} po optimalizaci zaznamenali:`
+              : `Our clients in the ${btTexts.industry.en} industry after optimization reported:`}
           </Text>
           <Text style={styles.recommendationText}>
-            • +60 % dotazů přes WhatsApp (po přidání tlačítka)
+            {language === 'cs' ? '• +45 % více online rezervací' : '• +45% more online bookings'}
           </Text>
           <Text style={styles.recommendationText}>
-            • –70 % okamžitých odchodů díky rychlejšímu načítání
+            {language === 'cs'
+              ? '• +60 % dotazů přes WhatsApp (po přidání tlačítka)'
+              : '• +60% WhatsApp inquiries (after adding button)'}
           </Text>
           <Text style={styles.recommendationText}>
-            • +80 % viditelnosti v AI vyhledávačích (ChatGPT, Perplexity)
+            {language === 'cs'
+              ? '• –70 % okamžitých odchodů díky rychlejšímu načítání'
+              : '• –70% bounce rate thanks to faster loading'}
+          </Text>
+          <Text style={styles.recommendationText}>
+            {language === 'cs'
+              ? '• +80 % viditelnosti v AI vyhledávačích (ChatGPT, Perplexity)'
+              : '• +80% visibility in AI search engines (ChatGPT, Perplexity)'}
           </Text>
         </View>
 
         {/* Specific Recommendations */}
         <View style={styles.recommendation} wrap={false}>
-          <Text style={styles.sectionTitle}>Funkce, které konkurence nemá</Text>
-          <Text style={styles.recommendationText}>
-            1. GEO/AIEO optimalizace – viditelnost v ChatGPT a Perplexity (80 % mladých klientů hledá zde)
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'Funkce, které konkurence nemá' : 'Features competitors don\'t have'}
           </Text>
           <Text style={styles.recommendationText}>
-            2. AI Chatbot 24/7 – okamžité odpovědi a automatická rezervace termínů
+            {language === 'cs'
+              ? '1. GEO/AIEO optimalizace – viditelnost v ChatGPT a Perplexity (80 % mladých klientů hledá zde)'
+              : '1. GEO/AIEO optimization – visibility in ChatGPT and Perplexity (80% of young clients search here)'}
           </Text>
           <Text style={styles.recommendationText}>
-            3. Live dashboard – sledování návštěvníků v reálném čase
+            {language === 'cs'
+              ? '2. AI Chatbot 24/7 – okamžité odpovědi a automatická rezervace termínů'
+              : '2. AI Chatbot 24/7 – instant answers and automatic booking'}
           </Text>
           <Text style={styles.recommendationText}>
-            4. Auto-translate (CZ/EN/DE/UKR/RU) – automatický přepis podle IP adresy
+            {language === 'cs'
+              ? '3. Live dashboard – sledování návštěvníků v reálném čase'
+              : '3. Live dashboard – real-time visitor tracking'}
           </Text>
           <Text style={styles.recommendationText}>
-            5. Smart kalendář – nabídka volných termínů + SMS připomínky
+            {language === 'cs'
+              ? '4. Auto-translate (CZ/EN/DE/UKR/RU) – automatický přepis podle IP adresy'
+              : '4. Auto-translate (CZ/EN/DE/UKR/RU) – automatic translation based on IP address'}
           </Text>
           <Text style={styles.recommendationText}>
-            6. Push notifikace – zasílání akcí přímo do mobilu klientů
+            {language === 'cs'
+              ? '5. Smart kalendář – nabídka volných termínů + SMS připomínky'
+              : '5. Smart calendar – available slots + SMS reminders'}
           </Text>
           <Text style={styles.recommendationText}>
-            7. Rychlé načítání pod 2 sekundy – lepší pozice v Google vyhledávání
+            {language === 'cs'
+              ? '6. Push notifikace – zasílání akcí přímo do mobilu klientů'
+              : '6. Push notifications – send promotions directly to clients\' phones'}
+          </Text>
+          <Text style={styles.recommendationText}>
+            {language === 'cs'
+              ? '7. Rychlé načítání pod 2 sekundy – lepší pozice v Google vyhledávání'
+              : '7. Fast loading under 2 seconds – better Google rankings'}
           </Text>
         </View>
 
-        {/* Original Recommendation */}
-        {analysis.recommendation && (
+        {/* Original Recommendation - ONLY for Czech (contains hardcoded Czech text) */}
+        {analysis.recommendation && language === 'cs' && (
           <View style={styles.recommendation} wrap={false}>
-            <Text style={styles.sectionTitle}>Technický rozbor</Text>
+            <Text style={styles.sectionTitle}>
+              {language === 'cs' ? 'Technický rozbor' : 'Technical Analysis'}
+            </Text>
             <Text style={styles.recommendationText}>{analysis.recommendation.slice(0, 450)}{analysis.recommendation.length > 450 ? '...' : ''}</Text>
           </View>
         )}
@@ -949,16 +1033,22 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Next Steps */}
         <View style={styles.nextSteps} wrap={false}>
-          <Text style={styles.sectionTitle}>Jak budeme pokračovat?</Text>
+          <Text style={styles.sectionTitle}>
+            {language === 'cs' ? 'Jak budeme pokračovat?' : 'Next steps'}
+          </Text>
 
           <View style={styles.stepItem} wrap={false}>
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>1</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Nezávazná konzultace (15 minut)</Text>
+              <Text style={styles.stepTitle}>
+                {language === 'cs' ? 'Nezávazná konzultace (15 minut)' : 'Free consultation (15 minutes)'}
+              </Text>
               <Text style={styles.stepDescription}>
-                Probereme, co by vašemu webu pomohlo nejvíc. Bez prodejního tlaku, jen praktické rady.
+                {language === 'cs'
+                  ? 'Probereme, co by vašemu webu pomohlo nejvíc. Bez prodejního tlaku, jen praktické rady.'
+                  : 'We\'ll discuss what would help your website most. No sales pressure, just practical advice.'}
               </Text>
             </View>
           </View>
@@ -968,9 +1058,13 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
               <Text style={styles.stepNumberText}>2</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Nabídka přesně na míru (zdarma)</Text>
+              <Text style={styles.stepTitle}>
+                {language === 'cs' ? 'Nabídka přesně na míru (zdarma)' : 'Custom proposal (free)'}
+              </Text>
               <Text style={styles.stepDescription}>
-                Detailní plán s konkrétními kroky, cenami a termíny. Transparentně.
+                {language === 'cs'
+                  ? 'Detailní plán s konkrétními kroky, cenami a termíny. Transparentně.'
+                  : 'Detailed plan with specific steps, prices and timeline. Transparent.'}
               </Text>
             </View>
           </View>
@@ -980,9 +1074,13 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
               <Text style={styles.stepNumberText}>3</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Realizace a měřitelné výsledky</Text>
+              <Text style={styles.stepTitle}>
+                {language === 'cs' ? 'Realizace a měřitelné výsledky' : 'Implementation and measurable results'}
+              </Text>
               <Text style={styles.stepDescription}>
-                První změny během 2 týdnů. Průběžné reporty s měřitelnými výsledky.
+                {language === 'cs'
+                  ? 'První změny během 2 týdnů. Průběžné reporty s měřitelnými výsledky.'
+                  : 'First changes within 2 weeks. Ongoing reports with measurable results.'}
               </Text>
             </View>
           </View>
@@ -991,7 +1089,11 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            <Text style={styles.footerBold}>Weblyx.cz</Text> – Weby, které prodávají. I v AI vyhledávačích.
+            <Text style={styles.footerBold}>Weblyx.cz</Text>
+            {' – '}
+            {language === 'cs'
+              ? 'Weby, které prodávají. I v AI vyhledávačích.'
+              : 'Websites that sell. Even in AI search engines.'}
           </Text>
           <Text style={styles.footerText}>
             E-mail: <Text style={styles.footerLink}>info@weblyx.cz</Text> |
@@ -999,9 +1101,14 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             Web: <Text style={styles.footerLink}>weblyx.cz</Text>
           </Text>
           <Text style={styles.footerText}>
-            Nejrychlejší odpověď: WhatsApp nebo e-mail. Reagujeme do 2 hodin.
+            {language === 'cs'
+              ? 'Nejrychlejší odpověď: WhatsApp nebo e-mail. Reagujeme do 2 hodin.'
+              : 'Fastest response: WhatsApp or email. We respond within 2 hours.'}
           </Text>
-          <Text style={styles.footerSmall}>Altro Servis Group s.r.o. | IČO: 23673389 | Praha, Česká republika</Text>
+          <Text style={styles.footerSmall}>
+            Altro Servis Group s.r.o. | IČO: 23673389 |{' '}
+            {language === 'cs' ? 'Praha, Česká republika' : 'Prague, Czech Republic'}
+          </Text>
         </View>
 
         </View>{/* End of padding wrapper */}
