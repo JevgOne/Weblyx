@@ -483,109 +483,109 @@ const premiumFeatures: PremiumFeature[] = [
     id: 'vibe-system',
     name: { cs: 'VIBE Systém', en: 'VIBE System' },
     description: {
-      cs: 'Heat/Tenderness/Tempo škály místo obyčejných hvězdiček - lidi si to pamatují a citují',
+      cs: 'Heat/Tenderness/Tempo škály místo obyčejných hvězdiček – zákazníci si to pamatují a citují',
       en: 'Heat/Tenderness/Tempo scales instead of ordinary star ratings - people remember and quote it'
     },
-    impact: '+35% konverze',
+    impact: '+35 % konverze',
     conversionBoost: 35,
     monthlyValue: 28000,
   },
   {
     id: 'quick-exit',
-    name: { cs: 'Quick Exit Tlačítko', en: 'Quick Exit Button' },
+    name: { cs: 'Tlačítko pro rychlý odchod', en: 'Quick Exit Button' },
     description: {
-      cs: 'Diskrétní tlačítko pro okamžité přepnutí na neutrální stránku - zvyšuje pocit bezpečí',
+      cs: 'Diskrétní tlačítko pro okamžité přepnutí na neutrální stránku – zvyšuje pocit bezpečí',
       en: 'Discreet button for instant switch to neutral page - increases feeling of safety'
     },
-    impact: '+40% mobilních rezervací',
+    impact: '+40 % mobilních rezervací',
     conversionBoost: 40,
     monthlyValue: 32000,
   },
   {
     id: 'scent-menu',
-    name: { cs: 'Scent Menu', en: 'Scent Menu' },
+    name: { cs: 'Menu vůní', en: 'Scent Menu' },
     description: {
-      cs: 'Výběr ze 3 vůní (Clean/Sweet/Dark) při rezervaci - působí luxusně a profesionálně',
+      cs: 'Výběr ze 3 vůní (Clean/Sweet/Dark) při rezervaci – působí luxusně a profesionálně',
       en: 'Choice of 3 scents (Clean/Sweet/Dark) when booking - looks luxurious and professional'
     },
-    impact: '+20% premium vnímání',
+    impact: '+20 % prémiového vnímání',
     conversionBoost: 20,
     monthlyValue: 18000,
   },
   {
     id: 'mood-selector',
-    name: { cs: 'Výběr Nálady', en: 'Choose Your Mood' },
+    name: { cs: 'Výběr nálady', en: 'Choose Your Mood' },
     description: {
-      cs: 'Rychlá volba nálady (Chci vypnout hlavu/Chci teasing/Chci něžnost) - doporučí správnou masáž',
+      cs: 'Rychlá volba nálady (Chci vypnout hlavu / Chci teasing / Chci něžnost) – doporučí správnou masáž',
       en: 'Quick mood selection (I want to switch off/I want teasing/I want tenderness) - recommends the right massage'
     },
-    impact: '+50% okamžitých rezervací',
+    impact: '+50 % okamžitých rezervací',
     conversionBoost: 50,
     monthlyValue: 42000,
   },
   {
     id: 'live-availability',
-    name: { cs: 'Živá Dostupnost', en: 'Live Availability' },
+    name: { cs: 'Živá dostupnost', en: 'Live Availability' },
     description: {
-      cs: 'Kalendář s nejbližšími volnými termíny "dnes/zítra" + chytré doporučení podle délky masáže',
+      cs: 'Kalendář s nejbližšími volnými termíny "dnes / zítra" + chytré doporučení podle délky masáže',
       en: 'Calendar with nearest available slots "today/tomorrow" + smart recommendations by session length'
     },
-    impact: '+45% rezervací',
+    impact: '+45 % rezervací',
     conversionBoost: 45,
     monthlyValue: 38000,
   },
   {
     id: 'verified-reviews',
-    name: { cs: 'Ověřené VIBE Recenze', en: 'Verified VIBE Reviews' },
+    name: { cs: 'Ověřené VIBE recenze', en: 'Verified VIBE Reviews' },
     description: {
-      cs: 'Recenze pouze od skutečných klientů s VIBE hodnocením - důvěryhodné a sexy zároveň',
+      cs: 'Recenze pouze od skutečných klientů s VIBE hodnocením – důvěryhodné a profesionální zároveň',
       en: 'Reviews only from real clients with VIBE ratings - trustworthy and sexy at the same time'
     },
-    impact: '+30% důvěry',
+    impact: '+30 % důvěry',
     conversionBoost: 30,
     monthlyValue: 25000,
   },
   {
     id: 'session-builder',
-    name: { cs: 'Průvodce Rezervací', en: 'Session Builder' },
+    name: { cs: 'Průvodce rezervací', en: 'Session Builder' },
     description: {
       cs: 'Krok za krokem sestavení masáže: délka → typ → doplňky → masérka → termín',
       en: 'Step by step massage composition: length → type → extras → masseuse → date'
     },
-    impact: '+35% dokončených rezervací',
+    impact: '+35 % dokončených rezervací',
     conversionBoost: 35,
     monthlyValue: 29000,
   },
   {
     id: 'preference-card',
-    name: { cs: 'Karta Preferencí', en: 'Preference Card' },
+    name: { cs: 'Karta preferencí', en: 'Preference Card' },
     description: {
-      cs: 'Před rezervací: preference komunikace, tempo, tlak, hranice - klient se cítí bezpečně',
+      cs: 'Před rezervací: preference komunikace, tempo, tlak, hranice – klient se cítí bezpečně',
       en: 'Before booking: communication preferences, tempo, pressure, boundaries - client feels safe'
     },
-    impact: '+25% vracejících se klientů',
+    impact: '+25 % vracejících se klientů',
     conversionBoost: 25,
     monthlyValue: 22000,
   },
   {
     id: 'vip-zone',
-    name: { cs: 'VIP Členská Zóna', en: 'VIP/Membership Zone' },
+    name: { cs: 'VIP členská zóna', en: 'VIP/Membership Zone' },
     description: {
       cs: 'Rezervace jedním kliknutím, historie návštěv, oblíbené masérky, priorita v časech, kreditní systém',
       en: '1-click booking, visit history, favorite masseuses, time priority, credit system'
     },
-    impact: '+60% věrnosti klientů',
+    impact: '+60 % věrnosti klientů',
     conversionBoost: 60,
     monthlyValue: 48000,
   },
   {
     id: 'ritual-descriptions',
-    name: { cs: 'Rituální Popisy', en: 'Ritual Descriptions' },
+    name: { cs: 'Rituální popisy', en: 'Ritual Descriptions' },
     description: {
-      cs: 'Masáže popsané jako "rituály" s příběhem a atmosférou - ne seznam služeb',
+      cs: 'Masáže popsané jako "rituály" s příběhem a atmosférou – ne seznam služeb',
       en: 'Massages described as "rituals" with story and atmosphere - not service list'
     },
-    impact: '+28% prémiových rezervací',
+    impact: '+28 % prémiových rezervací',
     conversionBoost: 28,
     monthlyValue: 24000,
   },
