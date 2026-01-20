@@ -808,7 +808,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             <Text style={styles.statsLabel}>Po optimalizaci (průměrně):</Text>
             <Text style={styles.statsValue}>+40–60 % návštěv, +50–100 % konverze</Text>
           </View>
-          <Text style={styles.introText} style={{ marginTop: 12, fontSize: 9, color: '#9CA3AF', fontStyle: 'italic' }}>
+          <Text style={[styles.introText, { marginTop: 12, fontSize: 9, color: '#9CA3AF' }]}>
             * Vaše reálná čísla se mohou lišit. Pro přesný audit můžeme analyzovat vaše Google Analytics data.
           </Text>
         </View>
