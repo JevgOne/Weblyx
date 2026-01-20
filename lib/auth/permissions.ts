@@ -68,15 +68,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'users',
   ],
 
-  // Specialist - limited access to sales/operations features
+  // Specialist - limited access, sees only assigned tasks
   specialist: [
     'dashboard',
-    'leads',
     'projects',
     'blog',
-    'web_analyzer',
-    'eroweb',
     'settings',
+    // NO 'eroweb' - specialist gets assigned tasks, not raw analysis
+    // NO 'leads' - can't see contact info
+    // NO 'web_analyzer' - owner only
   ],
 };
 
@@ -117,10 +117,10 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, { cs: string; en: string; ru: s
     de: 'Voller administrativer Zugang',
   },
   specialist: {
-    cs: 'Přístup k poptávkám, projektům, blogu a analýzám',
-    en: 'Access to leads, projects, blog and analysis tools',
-    ru: 'Доступ к заявкам, проектам, блогу и аналитике',
-    de: 'Zugang zu Anfragen, Projekten, Blog und Analysetools',
+    cs: 'Přístup k přiřazeným úkolům a projektům',
+    en: 'Access to assigned tasks and projects',
+    ru: 'Доступ к назначенным задачам и проектам',
+    de: 'Zugang zu zugewiesenen Aufgaben und Projekten',
   },
 };
 
