@@ -8,6 +8,7 @@ import {
   deleteDbAdmin,
   AdminUser,
 } from '@/lib/auth/simple-auth';
+import { isOwner } from '@/lib/auth/permissions';
 
 // Validation schema for updating admin
 const updateAdminSchema = z.object({
@@ -24,7 +25,7 @@ const updateAdminSchema = z.object({
     .min(2, 'Name must be at least 2 characters')
     .max(50, 'Name is too long')
     .optional(),
-  role: z.enum(['super_admin', 'admin']).optional(),
+  role: z.enum(['owner', 'admin', 'specialist']).optional(),
   active: z.boolean().optional(),
 });
 
@@ -188,6 +189,14 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Only owner can delete users
+    if (!isOwner(currentUser.role)) {
+      return NextResponse.json(
+        { error: 'Only owner can delete users' },
+        { status: 403 }
       );
     }
 

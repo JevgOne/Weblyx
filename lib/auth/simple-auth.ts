@@ -5,12 +5,13 @@
  */
 
 import bcrypt from 'bcryptjs';
+import type { UserRole } from './permissions';
 
 export interface AdminUser {
   id: string;
   email: string;
   name: string;
-  role?: 'super_admin' | 'admin';
+  role?: UserRole;
 }
 
 export interface DbAdminUser {
@@ -18,7 +19,7 @@ export interface DbAdminUser {
   email: string;
   name: string;
   password_hash: string;
-  role: 'super_admin' | 'admin';
+  role: UserRole;
   active: number;
   created_at: number;
 }
@@ -32,17 +33,17 @@ const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'weblyx-admin-secret-2024
 const LEGACY_ADMIN_USERS = [
   {
     id: 'admin-1',
-    email: process.env.ADMIN_EMAIL || 'admin@weblyx.cz',
+    email: process.env.ADMIN_EMAIL || 'zenuly3@gmail.com',
     password: process.env.ADMIN_PASSWORD || 'admin123',
-    name: 'Admin',
-    role: 'super_admin' as const,
+    name: 'Owner',
+    role: 'owner' as const,
   },
   {
     id: 'admin-2',
     email: process.env.ADMIN_EMAIL_2 || 'zvin.a@seznam.cz',
     password: process.env.ADMIN_PASSWORD_2 || 'Muzaisthebest',
-    name: 'Admin 2',
-    role: 'super_admin' as const,
+    name: 'Admin',
+    role: 'admin' as const,
   },
   {
     id: 'admin-3',
@@ -134,7 +135,7 @@ export async function createDbAdmin(
   email: string,
   password: string,
   name: string,
-  role: 'super_admin' | 'admin' = 'admin'
+  role: UserRole = 'admin'
 ): Promise<DbAdminUser | null> {
   try {
     const { turso } = await import('@/lib/turso');
@@ -170,7 +171,7 @@ export async function createDbAdmin(
  */
 export async function updateDbAdmin(
   id: string,
-  data: { name?: string; email?: string; password?: string; role?: 'super_admin' | 'admin'; active?: boolean }
+  data: { name?: string; email?: string; password?: string; role?: UserRole; active?: boolean }
 ): Promise<boolean> {
   try {
     const { turso } = await import('@/lib/turso');

@@ -20,7 +20,7 @@ const createAdminSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
     .max(50, 'Name is too long'),
-  role: z.enum(['super_admin', 'admin']).optional().default('admin'),
+  role: z.enum(['owner', 'admin', 'specialist']).optional().default('specialist'),
 });
 
 /**
@@ -41,8 +41,8 @@ async function verifyAuth(requireSuperAdmin = false): Promise<AdminUser | null> 
   }
 
   // For now, allow all authenticated admins to manage users
-  // In production, you might want to restrict to super_admin only
-  if (requireSuperAdmin && user.role !== 'super_admin') {
+  // In production, you might want to restrict to owner only
+  if (requireSuperAdmin && user.role !== 'owner') {
     return null;
   }
 

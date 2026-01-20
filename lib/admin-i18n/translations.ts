@@ -288,14 +288,14 @@ export const adminTranslations = {
       title: 'Weblyx Admin',
       dashboard: 'Dashboard',
       administrator: 'Administrator',
-      logout: 'Logout',
+      logout: 'Log out',
       language: 'Language',
     },
 
     // Dashboard
     dashboard: {
       welcome: 'Welcome back! 👋',
-      overview: 'Overview of your admin panel',
+      overview: 'Your admin panel at a glance',
       quickAccess: 'Quick Access',
 
       // Stats
@@ -304,15 +304,15 @@ export const adminTranslations = {
       leads: 'Leads',
       totalLeads: 'Total leads',
       portfolioProjects: 'Portfolio Projects',
-      publishedOnWeb: 'Published on web',
+      publishedOnWeb: 'Published online',
 
       // Quick access cards
       leadsTitle: 'Leads',
-      leadsDesc: 'Lead management',
+      leadsDesc: 'Manage leads',
       projectsTitle: 'Projects',
-      projectsDesc: 'Project management',
+      projectsDesc: 'Manage projects',
       portfolioTitle: 'Portfolio',
-      portfolioDesc: 'Portfolio management',
+      portfolioDesc: 'Manage portfolio',
       mediaTitle: 'Media 📸',
       mediaDesc: 'Image library',
       contentTitle: 'Content (CMS)',
@@ -320,9 +320,9 @@ export const adminTranslations = {
       statsTitle: 'Statistics',
       statsDesc: 'Analytics & reports',
       blogTitle: 'Blog',
-      blogDesc: 'Article management',
+      blogDesc: 'Manage articles',
       reviewsTitle: 'Reviews',
-      reviewsDesc: 'Customer reviews',
+      reviewsDesc: 'Customer feedback',
       promoCodesTitle: 'Promo Codes',
       promoCodesDesc: 'Discounts & promotions',
       paymentsTitle: 'Payments 💳',
@@ -330,14 +330,14 @@ export const adminTranslations = {
       invoicesTitle: 'Invoices 📄',
       invoicesDesc: 'Tax documents',
       webAnalyzerTitle: 'Web Analyzer',
-      webAnalyzerDesc: 'Competitor website analysis',
+      webAnalyzerDesc: 'Analyze competitor websites',
       analyze: 'Analyze',
       leadGenTitle: 'Lead Generation 🤖',
       leadGenDesc: 'AI scraping & email generation',
       erowebTitle: 'EroWeb Analysis 🔥',
       erowebDesc: 'Adult industry analysis',
       settingsTitle: 'Settings ⚙️',
-      settingsDesc: 'Password & account',
+      settingsDesc: 'Password & account settings',
       usersTitle: 'User Management 👥',
       usersDesc: 'Manage admin accounts',
     },
@@ -345,7 +345,7 @@ export const adminTranslations = {
     // EroWeb Analysis
     eroweb: {
       title: 'EroWeb Analysis',
-      subtitle: 'Analyze competitor websites and acquire new clients',
+      subtitle: 'Analyze competitor websites and win new clients',
       newAnalysis: '+ New Analysis',
 
       // Form
@@ -373,21 +373,21 @@ export const adminTranslations = {
       // Report
       report: 'Report',
       emailTab: 'Email',
-      categoryScores: 'Category Scores',
+      categoryScores: 'Scores by Category',
       categories: {
         speed: 'Speed',
-        mobile: 'Mobile Version',
+        mobile: 'Mobile',
         security: 'Security',
         seo: 'SEO',
         geo: 'GEO/AIEO',
         design: 'Design',
       },
       findings: 'Issues Found',
-      recommendation: 'Recommendation',
+      recommendation: 'Recommendations',
       pricing: 'Pricing',
-      pricingIndividual: 'Pricing is individual based on the scope of work and your specific requirements.',
-      pricingRange: 'Indicative price range:',
-      pricingNote: 'We will be happy to prepare a customized offer for your needs and budget.',
+      pricingIndividual: 'Pricing is tailored to the scope of work and your specific requirements.',
+      pricingRange: 'Estimated price range:',
+      pricingNote: 'We would be happy to prepare a custom quote tailored to your needs and budget.',
       downloadPdf: 'Download PDF',
       sendEmail: 'Send Email',
 
@@ -400,11 +400,11 @@ export const adminTranslations = {
       },
 
       // Email/WhatsApp
-      emailTemplate: 'Email Template',
-      whatsappTemplate: 'WhatsApp Template',
+      emailTemplate: 'Email Draft',
+      whatsappTemplate: 'WhatsApp Message Draft',
       subject: 'Subject:',
-      body: 'Email body:',
-      copyTip: 'Copy the message and send it directly via WhatsApp Web or mobile app.',
+      body: 'Message:',
+      copyTip: 'Copy the message and send it directly via WhatsApp Web or the mobile app.',
 
       // History
       history: 'Analysis History',
@@ -413,7 +413,7 @@ export const adminTranslations = {
 
       // Errors
       analysisFailed: 'Analysis failed',
-      timeout: 'Analysis took too long (60s timeout)',
+      timeout: 'Analysis timed out (60s limit)',
       tryAgain: 'Please try again',
     },
 
@@ -504,11 +504,11 @@ export const adminTranslations = {
       confirm: 'Подтвердить',
       back: 'Назад',
       next: 'Далее',
-      previous: 'Назад',
+      previous: 'Предыдущее',
       yes: 'Да',
       no: 'Нет',
       all: 'Все',
-      none: 'Нет',
+      none: 'Ничего',
       download: 'Скачать',
       upload: 'Загрузить',
       copy: 'Копировать',
@@ -536,8 +536,8 @@ export const adminTranslations = {
 
     // Dashboard
     dashboard: {
-      welcome: 'Добро пожаловать! 👋',
-      overview: 'Обзор панели администратора',
+      welcome: 'С возвращением! 👋',
+      overview: 'Обзор вашей панели управления',
       quickAccess: 'Быстрый доступ',
 
       // Stats
@@ -573,7 +573,7 @@ export const adminTranslations = {
       invoicesDesc: 'Налоговые документы',
       webAnalyzerTitle: 'Web Анализатор',
       webAnalyzerDesc: 'Анализ сайтов конкурентов',
-      analyze: 'Анализ',
+      analyze: 'Анализировать',
       leadGenTitle: 'Lead Generation 🤖',
       leadGenDesc: 'AI парсинг и генерация email',
       erowebTitle: 'EroWeb Анализ 🔥',
@@ -625,11 +625,11 @@ export const adminTranslations = {
         design: 'Дизайн',
       },
       findings: 'Обнаруженные проблемы',
-      recommendation: 'Рекомендации',
-      pricing: 'Цены',
-      pricingIndividual: 'Цена индивидуальна в зависимости от объема работ и ваших конкретных требований.',
+      recommendation: 'Рекомендация',
+      pricing: 'Стоимость',
+      pricingIndividual: 'Стоимость рассчитывается индивидуально в зависимости от объема работ и ваших требований.',
       pricingRange: 'Ориентировочный диапазон цен:',
-      pricingNote: 'Мы будем рады подготовить индивидуальное предложение под ваши нужды и бюджет.',
+      pricingNote: 'Мы с удовольствием подготовим персональное предложение с учетом ваших потребностей и бюджета.',
       downloadPdf: 'Скачать PDF',
       sendEmail: 'Отправить email',
 
@@ -654,9 +654,9 @@ export const adminTranslations = {
       deleteConfirm: 'Вы уверены, что хотите удалить этот анализ?',
 
       // Errors
-      analysisFailed: 'Анализ не удался',
-      timeout: 'Анализ занял слишком много времени (таймаут 60с)',
-      tryAgain: 'Пожалуйста, попробуйте снова',
+      analysisFailed: 'Ошибка анализа',
+      timeout: 'Превышено время ожидания (60 сек.)',
+      tryAgain: 'Попробуйте еще раз',
     },
 
     // Leads
@@ -679,7 +679,7 @@ export const adminTranslations = {
       newProject: 'Новый проект',
       noProjects: 'Пока нет проектов',
       client: 'Клиент',
-      deadline: 'Срок',
+      deadline: 'Дедлайн',
       budget: 'Бюджет',
     },
 
@@ -699,7 +699,7 @@ export const adminTranslations = {
       title: 'Блог',
       newArticle: 'Новая статья',
       articleTitle: 'Название статьи',
-      content: 'Контент',
+      content: 'Содержание',
       published: 'Опубликовано',
       draft: 'Черновик',
     },
@@ -724,7 +724,7 @@ export const adminTranslations = {
       currentPassword: 'Текущий пароль',
       newPassword: 'Новый пароль',
       confirmPassword: 'Подтвердить пароль',
-      languageSettings: 'Языковые настройки',
+      languageSettings: 'Настройки языка',
       selectLanguage: 'Выберите язык',
     },
   },

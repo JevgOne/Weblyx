@@ -29,10 +29,11 @@ import {
   UserCog,
 } from "lucide-react";
 import { useAdminTranslation, LanguageSelector } from "@/lib/admin-i18n";
+import { ROLE_NAMES } from "@/lib/auth/permissions";
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { user } = useAdminAuth();
+  const { user, can } = useAdminAuth();
   const { t } = useAdminTranslation();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -88,7 +89,9 @@ export default function AdminDashboard() {
             <LanguageSelector variant="compact" />
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium">{user?.email}</p>
-              <p className="text-xs text-muted-foreground">{t.header.administrator}</p>
+              <p className="text-xs text-muted-foreground">
+                {user?.role ? ROLE_NAMES[user.role]?.cs : t.header.administrator}
+              </p>
             </div>
             <Button
               variant="outline"

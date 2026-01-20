@@ -2,21 +2,26 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import type { UserRole, Permission } from "@/lib/auth/permissions";
+import { hasPermission } from "@/lib/auth/permissions";
 
 interface AdminUser {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
 }
 
 interface AdminAuthContextType {
   user: AdminUser | null;
   loading: boolean;
+  can: (permission: Permission) => boolean;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType>({
   user: null,
   loading: true,
+  can: () => false,
 });
 
 export const useAdminAuth = () => useContext(AdminAuthContext);
@@ -72,8 +77,13 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     return null;
   }
 
+  // Helper function to check if user has permission
+  const can = (permission: Permission): boolean => {
+    return hasPermission(user?.role, permission);
+  };
+
   return (
-    <AdminAuthContext.Provider value={{ user, loading }}>
+    <AdminAuthContext.Provider value={{ user, loading, can }}>
       {children}
     </AdminAuthContext.Provider>
   );

@@ -40,6 +40,7 @@ import {
   Edit,
   Shield,
   ShieldCheck,
+  UserCog,
   Eye,
   EyeOff,
   Loader2,
@@ -47,12 +48,13 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { type UserRole, ROLE_NAMES, ROLE_DESCRIPTIONS, isOwner } from "@/lib/auth/permissions";
 
 interface Admin {
   id: string;
   email: string;
   name: string;
-  role: 'super_admin' | 'admin';
+  role: UserRole;
   active: number;
   created_at: number;
 }
@@ -71,7 +73,7 @@ export default function AdminUsersPage() {
     email: '',
     name: '',
     password: '',
-    role: 'admin' as 'super_admin' | 'admin',
+    role: 'specialist' as UserRole,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -83,7 +85,7 @@ export default function AdminUsersPage() {
     name: '',
     email: '',
     password: '',
-    role: 'admin' as 'super_admin' | 'admin',
+    role: 'specialist' as UserRole,
   });
   const [updating, setUpdating] = useState(false);
 
@@ -322,7 +324,7 @@ export default function AdminUsersPage() {
                       <Label htmlFor="role">Role</Label>
                       <Select
                         value={newUser.role}
-                        onValueChange={(value: 'super_admin' | 'admin') =>
+                        onValueChange={(value: UserRole) =>
                           setNewUser({ ...newUser, role: value })
                         }
                       >
@@ -330,8 +332,18 @@ export default function AdminUsersPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="super_admin">Super Admin</SelectItem>
+                          <SelectItem value="specialist">
+                            <div className="flex flex-col">
+                              <span>Specialista</span>
+                              <span className="text-xs text-muted-foreground">Poptávky, Projekty, Analýzy</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="admin">
+                            <div className="flex flex-col">
+                              <span>Admin</span>
+                              <span className="text-xs text-muted-foreground">Plný přístup k administraci</span>
+                            </div>
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -412,13 +424,18 @@ export default function AdminUsersPage() {
                       <TableCell className="font-medium">{admin.name}</TableCell>
                       <TableCell>{admin.email}</TableCell>
                       <TableCell>
-                        <Badge variant={admin.role === 'super_admin' ? 'default' : 'secondary'}>
-                          {admin.role === 'super_admin' ? (
+                        <Badge
+                          variant={admin.role === 'owner' ? 'default' : admin.role === 'admin' ? 'secondary' : 'outline'}
+                          className={admin.role === 'specialist' ? 'border-blue-500 text-blue-600' : ''}
+                        >
+                          {admin.role === 'owner' ? (
                             <ShieldCheck className="h-3 w-3 mr-1" />
-                          ) : (
+                          ) : admin.role === 'admin' ? (
                             <Shield className="h-3 w-3 mr-1" />
+                          ) : (
+                            <UserCog className="h-3 w-3 mr-1" />
                           )}
-                          {admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                          {admin.role === 'owner' ? 'Vlastník' : admin.role === 'admin' ? 'Admin' : 'Specialista'}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -438,15 +455,17 @@ export default function AdminUsersPage() {
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => openDeleteDialog(admin)}
-                            disabled={admin.id === user?.id}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {isOwner(user?.role) && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => openDeleteDialog(admin)}
+                              disabled={admin.id === user?.id}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -520,7 +539,7 @@ export default function AdminUsersPage() {
                 <Label htmlFor="edit-role">Role</Label>
                 <Select
                   value={editForm.role}
-                  onValueChange={(value: 'super_admin' | 'admin') =>
+                  onValueChange={(value: UserRole) =>
                     setEditForm({ ...editForm, role: value })
                   }
                 >
@@ -528,8 +547,18 @@ export default function AdminUsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="super_admin">Super Admin</SelectItem>
+                    <SelectItem value="specialist">
+                      <div className="flex flex-col">
+                        <span>Specialista</span>
+                        <span className="text-xs text-muted-foreground">Poptávky, Projekty, Analýzy</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="admin">
+                      <div className="flex flex-col">
+                        <span>Admin</span>
+                        <span className="text-xs text-muted-foreground">Plný přístup k administraci</span>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
