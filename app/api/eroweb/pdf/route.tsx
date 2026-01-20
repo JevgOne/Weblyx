@@ -689,15 +689,15 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Introduction */}
         <View style={styles.introSection}>
-          <Text style={styles.sectionTitle}>✨ Proč jsme Vás kontaktovali?</Text>
+          <Text style={styles.sectionTitle}>✨ Proč jsme vás kontaktovali?</Text>
           <Text style={styles.introText}>
-            Protože vidíme obrovský potenciál! 🚀 Analyzovali jsme Váš web a zjistili jsme, kde přesně ztrácíte zákazníky. A hlavně - jak to napravit.
+            Protože vidíme obrovský potenciál! 🚀 Analyzovali jsme váš web a zjistili, kde přesně ztrácíte zákazníky – a hlavně, jak to napravit.
           </Text>
           <Text style={styles.introText}>
-            💡 V oboru erotických masáží dnes rozhoduje rychlost. Klient otevře 3-5 webů konkurence a vybere si do 30 sekund. Pokud Váš web načítá pomalu, nemá WhatsApp button nebo vypadá zastarale na mobilu - jste ven.
+            💡 V oboru erotických masáží dnes rozhoduje rychlost. Klient otevře 3–5 webů konkurence a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, nemá WhatsApp tlačítko nebo vypadá zastarale na mobilu – odchází ke konkurenci.
           </Text>
           <Text style={styles.introText}>
-            🎯 A tady je klíč: Většina Vaší konkurence to dělá špatně. To je Vaše šance! S pár konkrétními úpravami můžete být výrazně viditelnější, získat více dotazů a rezervací.
+            🎯 A tady je klíč: Většina vaší konkurence to dělá špatně. To je vaše šance! S několika konkrétními úpravami můžete být výrazně viditelnější, získat více dotazů a rezervací.
           </Text>
         </View>
 
@@ -792,32 +792,32 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Industry Benchmarks - Realistické odhady */}
         <View style={styles.statsBox} wrap={false}>
-          <Text style={styles.sectionTitle}>📊 Průměry v oboru a Váš potenciál</Text>
+          <Text style={styles.sectionTitle}>📊 Průměry v oboru a váš potenciál</Text>
           <Text style={styles.introText} style={{ marginBottom: 12, fontSize: 10, color: '#6B7280' }}>
             Na základě analýzy 50+ webů v oboru erotických masáží:
           </Text>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Typická návštěvnost (měsíc):</Text>
-            <Text style={styles.statsValue}>600-1200 návštěv</Text>
+            <Text style={styles.statsValue}>600–1200 návštěv</Text>
           </View>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Typická konverze (kontakt/rezervace):</Text>
-            <Text style={styles.statsValue}>2-5%</Text>
+            <Text style={styles.statsValue}>2–5 %</Text>
           </View>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Po optimalizaci (průměrně):</Text>
-            <Text style={styles.statsValue}>+40-60% návštěv, +50-100% konverze</Text>
+            <Text style={styles.statsValue}>+40–60 % návštěv, +50–100 % konverze</Text>
           </View>
           <Text style={styles.introText} style={{ marginTop: 12, fontSize: 9, color: '#9CA3AF', fontStyle: 'italic' }}>
-            * Vaše reálná čísla se mohou lišit. Pro přesný audit můžeme analyzovat Vaše Google Analytics data.
+            * Vaše reálná čísla se mohou lišit. Pro přesný audit můžeme analyzovat vaše Google Analytics data.
           </Text>
         </View>
 
         {/* Premium Features - Co vám chybí */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>🔥 TOP Features, které vám CHYBÍ (a konkurence to taky NEMÁ!)</Text>
+          <Text style={styles.sectionTitle}>🔥 TOP funkce, které vám chybí (a konkurence je také nemá!)</Text>
           <Text style={styles.introText} style={{ marginBottom: 16 }}>
-            Vybrali jsme pro Vás {selectedFeatures.length} klíčové prvky, které by měly největší dopad na Vaše tržby:
+            Vybrali jsme pro vás {selectedFeatures.length} klíčové prvky, které by měly největší dopad na vaše tržby:
           </Text>
           {selectedFeatures.map((feature, idx) => (
             <View key={feature.id} style={styles.featureCard}>
@@ -836,47 +836,47 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Business Impact Section */}
         <View style={styles.recommendation} wrap={false}>
-          <Text style={styles.sectionTitle}>💰 Co Vám to přinese?</Text>
+          <Text style={styles.sectionTitle}>💰 Co vám to přinese?</Text>
           <Text style={styles.recommendationText}>
             Naši klienti v oboru erotických masáží po optimalizaci webu zaznamenali:
           </Text>
           <Text style={styles.recommendationText}>
-            🔥 +45% více rezervací online
+            🔥 +45 % více online rezervací
           </Text>
           <Text style={styles.recommendationText}>
-            📱 +60% dotazů přes WhatsApp (pokud přidají button)
+            📱 +60 % dotazů přes WhatsApp (po přidání tlačítka)
           </Text>
           <Text style={styles.recommendationText}>
-            ⚡ -70% okamžitých odchodů díky rychlejšímu načítání
+            ⚡ –70 % okamžitých odchodů díky rychlejšímu načítání
           </Text>
           <Text style={styles.recommendationText}>
-            🎯 +80% viditelnosti v AI vyhledávačích (ChatGPT, Perplexity)
+            🎯 +80 % viditelnosti v AI vyhledávačích (ChatGPT, Perplexity)
           </Text>
         </View>
 
         {/* Specific Recommendations */}
         <View style={styles.recommendation} wrap={false}>
-          <Text style={styles.sectionTitle}>🔥 Features, které konkurence NEMÁ (Váš klíč k úspěchu!)</Text>
+          <Text style={styles.sectionTitle}>🔥 Funkce, které konkurence nemá (váš klíč k úspěchu!)</Text>
           <Text style={styles.recommendationText}>
-            1. 🤖 GEO/AIEO optimalizace - buďte VIDITELNÍ v ChatGPT a Perplexity! 80% mladých klientů tam hledá
+            1. 🤖 GEO/AIEO optimalizace – buďte viditelní v ChatGPT a Perplexity! 80 % mladých klientů tam hledá
           </Text>
           <Text style={styles.recommendationText}>
-            2. 💬 AI Chatbot 24/7 - odpovídá okamžitě i v noci, rezervuje termíny, neztrácíte jediného klienta
+            2. 💬 AI Chatbot 24/7 – odpovídá okamžitě i v noci, rezervuje termíny, neztratíte jediného klienta
           </Text>
           <Text style={styles.recommendationText}>
-            3. 📊 Live dashboard - vidíte v reálném čase, kdo je na webu, odkud přišel, co ho zajímá
+            3. 📊 Live dashboard – vidíte v reálném čase, kdo je na webu, odkud přišel, co ho zajímá
           </Text>
           <Text style={styles.recommendationText}>
-            4. 🌍 Auto-translate (CZ/EN/DE/UKR/RU) - stránka se přepne podle IP adresy návštěvníka
+            4. 🌍 Auto-translate (CZ/EN/DE/UKR/RU) – stránka se přepne podle IP adresy návštěvníka
           </Text>
           <Text style={styles.recommendationText}>
-            5. 📅 Smart kalendář - automaticky nabízí nejbližší volné termíny, posílá SMS připomínky
+            5. 📅 Smart kalendář – automaticky nabízí nejbližší volné termíny, posílá SMS připomínky
           </Text>
           <Text style={styles.recommendationText}>
-            6. 🔔 Push notifikace - pošlete speciální akce přímo do mobilu klientů (i když nejsou na webu!)
+            6. 🔔 Push notifikace – pošlete speciální akce přímo do mobilu klientů (i když nejsou na webu!)
           </Text>
           <Text style={styles.recommendationText}>
-            7. ⚡ Sub-2s loading - Váš web načte rychleji než konkurence zmáčkne enter (Google Vás odměňuje)
+            7. ⚡ Rychlé načítání pod 2 sekundy – váš web se načte rychleji než konkurence (Google vás odměňuje)
           </Text>
         </View>
 
@@ -892,17 +892,17 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         <View style={styles.pricing}>
           <Text style={styles.sectionTitle}>💰 Kolik to stojí?</Text>
           <Text style={styles.pricingText}>
-            Cena je VŽDY na míru podle toho, co potřebujete. Žádné drahé balíčky, které nevyužijete. Platíte jen za to, co Vám reálně přinese klienty.
+            Cena je vždy na míru podle toho, co potřebujete. Žádné drahé balíčky, které nevyužijete. Platíte jen za to, co vám reálně přinese klienty.
           </Text>
           <View style={styles.pricingBox}>
             <Text style={styles.pricingLabel}>📊 Typický projekt (kompletní optimalizace):</Text>
-            <Text style={styles.pricingAmount}>30 000 - 149 990 Kč</Text>
+            <Text style={styles.pricingAmount}>30 000–149 990 Kč</Text>
           </View>
           <Text style={styles.pricingNote}>
-            ✨ Zahrnuje: Analýzu, design, vývoj, GEO/AIEO optimalizaci, testování a spuštění.
+            ✨ Zahrnuje: analýzu, design, vývoj, GEO/AIEO optimalizaci, testování a spuštění.
           </Text>
           <Text style={styles.pricingNote}>
-            🚀 ROI: Průměrně se investice vrátí za 2-4 měsíce díky zvýšenému počtu rezervací.
+            🚀 ROI: Průměrně se investice vrátí za 2–4 měsíce díky zvýšenému počtu rezervací.
           </Text>
         </View>
 
@@ -917,7 +917,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>📞 Zavolejte nebo napište (15 minut, nezávazně)</Text>
               <Text style={styles.stepDescription}>
-                Probereme s Vámi konkrétně, co by Vašemu webu pomohlo nejvíc. Žádný sales pitch, jen praktické rady. I když se nakonec nerozhodnete pro spolupráci, budete mít jasno.
+                Probereme s vámi konkrétně, co by vašemu webu pomohlo nejvíc. Žádný prodejní tlak, jen praktické rady. I když se nakonec nerozhodnete pro spolupráci, budete mít jasno.
               </Text>
             </View>
           </View>
@@ -941,7 +941,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>🎯 Začneme a uvidíte výsledky</Text>
               <Text style={styles.stepDescription}>
-                Žádné dlouhé čekání. První změny uvidíte během 2 týdnů. Průběžně Vás budeme informovat a ukážeme měřitelné výsledky - více dotazů, rezervací, tržeb.
+                Žádné dlouhé čekání. První změny uvidíte během 2 týdnů. Průběžně vás budeme informovat a ukážeme měřitelné výsledky – více dotazů, rezervací, tržeb.
               </Text>
             </View>
           </View>
