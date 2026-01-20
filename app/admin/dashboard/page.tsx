@@ -27,9 +27,10 @@ import {
   CreditCard,
   Receipt,
   UserCog,
+  History,
 } from "lucide-react";
 import { useAdminTranslation, LanguageSelector } from "@/lib/admin-i18n";
-import { ROLE_NAMES } from "@/lib/auth/permissions";
+import { ROLE_NAMES, isAdminOrHigher } from "@/lib/auth/permissions";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -512,6 +513,28 @@ export default function AdminDashboard() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Activity Logs - only for Owner and Admin */}
+            {isAdminOrHigher(user?.role) && (
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-slate-500/10 to-slate-600/10 border-slate-300">
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                      <History className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle>Záznamy aktivit</CardTitle>
+                      <CardDescription>Historie akcí uživatelů</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" className="w-full" onClick={() => router.push("/admin/activity-logs")}>
+                    {t.common.open}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>

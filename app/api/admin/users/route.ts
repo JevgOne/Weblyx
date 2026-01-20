@@ -8,6 +8,7 @@ import {
   createDbAdmin,
   AdminUser,
 } from '@/lib/auth/simple-auth';
+import { logActivity } from '@/lib/activity-log';
 
 // Validation schema for creating admin
 const createAdminSchema = z.object({
@@ -139,6 +140,18 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`✅ [ADMIN CREATED] Email: ${email} by ${currentUser.email}`);
+
+    // Log activity
+    await logActivity({
+      userId: currentUser.id,
+      userEmail: currentUser.email,
+      userName: currentUser.name,
+      action: 'user_created',
+      entityType: 'user',
+      entityId: newAdmin.id,
+      entityName: `${newAdmin.name} (${newAdmin.email})`,
+      details: `Role: ${newAdmin.role}`,
+    });
 
     return NextResponse.json({
       success: true,

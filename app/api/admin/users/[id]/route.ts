@@ -9,6 +9,7 @@ import {
   AdminUser,
 } from '@/lib/auth/simple-auth';
 import { isOwner } from '@/lib/auth/permissions';
+import { logActivity } from '@/lib/activity-log';
 
 // Validation schema for updating admin
 const updateAdminSchema = z.object({
@@ -151,6 +152,19 @@ export async function PATCH(
 
     console.log(`✅ [ADMIN UPDATED] ID: ${id} by ${currentUser.email}`);
 
+    // Log activity
+    const changes = Object.keys(updateData).filter(k => k !== 'password').join(', ');
+    await logActivity({
+      userId: currentUser.id,
+      userEmail: currentUser.email,
+      userName: currentUser.name,
+      action: 'user_updated',
+      entityType: 'user',
+      entityId: id,
+      entityName: `${existingAdmin.name} (${existingAdmin.email})`,
+      details: changes ? `Změněno: ${changes}` : undefined,
+    });
+
     // Fetch updated admin
     const updatedAdmin = await getDbAdminById(id);
 
@@ -229,6 +243,17 @@ export async function DELETE(
     }
 
     console.log(`🗑️ [ADMIN DELETED] ID: ${id} by ${currentUser.email}`);
+
+    // Log activity
+    await logActivity({
+      userId: currentUser.id,
+      userEmail: currentUser.email,
+      userName: currentUser.name,
+      action: 'user_deleted',
+      entityType: 'user',
+      entityId: id,
+      entityName: `${existingAdmin.name} (${existingAdmin.email})`,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
