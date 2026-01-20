@@ -21,6 +21,7 @@ export type Permission =
   | 'web_analyzer'
   | 'lead_generation'
   | 'eroweb'
+  | 'tasks'
   | 'settings'
   | 'users';
 
@@ -43,6 +44,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'web_analyzer',
     'lead_generation',
     'eroweb',
+    'tasks',
     'settings',
     'users',
   ],
@@ -64,19 +66,16 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'web_analyzer',
     'lead_generation',
     'eroweb',
+    'tasks',
     'settings',
     'users',
   ],
 
-  // Specialist - limited access, sees only assigned tasks
+  // Specialist - sees only assigned tasks, completes work
   specialist: [
     'dashboard',
-    'projects',
-    'blog',
+    'tasks',  // Main section for specialist - their assigned work
     'settings',
-    // NO 'eroweb' - specialist gets assigned tasks, not raw analysis
-    // NO 'leads' - can't see contact info
-    // NO 'web_analyzer' - owner only
   ],
 };
 
