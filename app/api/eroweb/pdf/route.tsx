@@ -828,7 +828,9 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
                 {feature.description[language]}
               </Text>
               <Text style={styles.featureImpact}>
-                {feature.impact} • Potenciál: +{new Intl.NumberFormat('cs-CZ').format(feature.monthlyValue)} Kč/měsíc
+                {feature.impact} • {language === 'cs' ? 'Potenciál' : 'Potential'}: +{language === 'cs'
+                  ? `${new Intl.NumberFormat('cs-CZ').format(feature.monthlyValue)} Kč/měsíc`
+                  : `€${Math.round(feature.monthlyValue / 25)}/month`}
               </Text>
             </View>
           ))}
@@ -890,19 +892,31 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
 
         {/* Pricing */}
         <View style={styles.pricing} wrap={false}>
-          <Text style={styles.sectionTitle}>Investice</Text>
+          <Text style={styles.sectionTitle}>{language === 'cs' ? 'Investice' : 'Investment'}</Text>
           <Text style={styles.pricingText}>
-            Cena vždy na míru podle vašich potřeb. Platíte jen za to, co vám reálně přinese zákazníky.
+            {language === 'cs'
+              ? 'Cena vždy na míru podle vašich potřeb. Platíte jen za to, co vám reálně přinese zákazníky.'
+              : 'Price always tailored to your needs. You only pay for what actually brings you customers.'}
           </Text>
           <View style={styles.pricingBox} wrap={false}>
-            <Text style={styles.pricingLabel}>Typický projekt (kompletní optimalizace):</Text>
-            <Text style={styles.pricingAmount}>30 000–149 990 Kč</Text>
+            <Text style={styles.pricingLabel}>
+              {language === 'cs'
+                ? 'Typický projekt (kompletní optimalizace):'
+                : 'Typical project (complete optimization):'}
+            </Text>
+            <Text style={styles.pricingAmount}>
+              {language === 'cs' ? '30 000–149 990 Kč' : '€1 200–€6 000'}
+            </Text>
           </View>
           <Text style={styles.pricingNote}>
-            Zahrnuje: analýzu, design, vývoj, GEO/AIEO optimalizaci, testování a spuštění.
+            {language === 'cs'
+              ? 'Zahrnuje: analýzu, design, vývoj, GEO/AIEO optimalizaci, testování a spuštění.'
+              : 'Includes: analysis, design, development, GEO/AIEO optimization, testing and launch.'}
           </Text>
           <Text style={styles.pricingNote}>
-            ROI: Investice se průměrně vrátí za 2–4 měsíce díky zvýšeným rezervacím.
+            {language === 'cs'
+              ? 'ROI: Investice se průměrně vrátí za 2–4 měsíce díky zvýšeným rezervacím.'
+              : 'ROI: Investment typically returns within 2–4 months due to increased bookings.'}
           </Text>
         </View>
 
