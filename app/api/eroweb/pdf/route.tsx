@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   domainTitle: {
     fontSize: 18,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   sectionTitle: {
     fontSize: 16,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     borderColor: '#7C3AED',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   recommendationText: {
     fontSize: 11,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     borderColor: '#7C3AED',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   pricingText: {
     fontSize: 11,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   introText: {
     fontSize: 11,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     borderColor: '#86EFAC',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   stepItem: {
     flexDirection: 'row',
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     borderColor: '#F59E0B',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   roiTitle: {
     fontSize: 16,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     borderColor: '#86EFAC',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   statsRow: {
     flexDirection: 'row',
@@ -481,10 +481,10 @@ interface PremiumFeature {
 const premiumFeatures: PremiumFeature[] = [
   {
     id: 'vibe-system',
-    name: { cs: 'VIBE Systém', en: 'VIBE System' },
+    name: { cs: 'Originální hodnocení', en: 'Custom Rating System' },
     description: {
-      cs: 'Heat/Tenderness/Tempo škály místo obyčejných hvězdiček – zákazníci si to pamatují a citují',
-      en: 'Heat/Tenderness/Tempo scales instead of ordinary star ratings - people remember and quote it'
+      cs: 'Unikátní škály hodnocení místo obyčejných hvězdiček – zákazníci si to pamatují a citují',
+      en: 'Unique rating scales instead of ordinary star ratings - people remember and quote it'
     },
     impact: '+35 % konverze',
     conversionBoost: 35,
@@ -503,10 +503,10 @@ const premiumFeatures: PremiumFeature[] = [
   },
   {
     id: 'scent-menu',
-    name: { cs: 'Menu vůní', en: 'Scent Menu' },
+    name: { cs: 'Personalizace návštěvy', en: 'Visit Personalization' },
     description: {
-      cs: 'Výběr ze 3 vůní (Clean/Sweet/Dark) při rezervaci – působí luxusně a profesionálně',
-      en: 'Choice of 3 scents (Clean/Sweet/Dark) when booking - looks luxurious and professional'
+      cs: 'Volba preferencí před návštěvou (atmosféra, hudba, detaily) – působí luxusně a profesionálně',
+      en: 'Choice of preferences before visit (atmosphere, music, details) - looks luxurious and professional'
     },
     impact: '+20 % prémiového vnímání',
     conversionBoost: 20,
@@ -516,8 +516,8 @@ const premiumFeatures: PremiumFeature[] = [
     id: 'mood-selector',
     name: { cs: 'Výběr nálady', en: 'Choose Your Mood' },
     description: {
-      cs: 'Rychlá volba nálady (Chci vypnout hlavu / Chci teasing / Chci něžnost) – doporučí správnou masáž',
-      en: 'Quick mood selection (I want to switch off/I want teasing/I want tenderness) - recommends the right massage'
+      cs: 'Rychlá volba nálady nebo typu služby – inteligentní doporučení podle preferencí klienta',
+      en: 'Quick mood or service type selection - intelligent recommendations based on client preferences'
     },
     impact: '+50 % okamžitých rezervací',
     conversionBoost: 50,
@@ -527,7 +527,7 @@ const premiumFeatures: PremiumFeature[] = [
     id: 'live-availability',
     name: { cs: 'Živá dostupnost', en: 'Live Availability' },
     description: {
-      cs: 'Kalendář s nejbližšími volnými termíny "dnes / zítra" + chytré doporučení podle délky masáže',
+      cs: 'Kalendář s nejbližšími volnými termíny "dnes / zítra" + inteligentní doporučení podle délky návštěvy',
       en: 'Calendar with nearest available slots "today/tomorrow" + smart recommendations by session length'
     },
     impact: '+45 % rezervací',
@@ -549,8 +549,8 @@ const premiumFeatures: PremiumFeature[] = [
     id: 'session-builder',
     name: { cs: 'Průvodce rezervací', en: 'Session Builder' },
     description: {
-      cs: 'Krok za krokem sestavení masáže: délka → typ → doplňky → masérka → termín',
-      en: 'Step by step massage composition: length → type → extras → masseuse → date'
+      cs: 'Krok za krokem sestavení rezervace: délka → typ služby → doplňky → osoba → termín',
+      en: 'Step by step booking composition: length → service type → extras → person → date'
     },
     impact: '+35 % dokončených rezervací',
     conversionBoost: 35,
@@ -571,8 +571,8 @@ const premiumFeatures: PremiumFeature[] = [
     id: 'vip-zone',
     name: { cs: 'VIP členská zóna', en: 'VIP/Membership Zone' },
     description: {
-      cs: 'Rezervace jedním kliknutím, historie návštěv, oblíbené masérky, priorita v časech, kreditní systém',
-      en: '1-click booking, visit history, favorite masseuses, time priority, credit system'
+      cs: 'Rezervace jedním kliknutím, historie návštěv, oblíbení poskytovatelé, priorita v časech, kreditní systém',
+      en: '1-click booking, visit history, favorite providers, time priority, credit system'
     },
     impact: '+60 % věrnosti klientů',
     conversionBoost: 60,
@@ -580,10 +580,10 @@ const premiumFeatures: PremiumFeature[] = [
   },
   {
     id: 'ritual-descriptions',
-    name: { cs: 'Rituální popisy', en: 'Ritual Descriptions' },
+    name: { cs: 'Storytelling popisy', en: 'Storytelling Descriptions' },
     description: {
-      cs: 'Masáže popsané jako "rituály" s příběhem a atmosférou – ne seznam služeb',
-      en: 'Massages described as "rituals" with story and atmosphere - not service list'
+      cs: 'Služby popsané s příběhem a atmosférou – ne suchý seznam, ale zážitek',
+      en: 'Services described with story and atmosphere - not dry list, but experience'
     },
     impact: '+28 % prémiových rezervací',
     conversionBoost: 28,
@@ -694,7 +694,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
             Analyzovali jsme váš web a vidíme obrovský potenciál. Zjistili jsme přesně, kde ztrácíte zákazníky – a jak to napravit.
           </Text>
           <Text style={styles.introText}>
-            V oboru erotických masáží rozhoduje rychlost. Klient navštíví 3–5 konkurenčních webů a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.
+            Ve vašem oboru rozhoduje rychlost. Klient navštíví 3–5 konkurenčních webů a rozhodne se do 30 sekund. Pokud váš web načítá pomalu, chybí WhatsApp tlačítko nebo mobilní verze není optimální – zákazník odchází.
           </Text>
           <Text style={styles.introText}>
             Dobrá zpráva: Většina konkurence má stejné problémy. S cílenými úpravami můžete být viditelněj­ší a získat výrazně více rezervací.
@@ -794,7 +794,7 @@ function EroWebPDFDocument({ analysis, language = 'cs' }: { analysis: EroWebAnal
         <View style={styles.statsBox} wrap={false}>
           <Text style={styles.sectionTitle}>Srovnání s průměrem v oboru</Text>
           <Text style={[styles.introText, { marginBottom: 12, fontSize: 10, color: '#6B7280' }]}>
-            Data z analýzy 50+ webů erotických masáží:
+            Data z analýzy 50+ podobných webů ve vašem oboru:
           </Text>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Návštěvnost (měsíčně):</Text>
