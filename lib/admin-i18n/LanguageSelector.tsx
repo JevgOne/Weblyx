@@ -14,6 +14,7 @@ import { Globe } from 'lucide-react';
 const LANGUAGE_OPTIONS: { value: AdminLocale; label: string; flag: string }[] = [
   { value: 'cs', label: 'Čeština', flag: '🇨🇿' },
   { value: 'en', label: 'English', flag: '🇬🇧' },
+  { value: 'de', label: 'Deutsch', flag: '🇩🇪' },
   { value: 'ru', label: 'Русский', flag: '🇷🇺' },
 ];
 

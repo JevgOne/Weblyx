@@ -1,6 +1,6 @@
-// Admin Panel Translations - CZ/EN/RU
+// Admin Panel Translations - CZ/EN/RU/DE
 
-export type AdminLocale = 'cs' | 'en' | 'ru';
+export type AdminLocale = 'cs' | 'en' | 'ru' | 'de';
 
 export const adminTranslations = {
   cs: {
@@ -726,6 +726,248 @@ export const adminTranslations = {
       confirmPassword: 'Подтвердить пароль',
       languageSettings: 'Настройки языка',
       selectLanguage: 'Выберите язык',
+    },
+  },
+
+  de: {
+    // Common
+    common: {
+      open: 'Öffnen',
+      close: 'Schließen',
+      save: 'Speichern',
+      cancel: 'Abbrechen',
+      delete: 'Löschen',
+      edit: 'Bearbeiten',
+      add: 'Hinzufügen',
+      search: 'Suchen',
+      loading: 'Wird geladen...',
+      error: 'Fehler',
+      success: 'Erfolg',
+      confirm: 'Bestätigen',
+      back: 'Zurück',
+      next: 'Weiter',
+      previous: 'Vorherige',
+      yes: 'Ja',
+      no: 'Nein',
+      all: 'Alle',
+      none: 'Keine',
+      download: 'Herunterladen',
+      upload: 'Hochladen',
+      copy: 'Kopieren',
+      copied: 'Kopiert!',
+      new: 'Neu',
+      view: 'Ansehen',
+      actions: 'Aktionen',
+      status: 'Status',
+      date: 'Datum',
+      name: 'Name',
+      email: 'E-Mail',
+      phone: 'Telefon',
+      total: 'Gesamt',
+      settings: 'Einstellungen',
+    },
+
+    // Header
+    header: {
+      title: 'Weblyx Admin',
+      dashboard: 'Dashboard',
+      administrator: 'Administrator',
+      logout: 'Abmelden',
+      language: 'Sprache',
+    },
+
+    // Dashboard
+    dashboard: {
+      welcome: 'Willkommen zurück! 👋',
+      overview: 'Übersicht Ihres Admin-Panels',
+      quickAccess: 'Schnellzugriff',
+
+      // Stats
+      activeProjects: 'Aktive Projekte',
+      totalProjects: 'Projekte insgesamt',
+      leads: 'Anfragen (Leads)',
+      totalLeads: 'Anfragen insgesamt',
+      portfolioProjects: 'Portfolio-Projekte',
+      publishedOnWeb: 'Online veröffentlicht',
+
+      // Quick access cards
+      leadsTitle: 'Anfragen',
+      leadsDesc: 'Leads verwalten',
+      projectsTitle: 'Projekte',
+      projectsDesc: 'Projekte verwalten',
+      portfolioTitle: 'Portfolio',
+      portfolioDesc: 'Portfolio verwalten',
+      mediaTitle: 'Medien 📸',
+      mediaDesc: 'Bilderbibliothek',
+      contentTitle: 'Inhalt (CMS)',
+      contentDesc: 'Website-Inhalte bearbeiten',
+      statsTitle: 'Statistiken',
+      statsDesc: 'Analysen & Berichte',
+      blogTitle: 'Blog',
+      blogDesc: 'Artikel verwalten',
+      reviewsTitle: 'Bewertungen',
+      reviewsDesc: 'Kundenfeedback',
+      promoCodesTitle: 'Promo-Codes',
+      promoCodesDesc: 'Rabatte & Aktionen',
+      paymentsTitle: 'Zahlungen 💳',
+      paymentsDesc: 'GoPay Zahlungsgateway',
+      invoicesTitle: 'Rechnungen 📄',
+      invoicesDesc: 'Steuerbelege',
+      webAnalyzerTitle: 'Web-Analyzer',
+      webAnalyzerDesc: 'Konkurrenz-Websites analysieren',
+      analyze: 'Analysieren',
+      leadGenTitle: 'Lead-Generierung 🤖',
+      leadGenDesc: 'KI-Scraping & E-Mail-Generierung',
+      erowebTitle: 'EroWeb Analyse 🔥',
+      erowebDesc: 'Analyse für Adult-Branche',
+      settingsTitle: 'Einstellungen ⚙️',
+      settingsDesc: 'Passwort & Konto',
+      usersTitle: 'Benutzerverwaltung 👥',
+      usersDesc: 'Admin-Konten verwalten',
+    },
+
+    // EroWeb Analysis
+    eroweb: {
+      title: 'EroWeb Analyse',
+      subtitle: 'Analysieren Sie Konkurrenz-Websites und gewinnen Sie neue Kunden',
+      newAnalysis: '+ Neue Analyse',
+
+      // Form
+      urlLabel: 'Website-URL',
+      urlPlaceholder: 'https://example.com',
+      businessTypeLabel: 'Geschäftsart',
+      businessTypes: {
+        massage: 'Erotische Massage',
+        privat: 'Privat / Club',
+        escort: 'Escort',
+      },
+      analyzeButton: 'Website analysieren',
+      analyzing: 'Analysiere...',
+
+      // Progress steps
+      steps: {
+        fetch: 'Website wird geladen',
+        speed: 'Geschwindigkeit testen',
+        seo: 'SEO analysieren',
+        geo: 'GEO/AIEO prüfen',
+        design: 'Design bewerten',
+        report: 'Bericht erstellen',
+      },
+
+      // Report
+      report: 'Bericht',
+      emailTab: 'E-Mail',
+      categoryScores: 'Bewertungen nach Kategorien',
+      categories: {
+        speed: 'Geschwindigkeit',
+        mobile: 'Mobil',
+        security: 'Sicherheit',
+        seo: 'SEO',
+        geo: 'GEO/AIEO',
+        design: 'Design',
+      },
+      findings: 'Gefundene Probleme',
+      recommendation: 'Empfehlungen',
+      pricing: 'Preise',
+      pricingIndividual: 'Die Preise richten sich nach dem Arbeitsumfang und Ihren spezifischen Anforderungen.',
+      pricingRange: 'Geschätzte Preisspanne:',
+      pricingNote: 'Wir erstellen Ihnen gerne ein individuelles Angebot, das auf Ihre Bedürfnisse und Ihr Budget zugeschnitten ist.',
+      downloadPdf: 'PDF herunterladen',
+      sendEmail: 'E-Mail senden',
+
+      // Contact status
+      contactStatus: {
+        not_contacted: 'Nicht kontaktiert',
+        contacted: 'Kontaktiert',
+        agreed: 'Vereinbart',
+        no_response: 'Keine Antwort',
+      },
+
+      // Email/WhatsApp
+      emailTemplate: 'E-Mail-Entwurf',
+      whatsappTemplate: 'WhatsApp-Nachrichtenentwurf',
+      subject: 'Betreff:',
+      body: 'Nachricht:',
+      copyTip: 'Kopieren Sie die Nachricht und senden Sie sie direkt über WhatsApp Web oder die mobile App.',
+
+      // History
+      history: 'Analyse-Verlauf',
+      noAnalyses: 'Noch keine Analysen',
+      deleteConfirm: 'Möchten Sie diese Analyse wirklich löschen?',
+
+      // Errors
+      analysisFailed: 'Analyse fehlgeschlagen',
+      timeout: 'Zeitüberschreitung bei der Analyse (60 Sek.)',
+      tryAgain: 'Bitte versuchen Sie es erneut',
+    },
+
+    // Leads
+    leads: {
+      title: 'Anfragen',
+      newLead: 'Neue Anfrage',
+      noLeads: 'Noch keine Anfragen',
+      status: {
+        new: 'Neu',
+        contacted: 'Kontaktiert',
+        inProgress: 'In Bearbeitung',
+        completed: 'Abgeschlossen',
+        rejected: 'Abgelehnt',
+      },
+    },
+
+    // Projects
+    projects: {
+      title: 'Projekte',
+      newProject: 'Neues Projekt',
+      noProjects: 'Noch keine Projekte',
+      client: 'Kunde',
+      deadline: 'Deadline',
+      budget: 'Budget',
+    },
+
+    // Portfolio
+    portfolio: {
+      title: 'Portfolio',
+      addProject: 'Projekt hinzufügen',
+      projectName: 'Projektname',
+      projectUrl: 'Projekt-URL',
+      description: 'Beschreibung',
+      technologies: 'Technologien',
+      image: 'Bild',
+    },
+
+    // Blog
+    blog: {
+      title: 'Blog',
+      newArticle: 'Neuer Artikel',
+      articleTitle: 'Artikeltitel',
+      content: 'Inhalt',
+      published: 'Veröffentlicht',
+      draft: 'Entwurf',
+    },
+
+    // Invoices
+    invoices: {
+      title: 'Rechnungen',
+      newInvoice: 'Neue Rechnung',
+      invoiceNumber: 'Rechnungsnummer',
+      client: 'Kunde',
+      amount: 'Betrag',
+      dueDate: 'Fälligkeitsdatum',
+      paid: 'Bezahlt',
+      unpaid: 'Unbezahlt',
+    },
+
+    // Settings
+    settingsPage: {
+      title: 'Einstellungen',
+      accountSettings: 'Kontoeinstellungen',
+      changePassword: 'Passwort ändern',
+      currentPassword: 'Aktuelles Passwort',
+      newPassword: 'Neues Passwort',
+      confirmPassword: 'Passwort bestätigen',
+      languageSettings: 'Spracheinstellungen',
+      selectLanguage: 'Sprache auswählen',
     },
   },
 } as const;

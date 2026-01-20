@@ -81,40 +81,46 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 };
 
 // Role display names for each locale
-export const ROLE_NAMES: Record<UserRole, { cs: string; en: string; ru: string }> = {
+export const ROLE_NAMES: Record<UserRole, { cs: string; en: string; ru: string; de: string }> = {
   owner: {
     cs: 'Vlastník',
     en: 'Owner',
     ru: 'Владелец',
+    de: 'Inhaber',
   },
   admin: {
     cs: 'Administrátor',
     en: 'Administrator',
     ru: 'Администратор',
+    de: 'Administrator',
   },
   specialist: {
     cs: 'Specialista',
     en: 'Specialist',
     ru: 'Специалист',
+    de: 'Spezialist',
   },
 };
 
 // Role descriptions
-export const ROLE_DESCRIPTIONS: Record<UserRole, { cs: string; en: string; ru: string }> = {
+export const ROLE_DESCRIPTIONS: Record<UserRole, { cs: string; en: string; ru: string; de: string }> = {
   owner: {
     cs: 'Maximální práva - vlastník firmy',
     en: 'Maximum access - business owner',
     ru: 'Максимальные права - владелец',
+    de: 'Maximale Rechte - Geschäftsinhaber',
   },
   admin: {
     cs: 'Plný přístup k administraci',
     en: 'Full administrative access',
     ru: 'Полный административный доступ',
+    de: 'Voller administrativer Zugang',
   },
   specialist: {
     cs: 'Přístup k poptávkám, projektům, blogu a analýzám',
     en: 'Access to leads, projects, blog and analysis tools',
     ru: 'Доступ к заявкам, проектам, блогу и аналитике',
+    de: 'Zugang zu Anfragen, Projekten, Blog und Analysetools',
   },
 };
 
