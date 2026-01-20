@@ -168,7 +168,11 @@ https://weblyx.cz`;
   const handleDownloadPdfWithLang = async () => {
     try {
       const res = await fetch(`/api/eroweb/pdf?id=${analysis.id}&lang=${language}`);
-      if (!res.ok) throw new Error('PDF generation failed');
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || `HTTP ${res.status}`);
+      }
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
@@ -180,7 +184,8 @@ https://weblyx.cz`;
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error: any) {
-      console.error('PDF download failed:', error.message);
+      console.error('PDF download failed:', error);
+      alert(`❌ Chyba při stahování PDF:\n\n${error.message}\n\nZkuste to prosím znovu nebo kontaktujte podporu.`);
     }
   };
 
