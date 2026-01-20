@@ -27,6 +27,9 @@ import {
   Copy,
   Check,
   Languages,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
@@ -66,6 +69,10 @@ export function ReportCard({ analysis, onSendEmail, onDownloadPdf, onStatusChang
   const { t, locale } = useAdminTranslation();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
+  const [copiedBrief, setCopiedBrief] = useState(false);
+  const [briefExpanded, setBriefExpanded] = useState(false);
+  const [copiedKw, setCopiedKw] = useState(false);
+  const [kwExpanded, setKwExpanded] = useState(false);
   const [language, setLanguage] = useState<'cs' | 'en' | 'de' | 'ru'>('cs');
 
   // Sync language with locale on mount
@@ -267,6 +274,145 @@ https://weblyx.cz`,
   const getPriceRange = () => {
     if (language === 'cs') return '30 000 - 149 990 Kč';
     return '€1,200 - €6,000';
+  };
+
+  // Generate AI Brief prompt template
+  const getBriefPrompt = () => {
+    const criticalFindings = analysis.findings?.filter(f => f.type === 'critical') || [];
+    const warnings = analysis.findings?.filter(f => f.type === 'warning') || [];
+    const opportunities = analysis.findings?.filter(f => f.type === 'opportunity') || [];
+
+    return `Jsi profesionální web designer a vývojář. Vytvořím ti brief pro redesign/nový web pro klienta.
+
+=== ANALÝZA WEBU ===
+Doména: ${analysis.domain}
+URL: ${analysis.url}
+Typ podnikání: ${businessTypeLabel}
+Celkové skóre: ${analysis.scores.total}/100
+
+SKÓRE PO KATEGORIÍCH:
+• Rychlost: ${analysis.scores.speed}/${CATEGORY_MAX_SCORES.speed}
+• Mobilní verze: ${analysis.scores.mobile}/${CATEGORY_MAX_SCORES.mobile}
+• Zabezpečení: ${analysis.scores.security}/${CATEGORY_MAX_SCORES.security}
+• SEO: ${analysis.scores.seo}/${CATEGORY_MAX_SCORES.seo}
+• GEO/AIEO: ${analysis.scores.geo}/${CATEGORY_MAX_SCORES.geo}
+• Design: ${analysis.scores.design}/${CATEGORY_MAX_SCORES.design}
+
+${criticalFindings.length > 0 ? `KRITICKÉ PROBLÉMY:
+${criticalFindings.map(f => `• ${f.title}: ${f.description}`).join('\n')}` : ''}
+
+${warnings.length > 0 ? `VAROVÁNÍ:
+${warnings.map(f => `• ${f.title}: ${f.description}`).join('\n')}` : ''}
+
+${opportunities.length > 0 ? `PŘÍLEŽITOSTI:
+${opportunities.map(f => `• ${f.title}: ${f.description}`).join('\n')}` : ''}
+
+DOPORUČENÍ Z ANALÝZY:
+${analysis.recommendation || 'Není k dispozici'}
+
+=== MOJE POZNÁMKY (doplň) ===
+Kontakt: ${analysis.contactName || '[jméno kontaktu]'}
+Email: ${analysis.contactEmail || '[email]'}
+Telefon: [doplň telefon]
+
+Co klient chce:
+[ZDE DOPLŇ - jaké má klient požadavky, co mu chybí, co chce změnit]
+
+Rozpočet klienta:
+[ZDE DOPLŇ - jaký má klient budget nebo cenovou představu]
+
+Deadline:
+[ZDE DOPLŇ - do kdy to klient potřebuje]
+
+Speciální požadavky:
+[ZDE DOPLŇ - speciální funkce, integrace, požadavky]
+
+=== TVŮJ ÚKOL ===
+Na základě těchto informací vytvoř:
+
+1. **EXECUTIVE SUMMARY** (3-5 vět)
+   - Hlavní problémy současného webu
+   - Navrhované řešení
+
+2. **SEZNAM ÚKOLŮ** (strukturovaný)
+   - Design úkoly
+   - Technické úkoly
+   - SEO úkoly
+   - Obsahové úkoly
+
+3. **DOPORUČENÝ TECH STACK**
+   - Framework
+   - Hosting
+   - Další nástroje
+
+4. **CENOVÝ ODHAD**
+   - Rozložení podle kategorií
+   - Celková cena
+
+5. **ČASOVÝ HARMONOGRAM**
+   - Fáze projektu s odhady
+
+Odpověz v češtině, profesionálně a strukturovaně.`;
+  };
+
+  const copyBrief = async () => {
+    await navigator.clipboard.writeText(getBriefPrompt());
+    setCopiedBrief(true);
+    setTimeout(() => setCopiedBrief(false), 2000);
+  };
+
+  // Generate KW Analysis prompt for Claude
+  const getKwAnalysisPrompt = () => {
+    return `Proveď kompletní SEO a keyword analýzu pro tento web:
+
+=== WEB K ANALÝZE ===
+URL: ${analysis.url}
+Doména: ${analysis.domain}
+Typ podnikání: ${businessTypeLabel} (${analysis.businessType === 'massage' ? 'erotické masáže' : analysis.businessType === 'privat' ? 'privát/klub' : 'escort služby'})
+Lokalita: Česká republika (pravděpodobně Praha nebo větší město)
+
+=== ÚKOLY ===
+
+1. **HLAVNÍ KEYWORDS (10-15)**
+   Navrhni hlavní klíčová slova pro tento typ podnikání:
+   - Včetně lokálních variant (např. "masáže Praha")
+   - Short-tail i long-tail
+   - Transakční i informační
+
+2. **LONG-TAIL KEYWORDS (10-15)**
+   Navrhni long-tail varianty:
+   - Otázky které lidi hledají
+   - Specifické služby
+   - "Blízko mě" varianty
+
+3. **KONKURENČNÍ ANALÝZA**
+   - Kdo jsou hlavní konkurenti v tomto segmentu?
+   - Jaká slova pravděpodobně cílí?
+   - Jaké mezery v trhu existují?
+
+4. **CONTENT GAPS**
+   - Jaký obsah by měl web mít a pravděpodobně nemá?
+   - FAQ otázky které by měly být zodpovězeny
+   - Blog témata
+
+5. **LOCAL SEO DOPORUČENÍ**
+   - Google Business profil tipy
+   - Lokální citace
+   - Schema markup doporučení
+
+6. **AI/GEO OPTIMALIZACE**
+   - Jak optimalizovat pro AI vyhledávače (ChatGPT, Perplexity, Claude)?
+   - Jaké strukturované odpovědi přidat?
+
+Odpověz strukturovaně v češtině. U každého keyword uveď:
+- Odhadovanou obtížnost (nízká/střední/vysoká)
+- Odhadovaný search intent (informační/transakční/navigační)`;
+  };
+
+  const copyKwPrompt = async () => {
+    await navigator.clipboard.writeText(getKwAnalysisPrompt());
+    setCopiedKw(true);
+    setTimeout(() => setCopiedKw(false), 2000);
   };
 
   return (
@@ -547,6 +693,208 @@ https://weblyx.cz`,
             💡 {t.eroweb.copyTip}
           </p>
         </CardContent>
+      </Card>
+
+      {/* AI Lead Brief Generator */}
+      <Card className="border-purple-200 shadow-lg bg-gradient-to-br from-purple-50 to-background dark:from-purple-950/20 w-full">
+        <CardHeader
+          className="cursor-pointer"
+          onClick={() => setBriefExpanded(!briefExpanded)}
+        >
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-foreground text-lg flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              {locale === 'cs' ? 'AI Brief Generátor' :
+               locale === 'ru' ? 'AI Генератор брифа' :
+               locale === 'de' ? 'AI Brief Generator' : 'AI Brief Generator'}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              {briefExpanded && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyBrief();
+                  }}
+                  className="gap-2"
+                >
+                  {copiedBrief ? (
+                    <>
+                      <Check className="w-4 h-4 text-green-600" />
+                      {t.common.copied}
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      {t.common.copy}
+                    </>
+                  )}
+                </Button>
+              )}
+              {briefExpanded ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            {locale === 'cs' ? 'Zkopíruj prompt a vlož do Claude pro vytvoření profesionálního briefu' :
+             locale === 'ru' ? 'Скопируйте промпт и вставьте в Claude для создания профессионального брифа' :
+             locale === 'de' ? 'Kopiere den Prompt und füge ihn in Claude ein, um ein professionelles Briefing zu erstellen' :
+             'Copy the prompt and paste into Claude to create a professional brief'}
+          </p>
+        </CardHeader>
+        {briefExpanded && (
+          <CardContent>
+            <div className="bg-background px-4 py-3 rounded-lg border border-border shadow-sm max-h-[500px] overflow-y-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
+                {getBriefPrompt()}
+              </pre>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <Button
+                onClick={copyBrief}
+                className="flex-1 bg-purple-600 hover:bg-purple-700"
+              >
+                {copiedBrief ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    {t.common.copied}
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-2" />
+                    {locale === 'cs' ? 'Zkopírovat prompt' :
+                     locale === 'ru' ? 'Скопировать промпт' :
+                     locale === 'de' ? 'Prompt kopieren' : 'Copy prompt'}
+                  </>
+                )}
+              </Button>
+              <a
+                href="https://claude.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1"
+              >
+                <Button variant="outline" className="w-full gap-2">
+                  <ExternalLink className="w-4 h-4" />
+                  {locale === 'cs' ? 'Otevřít Claude' :
+                   locale === 'ru' ? 'Открыть Claude' :
+                   locale === 'de' ? 'Claude öffnen' : 'Open Claude'}
+                </Button>
+              </a>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              💡 {locale === 'cs' ? 'Doplň sekci "MOJE POZNÁMKY" před vložením do Claude pro lepší výsledky' :
+                   locale === 'ru' ? 'Заполните раздел "МОИ ЗАМЕТКИ" перед вставкой в Claude для лучших результатов' :
+                   locale === 'de' ? 'Fülle den Abschnitt "MEINE NOTIZEN" aus, bevor du in Claude einfügst, für bessere Ergebnisse' :
+                   'Fill in the "MY NOTES" section before pasting into Claude for better results'}
+            </p>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* KW Analysis Prompt for Claude */}
+      <Card className="border-orange-200 shadow-lg bg-gradient-to-br from-orange-50 to-background dark:from-orange-950/20 w-full">
+        <CardHeader
+          className="cursor-pointer"
+          onClick={() => setKwExpanded(!kwExpanded)}
+        >
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-foreground text-lg flex items-center gap-2">
+              <Search className="w-5 h-5 text-orange-600" />
+              {locale === 'cs' ? 'SEO & Keyword Analýza' :
+               locale === 'ru' ? 'SEO & Анализ ключевых слов' :
+               locale === 'de' ? 'SEO & Keyword-Analyse' : 'SEO & Keyword Analysis'}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              {kwExpanded && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyKwPrompt();
+                  }}
+                  className="gap-2"
+                >
+                  {copiedKw ? (
+                    <>
+                      <Check className="w-4 h-4 text-green-600" />
+                      {t.common.copied}
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      {t.common.copy}
+                    </>
+                  )}
+                </Button>
+              )}
+              {kwExpanded ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            {locale === 'cs' ? 'Prompt pro Claude - kompletní keyword a SEO analýza zdarma' :
+             locale === 'ru' ? 'Промпт для Claude - полный SEO и анализ ключевых слов бесплатно' :
+             locale === 'de' ? 'Prompt für Claude - komplette Keyword- und SEO-Analyse kostenlos' :
+             'Prompt for Claude - complete keyword and SEO analysis for free'}
+          </p>
+        </CardHeader>
+        {kwExpanded && (
+          <CardContent>
+            <div className="bg-background px-4 py-3 rounded-lg border border-border shadow-sm max-h-[500px] overflow-y-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
+                {getKwAnalysisPrompt()}
+              </pre>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <Button
+                onClick={copyKwPrompt}
+                className="flex-1 bg-orange-600 hover:bg-orange-700"
+              >
+                {copiedKw ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    {t.common.copied}
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-2" />
+                    {locale === 'cs' ? 'Zkopírovat KW prompt' :
+                     locale === 'ru' ? 'Скопировать KW промпт' :
+                     locale === 'de' ? 'KW Prompt kopieren' : 'Copy KW prompt'}
+                  </>
+                )}
+              </Button>
+              <a
+                href="https://claude.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1"
+              >
+                <Button variant="outline" className="w-full gap-2">
+                  <ExternalLink className="w-4 h-4" />
+                  {locale === 'cs' ? 'Otevřít Claude' :
+                   locale === 'ru' ? 'Открыть Claude' :
+                   locale === 'de' ? 'Claude öffnen' : 'Open Claude'}
+                </Button>
+              </a>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              💡 {locale === 'cs' ? 'Claude ti dá kompletní keyword analýzu zdarma - výsledek můžeš přidat do briefu' :
+                   locale === 'ru' ? 'Claude даст полный анализ ключевых слов бесплатно - результат можно добавить в бриф' :
+                   locale === 'de' ? 'Claude gibt dir eine komplette Keyword-Analyse kostenlos - das Ergebnis kannst du zum Briefing hinzufügen' :
+                   'Claude will give you a complete keyword analysis for free - you can add the result to your brief'}
+            </p>
+          </CardContent>
+        )}
       </Card>
     </div>
   );
