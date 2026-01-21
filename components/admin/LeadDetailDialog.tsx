@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, User, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
+import { Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, User, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AIDesignSuggestionCard } from "./AIDesignSuggestionCard";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 
 interface LeadDetailDialogProps {
@@ -48,39 +47,9 @@ const ADMIN_USERS = [
   { id: 'admin-3', name: 'Filip', email: 'filip@weblyx.com' },
 ];
 
-// Helper function to parse AI Brief from rawResponse
-function parseAIBrief(aiBrief: any) {
-  if (!aiBrief) return null;
-
-  // If it's already parsed correctly, return it
-  if (aiBrief.projectOverview || aiBrief.targetAudience) {
-    return aiBrief;
-  }
-
-  // If it has rawResponse, parse it
-  if (aiBrief.rawResponse) {
-    try {
-      // Remove markdown code block wrappers (```json ... ```)
-      let jsonString = aiBrief.rawResponse.trim();
-      jsonString = jsonString.replace(/^```json\s*\n?/, '').replace(/\n?```\s*$/, '');
-
-      // Parse the JSON
-      const parsed = JSON.parse(jsonString);
-      return parsed;
-    } catch (error) {
-      console.error('Failed to parse AI Brief rawResponse:', error);
-      return null;
-    }
-  }
-
-  return null;
-}
-
 export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUpdate }: LeadDetailDialogProps) {
   const { user } = useAdminAuth();
   const [currentLead, setCurrentLead] = useState(lead);
-  const [generating, setGenerating] = useState(false);
-  const [generatingBrief, setGeneratingBrief] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -119,83 +88,6 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
     };
     loadSpecialists();
   }, []);
-
-  const generateDesign = async () => {
-    setGenerating(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const response = await fetch(`/api/leads/${currentLead.id}/generate-design`, {
-        method: "POST",
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess("✅ AI návrh designu úspěšně vygenerován!");
-        // Success - refresh lead data
-        if (onRefresh) {
-          await onRefresh();
-        }
-      } else {
-        setError(data.error || "Generování selhalo. Zkuste to znovu.");
-        console.error("Failed to generate design:", data);
-      }
-    } catch (error: any) {
-      setError("Chyba spojení. Zkuste to znovu.");
-      console.error("Error generating design:", error);
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  const generateBrief = async () => {
-    setGeneratingBrief(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const response = await fetch(`/api/leads/${currentLead.id}/generate-brief`, {
-        method: "POST",
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess("✅ AI Brief úspěšně vygenerován!");
-
-        // Fetch updated lead data immediately
-        const leadsResponse = await fetch('/api/admin/leads');
-        const leadsData = await leadsResponse.json();
-
-        if (leadsData.success) {
-          const updatedLead = leadsData.data.find((l: any) => l.id === currentLead.id);
-          if (updatedLead) {
-            setCurrentLead(updatedLead);
-            if (onLeadUpdate) {
-              onLeadUpdate(updatedLead);
-            }
-          }
-        }
-
-        // Also call parent refresh if provided
-        if (onRefresh) {
-          await onRefresh();
-        }
-      } else {
-        setError(data.error || "Generování brief selhalo. Zkuste to znovu.");
-        console.error("Failed to generate brief:", data);
-      }
-    } catch (error: any) {
-      setError("Chyba spojení. Zkuste to znovu.");
-      console.error("Error generating brief:", error);
-    } finally {
-      setGeneratingBrief(false);
-    }
-  };
-
-  const handleRegenerate = async () => {
-    await generateDesign();
-  };
 
   const handleUpdateAssignment = async (adminId: string) => {
     if (!adminId) return;
@@ -841,143 +733,6 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
               </div>
             </div>
           )}
-
-          {/* AI Design Suggestion */}
-          {currentLead.aiDesignSuggestion ? (
-            <AIDesignSuggestionCard
-              suggestion={currentLead.aiDesignSuggestion}
-              leadId={currentLead.id}
-              onRegenerate={handleRegenerate}
-            />
-          ) : (
-            <div className="border-2 border-dashed rounded-lg p-8 text-center">
-              <Sparkles className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h4 className="font-semibold mb-2">Žádný AI návrh</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Pro tento lead ještě nebyl vygenerován AI design návrh.
-              </p>
-              <Button variant="outline" onClick={generateDesign} disabled={generating}>
-                {generating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generuji...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Vygenerovat AI návrh
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
-
-          {/* AI Project Brief */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-lg flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              AI Project Brief
-            </h4>
-
-            {(() => {
-              const parsedBrief = parseAIBrief(currentLead.aiBrief);
-              return parsedBrief ? (
-              <div className="border rounded-lg p-6 space-y-4 bg-muted/30">
-                {/* Project Overview */}
-                {parsedBrief.projectOverview && (
-                  <div>
-                    <h5 className="font-semibold text-sm text-muted-foreground mb-2">PROJECT OVERVIEW</h5>
-                    <h6 className="font-bold text-lg mb-2">{parsedBrief.projectOverview.title}</h6>
-                    <p className="text-sm mb-3">{parsedBrief.projectOverview.summary}</p>
-                    {parsedBrief.projectOverview.businessGoals && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Business Goals:</p>
-                        <ul className="text-sm list-disc list-inside space-y-1">
-                          {parsedBrief.projectOverview.businessGoals.map((goal: string, idx: number) => (
-                            <li key={idx}>{goal}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* AI Implementation Prompt */}
-                {parsedBrief.aiImplementationPrompt && (
-                  <div>
-                    <h5 className="font-semibold text-sm text-muted-foreground mb-2">AI IMPLEMENTATION PROMPT</h5>
-                    <div className="bg-background p-4 rounded border font-mono text-xs overflow-x-auto">
-                      <pre className="whitespace-pre-wrap">{parsedBrief.aiImplementationPrompt}</pre>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        navigator.clipboard.writeText(parsedBrief.aiImplementationPrompt);
-                      }}
-                    >
-                      📋 Copy Prompt
-                    </Button>
-                  </div>
-                )}
-
-                {/* Regenerate Button */}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={generateBrief}
-                  disabled={generatingBrief}
-                >
-                  {generatingBrief ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Regeneruji...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Regenerovat Brief
-                    </>
-                  )}
-                </Button>
-
-                {currentLead.briefGeneratedAt && (
-                  <p className="text-xs text-muted-foreground">
-                    Vygenerováno: {new Date(
-                      typeof currentLead.briefGeneratedAt === 'number'
-                        ? currentLead.briefGeneratedAt * 1000
-                        : currentLead.briefGeneratedAt.seconds
-                        ? currentLead.briefGeneratedAt.seconds * 1000
-                        : currentLead.briefGeneratedAt
-                    ).toLocaleString('cs-CZ')}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                <Sparkles className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h4 className="font-semibold mb-2">Žádný AI Project Brief</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Pro tento lead ještě nebyl vygenerován strukturovaný project brief pro AI nástroje.
-                </p>
-                <Button variant="outline" onClick={generateBrief} disabled={generatingBrief}>
-                  {generatingBrief ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Generuji...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Vygenerovat AI Brief
-                    </>
-                  )}
-                </Button>
-              </div>
-            );
-            })()}
-          </div>
 
           {/* Delete Section */}
           <div className="pt-6 border-t mt-6">
