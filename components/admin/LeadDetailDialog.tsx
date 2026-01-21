@@ -356,7 +356,8 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
       if (currentLead.phone) description += `\n**Tel:** ${currentLead.phone}`;
       if (currentLead.budgetRange) description += `\n**Rozpočet:** ${currentLead.budgetRange}`;
 
-      const specialist = specialists.find(s => s.id === taskAssignedTo);
+      const actualAssignedTo = taskAssignedTo === 'unassigned' ? null : taskAssignedTo;
+      const specialist = specialists.find(s => s.id === actualAssignedTo);
 
       const res = await fetch('/api/admin/tasks', {
         method: 'POST',
@@ -365,7 +366,7 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
           title: `${currentLead.projectType || 'Web'}: ${currentLead.company || currentLead.name}`,
           description,
           domain: currentLead.existingWebsite || '',
-          assigned_to: taskAssignedTo || null,
+          assigned_to: actualAssignedTo,
           assigned_to_name: specialist?.name || null,
           priority: taskPriority,
           source_analysis_id: `lead-${currentLead.id}`,
@@ -655,7 +656,7 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
                       <SelectValue placeholder="Vybrat specialistu" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nepřiřazeno</SelectItem>
+                      <SelectItem value="unassigned">Nepřiřazeno</SelectItem>
                       {specialists.map((s) => (
                         <SelectItem key={s.id} value={s.id}>
                           {s.name}
