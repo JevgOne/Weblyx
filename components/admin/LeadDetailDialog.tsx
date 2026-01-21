@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, User, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -21,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 
 interface LeadDetailDialogProps {
   open: boolean;
@@ -41,22 +39,12 @@ const statusConfig = {
   paused: { label: "Pozastaveno", color: "bg-orange-500" },
 };
 
-const ADMIN_USERS = [
-  { id: 'admin-1', name: 'Admin', email: 'admin@weblyx.cz' },
-  { id: 'admin-2', name: 'Zen', email: 'zvin.a@seznam.cz' },
-  { id: 'admin-3', name: 'Filip', email: 'filip@weblyx.com' },
-];
-
 export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUpdate }: LeadDetailDialogProps) {
-  const { user } = useAdminAuth();
   const [currentLead, setCurrentLead] = useState(lead);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [assignedToId, setAssignedToId] = useState<string>(lead.assignedTo || "");
-  const [updatingAssignment, setUpdatingAssignment] = useState(false);
-  const [takingLead, setTakingLead] = useState(false);
 
   // Task creation state
   const [specialists, setSpecialists] = useState<any[]>([]);
@@ -69,7 +57,6 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
   // Update currentLead when lead prop changes
   useEffect(() => {
     setCurrentLead(lead);
-    setAssignedToId(lead.assignedTo || "");
   }, [lead]);
 
   // Load specialists for task assignment
@@ -88,101 +75,6 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
     };
     loadSpecialists();
   }, []);
-
-  const handleUpdateAssignment = async (adminId: string) => {
-    if (!adminId) return;
-
-    setUpdatingAssignment(true);
-    setError(null);
-    setSuccess(null);
-
-    const selectedAdmin = ADMIN_USERS.find(a => a.id === adminId);
-
-    try {
-      const response = await fetch(`/api/admin/leads`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          leadId: currentLead.id,
-          updates: {
-            assignedTo: adminId,
-          },
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(`✅ Lead přiřazen uživateli ${selectedAdmin?.name}`);
-        setCurrentLead({ ...currentLead, assignedTo: adminId });
-        setAssignedToId(adminId);
-
-        if (onLeadUpdate) {
-          onLeadUpdate({ ...currentLead, assignedTo: adminId });
-        }
-
-        if (onRefresh) {
-          await onRefresh();
-        }
-      } else {
-        setError(data.error || "Update přiřazení selhal. Zkuste to znovu.");
-      }
-    } catch (error: any) {
-      setError("Chyba spojení. Zkuste to znovu.");
-      console.error("Error updating assignment:", error);
-    } finally {
-      setUpdatingAssignment(false);
-    }
-  };
-
-  const handleTakeLead = async () => {
-    if (!user) return;
-
-    if (!confirm(`Chcete převést poptávku "${currentLead.name}" na projekt a přiřadit si ji?`)) {
-      return;
-    }
-
-    setTakingLead(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const response = await fetch('/api/admin/leads/convert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadId: currentLead.id,
-          adminId: user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        setError(error.error || 'Chyba při převodu poptávky');
-        return;
-      }
-
-      const result = await response.json();
-
-      setSuccess(`✅ Poptávka převedena na projekt!\n\nMůžete ji najít v Projekty → ID: ${result.project.id}`);
-
-      // Refresh and close after delay
-      setTimeout(() => {
-        if (onRefresh) {
-          onRefresh();
-        }
-        onOpenChange(false);
-      }, 2000);
-
-    } catch (error) {
-      console.error('❌ Error taking lead:', error);
-      setError('Chyba při převodu poptávky');
-    } finally {
-      setTakingLead(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (!confirmDelete) {
@@ -385,97 +277,6 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                 <div className="text-sm">
                   <span className="text-muted-foreground">Termín: </span>
                   <span>{currentLead.timeline}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Assignment Section */}
-          <div className="space-y-4 bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-950/20 dark:to-teal-900/20 p-6 rounded-lg border-2 border-teal-200 dark:border-teal-800">
-            <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2 text-base font-semibold">
-                <UserCheck className="h-5 w-5 text-teal-600" />
-                Přiřazení projektu
-              </Label>
-              {currentLead.status === 'new' && (
-                <Badge variant="destructive" className="animate-pulse">
-                  🚨 Nová
-                </Badge>
-              )}
-            </div>
-
-            {/* Take Lead Button - Only for new leads */}
-            {currentLead.status === 'new' && user && (
-              <Button
-                onClick={handleTakeLead}
-                disabled={takingLead}
-                size="lg"
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                {takingLead ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                    Převádím na projekt...
-                  </>
-                ) : (
-                  <>
-                    <UserCheck className="h-5 w-5 mr-2" />
-                    🚨 Vzít poptávku a převést na projekt
-                  </>
-                )}
-              </Button>
-            )}
-
-            {/* Divider */}
-            {currentLead.status === 'new' && (
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-teal-300 dark:border-teal-700"></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-teal-50 dark:bg-teal-950/20 px-2 text-teal-600 dark:text-teal-400">
-                    nebo přiřadit kolegovi
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Assign to Colleague */}
-            <div className="space-y-3">
-              <Label htmlFor="assignedTo" className="text-sm text-muted-foreground">
-                Přiřadit konkrétnímu adminovi:
-              </Label>
-              <div className="flex gap-2">
-                <Select
-                  value={assignedToId}
-                  onValueChange={(value) => {
-                    setAssignedToId(value);
-                    handleUpdateAssignment(value);
-                  }}
-                  disabled={updatingAssignment}
-                >
-                  <SelectTrigger className="flex-1 bg-white dark:bg-gray-900">
-                    <SelectValue placeholder="Vyberte admina..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ADMIN_USERS.map((admin) => (
-                      <SelectItem key={admin.id} value={admin.id}>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{admin.name}</span>
-                          <span className="text-xs text-muted-foreground">({admin.email})</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {currentLead.assignedTo && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Badge variant="secondary" className="gap-1">
-                    <UserCheck className="h-3 w-3" />
-                    {ADMIN_USERS.find(a => a.id === currentLead.assignedTo)?.name || currentLead.assignedTo}
-                  </Badge>
-                  <span className="text-muted-foreground">je přiřazen k této poptávce</span>
                 </div>
               )}
             </div>
