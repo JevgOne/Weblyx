@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, User, UserCheck } from "lucide-react";
+import { Sparkles, Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, User, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -88,11 +89,36 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
   const [updatingAssignment, setUpdatingAssignment] = useState(false);
   const [takingLead, setTakingLead] = useState(false);
 
+  // Task creation state
+  const [specialists, setSpecialists] = useState<any[]>([]);
+  const [taskBrief, setTaskBrief] = useState("");
+  const [taskKwAnalysis, setTaskKwAnalysis] = useState("");
+  const [taskAssignedTo, setTaskAssignedTo] = useState("");
+  const [taskPriority, setTaskPriority] = useState<"low" | "medium" | "high" | "urgent">("medium");
+  const [creatingTask, setCreatingTask] = useState(false);
+
   // Update currentLead when lead prop changes
   useEffect(() => {
     setCurrentLead(lead);
     setAssignedToId(lead.assignedTo || "");
   }, [lead]);
+
+  // Load specialists for task assignment
+  useEffect(() => {
+    const loadSpecialists = async () => {
+      try {
+        const res = await fetch('/api/admin/users');
+        if (res.ok) {
+          const data = await res.json();
+          const specs = data.users?.filter((u: any) => u.role === 'specialist' && u.active) || [];
+          setSpecialists(specs);
+        }
+      } catch (error) {
+        console.error('Failed to load specialists:', error);
+      }
+    };
+    loadSpecialists();
+  }, []);
 
   const generateDesign = async () => {
     setGenerating(true);
@@ -305,6 +331,84 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
     }
   };
 
+  // Create task for specialist
+  const handleCreateTask = async () => {
+    if (!taskBrief.trim()) {
+      setError("Zadejte Brief pro úkol");
+      return;
+    }
+
+    setCreatingTask(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      // Build complete task description
+      let description = `## Brief\n${taskBrief}`;
+      if (taskKwAnalysis.trim()) {
+        description += `\n\n## Klíčová slova & SEO\n${taskKwAnalysis}`;
+      }
+
+      // Add lead info
+      description += `\n\n---\n**Kontakt:** ${currentLead.name}`;
+      if (currentLead.company) description += ` (${currentLead.company})`;
+      if (currentLead.email) description += `\n**Email:** ${currentLead.email}`;
+      if (currentLead.phone) description += `\n**Tel:** ${currentLead.phone}`;
+      if (currentLead.budgetRange) description += `\n**Rozpočet:** ${currentLead.budgetRange}`;
+
+      const specialist = specialists.find(s => s.id === taskAssignedTo);
+
+      const res = await fetch('/api/admin/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `${currentLead.projectType || 'Web'}: ${currentLead.company || currentLead.name}`,
+          description,
+          domain: currentLead.existingWebsite || '',
+          assigned_to: taskAssignedTo || null,
+          assigned_to_name: specialist?.name || null,
+          priority: taskPriority,
+          source_analysis_id: `lead-${currentLead.id}`,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        // Update lead status to converted
+        await fetch(`/api/admin/leads`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            leadId: currentLead.id,
+            updates: { status: 'converted' },
+          }),
+        });
+
+        setSuccess(`✅ Úkol vytvořen! ${specialist ? `Přiřazen: ${specialist.name}` : 'Nepřiřazeno'}`);
+
+        // Clear form
+        setTaskBrief("");
+        setTaskKwAnalysis("");
+        setTaskAssignedTo("");
+        setTaskPriority("medium");
+
+        // Refresh
+        if (onRefresh) {
+          setTimeout(() => onRefresh(), 1500);
+        }
+      } else {
+        const err = await res.json();
+        setError(err.error || "Chyba při vytváření úkolu");
+      }
+    } catch (error) {
+      console.error('Error creating task:', error);
+      setError("Chyba připojení. Zkuste to znovu.");
+    } finally {
+      setCreatingTask(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -483,6 +587,133 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
               )}
             </div>
           </div>
+
+          {/* CREATE TASK SECTION - Main workflow */}
+          {currentLead.status !== 'converted' && (
+            <div className="space-y-4 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-purple-950/20 dark:to-violet-900/20 p-6 rounded-lg border-2 border-purple-200 dark:border-purple-800">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2 text-base font-semibold">
+                  <ClipboardList className="h-5 w-5 text-purple-600" />
+                  Vytvořit úkol pro specialistu
+                </Label>
+                <a
+                  href="https://claude.ai/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-purple-600 hover:underline flex items-center gap-1"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  Otevřít Claude
+                </a>
+              </div>
+
+              <p className="text-sm text-muted-foreground">
+                Vygenerujte Brief a KW analýzu v Claude a vložte je sem. Pak vytvořte úkol pro specialistu.
+              </p>
+
+              {/* Brief Field */}
+              <div className="space-y-2">
+                <Label htmlFor="taskBrief" className="text-sm font-medium">
+                  1. Brief (zadání projektu) *
+                </Label>
+                <Textarea
+                  id="taskBrief"
+                  placeholder="Sem vložte vygenerovaný Brief z Claude...
+
+Např: Vytvořit moderní webovou prezentaci pro kadeřnický salon. Hlavní cíl: zvýšit online rezervace o 30%. Design: čistý, minimalistický, ženská cílová skupina..."
+                  className="min-h-[150px] bg-white dark:bg-gray-900"
+                  value={taskBrief}
+                  onChange={(e) => setTaskBrief(e.target.value)}
+                />
+              </div>
+
+              {/* KW Analysis Field */}
+              <div className="space-y-2">
+                <Label htmlFor="taskKwAnalysis" className="text-sm font-medium">
+                  2. Klíčová slova & SEO analýza (volitelné)
+                </Label>
+                <Textarea
+                  id="taskKwAnalysis"
+                  placeholder="Sem vložte výsledky KW analýzy z Claude...
+
+Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (1900), barvení vlasů..."
+                  className="min-h-[120px] bg-white dark:bg-gray-900"
+                  value={taskKwAnalysis}
+                  onChange={(e) => setTaskKwAnalysis(e.target.value)}
+                />
+              </div>
+
+              {/* Assignment and Priority */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Přiřadit specialistovi</Label>
+                  <Select
+                    value={taskAssignedTo}
+                    onValueChange={setTaskAssignedTo}
+                  >
+                    <SelectTrigger className="bg-white dark:bg-gray-900">
+                      <SelectValue placeholder="Vybrat specialistu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Nepřiřazeno</SelectItem>
+                      {specialists.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Priorita</Label>
+                  <Select
+                    value={taskPriority}
+                    onValueChange={(v) => setTaskPriority(v as any)}
+                  >
+                    <SelectTrigger className="bg-white dark:bg-gray-900">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Nízká</SelectItem>
+                      <SelectItem value="medium">Střední</SelectItem>
+                      <SelectItem value="high">Vysoká</SelectItem>
+                      <SelectItem value="urgent">Urgentní</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Create Task Button */}
+              <Button
+                onClick={handleCreateTask}
+                disabled={creatingTask || !taskBrief.trim()}
+                size="lg"
+                className="w-full bg-gradient-to-r from-purple-600 to-violet-700 hover:from-purple-700 hover:to-violet-800 text-white font-bold shadow-lg hover:shadow-xl transition-all"
+              >
+                {creatingTask ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    Vytvářím úkol...
+                  </>
+                ) : (
+                  <>
+                    <ClipboardList className="h-5 w-5 mr-2" />
+                    Vytvořit úkol pro specialistu
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {/* Already converted notice */}
+          {currentLead.status === 'converted' && (
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg">
+              <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                <UserCheck className="h-5 w-5" />
+                <span className="font-medium">Tato poptávka již byla převedena na úkol.</span>
+              </div>
+            </div>
+          )}
 
           {/* Business Description */}
           {currentLead.businessDescription && (
