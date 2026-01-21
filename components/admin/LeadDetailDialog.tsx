@@ -597,7 +597,7 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                   Vytvořit úkol pro specialistu
                 </Label>
                 <a
-                  href="https://claude.ai/new"
+                  href="https://claude.ai"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-purple-600 hover:underline flex items-center gap-1"
