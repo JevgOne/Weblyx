@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Contact } from "@/components/home/contact";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { generateContactPageSchema, generateLocalBusinessSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
+import { generateContactPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const metadata: Metadata = {
@@ -36,16 +36,6 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   // Generate schemas
   const contactPageSchema = generateContactPageSchema();
-  const localBusinessSchema = generateLocalBusinessSchema({
-    name: 'Weblyx',
-    url: 'https://www.weblyx.cz',
-    description: 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
-    email: 'info@weblyx.cz',
-    addressLocality: 'Praha',
-    addressCountry: 'CZ',
-    priceRange: '10000-150000 CZK',
-    openingHours: ['Mo-Fr 09:00-18:00'],
-  });
 
   // Generate breadcrumb
   const breadcrumbs: BreadcrumbItem[] = [
@@ -64,7 +54,6 @@ export default function ContactPage() {
     <>
       {/* Schema.org JSON-LD */}
       <JsonLd data={contactPageSchema} />
-      <JsonLd data={localBusinessSchema} />
       <JsonLd data={webpageSchema} />
 
       <main className="min-h-screen pt-16">

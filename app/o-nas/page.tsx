@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Target, Heart, Zap, Shield, Users, TrendingUp } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { generateAboutPageSchema, generateOrganizationSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
+import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
   title: "O nás – Weblyx | Česká webová agentura | Tvorba webů od 7 990 Kč",
@@ -68,9 +68,6 @@ export default function AboutPage() {
 
   // Generate schemas
   const aboutPageSchema = generateAboutPageSchema();
-  const organizationSchema = generateOrganizationSchema({
-    foundingDate: '2024-02',
-  });
 
   // Generate breadcrumb
   const breadcrumbs: BreadcrumbItem[] = [
@@ -89,7 +86,6 @@ export default function AboutPage() {
     <>
       {/* Schema.org JSON-LD */}
       <JsonLd data={aboutPageSchema} />
-      <JsonLd data={organizationSchema} />
       <JsonLd data={webpageSchema} />
 
       <main className="min-h-screen">
