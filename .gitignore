@@ -29,6 +29,21 @@ yarn-error.log*
 .env*.local
 .env
 
+# Service account keys (sensitive)
+service-account-key.json
+**/service-account*.json
+
+# Temporary test scripts
+test-*.js
+check-*.js
+get-*.js
+list-*.js
+generate-*.js
+exchange-*.js
+update-*.js
+manual-*.js
+*-task.md
+
 # vercel
 .vercel
 

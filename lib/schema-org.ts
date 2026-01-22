@@ -328,6 +328,11 @@ export function generateOfferSchema(pricing: PricingTier) {
     priceCurrency: 'CZK',
     availability: 'https://schema.org/InStock',
     url: `${BASE_URL}/#pricing`,
+    itemOffered: {
+      '@type': 'Service',
+      name: pricing.name,
+      description: pricing.description,
+    },
     seller: {
       '@type': 'Organization',
       name: 'Weblyx',

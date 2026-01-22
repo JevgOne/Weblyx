@@ -195,14 +195,16 @@ export function generateReviewsSchema(reviews: Array<{
   date: Date;
   locale: 'cs' | 'de';
 }>) {
-  return reviews.map(review => generateReviewSchema({
-    reviewBody: review.text,
-    authorName: review.authorName,
-    authorImage: review.authorImage,
-    ratingValue: review.rating,
-    datePublished: review.date.toISOString(),
-    locale: review.locale,
-  }));
+  return reviews
+    .filter(review => review.text && review.text.trim().length > 0) // Filter out empty reviews
+    .map(review => generateReviewSchema({
+      reviewBody: review.text,
+      authorName: review.authorName,
+      authorImage: review.authorImage,
+      ratingValue: review.rating,
+      datePublished: review.date.toISOString(),
+      locale: review.locale,
+    }));
 }
 
 // ============================================================================
@@ -252,6 +254,11 @@ export function generateServiceSchema(data: ServiceSchemaData) {
         priceCurrency: data.offers.priceCurrency,
         ...(data.offers.price && { price: data.offers.price }),
         ...(data.offers.priceRange && { priceRange: data.offers.priceRange }),
+        itemOffered: {
+          '@type': 'Service',
+          name: data.serviceName,
+          description: data.description,
+        },
       },
     }),
     ...(data.aggregateRating && {
