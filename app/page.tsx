@@ -67,12 +67,18 @@ export default async function HomePage() {
   const localBusinessSchema = generateLocalBusinessSchema({
     priceRange: "10000 Kč - 85000 Kč",
     openingHours: ["Mo-Fr 09:00-18:00"],
+    aggregateRating: {
+      ratingValue: 5.0,
+      reviewCount: 7,
+      bestRating: 5,
+      worstRating: 1,
+    },
   });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;
 
-  // Service schema WITH AggregateRating
-  // Now includes reviews since we have visible Google Reviews widget
+  // Service schema WITHOUT AggregateRating (Google doesn't support it for Service type in rich results)
+  // AggregateRating is on LocalBusiness schema instead
   const serviceSchema = generateServiceSchema({
     serviceName: "Profesionální tvorba webových stránek",
     description: "Tvorba webových stránek pro živnostníky a firmy. Dodání za 5-7 dní, garantované načítání pod 2 sekundy, SEO optimalizace v ceně. Česká agentura.",
@@ -81,12 +87,6 @@ export default async function HomePage() {
     offers: {
       priceCurrency: "CZK",
       priceRange: "10000-85000",
-    },
-    aggregateRating: {
-      ratingValue: 5.0,
-      reviewCount: 7,
-      bestRating: 5,
-      worstRating: 1,
     },
   });
 

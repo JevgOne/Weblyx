@@ -140,6 +140,13 @@ export interface LocalBusinessData extends OrganizationData {
   priceRange?: string;
   openingHours?: string[];
   streetAddress?: string;
+  postalCode?: string;
+  aggregateRating?: {
+    ratingValue: number;
+    reviewCount: number;
+    bestRating?: number;
+    worstRating?: number;
+  };
 }
 
 export function generateLocalBusinessSchema(data?: LocalBusinessData) {
@@ -155,6 +162,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       addressLocality: 'Praha',
       addressCountry: 'CZ',
       streetAddress: 'Praha',
+      postalCode: '110 00',
       priceRange: '10000 Kč - 50000 Kč',
       openingHours: ['Mo-Fr 09:00-18:00'],
       areaServedName: 'Czech Republic',
@@ -168,6 +176,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       addressLocality: 'Prag',
       addressCountry: 'DE',
       streetAddress: 'Prag',
+      postalCode: '110 00',
       priceRange: '349€ - 1299€',
       openingHours: ['Mo-Fr 09:00-18:00'],
       areaServedName: 'Germany, Austria, Switzerland',
@@ -185,8 +194,10 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
     addressLocality = config.addressLocality,
     addressCountry = config.addressCountry,
     streetAddress = config.streetAddress,
+    postalCode = config.postalCode,
     priceRange = config.priceRange,
     openingHours = config.openingHours,
+    aggregateRating,
   } = data || {};
 
   return {
@@ -199,11 +210,21 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       '@type': 'PostalAddress',
       streetAddress,
       addressLocality,
+      postalCode,
       addressCountry,
     },
     telephone: phone,
     email,
     priceRange,
+    ...(aggregateRating && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: aggregateRating.ratingValue,
+        reviewCount: aggregateRating.reviewCount,
+        bestRating: aggregateRating.bestRating || 5,
+        worstRating: aggregateRating.worstRating || 1,
+      },
+    }),
     openingHoursSpecification: openingHours.map((hours) => {
       const [days, time] = hours.split(' ');
       const [opens, closes] = time.split('-');
