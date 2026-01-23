@@ -22,6 +22,10 @@ interface ReviewRow {
 }
 
 function rowToReview(row: ReviewRow): Review {
+  // Fallback to a historical date (Jan 1, 2024) if date is missing
+  // NEVER use new Date() as fallback - it causes future dates in structured data!
+  const fallbackDate = new Date('2024-01-01T00:00:00Z');
+
   return {
     id: row.id,
     authorName: row.author_name,
@@ -29,15 +33,15 @@ function rowToReview(row: ReviewRow): Review {
     authorRole: row.author_role || undefined,
     rating: row.rating,
     text: row.text,
-    date: unixToDate(row.date) || new Date(),
+    date: unixToDate(row.date) || fallbackDate,
     source: row.source || 'manual',
     sourceUrl: row.source_url || undefined,
     published: Boolean(row.published),
     featured: Boolean(row.featured),
     order: row.order,
     locale: (row.locale || 'cs') as 'cs' | 'de',
-    createdAt: unixToDate(row.created_at) || new Date(),
-    updatedAt: unixToDate(row.updated_at) || new Date(),
+    createdAt: unixToDate(row.created_at) || fallbackDate,
+    updatedAt: unixToDate(row.updated_at) || fallbackDate,
   };
 }
 
