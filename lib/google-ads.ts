@@ -28,6 +28,26 @@ export async function testGoogleAdsConnection(): Promise<{
   customerInfo?: any;
 }> {
   try {
+    // Check if required env vars are set
+    const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
+    const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
+    const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN;
+
+    if (!clientId || !clientSecret || !developerToken || !customerId || !refreshToken) {
+      const missing = [];
+      if (!clientId) missing.push("GOOGLE_ADS_CLIENT_ID");
+      if (!clientSecret) missing.push("GOOGLE_ADS_CLIENT_SECRET");
+      if (!developerToken) missing.push("GOOGLE_ADS_DEVELOPER_TOKEN");
+      if (!customerId) missing.push("GOOGLE_ADS_CUSTOMER_ID");
+      if (!refreshToken) missing.push("GOOGLE_ADS_REFRESH_TOKEN");
+      return {
+        success: false,
+        error: `Missing environment variables: ${missing.join(", ")}`,
+      };
+    }
+
     const customer = getGoogleAdsCustomer();
 
     // Query for basic account info to test connection
@@ -46,9 +66,28 @@ export async function testGoogleAdsConnection(): Promise<{
       customerInfo: response,
     };
   } catch (error: any) {
+    console.error("Google Ads API Error:", JSON.stringify(error, null, 2));
+
+    // Try to extract detailed error message
+    let errorMessage = "Unknown error";
+
+    if (error.message) {
+      errorMessage = error.message;
+    } else if (error.errors && Array.isArray(error.errors)) {
+      errorMessage = error.errors.map((e: any) => e.message || JSON.stringify(e)).join("; ");
+    } else if (error.error) {
+      errorMessage = typeof error.error === "string" ? error.error : JSON.stringify(error.error);
+    } else if (error.response?.data) {
+      errorMessage = JSON.stringify(error.response.data);
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    } else {
+      errorMessage = JSON.stringify(error);
+    }
+
     return {
       success: false,
-      error: error.message || "Unknown error",
+      error: errorMessage,
     };
   }
 }
