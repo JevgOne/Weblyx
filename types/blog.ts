@@ -1,5 +1,7 @@
 // Blog types
 
+export type BlogLanguage = 'cs' | 'de';
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -17,6 +19,11 @@ export interface BlogPost {
   views: number;
   createdAt: Date;
   updatedAt: Date;
+  // Scheduling & Multi-language fields
+  language: BlogLanguage;
+  scheduledDate?: Date; // When to auto-publish this post
+  autoTranslate: boolean; // Auto-create translation in other language
+  parentPostId?: string; // Links to original post if this is a translation
 }
 
 export interface CreateBlogPostData {
@@ -32,6 +39,11 @@ export interface CreateBlogPostData {
   tags?: string[];
   metaTitle?: string;
   metaDescription?: string;
+  // Scheduling & Multi-language fields
+  language?: BlogLanguage;
+  scheduledDate?: Date;
+  autoTranslate?: boolean;
+  parentPostId?: string;
 }
 
 export interface UpdateBlogPostData {
@@ -47,4 +59,9 @@ export interface UpdateBlogPostData {
   tags?: string[];
   metaTitle?: string;
   metaDescription?: string;
+  // Scheduling & Multi-language fields
+  language?: BlogLanguage;
+  scheduledDate?: Date;
+  autoTranslate?: boolean;
+  parentPostId?: string;
 }

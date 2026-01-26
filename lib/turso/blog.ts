@@ -20,6 +20,11 @@ interface BlogPostRow {
   views: number;
   created_at: number;
   updated_at: number;
+  // Scheduling & Multi-language fields
+  language: string;
+  scheduled_date: number | null;
+  auto_translate: number;
+  parent_post_id: string | null;
 }
 
 function rowToBlogPost(row: BlogPostRow): BlogPost {
@@ -40,6 +45,11 @@ function rowToBlogPost(row: BlogPostRow): BlogPost {
     views: row.views || 0,
     createdAt: unixToDate(row.created_at) || new Date(),
     updatedAt: unixToDate(row.updated_at) || new Date(),
+    // Scheduling & Multi-language fields
+    language: (row.language || 'cs') as 'cs' | 'de',
+    scheduledDate: unixToDate(row.scheduled_date) || undefined,
+    autoTranslate: Boolean(row.auto_translate),
+    parentPostId: row.parent_post_id || undefined,
   };
 }
 
@@ -90,8 +100,9 @@ export async function createBlogPost(data: CreateBlogPostData): Promise<BlogPost
     sql: `INSERT INTO blog_posts (
       id, title, slug, content, excerpt, author_id, author_name,
       featured_image, published, published_at, tags, meta_title,
-      meta_description, views, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      meta_description, views, created_at, updated_at,
+      language, scheduled_date, auto_translate, parent_post_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.title,
@@ -109,6 +120,11 @@ export async function createBlogPost(data: CreateBlogPostData): Promise<BlogPost
       0, // views start at 0
       now,
       now,
+      // Scheduling & Multi-language fields
+      data.language || 'cs',
+      data.scheduledDate ? dateToUnix(data.scheduledDate) : null,
+      data.autoTranslate ? 1 : 0,
+      data.parentPostId || null,
     ],
   });
 
@@ -180,6 +196,23 @@ export async function updateBlogPost(
     updates.push('meta_description = ?');
     args.push(data.metaDescription || null);
   }
+  // Scheduling & Multi-language fields
+  if (data.language !== undefined) {
+    updates.push('language = ?');
+    args.push(data.language);
+  }
+  if (data.scheduledDate !== undefined) {
+    updates.push('scheduled_date = ?');
+    args.push(data.scheduledDate ? dateToUnix(data.scheduledDate) : null);
+  }
+  if (data.autoTranslate !== undefined) {
+    updates.push('auto_translate = ?');
+    args.push(data.autoTranslate ? 1 : 0);
+  }
+  if (data.parentPostId !== undefined) {
+    updates.push('parent_post_id = ?');
+    args.push(data.parentPostId || null);
+  }
 
   if (updates.length === 0) {
     throw new Error('No fields to update');
@@ -211,4 +244,68 @@ export async function incrementBlogPostViews(id: string): Promise<void> {
     sql: 'UPDATE blog_posts SET views = views + 1 WHERE id = ?',
     args: [id],
   });
+}
+
+// ==========================================
+// Scheduling & Multi-language Functions
+// ==========================================
+
+/**
+ * Get all blog posts scheduled for publication that are ready (scheduled_date <= now)
+ * and not yet published
+ */
+export async function getScheduledPostsReadyToPublish(): Promise<BlogPost[]> {
+  const now = Math.floor(Date.now() / 1000);
+  const result = await turso.execute({
+    sql: `SELECT * FROM blog_posts
+          WHERE scheduled_date IS NOT NULL
+          AND scheduled_date <= ?
+          AND published = 0
+          ORDER BY scheduled_date ASC`,
+    args: [now],
+  });
+  return result.rows.map((row) => rowToBlogPost(row as unknown as BlogPostRow));
+}
+
+/**
+ * Get all blog posts in a specific language
+ */
+export async function getBlogPostsByLanguage(language: 'cs' | 'de'): Promise<BlogPost[]> {
+  const result = await turso.execute({
+    sql: 'SELECT * FROM blog_posts WHERE language = ? ORDER BY created_at DESC',
+    args: [language],
+  });
+  return result.rows.map((row) => rowToBlogPost(row as unknown as BlogPostRow));
+}
+
+/**
+ * Get all published blog posts in a specific language
+ */
+export async function getPublishedBlogPostsByLanguage(language: 'cs' | 'de'): Promise<BlogPost[]> {
+  const result = await turso.execute({
+    sql: 'SELECT * FROM blog_posts WHERE language = ? AND published = 1 ORDER BY published_at DESC',
+    args: [language],
+  });
+  return result.rows.map((row) => rowToBlogPost(row as unknown as BlogPostRow));
+}
+
+/**
+ * Get all translations of a blog post (posts with the same parent_post_id or posts where this is the parent)
+ */
+export async function getPostTranslations(postId: string): Promise<BlogPost[]> {
+  // First check if this post has a parent (it's a translation itself)
+  const post = await getBlogPostById(postId);
+  if (!post) return [];
+
+  const parentId = post.parentPostId || post.id;
+
+  // Get all posts that share this parent (excluding the requested post itself)
+  const result = await turso.execute({
+    sql: `SELECT * FROM blog_posts
+          WHERE (parent_post_id = ? OR (id = ? AND parent_post_id IS NULL))
+          AND id != ?
+          ORDER BY language ASC`,
+    args: [parentId, parentId, postId],
+  });
+  return result.rows.map((row) => rowToBlogPost(row as unknown as BlogPostRow));
 }
