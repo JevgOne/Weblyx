@@ -1,4 +1,4 @@
-import { GoogleAdsApi, Customer } from "google-ads-api";
+import { GoogleAdsApi, Customer, enums, resources, MutateOperation } from "google-ads-api";
 
 // Google Ads API Configuration
 const googleAdsConfig = {
@@ -263,4 +263,298 @@ export async function getKeywordPerformance(
     console.error("Error fetching keyword performance:", error);
     throw error;
   }
+}
+
+// ============================================
+// CAMPAIGN MANAGEMENT FUNCTIONS
+// ============================================
+
+// Update campaign status (ENABLED, PAUSED, REMOVED)
+export async function updateCampaignStatus(
+  campaignId: string,
+  status: "ENABLED" | "PAUSED" | "REMOVED"
+) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    const campaignResourceName = `customers/${customerId}/campaigns/${campaignId}`;
+
+    const operation: MutateOperation<resources.ICampaign> = {
+      entity: "campaign",
+      operation: "update",
+      resource: {
+        resource_name: campaignResourceName,
+        status: enums.CampaignStatus[status],
+      },
+      update_mask: {
+        paths: ["status"],
+      },
+    };
+
+    const response = await customer.mutateResources([operation]);
+
+    return {
+      success: true,
+      resourceName: response.results[0]?.resource_name,
+    };
+  } catch (error: any) {
+    console.error("Error updating campaign status:", error);
+    throw error;
+  }
+}
+
+// Update campaign budget
+export async function updateCampaignBudget(
+  budgetId: string,
+  amountCzk: number
+) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    const budgetResourceName = `customers/${customerId}/campaignBudgets/${budgetId}`;
+    const amountMicros = Math.round(amountCzk * 1000000);
+
+    const operation: MutateOperation<resources.ICampaignBudget> = {
+      entity: "campaign_budget",
+      operation: "update",
+      resource: {
+        resource_name: budgetResourceName,
+        amount_micros: amountMicros,
+      },
+      update_mask: {
+        paths: ["amount_micros"],
+      },
+    };
+
+    const response = await customer.mutateResources([operation]);
+
+    return {
+      success: true,
+      resourceName: response.results[0]?.resource_name,
+    };
+  } catch (error: any) {
+    console.error("Error updating campaign budget:", error);
+    throw error;
+  }
+}
+
+// Get campaign with budget details for editing
+export async function getCampaignDetails(campaignId: string) {
+  try {
+    const customer = getGoogleAdsCustomer();
+
+    const [campaign] = await customer.query(`
+      SELECT
+        campaign.id,
+        campaign.name,
+        campaign.status,
+        campaign.advertising_channel_type,
+        campaign.campaign_budget,
+        campaign_budget.id,
+        campaign_budget.amount_micros,
+        campaign_budget.delivery_method
+      FROM campaign
+      WHERE campaign.id = ${campaignId}
+    `);
+
+    if (!campaign) {
+      throw new Error("Campaign not found");
+    }
+
+    return {
+      id: campaign.campaign.id,
+      name: campaign.campaign.name,
+      status: campaign.campaign.status,
+      channelType: campaign.campaign.advertising_channel_type,
+      budgetId: campaign.campaign_budget.id,
+      budgetAmount: campaign.campaign_budget.amount_micros / 1000000,
+      budgetDeliveryMethod: campaign.campaign_budget.delivery_method,
+    };
+  } catch (error: any) {
+    console.error("Error fetching campaign details:", error);
+    throw error;
+  }
+}
+
+// Create a new Search campaign
+export async function createSearchCampaign(params: {
+  name: string;
+  dailyBudgetCzk: number;
+  startDate?: string; // YYYY-MM-DD format
+  endDate?: string; // YYYY-MM-DD format
+}) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    // Generate temporary IDs for the budget
+    const tempBudgetId = -1;
+    const budgetAmountMicros = Math.round(params.dailyBudgetCzk * 1000000);
+
+    // Create budget first
+    const budgetOperation: MutateOperation<resources.ICampaignBudget> = {
+      entity: "campaign_budget",
+      operation: "create",
+      resource: {
+        resource_name: `customers/${customerId}/campaignBudgets/${tempBudgetId}`,
+        name: `Budget for ${params.name}`,
+        amount_micros: budgetAmountMicros,
+        delivery_method: enums.BudgetDeliveryMethod.STANDARD,
+        explicitly_shared: false,
+      },
+    };
+
+    // Create campaign
+    const campaignOperation: MutateOperation<resources.ICampaign> = {
+      entity: "campaign",
+      operation: "create",
+      resource: {
+        name: params.name,
+        status: enums.CampaignStatus.PAUSED, // Start paused for safety
+        advertising_channel_type: enums.AdvertisingChannelType.SEARCH,
+        campaign_budget: `customers/${customerId}/campaignBudgets/${tempBudgetId}`,
+        manual_cpc: {
+          enhanced_cpc_enabled: false,
+        },
+        network_settings: {
+          target_google_search: true,
+          target_search_network: true,
+          target_content_network: false,
+        },
+        start_date: params.startDate || formatDate(new Date()),
+        end_date: params.endDate,
+      },
+    };
+
+    const response = await customer.mutateResources([
+      budgetOperation,
+      campaignOperation,
+    ]);
+
+    return {
+      success: true,
+      budgetResourceName: response.results[0]?.resource_name,
+      campaignResourceName: response.results[1]?.resource_name,
+    };
+  } catch (error: any) {
+    console.error("Error creating campaign:", error);
+    throw error;
+  }
+}
+
+// Create ad group in a campaign
+export async function createAdGroup(params: {
+  campaignId: string;
+  name: string;
+  cpcBidCzk: number;
+}) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    const cpcBidMicros = Math.round(params.cpcBidCzk * 1000000);
+
+    const operation: MutateOperation<resources.IAdGroup> = {
+      entity: "ad_group",
+      operation: "create",
+      resource: {
+        name: params.name,
+        campaign: `customers/${customerId}/campaigns/${params.campaignId}`,
+        status: enums.AdGroupStatus.ENABLED,
+        type: enums.AdGroupType.SEARCH_STANDARD,
+        cpc_bid_micros: cpcBidMicros,
+      },
+    };
+
+    const response = await customer.mutateResources([operation]);
+
+    return {
+      success: true,
+      resourceName: response.results[0]?.resource_name,
+    };
+  } catch (error: any) {
+    console.error("Error creating ad group:", error);
+    throw error;
+  }
+}
+
+// Add keywords to an ad group
+export async function addKeywords(params: {
+  adGroupId: string;
+  keywords: Array<{
+    text: string;
+    matchType: "EXACT" | "PHRASE" | "BROAD";
+  }>;
+}) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    const operations: MutateOperation<resources.IAdGroupCriterion>[] =
+      params.keywords.map((kw, index) => ({
+        entity: "ad_group_criterion",
+        operation: "create",
+        resource: {
+          ad_group: `customers/${customerId}/adGroups/${params.adGroupId}`,
+          status: enums.AdGroupCriterionStatus.ENABLED,
+          keyword: {
+            text: kw.text,
+            match_type: enums.KeywordMatchType[kw.matchType],
+          },
+        },
+      }));
+
+    const response = await customer.mutateResources(operations);
+
+    return {
+      success: true,
+      results: response.results.map((r) => r.resource_name),
+    };
+  } catch (error: any) {
+    console.error("Error adding keywords:", error);
+    throw error;
+  }
+}
+
+// Update keyword status
+export async function updateKeywordStatus(
+  adGroupId: string,
+  criterionId: string,
+  status: "ENABLED" | "PAUSED" | "REMOVED"
+) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    const resourceName = `customers/${customerId}/adGroupCriteria/${adGroupId}~${criterionId}`;
+
+    const operation: MutateOperation<resources.IAdGroupCriterion> = {
+      entity: "ad_group_criterion",
+      operation: "update",
+      resource: {
+        resource_name: resourceName,
+        status: enums.AdGroupCriterionStatus[status],
+      },
+      update_mask: {
+        paths: ["status"],
+      },
+    };
+
+    const response = await customer.mutateResources([operation]);
+
+    return {
+      success: true,
+      resourceName: response.results[0]?.resource_name,
+    };
+  } catch (error: any) {
+    console.error("Error updating keyword status:", error);
+    throw error;
+  }
+}
+
+// Helper function to format date as YYYY-MM-DD
+function formatDate(date: Date): string {
+  return date.toISOString().split("T")[0];
 }
