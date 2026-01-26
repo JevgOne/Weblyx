@@ -29,6 +29,7 @@ import {
   UserCog,
   History,
   ClipboardList,
+  TrendingUp,
 } from "lucide-react";
 import { useAdminTranslation, LanguageSelector } from "@/lib/admin-i18n";
 import { ROLE_NAMES, isAdminOrHigher } from "@/lib/auth/permissions";
@@ -455,6 +456,26 @@ export default function AdminDashboard() {
                     Stats
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Google Ads */}
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-200">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Google Ads</CardTitle>
+                    <CardDescription>Kampaně, statistiky, konverze</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="default" className="w-full bg-yellow-600 hover:bg-yellow-700" onClick={() => router.push("/admin/google-ads")}>
+                  {t.common.open}
+                </Button>
               </CardContent>
             </Card>
 
