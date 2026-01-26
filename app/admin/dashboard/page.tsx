@@ -30,6 +30,7 @@ import {
   History,
   ClipboardList,
   TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import { useAdminTranslation, LanguageSelector } from "@/lib/admin-i18n";
 import { ROLE_NAMES, isAdminOrHigher } from "@/lib/auth/permissions";
@@ -474,6 +475,26 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <Button variant="default" className="w-full bg-yellow-600 hover:bg-yellow-700" onClick={() => router.push("/admin/google-ads")}>
+                  {t.common.open}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Analytics & SEO */}
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-200">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <BarChart3 className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Analytics & SEO</CardTitle>
+                    <CardDescription>GA4 + Search Console</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button variant="default" className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push("/admin/analytics")}>
                   {t.common.open}
                 </Button>
               </CardContent>
