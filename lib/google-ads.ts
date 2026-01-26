@@ -287,9 +287,6 @@ export async function updateCampaignStatus(
         resource_name: campaignResourceName,
         status: enums.CampaignStatus[status],
       },
-      update_mask: {
-        paths: ["status"],
-      },
     };
 
     const response = await customer.mutateResources([operation]);
@@ -322,9 +319,6 @@ export async function updateCampaignBudget(
       resource: {
         resource_name: budgetResourceName,
         amount_micros: amountMicros,
-      },
-      update_mask: {
-        paths: ["amount_micros"],
       },
     };
 
@@ -536,9 +530,6 @@ export async function updateKeywordStatus(
       resource: {
         resource_name: resourceName,
         status: enums.AdGroupCriterionStatus[status],
-      },
-      update_mask: {
-        paths: ["status"],
       },
     };
 
