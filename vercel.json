@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/publish-scheduled-posts",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/google-marketing/cron",
+      "schedule": "0 6 * * *"
     }
   ]
 }

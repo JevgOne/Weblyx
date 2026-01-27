@@ -72,7 +72,9 @@ import {
   Smartphone,
   Tablet,
   Globe,
+  Lightbulb,
 } from "lucide-react";
+import RecommendationsPanel from "./_components/RecommendationsPanel";
 
 interface Campaign {
   id: string;
@@ -1024,6 +1026,11 @@ export default function GoogleAdsPage() {
                     </Badge>
                   )}
                 </TabsTrigger>
+                <TabsTrigger value="recommendations" className="flex items-center gap-2">
+                  <Lightbulb className="h-4 w-4" />
+                  Doporučení
+                  <Badge variant="default" className="bg-purple-500 ml-1">AI</Badge>
+                </TabsTrigger>
               </TabsList>
 
               {/* Google Ads Tab */}
@@ -1477,6 +1484,11 @@ export default function GoogleAdsPage() {
                     </div>
                   </div>
                 )}
+              </TabsContent>
+
+              {/* Recommendations Tab */}
+              <TabsContent value="recommendations">
+                <RecommendationsPanel />
               </TabsContent>
             </Tabs>
           </div>
