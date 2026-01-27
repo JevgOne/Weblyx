@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getCampaignPerformance, getKeywordPerformance } from "@/lib/google-ads";
+import { getGA4Overview, getGA4TopPages, getGA4TrafficSources } from "@/lib/google-analytics";
+import { getSearchConsoleOverview, getSearchConsoleTopQueries, getSearchConsoleTopPages } from "@/lib/google-search-console";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -57,6 +59,53 @@ AVOID KEYWORDS: ${worstKeywords.map((k: any) => `"${k.keyword}"`).join(", ")}
   }
 }
 
+async function getGA4Insights(): Promise<string> {
+  try {
+    const [overview, topPages, trafficSources] = await Promise.all([
+      getGA4Overview("30daysAgo", "today"),
+      getGA4TopPages("30daysAgo", "today", 10),
+      getGA4TrafficSources("30daysAgo", "today"),
+    ]);
+
+    const summary = overview.summary;
+
+    return `
+OVERVIEW: ${summary.totalUsers} users, ${summary.totalSessions} sessions, ${summary.totalPageViews} pageviews
+BOUNCE RATE: ${summary.avgBounceRate.toFixed(1)}%, AVG SESSION: ${Math.round(summary.avgSessionDuration)}s
+TOP PAGES: ${topPages.map((p: any) => `${p.path} (${p.pageViews} views, ${p.bounceRate.toFixed(0)}% bounce)`).join("; ")}
+TRAFFIC SOURCES: ${trafficSources.map((s: any) => `${s.source}: ${s.sessions} sessions`).join("; ")}
+    `.trim();
+  } catch (error) {
+    console.error("GA4 insights error:", error);
+    return "GA4 data not available";
+  }
+}
+
+async function getSearchConsoleInsights(): Promise<string> {
+  try {
+    const siteUrl = process.env.SEARCH_CONSOLE_SITE_URL || "sc-domain:weblyx.cz";
+    const endDate = new Date().toISOString().split("T")[0];
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+    const [overview, topQueries, topPages] = await Promise.all([
+      getSearchConsoleOverview(siteUrl, startDate, endDate),
+      getSearchConsoleTopQueries(siteUrl, startDate, endDate, 20),
+      getSearchConsoleTopPages(siteUrl, startDate, endDate, 10),
+    ]);
+
+    const summary = overview.summary;
+
+    return `
+ORGANIC OVERVIEW: ${summary.totalClicks} clicks, ${summary.totalImpressions} impressions, CTR ${summary.avgCtr.toFixed(2)}%, Avg Position ${summary.avgPosition.toFixed(1)}
+TOP ORGANIC QUERIES: ${topQueries.map((q: any) => `"${q.query}" (${q.clicks} clicks, pos ${q.position.toFixed(1)})`).join("; ")}
+TOP ORGANIC PAGES: ${topPages.map((p: any) => `${p.page.replace(/https?:\/\/[^/]+/, '')} (${p.clicks} clicks)`).join("; ")}
+    `.trim();
+  } catch (error) {
+    console.error("Search Console insights error:", error);
+    return "Search Console data not available";
+  }
+}
+
 async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7): Promise<string> {
   const response = await anthropic.messages.create({
     model: "claude-3-5-sonnet-20241022",
@@ -90,7 +139,13 @@ export async function POST(request: NextRequest) {
       fetchWebsiteContent(websiteUrl),
       ...competitors.slice(0, 3).map(fetchWebsiteContent),
     ]);
-    const googleAdsData = await getGoogleAdsInsights();
+
+    // Fetch all Google data in parallel
+    const [googleAdsData, ga4Data, gscData] = await Promise.all([
+      getGoogleAdsInsights(),
+      getGA4Insights(),
+      getSearchConsoleInsights(),
+    ]);
 
     const rawData = `
 === CLIENT WEBSITE (${websiteUrl}) ===
@@ -99,8 +154,14 @@ ${websiteContent}
 === COMPETITOR WEBSITES ===
 ${competitors.map((url, i) => `[${url}]: ${competitorContents[i]?.slice(0, 4000) || "N/A"}`).join("\n\n")}
 
-=== GOOGLE ADS HISTORICAL DATA ===
+=== GOOGLE ADS HISTORICAL DATA (Paid Traffic) ===
 ${googleAdsData}
+
+=== GOOGLE ANALYTICS 4 DATA (Website Behavior) ===
+${ga4Data}
+
+=== GOOGLE SEARCH CONSOLE DATA (Organic Search) ===
+${gscData}
 
 === BUSINESS CONTEXT ===
 Goal: ${businessGoal}
@@ -484,7 +545,11 @@ Output ONLY valid JSON:
       metadata: {
         websiteAnalyzed: websiteUrl,
         competitorsAnalyzed: competitors.length,
-        googleAdsDataUsed: googleAdsData !== "Google Ads data not available",
+        dataSources: {
+          googleAds: googleAdsData !== "Google Ads data not available",
+          ga4: ga4Data !== "GA4 data not available",
+          searchConsole: gscData !== "Search Console data not available",
+        },
         language,
         collaborationModel: "cross-review-iteration",
       },
