@@ -475,21 +475,21 @@ export default function GoogleAdsPage() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
-                  Google Ads
-                  {connected ? (
-                    <Badge variant="default" className="bg-green-500">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Připojeno
-                    </Badge>
-                  ) : (
-                    <Badge variant="destructive">
-                      <XCircle className="h-3 w-3 mr-1" />
-                      Nepřipojeno
-                    </Badge>
-                  )}
+                  Google Marketing
+                  <div className="flex gap-1">
+                    {connected && (
+                      <Badge variant="default" className="bg-yellow-500 text-xs">Ads</Badge>
+                    )}
+                    {ga4Connected && (
+                      <Badge variant="default" className="bg-blue-500 text-xs">GA4</Badge>
+                    )}
+                    {gscConnected && (
+                      <Badge variant="default" className="bg-green-500 text-xs">GSC</Badge>
+                    )}
+                  </div>
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  {customerInfo?.customer?.descriptive_name || "Správa kampaní a statistiky"}
+                  Google Ads • Analytics 4 • Search Console
                 </p>
               </div>
             </div>
@@ -932,60 +932,99 @@ export default function GoogleAdsPage() {
           </Card>
         )}
 
-        {connected && (
-          <div className="space-y-8">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" /> Zobrazení
-                  </CardDescription>
-                  <CardTitle className="text-3xl">{formatNumber(totals.impressions)}</CardTitle>
-                </CardHeader>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-1">
-                    <MousePointer className="h-4 w-4" /> Kliknutí
-                  </CardDescription>
-                  <CardTitle className="text-3xl">{formatNumber(totals.clicks)}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    CTR: {totals.impressions > 0 ? formatPercent(totals.clicks / totals.impressions) : "0%"}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-1">
-                    <DollarSign className="h-4 w-4" /> Útrata
-                  </CardDescription>
-                  <CardTitle className="text-3xl">{formatCurrency(totals.cost)}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    CPC: {totals.clicks > 0 ? formatCurrency(totals.cost / totals.clicks) : "0 Kč"}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-1">
-                    <Target className="h-4 w-4" /> Konverze
-                  </CardDescription>
-                  <CardTitle className="text-3xl text-primary">{formatNumber(totals.conversions)}</CardTitle>
-                </CardHeader>
-              </Card>
-            </div>
-
+        <div className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="campaigns">Kampaně</TabsTrigger>
-                <TabsTrigger value="keywords">Klíčová slova</TabsTrigger>
+              <TabsList className="mb-4">
+                <TabsTrigger value="ads" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Google Ads
+                  {connected ? (
+                    <Badge variant="default" className="bg-green-500 ml-1 h-5 px-1">
+                      <CheckCircle className="h-3 w-3" />
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="ml-1 h-5 px-1">
+                      <XCircle className="h-3 w-3" />
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="ga4" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics (GA4)
+                  {ga4Connected ? (
+                    <Badge variant="default" className="bg-green-500 ml-1 h-5 px-1">
+                      <CheckCircle className="h-3 w-3" />
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="ml-1 h-5 px-1">
+                      <XCircle className="h-3 w-3" />
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="gsc" className="flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  Search Console
+                  {gscConnected ? (
+                    <Badge variant="default" className="bg-green-500 ml-1 h-5 px-1">
+                      <CheckCircle className="h-3 w-3" />
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="ml-1 h-5 px-1">
+                      <XCircle className="h-3 w-3" />
+                    </Badge>
+                  )}
+                </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="campaigns">
+              {/* Google Ads Tab */}
+              <TabsContent value="ads" className="space-y-6">
+                {/* Summary Cards for Ads */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription className="flex items-center gap-1">
+                        <Eye className="h-4 w-4" /> Zobrazení
+                      </CardDescription>
+                      <CardTitle className="text-3xl">{formatNumber(totals.impressions)}</CardTitle>
+                    </CardHeader>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription className="flex items-center gap-1">
+                        <MousePointer className="h-4 w-4" /> Kliknutí
+                      </CardDescription>
+                      <CardTitle className="text-3xl">{formatNumber(totals.clicks)}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        CTR: {totals.impressions > 0 ? formatPercent(totals.clicks / totals.impressions) : "0%"}
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription className="flex items-center gap-1">
+                        <DollarSign className="h-4 w-4" /> Útrata
+                      </CardDescription>
+                      <CardTitle className="text-3xl">{formatCurrency(totals.cost)}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        CPC: {totals.clicks > 0 ? formatCurrency(totals.cost / totals.clicks) : "0 Kč"}
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription className="flex items-center gap-1">
+                        <Target className="h-4 w-4" /> Konverze
+                      </CardDescription>
+                      <CardTitle className="text-3xl text-primary">{formatNumber(totals.conversions)}</CardTitle>
+                    </CardHeader>
+                  </Card>
+                </div>
+
+                {/* Campaigns Table */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Kampaně (posledních 30 dní)</CardTitle>
@@ -1047,9 +1086,8 @@ export default function GoogleAdsPage() {
                     </Table>
                   </CardContent>
                 </Card>
-              </TabsContent>
 
-              <TabsContent value="keywords">
+                {/* Keywords Table */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Klíčová slova (posledních 30 dní)</CardTitle>
@@ -1094,9 +1132,258 @@ export default function GoogleAdsPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {/* GA4 Tab */}
+              <TabsContent value="ga4">
+                {ga4Error && (
+                  <Card className="mb-6 border-destructive">
+                    <CardContent className="pt-6">
+                      <p className="text-destructive">{ga4Error}</p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Nastav GA4_PROPERTY_ID a GOOGLE_SERVICE_ACCOUNT_KEY
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {ga4Data && (
+                  <div className="space-y-6">
+                    {/* GA4 Summary Cards */}
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <Users className="h-4 w-4" /> Uživatelé
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatNumber(ga4Data.summary.totalUsers)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" /> Zobrazení stránek
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatNumber(ga4Data.summary.totalPageViews)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" /> Průměrná doba
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatDuration(ga4Data.summary.avgSessionDuration)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <TrendingUp className="h-4 w-4" /> Bounce Rate
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatPercentDirect(ga4Data.summary.avgBounceRate)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                    </div>
+
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      {/* Top Pages */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Top stránky</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Stránka</TableHead>
+                                <TableHead className="text-right">Zobrazení</TableHead>
+                                <TableHead className="text-right">Bounce</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {ga4Data.topPages.slice(0, 8).map((page, i) => (
+                                <TableRow key={i}>
+                                  <TableCell className="font-medium truncate max-w-[200px]" title={page.path}>
+                                    {page.path}
+                                  </TableCell>
+                                  <TableCell className="text-right">{formatNumber(page.pageViews)}</TableCell>
+                                  <TableCell className="text-right">{formatPercentDirect(page.bounceRate)}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </CardContent>
+                      </Card>
+
+                      {/* Traffic Sources */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Zdroje návštěvnosti</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Zdroj</TableHead>
+                                <TableHead className="text-right">Sessions</TableHead>
+                                <TableHead className="text-right">Uživatelé</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {ga4Data.trafficSources.map((source, i) => (
+                                <TableRow key={i}>
+                                  <TableCell className="font-medium">{source.source}</TableCell>
+                                  <TableCell className="text-right">{formatNumber(source.sessions)}</TableCell>
+                                  <TableCell className="text-right">{formatNumber(source.users)}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Devices */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Zařízení</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-4 md:grid-cols-3">
+                          {ga4Data.devices.map((device, i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
+                              <div className="p-3 bg-muted rounded-lg">
+                                {getDeviceIcon(device.device)}
+                              </div>
+                              <div>
+                                <p className="font-medium capitalize">{device.device}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {formatNumber(device.sessions)} sessions • {formatPercentDirect(device.bounceRate)} bounce
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Search Console Tab */}
+              <TabsContent value="gsc">
+                {gscError && (
+                  <Card className="mb-6 border-destructive">
+                    <CardContent className="pt-6">
+                      <p className="text-destructive">{gscError}</p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Nastav SEARCH_CONSOLE_SITE_URL a GOOGLE_SERVICE_ACCOUNT_KEY
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {gscData && (
+                  <div className="space-y-6">
+                    {/* GSC Summary Cards */}
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <MousePointer className="h-4 w-4" /> Kliknutí
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatNumber(gscData.summary.totalClicks)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" /> Zobrazení
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatNumber(gscData.summary.totalImpressions)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <TrendingUp className="h-4 w-4" /> CTR
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{formatPercentDirect(gscData.summary.avgCtr)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardDescription className="flex items-center gap-1">
+                            <Search className="h-4 w-4" /> Avg. pozice
+                          </CardDescription>
+                          <CardTitle className="text-3xl">{gscData.summary.avgPosition.toFixed(1)}</CardTitle>
+                        </CardHeader>
+                      </Card>
+                    </div>
+
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      {/* Top Queries */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Top vyhledávací dotazy</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Dotaz</TableHead>
+                                <TableHead className="text-right">Kliky</TableHead>
+                                <TableHead className="text-right">Pozice</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {gscData.topQueries.slice(0, 10).map((query, i) => (
+                                <TableRow key={i}>
+                                  <TableCell className="font-medium truncate max-w-[200px]" title={query.query}>
+                                    {query.query}
+                                  </TableCell>
+                                  <TableCell className="text-right">{formatNumber(query.clicks)}</TableCell>
+                                  <TableCell className="text-right">{query.position.toFixed(1)}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </CardContent>
+                      </Card>
+
+                      {/* Top Pages */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Top stránky ve vyhledávání</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>URL</TableHead>
+                                <TableHead className="text-right">Kliky</TableHead>
+                                <TableHead className="text-right">CTR</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {gscData.topPages.slice(0, 10).map((page, i) => (
+                                <TableRow key={i}>
+                                  <TableCell className="font-medium truncate max-w-[200px]" title={page.page}>
+                                    {page.page.replace("https://weblyx.cz", "")}
+                                  </TableCell>
+                                  <TableCell className="text-right">{formatNumber(page.clicks)}</TableCell>
+                                  <TableCell className="text-right">{formatPercentDirect(page.ctr)}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
             </Tabs>
           </div>
-        )}
       </main>
     </div>
   );
