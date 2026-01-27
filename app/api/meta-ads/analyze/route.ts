@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 import {
   getCampaignPerformance,
   getAdSetPerformance,
@@ -7,7 +7,9 @@ import {
   getAccountInsights,
 } from "@/lib/meta-ads";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -72,22 +74,14 @@ async function runAgent(
   userPrompt: string,
   temperature = 0.7
 ): Promise<string> {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-  const result = await model.generateContent({
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: `${systemPrompt}\n\n---\n\n${userPrompt}` }],
-      },
-    ],
-    generationConfig: {
-      temperature,
-      maxOutputTokens: 3000,
-    },
+  const response = await anthropic.messages.create({
+    model: "claude-3-5-sonnet-20241022",
+    max_tokens: 3000,
+    temperature,
+    system: systemPrompt,
+    messages: [{ role: "user", content: userPrompt }],
   });
-
-  return result.response.text();
+  return response.content[0].type === "text" ? response.content[0].text : "";
 }
 
 export async function POST(request: NextRequest) {
