@@ -14,7 +14,7 @@ import {
   type CampaignTracking,
 } from '@/lib/turso/google-marketing';
 import { generateRecommendations, getImpactComparison } from '@/lib/google-marketing-recommendations';
-import { getCampaignPerformance, getKeywordPerformance, getSearchTermsReport } from '@/lib/google-ads';
+import { getCampaignPerformance, getKeywordPerformance } from '@/lib/google-ads';
 import { getGA4Overview, getGA4TopPages } from '@/lib/google-analytics';
 import { getSearchConsoleOverview, getSearchConsoleTopQueries } from '@/lib/google-search-console';
 
@@ -111,11 +111,9 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
     campaignMetrics = campaigns.find((c: any) => c.id === tracking.campaignId);
     keywords = await getKeywordPerformance(tracking.campaignId, 'LAST_30_DAYS');
 
-    try {
-      searchTerms = await getSearchTermsReport(tracking.campaignId, 'LAST_30_DAYS');
-    } catch {
-      searchTerms = [];
-    }
+    // Search terms report - TODO: implement getSearchTermsReport in google-ads.ts
+    // For now, we'll work without search terms data
+    searchTerms = [];
 
     dataSources.googleAds = true;
   } catch (error) {
