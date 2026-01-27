@@ -272,8 +272,8 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
     lastAnalysisDate: new Date(),
     nextAnalysisDate,
     analysisCount: tracking.analysisCount + 1,
-    currentMetrics,
-    baselineMetrics: tracking.analysisCount === 0 ? currentMetrics : tracking.baselineMetrics,
+    currentMetrics: currentMetrics || undefined,
+    baselineMetrics: tracking.analysisCount === 0 ? (currentMetrics || undefined) : tracking.baselineMetrics,
   });
 
   return {
