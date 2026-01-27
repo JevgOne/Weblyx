@@ -588,6 +588,56 @@ export default function GoogleAdsPage() {
                         </div>
                       )}
 
+                      {/* Data Sources Status */}
+                      <Card className="bg-muted/50">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium">Dostupné datové zdroje pro analýzu</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-4 gap-3">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2.5 h-2.5 rounded-full ${connected && campaigns.length > 0 ? 'bg-green-500' : campaigns.length === 0 ? 'bg-yellow-500' : 'bg-gray-300'}`} />
+                              <div>
+                                <p className="text-sm font-medium">Google Ads</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {connected && campaigns.length > 0 ? `${campaigns.length} kampaní` : campaigns.length === 0 ? 'Bez historie' : 'Nepřipojeno'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2.5 h-2.5 rounded-full ${ga4Connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                              <div>
+                                <p className="text-sm font-medium">GA4</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {ga4Connected ? `${ga4Data?.summary.totalUsers || 0} uživatelů` : 'Nepřipojeno'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2.5 h-2.5 rounded-full ${gscConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                              <div>
+                                <p className="text-sm font-medium">Search Console</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {gscConnected ? `${gscData?.topQueries.length || 0} dotazů` : 'Nepřipojeno'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                              <div>
+                                <p className="text-sm font-medium">Web + Konkurence</p>
+                                <p className="text-xs text-muted-foreground">Vždy dostupné</p>
+                              </div>
+                            </div>
+                          </div>
+                          {campaigns.length === 0 && (
+                            <p className="text-xs text-muted-foreground mt-3 p-2 bg-yellow-500/10 rounded border border-yellow-500/20">
+                              💡 Tip: I bez historie Google Ads vytvoří AI kvalitní kampaň na základě GA4, Search Console a analýzy webu.
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+
                       <div className="grid grid-cols-4 gap-3">
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
@@ -978,7 +1028,51 @@ export default function GoogleAdsPage() {
 
               {/* Google Ads Tab */}
               <TabsContent value="ads" className="space-y-6">
+                {/* Empty State - No Campaigns */}
+                {campaigns.length === 0 && connected && (
+                  <Card className="border-dashed border-2 border-muted-foreground/25">
+                    <CardContent className="pt-12 pb-12 text-center">
+                      <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                        <Target className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Zatím nemáte žádnou kampaň</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                        Začněte vytvořením první kampaně. AI analýza použije data z GA4 a Search Console
+                        pro vytvoření optimální strategie, i bez historie Google Ads.
+                      </p>
+                      <div className="flex gap-3 justify-center">
+                        <Button onClick={() => setShowAnalyzeDialog(true)} className="bg-gradient-to-r from-purple-600 to-blue-600">
+                          <Brain className="h-4 w-4 mr-2" />
+                          Spustit AI Analýzu
+                        </Button>
+                        <Button variant="outline" onClick={() => setShowCreateDialog(true)}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Vytvořit kampaň manuálně
+                        </Button>
+                      </div>
+                      <div className="mt-8 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${ga4Connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                          <p className="text-xs font-medium">GA4 Data</p>
+                          <p className="text-xs text-muted-foreground">{ga4Connected ? 'Dostupné' : 'Nepřipojeno'}</p>
+                        </div>
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${gscConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                          <p className="text-xs font-medium">Search Console</p>
+                          <p className="text-xs text-muted-foreground">{gscConnected ? 'Dostupné' : 'Nepřipojeno'}</p>
+                        </div>
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <div className="w-3 h-3 rounded-full mx-auto mb-2 bg-green-500" />
+                          <p className="text-xs font-medium">Web Analýza</p>
+                          <p className="text-xs text-muted-foreground">Vždy dostupné</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Summary Cards for Ads */}
+                {campaigns.length > 0 && (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <Card>
                     <CardHeader className="pb-2">
@@ -1023,8 +1117,10 @@ export default function GoogleAdsPage() {
                     </CardHeader>
                   </Card>
                 </div>
+                )}
 
-                {/* Campaigns Table */}
+                {/* Campaigns Table - only show if campaigns exist */}
+                {campaigns.length > 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Kampaně (posledních 30 dní)</CardTitle>
@@ -1045,49 +1141,43 @@ export default function GoogleAdsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {campaigns.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={9} className="text-center text-muted-foreground">
-                              Žádné kampaně
+                        {campaigns.map((campaign) => (
+                          <TableRow key={campaign.id}>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleToggleCampaign(campaign.id, campaign.status)}
+                              >
+                                {campaign.status === "ENABLED" ? (
+                                  <Pause className="h-4 w-4 text-yellow-500" />
+                                ) : (
+                                  <Play className="h-4 w-4 text-green-500" />
+                                )}
+                              </Button>
                             </TableCell>
+                            <TableCell className="font-medium">{campaign.name}</TableCell>
+                            <TableCell>
+                              <Badge variant={campaign.status === "ENABLED" ? "default" : "secondary"}>
+                                {campaign.status === "ENABLED" ? "Aktivní" : "Pozastavená"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">{formatNumber(campaign.impressions)}</TableCell>
+                            <TableCell className="text-right">{formatNumber(campaign.clicks)}</TableCell>
+                            <TableCell className="text-right">{formatPercent(campaign.ctr)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(campaign.avgCpc)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(campaign.cost)}</TableCell>
+                            <TableCell className="text-right">{formatNumber(campaign.conversions)}</TableCell>
                           </TableRow>
-                        ) : (
-                          campaigns.map((campaign) => (
-                            <TableRow key={campaign.id}>
-                              <TableCell>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleToggleCampaign(campaign.id, campaign.status)}
-                                >
-                                  {campaign.status === "ENABLED" ? (
-                                    <Pause className="h-4 w-4 text-yellow-500" />
-                                  ) : (
-                                    <Play className="h-4 w-4 text-green-500" />
-                                  )}
-                                </Button>
-                              </TableCell>
-                              <TableCell className="font-medium">{campaign.name}</TableCell>
-                              <TableCell>
-                                <Badge variant={campaign.status === "ENABLED" ? "default" : "secondary"}>
-                                  {campaign.status === "ENABLED" ? "Aktivní" : "Pozastavená"}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">{formatNumber(campaign.impressions)}</TableCell>
-                              <TableCell className="text-right">{formatNumber(campaign.clicks)}</TableCell>
-                              <TableCell className="text-right">{formatPercent(campaign.ctr)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(campaign.avgCpc)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(campaign.cost)}</TableCell>
-                              <TableCell className="text-right">{formatNumber(campaign.conversions)}</TableCell>
-                            </TableRow>
-                          ))
-                        )}
+                        ))}
                       </TableBody>
                     </Table>
                   </CardContent>
                 </Card>
+                )}
 
-                {/* Keywords Table */}
+                {/* Keywords Table - only show if keywords exist */}
+                {keywords.length > 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Klíčová slova (posledních 30 dní)</CardTitle>
@@ -1107,41 +1197,47 @@ export default function GoogleAdsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {keywords.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={8} className="text-center text-muted-foreground">
-                              Žádná klíčová slova
-                            </TableCell>
+                        {keywords.map((kw, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">{kw.keyword}</TableCell>
+                            <TableCell><Badge variant="outline">{kw.matchType}</Badge></TableCell>
+                            <TableCell className="text-muted-foreground">{kw.campaignName}</TableCell>
+                            <TableCell className="text-right">{formatNumber(kw.impressions)}</TableCell>
+                            <TableCell className="text-right">{formatNumber(kw.clicks)}</TableCell>
+                            <TableCell className="text-right">{formatPercent(kw.ctr)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(kw.avgCpc)}</TableCell>
+                            <TableCell className="text-right">{formatNumber(kw.conversions)}</TableCell>
                           </TableRow>
-                        ) : (
-                          keywords.map((kw, i) => (
-                            <TableRow key={i}>
-                              <TableCell className="font-medium">{kw.keyword}</TableCell>
-                              <TableCell><Badge variant="outline">{kw.matchType}</Badge></TableCell>
-                              <TableCell className="text-muted-foreground">{kw.campaignName}</TableCell>
-                              <TableCell className="text-right">{formatNumber(kw.impressions)}</TableCell>
-                              <TableCell className="text-right">{formatNumber(kw.clicks)}</TableCell>
-                              <TableCell className="text-right">{formatPercent(kw.ctr)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(kw.avgCpc)}</TableCell>
-                              <TableCell className="text-right">{formatNumber(kw.conversions)}</TableCell>
-                            </TableRow>
-                          ))
-                        )}
+                        ))}
                       </TableBody>
                     </Table>
                   </CardContent>
                 </Card>
+                )}
               </TabsContent>
 
               {/* GA4 Tab */}
               <TabsContent value="ga4">
                 {ga4Error && (
-                  <Card className="mb-6 border-destructive">
-                    <CardContent className="pt-6">
-                      <p className="text-destructive">{ga4Error}</p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Nastav GA4_PROPERTY_ID a GOOGLE_SERVICE_ACCOUNT_KEY
+                  <Card className="border-dashed border-2 border-muted-foreground/25">
+                    <CardContent className="pt-12 pb-12 text-center">
+                      <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                        <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Google Analytics 4 není připojeno</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto mb-4">
+                        Propojte GA4 pro sledování návštěvnosti, chování uživatelů a konverzí na webu.
                       </p>
+                      <div className="bg-muted/50 rounded-lg p-4 max-w-md mx-auto text-left">
+                        <p className="text-sm font-medium mb-2">Nastavení:</p>
+                        <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                          <li>Přidejte <code className="bg-muted px-1 rounded">GA4_PROPERTY_ID</code> do env variables</li>
+                          <li>Přidejte Service Account do GA4 s oprávněním Viewer</li>
+                        </ol>
+                      </div>
+                      {ga4Error && (
+                        <p className="text-xs text-destructive mt-4">Chyba: {ga4Error}</p>
+                      )}
                     </CardContent>
                   </Card>
                 )}
