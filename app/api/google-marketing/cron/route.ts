@@ -215,8 +215,8 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
   // Calculate new phase and health score
   const updatedTracking = {
     ...tracking,
-    currentMetrics,
-  };
+    currentMetrics: currentMetrics || undefined,
+  } as CampaignTracking;
   const newPhase = calculateCampaignPhase(updatedTracking);
   const newHealthScore = calculateHealthScore(updatedTracking);
 
