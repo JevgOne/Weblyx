@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import {
   getCampaignPerformance,
-  getAdSetPerformance,
-  getAdPerformance,
   getAccountInsights,
 } from "@/lib/meta-ads";
 
@@ -12,7 +10,7 @@ const anthropic = new Anthropic({
 });
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // 5 minutes for multi-agent collaboration
+export const maxDuration = 120;
 
 interface AnalysisRequest {
   websiteUrl: string;
@@ -25,9 +23,15 @@ interface AnalysisRequest {
 
 async function fetchWebsiteContent(url: string): Promise<string> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; WeblyxBot/1.0)" },
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
+
     const html = await response.text();
     return html
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
@@ -35,10 +39,10 @@ async function fetchWebsiteContent(url: string): Promise<string> {
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, 10000);
+      .slice(0, 8000);
   } catch (error) {
     console.error(`Error fetching ${url}:`, error);
-    return "";
+    return `[Nepodařilo se načíst obsah webu ${url}]`;
   }
 }
 
@@ -55,36 +59,23 @@ async function getMetaAdsInsights(): Promise<string> {
       .slice(0, 5);
 
     return `
-ACCOUNT OVERVIEW (Last 30 days):
-- Reach: ${insights.reach}, Impressions: ${insights.impressions}
-- Clicks: ${insights.clicks}, CTR: ${insights.ctr.toFixed(2)}%
-- Spend: ${insights.spend.toFixed(0)} CZK, CPC: ${insights.cpc.toFixed(2)} CZK
-- Conversions: ${insights.conversions}, Frequency: ${insights.frequency.toFixed(1)}
+PŘEHLED ÚČTU (posledních 30 dní):
+- Dosah: ${insights.reach}, Zobrazení: ${insights.impressions}
+- Kliknutí: ${insights.clicks}, CTR: ${insights.ctr.toFixed(2)}%
+- Útrata: ${insights.spend.toFixed(0)} CZK, CPC: ${insights.cpc.toFixed(2)} CZK
+- Konverze: ${insights.conversions}, Frekvence: ${insights.frequency.toFixed(1)}
 
-TOP CAMPAIGNS:
-${topCampaigns.map((c: any) => `- ${c.campaignName}: CTR ${c.ctr.toFixed(2)}%, ${c.conversions || 0} conv, ${c.spend.toFixed(0)} CZK spent`).join("\n")}
+TOP KAMPANĚ:
+${topCampaigns.map((c: any) => `- ${c.campaignName}: CTR ${c.ctr.toFixed(2)}%, ${c.conversions || 0} konverzí`).join("\n")}
     `.trim();
   } catch {
-    return "Meta Ads data not available - this is a new account or no campaigns yet.";
+    return "Meta Ads data nejsou k dispozici - nový účet nebo žádné kampaně.";
   }
 }
 
-async function runAgent(
-  systemPrompt: string,
-  userPrompt: string,
-  temperature = 0.7
-): Promise<string> {
-  const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 3000,
-    temperature,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userPrompt }],
-  });
-  return response.content[0].type === "text" ? response.content[0].text : "";
-}
-
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+
   try {
     const body: AnalysisRequest = await request.json();
     const {
@@ -98,475 +89,160 @@ export async function POST(request: NextRequest) {
 
     if (!websiteUrl || !language) {
       return NextResponse.json(
-        { success: false, error: "Missing websiteUrl or language" },
+        { success: false, error: "Chybí URL webu nebo jazyk" },
         { status: 400 }
       );
     }
 
-    const langNames = { cs: "Czech", de: "German", en: "English" };
-    const langFull = langNames[language];
+    const langMap = { cs: "česky", de: "německy", en: "anglicky" };
+    const goalMap = {
+      leads: "získání kontaktů/leadů",
+      traffic: "zvýšení návštěvnosti",
+      sales: "prodej produktů",
+      brand: "budování značky",
+      app_installs: "instalace aplikace"
+    };
 
-    console.log("🚀 Starting Meta Ads multi-agent analysis...");
+    console.log("🚀 Meta Ads analýza - start");
 
-    // ========================================
-    // PHASE 1: DATA GATHERING
-    // ========================================
-    console.log("📥 Phase 1: Gathering data...");
-
-    const [websiteContent, ...competitorContents] = await Promise.all([
+    // FÁZE 1: Sběr dat (paralelně)
+    console.log("📥 Fáze 1: Sběr dat...");
+    const [websiteContent, metaAdsData, ...competitorContents] = await Promise.all([
       fetchWebsiteContent(websiteUrl),
-      ...competitors.slice(0, 3).map(fetchWebsiteContent),
+      getMetaAdsInsights(),
+      ...competitors.slice(0, 2).map(fetchWebsiteContent),
     ]);
 
-    const metaAdsData = await getMetaAdsInsights();
-
-    const rawData = `
-=== CLIENT WEBSITE (${websiteUrl}) ===
+    const dataContext = `
+=== KLIENTSKÝ WEB: ${websiteUrl} ===
 ${websiteContent}
 
-=== COMPETITOR WEBSITES ===
-${competitors.map((url, i) => `[${url}]: ${competitorContents[i]?.slice(0, 3000) || "N/A"}`).join("\n\n")}
+=== KONKURENCE ===
+${competitors.slice(0, 2).map((url, i) => `[${url}]:\n${competitorContents[i]?.slice(0, 3000) || "N/A"}`).join("\n\n")}
 
-=== META ADS HISTORICAL DATA ===
+=== META ADS DATA ===
 ${metaAdsData}
 
-=== BUSINESS CONTEXT ===
-Goal: ${businessGoal}
-Monthly Budget: ${monthlyBudget} CZK
-Target Language: ${langFull}
-Target Platform: ${targetPlatform === "both" ? "Facebook + Instagram" : targetPlatform}
+=== ZADÁNÍ ===
+- Cíl: ${goalMap[businessGoal]}
+- Měsíční rozpočet: ${monthlyBudget} CZK
+- Platforma: ${targetPlatform === "both" ? "Facebook + Instagram" : targetPlatform}
+- Jazyk reklam: ${langMap[language]}
     `.trim();
 
-    // ========================================
-    // PHASE 2: PROJECT MANAGER - STRATEGIC BRIEF
-    // ========================================
-    console.log("👔 Phase 2: Project Manager creating brief...");
+    // FÁZE 2: Kompletní analýza v jednom volání
+    console.log("🤖 Fáze 2: AI analýza...");
 
-    const pmBrief = await runAgent(
-      `You are a Senior Digital Marketing Project Manager specializing in Meta (Facebook/Instagram) advertising.
-Your role is to analyze the situation and create a strategic brief for your team of specialists.
-Be decisive, specific, and data-driven. Output in English.`,
-      `Create a strategic brief for Meta Ads campaign based on this data:
+    const analysisResponse = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 4000,
+      temperature: 0.7,
+      system: `Jsi expert na Meta (Facebook/Instagram) reklamy. Vytvoř kompletní analýzu a strategii pro klienta.
 
-${rawData}
+DŮLEŽITÉ: Veškerý text reklam MUSÍ být ${langMap[language]}.
 
-Your brief should include:
-1. EXECUTIVE SUMMARY - What's the situation?
-2. CAMPAIGN OBJECTIVES - What must we achieve? (${businessGoal})
-3. TARGET AUDIENCE - Who are we targeting? Be specific about demographics, interests, behaviors.
-4. COMPETITIVE ANALYSIS - What are competitors doing on social media? Opportunities?
-5. BUDGET ALLOCATION - How to split ${monthlyBudget} CZK/month between FB/IG?
-6. PLATFORM STRATEGY - Facebook vs Instagram priorities
-7. FUNNEL STRATEGY - Cold → Warm → Hot audience approach
-8. DIRECTION FOR EACH SPECIALIST:
-   - For Marketing Strategist: What positioning?
-   - For Facebook Expert: What formats and placements?
-   - For Instagram Expert: What content style?
-   - For PPC Specialist: What bidding and optimization?
+Odpověz POUZE validním JSON ve formátu níže. Žádný jiný text.`,
+      messages: [{
+        role: "user",
+        content: `Analyzuj následující data a vytvoř kompletní strategii pro Meta Ads:
 
-Be decisive. The team relies on your direction.`
-    );
+${dataContext}
 
-    // ========================================
-    // PHASE 3: PARALLEL SPECIALIST WORK
-    // ========================================
-    console.log("🔄 Phase 3: Specialists working in parallel...");
-
-    const [marketingDraft, facebookDraft, instagramDraft, ppcDraft] =
-      await Promise.all([
-        // Marketing Strategist
-        runAgent(
-          `You are a Brand & Marketing Strategist specializing in social media advertising.
-Focus on: positioning, messaging, emotional triggers, value propositions, audience psychology.
-Be creative but strategic. Output in English.`,
-          `PROJECT MANAGER'S BRIEF:
-${pmBrief}
-
-Develop the marketing strategy for Meta Ads:
-1. BRAND POSITIONING - How to position on social media?
-2. UNIQUE VALUE PROPOSITION - The #1 reason to engage/buy
-3. KEY MESSAGES (5-7) - Core messages for ads
-4. EMOTIONAL TRIGGERS - What motivates our audience?
-5. CONTENT PILLARS - 3-4 themes for ad content
-6. TONE & VOICE - How should ads feel?
-7. CUSTOMER JOURNEY - Awareness → Consideration → Conversion messaging`
-        ),
-
-        // Facebook Ads Expert
-        runAgent(
-          `You are a Facebook Ads Expert with 10+ years of experience.
-You know every ad format, placement, and optimization technique.
-Focus on: ad formats, placements, audience targeting, Facebook-specific strategies.
-Output in English.`,
-          `PROJECT MANAGER'S BRIEF:
-${pmBrief}
-
-Create Facebook-specific ad strategy:
-1. RECOMMENDED AD FORMATS:
-   - Feed ads (single image, video, carousel)
-   - Stories ads
-   - Reels ads
-   - Marketplace ads
-   - Right column
-   Which to prioritize and why?
-
-2. AUDIENCE STRATEGY:
-   - Core audiences (interests, behaviors)
-   - Custom audiences (website visitors, engagement)
-   - Lookalike audiences (sources and percentages)
-
-3. CAMPAIGN STRUCTURE:
-   - How many campaigns?
-   - Campaign objectives (awareness, traffic, conversions)?
-   - Ad set organization
-
-4. CREATIVE SPECIFICATIONS:
-   - Image sizes and ratios
-   - Video length recommendations
-   - Carousel best practices
-
-5. FACEBOOK-SPECIFIC TIPS:
-   - What works specifically on Facebook?
-   - Common mistakes to avoid`
-        ),
-
-        // Instagram Ads Expert
-        runAgent(
-          `You are an Instagram Ads Expert and social media specialist.
-You understand Instagram culture, aesthetics, and what makes content viral.
-Focus on: Instagram-specific formats, Reels, Stories, visual aesthetics, influencer style.
-Output in English.`,
-          `PROJECT MANAGER'S BRIEF:
-${pmBrief}
-
-Create Instagram-specific ad strategy:
-1. CONTENT STYLE:
-   - Visual aesthetic recommendations
-   - Instagram-native look and feel
-   - UGC vs polished content
-
-2. RECOMMENDED FORMATS:
-   - Feed posts (single, carousel)
-   - Stories (15s max)
-   - Reels (trending formats)
-   - Explore ads
-   Which to prioritize?
-
-3. REELS STRATEGY:
-   - Hook techniques (first 1-3 seconds)
-   - Trending audio/music
-   - Length recommendations
-   - CTA placement
-
-4. STORIES STRATEGY:
-   - Interactive elements (polls, questions)
-   - Swipe-up/link stickers
-   - Story sequence ideas
-
-5. INSTAGRAM-SPECIFIC TIPS:
-   - Hashtag strategy
-   - Best posting times
-   - Engagement tactics
-   - What makes content feel native`
-        ),
-
-        // PPC Specialist
-        runAgent(
-          `You are a Meta Ads PPC Specialist focused on performance and ROI.
-You optimize campaigns for maximum conversions at lowest cost.
-Focus on: bidding strategies, budget optimization, A/B testing, pixel setup, attribution.
-Output in English.`,
-          `PROJECT MANAGER'S BRIEF:
-${pmBrief}
-
-Create PPC optimization strategy:
-1. CAMPAIGN OBJECTIVES:
-   - Which campaign objectives for ${businessGoal}?
-   - Conversion events to optimize for
-
-2. BIDDING STRATEGY:
-   - Lowest cost vs cost cap vs bid cap?
-   - When to use each?
-
-3. BUDGET ALLOCATION:
-   - CBO vs ABO recommendation
-   - Daily vs lifetime budget
-   - Testing budget vs scaling budget
-
-4. OPTIMIZATION TIMELINE:
-   - Learning phase considerations
-   - When to make changes?
-   - Scaling strategy (20% rule)
-
-5. PIXEL & TRACKING:
-   - Essential pixel events
-   - Conversion API setup
-   - Attribution settings
-
-6. A/B TESTING PLAN:
-   - What to test first?
-   - How long to run tests?
-   - Statistical significance
-
-7. PERFORMANCE BENCHMARKS:
-   - Target CTR, CPC, CPM
-   - Expected conversion rates
-   - Warning signs to watch`
-        ),
-      ]);
-
-    // ========================================
-    // PHASE 4: CROSS-REVIEW
-    // ========================================
-    console.log("🤝 Phase 4: Cross-review...");
-
-    const crossReview = await runAgent(
-      `You are the Project Manager reviewing all specialist outputs for alignment and synergy.`,
-      `Review these specialist outputs and identify:
-
-MARKETING STRATEGY:
-${marketingDraft}
-
-FACEBOOK STRATEGY:
-${facebookDraft}
-
-INSTAGRAM STRATEGY:
-${instagramDraft}
-
-PPC STRATEGY:
-${ppcDraft}
-
-Provide:
-1. KEY SYNERGIES - Where strategies align well
-2. CONFLICTS - Any contradictions to resolve
-3. GAPS - What's missing?
-4. UNIFIED RECOMMENDATIONS - Final direction for ad creation`
-    );
-
-    // ========================================
-    // PHASE 5: FINAL AD CREATION
-    // ========================================
-    console.log("✍️ Phase 5: Creating final ads...");
-
-    const finalAds = await runAgent(
-      `You are a Meta Ads Copywriter creating the final ad content.
-All text MUST be in ${langFull}.
-You write ads that CONVERT with perfect platform-native style.`,
-      `Based on all specialist input, create the final ads in ${langFull}:
-
-MARKETING STRATEGY:
-${marketingDraft}
-
-FACEBOOK STRATEGY:
-${facebookDraft}
-
-INSTAGRAM STRATEGY:
-${instagramDraft}
-
-CROSS-REVIEW:
-${crossReview}
-
-CREATE FINAL ADS in ${langFull}:
-
-1. PRIMARY TEXT OPTIONS (5 variations, max 125 chars before "See more"):
-   - Format: "Text" [angle: benefit/urgency/social-proof/question/story]
-
-2. HEADLINES (5 variations, max 40 chars):
-   - Format: "Headline" [angle]
-
-3. DESCRIPTIONS (3 variations, max 30 chars):
-   - For link description under headline
-
-4. CALL-TO-ACTION recommendations:
-   - Best CTAs for ${businessGoal}
-
-5. CREATIVE CONCEPTS (3 ideas):
-   - Describe the visual/video concept
-   - Include hook, body, CTA
-
-6. CAROUSEL CONTENT (if applicable):
-   - 3-5 card concepts with headlines
-
-7. STORY/REEL SCRIPTS (2 concepts):
-   - 15-second script with timing
-
-8. HASHTAGS (10-15 relevant):
-   - Mix of popular and niche`
-    );
-
-    // ========================================
-    // PHASE 6: FINAL JSON OUTPUT
-    // ========================================
-    console.log("🎯 Phase 6: Compiling final output...");
-
-    const finalOutput = await runAgent(
-      `Compile all outputs into valid JSON. All ad text MUST be in ${langFull}.`,
-      `Compile this into JSON:
-
-FINAL ADS:
-${finalAds}
-
-PROJECT MANAGER BRIEF:
-${pmBrief.slice(0, 2000)}
-
-Output ONLY valid JSON:
-\`\`\`json
+Vrať POUZE tento JSON (bez markdown bloků):
 {
+  "executive_summary": "Krátké shrnutí situace a hlavní doporučení",
+  "target_audience": {
+    "demographics": "Věk, pohlaví, lokace",
+    "interests": ["zájem1", "zájem2", "zájem3"],
+    "behaviors": ["chování1", "chování2"]
+  },
   "strategy": {
-    "campaign_objective": "${businessGoal}",
-    "target_audience": "description",
-    "unique_value_proposition": "main UVP",
-    "key_messages": ["message1", "message2"],
-    "content_pillars": ["pillar1", "pillar2"],
+    "campaign_objective": "doporučený cíl kampaně",
     "budget_split": {"facebook": 60, "instagram": 40},
-    "funnel_strategy": {
-      "cold": "awareness approach",
-      "warm": "consideration approach",
-      "hot": "conversion approach"
-    }
-  },
-  "facebook_ads": {
-    "recommended_formats": ["format1", "format2"],
-    "placements": ["feed", "stories", "reels"],
-    "audience_targeting": {
-      "interests": ["interest1"],
-      "behaviors": ["behavior1"],
-      "lookalike_sources": ["source1"]
-    }
-  },
-  "instagram_ads": {
-    "content_style": "description",
-    "recommended_formats": ["reels", "stories", "feed"],
-    "reels_strategy": {
-      "hook": "first 3 sec strategy",
-      "length": "15-30s",
-      "style": "ugc/polished"
-    }
+    "daily_budget": ${Math.round(monthlyBudget / 30)},
+    "recommended_formats": ["formát1", "formát2"]
   },
   "ad_copy": {
-    "primary_texts": [
-      {"text": "ad text in ${langFull}", "angle": "benefit"}
-    ],
-    "headlines": [
-      {"text": "headline in ${langFull}", "angle": "urgency"}
-    ],
-    "descriptions": ["desc1", "desc2"],
-    "ctas": ["Shop Now", "Learn More"]
+    "headlines": ["headline1 ${langMap[language]}", "headline2", "headline3"],
+    "primary_texts": ["text reklamy 1 ${langMap[language]}", "text reklamy 2"],
+    "descriptions": ["popis1", "popis2"],
+    "ctas": ["Learn More", "Shop Now"]
   },
   "creative_concepts": [
     {
-      "name": "Concept 1",
-      "format": "video/image/carousel",
-      "description": "visual concept",
-      "hook": "first 3 seconds",
-      "script": "full script if video"
+      "name": "Koncept 1",
+      "format": "image/video/carousel",
+      "description": "Popis vizuálu",
+      "image_prompt": "Detailní prompt pro generování obrázku v angličtině"
     }
   ],
   "hashtags": ["hashtag1", "hashtag2"],
-  "campaign_settings": {
-    "objective": "conversions/traffic/awareness",
-    "bidding": "lowest_cost/cost_cap",
-    "daily_budget": ${Math.round(monthlyBudget / 30)},
-    "optimization_event": "purchase/lead/link_click"
-  },
-  "testing_plan": {
-    "week_1": "what to test",
-    "week_2": "what to test",
-    "week_4": "optimization focus"
-  },
-  "expert_notes": {
-    "project_manager": "key insight",
-    "marketing": "key insight",
-    "facebook": "key insight",
-    "instagram": "key insight",
-    "ppc": "key insight"
-  }
-}
-\`\`\``,
-      0.2
-    );
+  "recommendations": [
+    "Konkrétní doporučení 1",
+    "Konkrétní doporučení 2"
+  ]
+}`
+      }],
+    });
 
-    // Parse JSON with multiple fallback strategies
-    let result = null;
-    let parseError = null;
+    const analysisText = analysisResponse.content[0].type === "text"
+      ? analysisResponse.content[0].text
+      : "";
 
+    console.log("📊 Fáze 3: Parsování výsledků...");
+
+    // Parse JSON
+    let result;
     try {
-      // Try multiple regex patterns
-      const patterns = [
-        /```json\n([\s\S]*?)\n```/,
-        /```json([\s\S]*?)```/,
-        /```\n([\s\S]*?)\n```/,
-        /\{[\s\S]*\}/,
-      ];
-
-      for (const pattern of patterns) {
-        const match = finalOutput.match(pattern);
-        if (match) {
-          const jsonStr = match[1] || match[0];
-          try {
-            result = JSON.parse(jsonStr.trim());
-            break;
-          } catch {
-            continue;
-          }
-        }
+      // Zkusit najít JSON v odpovědi
+      const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        result = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error("No JSON found");
       }
-    } catch (e) {
-      parseError = e;
-      console.error("JSON parse error:", e);
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      // Vrátit raw text jako fallback
+      return NextResponse.json({
+        success: true,
+        data: {
+          executive_summary: "Analýza dokončena, ale nepodařilo se parsovat strukturovaná data.",
+          raw_analysis: analysisText,
+        },
+        metadata: {
+          websiteAnalyzed: websiteUrl,
+          competitorsAnalyzed: competitors.length,
+          language,
+          processingTime: Date.now() - startTime,
+          parseError: true,
+        },
+      });
     }
 
-    console.log("✅ Multi-agent Meta Ads analysis complete!");
+    console.log(`✅ Analýza dokončena za ${Date.now() - startTime}ms`);
 
-    // Return results even if JSON parsing failed - include raw outputs
     return NextResponse.json({
       success: true,
-      data: result || {
-        strategy: { note: "JSON parsing failed, see agentOutputs for full results" },
-        ad_copy: { note: "See finalAds in agentOutputs" },
-      },
-      collaboration: {
-        phases: [
-          "Data Gathering",
-          "PM Strategic Brief",
-          "Parallel Specialist Work (4 agents)",
-          "Cross-Review",
-          "Final Ad Creation",
-          "JSON Compilation",
-        ],
-        agents: [
-          "Project Manager",
-          "Marketing Strategist",
-          "Facebook Ads Expert",
-          "Instagram Ads Expert",
-          "PPC Specialist",
-        ],
-        totalApiCalls: 8,
-      },
-      agentOutputs: {
-        pmBrief,
-        marketing: marketingDraft,
-        facebook: facebookDraft,
-        instagram: instagramDraft,
-        ppc: ppcDraft,
-        crossReview,
-        finalAds,
-        finalJson: finalOutput,
-      },
+      data: result,
       metadata: {
         websiteAnalyzed: websiteUrl,
         competitorsAnalyzed: competitors.length,
         language,
         platform: targetPlatform,
         budget: monthlyBudget,
-        jsonParsed: result !== null,
-        parseError: parseError ? String(parseError) : null,
+        processingTime: Date.now() - startTime,
       },
     });
+
   } catch (error: any) {
-    console.error("❌ Meta Ads analysis error:", error);
+    console.error("❌ Meta Ads analýza error:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      {
+        success: false,
+        error: error.message || "Neznámá chyba",
+        details: error.toString(),
+      },
       { status: 500 }
     );
   }
