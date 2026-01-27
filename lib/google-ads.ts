@@ -423,8 +423,8 @@ export async function createSearchCampaign(params: {
     };
 
     const response = await customer.mutateResources([
-      budgetOperation,
-      campaignOperation,
+      budgetOperation as any,
+      campaignOperation as any,
     ]);
 
     return {
