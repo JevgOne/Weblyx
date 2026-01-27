@@ -150,37 +150,58 @@ ${dataContext}
 
 Vrať POUZE tento JSON (bez markdown bloků):
 {
-  "executive_summary": "Krátké shrnutí situace a hlavní doporučení",
-  "target_audience": {
-    "demographics": "Věk, pohlaví, lokace",
-    "interests": ["zájem1", "zájem2", "zájem3"],
-    "behaviors": ["chování1", "chování2"]
-  },
   "strategy": {
-    "campaign_objective": "doporučený cíl kampaně",
+    "target_audience": "Detailní popis cílové skupiny - věk, pohlaví, zájmy, chování",
+    "unique_value_proposition": "Hlavní hodnota a důvod proč koupit/kontaktovat",
     "budget_split": {"facebook": 60, "instagram": 40},
-    "daily_budget": ${Math.round(monthlyBudget / 30)},
-    "recommended_formats": ["formát1", "formát2"]
+    "campaign_objective": "doporučený cíl kampaně",
+    "daily_budget": ${Math.round(monthlyBudget / 30)}
   },
   "ad_copy": {
-    "headlines": ["headline1 ${langMap[language]}", "headline2", "headline3"],
-    "primary_texts": ["text reklamy 1 ${langMap[language]}", "text reklamy 2"],
-    "descriptions": ["popis1", "popis2"],
-    "ctas": ["Learn More", "Shop Now"]
+    "primary_texts": [
+      {"text": "Hlavní text reklamy ${langMap[language]} - max 125 znaků", "angle": "benefit"},
+      {"text": "Druhý text reklamy ${langMap[language]}", "angle": "urgency"},
+      {"text": "Třetí text reklamy ${langMap[language]}", "angle": "social-proof"}
+    ],
+    "headlines": [
+      {"text": "Headline 1 ${langMap[language]}"},
+      {"text": "Headline 2 ${langMap[language]}"},
+      {"text": "Headline 3 ${langMap[language]}"}
+    ],
+    "descriptions": ["Krátký popis 1", "Krátký popis 2"],
+    "ctas": ["Learn More", "Contact Us"]
   },
   "creative_concepts": [
     {
-      "name": "Koncept 1",
-      "format": "image/video/carousel",
-      "description": "Popis vizuálu",
-      "image_prompt": "Detailní prompt pro generování obrázku v angličtině"
+      "name": "Název konceptu 1",
+      "format": "video",
+      "description": "Detailní popis vizuálu/videa",
+      "hook": "První 3 sekundy - co zaujme",
+      "script": "Celý scénář: 0-3s: ..., 3-10s: ..., 10-15s: CTA",
+      "image_prompt": "Detailed English prompt for AI image generation"
+    },
+    {
+      "name": "Název konceptu 2",
+      "format": "carousel",
+      "description": "Popis carousel reklamy",
+      "hook": "Úvodní hook",
+      "script": "Slide 1: ..., Slide 2: ..., Slide 3: ..."
+    },
+    {
+      "name": "Název konceptu 3",
+      "format": "image",
+      "description": "Popis statického obrázku",
+      "hook": "Hlavní sdělení",
+      "image_prompt": "Detailed English prompt for AI image generation"
     }
   ],
-  "hashtags": ["hashtag1", "hashtag2"],
-  "recommendations": [
-    "Konkrétní doporučení 1",
-    "Konkrétní doporučení 2"
-  ]
+  "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5"],
+  "expert_notes": {
+    "project_manager": "Strategické doporučení a hlavní insight",
+    "marketing": "Tip pro messaging a positioning",
+    "facebook": "Specifické doporučení pro Facebook",
+    "instagram": "Specifické doporučení pro Instagram"
+  }
 }`
       }],
     });
