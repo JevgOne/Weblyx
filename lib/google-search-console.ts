@@ -1,12 +1,29 @@
 import { google } from "googleapis";
 import path from "path";
+import fs from "fs";
+
+// Get credentials from env or file
+function getCredentials() {
+  // First try environment variable (for Vercel)
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+  }
+
+  // Fallback to file (for local development)
+  const keyFilePath = path.join(process.cwd(), "service-account-key.json");
+  if (fs.existsSync(keyFilePath)) {
+    return JSON.parse(fs.readFileSync(keyFilePath, "utf-8"));
+  }
+
+  throw new Error("No Google Service Account credentials found");
+}
 
 // Initialize Service Account authentication
 function getServiceAccountAuth() {
-  const keyFilePath = path.join(process.cwd(), "service-account-key.json");
+  const credentials = getCredentials();
 
   const auth = new google.auth.GoogleAuth({
-    keyFile: keyFilePath,
+    credentials,
     scopes: [
       "https://www.googleapis.com/auth/webmasters.readonly",
     ],

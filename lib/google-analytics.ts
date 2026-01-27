@@ -1,16 +1,33 @@
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
 import { google } from "googleapis";
 import path from "path";
+import fs from "fs";
 
 // Google Analytics 4 Configuration
 const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID!;
 
+// Get credentials from env or file
+function getCredentials() {
+  // First try environment variable (for Vercel)
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+  }
+
+  // Fallback to file (for local development)
+  const keyFilePath = path.join(process.cwd(), "service-account-key.json");
+  if (fs.existsSync(keyFilePath)) {
+    return JSON.parse(fs.readFileSync(keyFilePath, "utf-8"));
+  }
+
+  throw new Error("No Google Service Account credentials found");
+}
+
 // Initialize Service Account authentication
 function getServiceAccountAuth() {
-  const keyFilePath = path.join(process.cwd(), "service-account-key.json");
+  const credentials = getCredentials();
 
   const auth = new google.auth.GoogleAuth({
-    keyFile: keyFilePath,
+    credentials,
     scopes: [
       "https://www.googleapis.com/auth/analytics.readonly",
     ],
@@ -21,10 +38,10 @@ function getServiceAccountAuth() {
 
 // Initialize GA4 client with Service Account
 export function getGA4Client() {
-  const auth = getServiceAccountAuth();
+  const credentials = getCredentials();
 
   return new BetaAnalyticsDataClient({
-    auth: auth as any,
+    credentials,
   });
 }
 

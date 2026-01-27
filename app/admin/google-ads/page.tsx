@@ -66,6 +66,12 @@ import {
   Briefcase,
   Copy,
   Check,
+  BarChart3,
+  Clock,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Globe,
 } from "lucide-react";
 
 interface Campaign {
@@ -94,6 +100,59 @@ interface Keyword {
   avgCpc: number;
   cost: number;
   conversions: number;
+}
+
+interface GA4Data {
+  summary: {
+    totalUsers: number;
+    totalSessions: number;
+    totalPageViews: number;
+    avgBounceRate: number;
+    avgSessionDuration: number;
+    totalConversions: number;
+  };
+  topPages: Array<{
+    path: string;
+    title: string;
+    pageViews: number;
+    avgDuration: number;
+    bounceRate: number;
+  }>;
+  trafficSources: Array<{
+    source: string;
+    sessions: number;
+    users: number;
+    conversions: number;
+  }>;
+  devices: Array<{
+    device: string;
+    sessions: number;
+    users: number;
+    bounceRate: number;
+  }>;
+}
+
+interface SearchConsoleData {
+  summary: {
+    totalClicks: number;
+    totalImpressions: number;
+    avgCtr: number;
+    avgPosition: number;
+  };
+  topQueries: Array<{
+    query: string;
+    clicks: number;
+    impressions: number;
+    ctr: number;
+    position: number;
+  }>;
+  topPages: Array<{
+    page: string;
+    clicks: number;
+    impressions: number;
+    ctr: number;
+    position: number;
+  }>;
 }
 
 interface AnalysisResult {
@@ -143,7 +202,18 @@ export default function GoogleAdsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [keywords, setKeywords] = useState<Keyword[]>([]);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState("campaigns");
+  const [activeTab, setActiveTab] = useState("ads");
+  const [dateRange, setDateRange] = useState("30");
+
+  // GA4 state
+  const [ga4Data, setGa4Data] = useState<GA4Data | null>(null);
+  const [ga4Error, setGa4Error] = useState<string | null>(null);
+  const [ga4Connected, setGa4Connected] = useState(false);
+
+  // Search Console state
+  const [gscData, setGscData] = useState<SearchConsoleData | null>(null);
+  const [gscError, setGscError] = useState<string | null>(null);
+  const [gscConnected, setGscConnected] = useState(false);
 
   // Create campaign state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -173,28 +243,62 @@ export default function GoogleAdsPage() {
       setRefreshing(true);
       setError(null);
 
+      // Fetch Google Ads data
       const testRes = await fetch("/api/google-ads/test");
       const testData = await testRes.json();
 
-      if (!testData.success) {
+      if (testData.success) {
+        setConnected(true);
+        setCustomerInfo(testData.data);
+
+        const [campaignsRes, keywordsRes] = await Promise.all([
+          fetch("/api/google-ads/campaigns"),
+          fetch("/api/google-ads/keywords"),
+        ]);
+
+        const campaignsData = await campaignsRes.json();
+        const keywordsData = await keywordsRes.json();
+
+        if (campaignsData.success) setCampaigns(campaignsData.data || []);
+        if (keywordsData.success) setKeywords(keywordsData.data || []);
+      } else {
         setConnected(false);
-        setError(testData.error || "Connection failed");
-        return;
+        setError(testData.error || "Google Ads connection failed");
       }
 
-      setConnected(true);
-      setCustomerInfo(testData.data);
+      // Fetch GA4 data
+      try {
+        const ga4Res = await fetch(`/api/analytics/overview?startDate=${dateRange}daysAgo&endDate=today`);
+        const ga4Json = await ga4Res.json();
+        if (ga4Json.success) {
+          setGa4Data(ga4Json.data);
+          setGa4Connected(true);
+          setGa4Error(null);
+        } else {
+          setGa4Connected(false);
+          setGa4Error(ga4Json.error);
+        }
+      } catch (err: any) {
+        setGa4Connected(false);
+        setGa4Error(err.message);
+      }
 
-      const [campaignsRes, keywordsRes] = await Promise.all([
-        fetch("/api/google-ads/campaigns"),
-        fetch("/api/google-ads/keywords"),
-      ]);
-
-      const campaignsData = await campaignsRes.json();
-      const keywordsData = await keywordsRes.json();
-
-      if (campaignsData.success) setCampaigns(campaignsData.data || []);
-      if (keywordsData.success) setKeywords(keywordsData.data || []);
+      // Fetch Search Console data
+      try {
+        const gscRes = await fetch(`/api/search-console/overview?days=${dateRange}`);
+        const gscJson = await gscRes.json();
+        if (gscJson.success) {
+          setGscData(gscJson.data);
+          setGscConnected(true);
+          setGscError(null);
+        } else {
+          setGscConnected(false);
+          setGscError(gscJson.error);
+        }
+      } catch (err: any) {
+        setGscConnected(false);
+        setGscError(err.message);
+      }
     } catch (err) {
       console.error("Error fetching data:", err);
       setError("Failed to fetch data");
@@ -206,7 +310,7 @@ export default function GoogleAdsPage() {
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user]);
+  }, [user, dateRange]);
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }).format(value);
@@ -214,6 +318,21 @@ export default function GoogleAdsPage() {
   const formatNumber = (value: number) => new Intl.NumberFormat("cs-CZ").format(value);
 
   const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
+  const formatPercentDirect = (value: number) => `${value.toFixed(2)}%`;
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const getDeviceIcon = (device: string) => {
+    switch (device.toLowerCase()) {
+      case "desktop": return <Monitor className="h-4 w-4" />;
+      case "mobile": return <Smartphone className="h-4 w-4" />;
+      case "tablet": return <Tablet className="h-4 w-4" />;
+      default: return <Globe className="h-4 w-4" />;
+    }
+  };
 
   const handleToggleCampaign = async (campaignId: string, currentStatus: string) => {
     const newStatus = currentStatus === "ENABLED" ? "PAUSED" : "ENABLED";

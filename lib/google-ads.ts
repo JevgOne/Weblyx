@@ -293,7 +293,7 @@ export async function updateCampaignStatus(
 
     return {
       success: true,
-      resourceName: response.results[0]?.resource_name,
+      resourceName: response.mutate_operation_responses?.[0]?.campaign_result?.resource_name,
     };
   } catch (error: any) {
     console.error("Error updating campaign status:", error);
@@ -326,7 +326,7 @@ export async function updateCampaignBudget(
 
     return {
       success: true,
-      resourceName: response.results[0]?.resource_name,
+      resourceName: response.mutate_operation_responses?.[0]?.campaign_budget_result?.resource_name,
     };
   } catch (error: any) {
     console.error("Error updating campaign budget:", error);
@@ -429,8 +429,8 @@ export async function createSearchCampaign(params: {
 
     return {
       success: true,
-      budgetResourceName: response.results[0]?.resource_name,
-      campaignResourceName: response.results[1]?.resource_name,
+      budgetResourceName: response.mutate_operation_responses?.[0]?.campaign_budget_result?.resource_name,
+      campaignResourceName: response.mutate_operation_responses?.[1]?.campaign_result?.resource_name,
     };
   } catch (error: any) {
     console.error("Error creating campaign:", error);
@@ -466,7 +466,7 @@ export async function createAdGroup(params: {
 
     return {
       success: true,
-      resourceName: response.results[0]?.resource_name,
+      resourceName: response.mutate_operation_responses?.[0]?.ad_group_result?.resource_name,
     };
   } catch (error: any) {
     console.error("Error creating ad group:", error);
@@ -504,7 +504,7 @@ export async function addKeywords(params: {
 
     return {
       success: true,
-      results: response.results.map((r) => r.resource_name),
+      results: response.mutate_operation_responses?.map((r) => r.ad_group_criterion_result?.resource_name) || [],
     };
   } catch (error: any) {
     console.error("Error adding keywords:", error);
@@ -537,7 +537,7 @@ export async function updateKeywordStatus(
 
     return {
       success: true,
-      resourceName: response.results[0]?.resource_name,
+      resourceName: response.mutate_operation_responses?.[0]?.ad_group_criterion_result?.resource_name,
     };
   } catch (error: any) {
     console.error("Error updating keyword status:", error);
