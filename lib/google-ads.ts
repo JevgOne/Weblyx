@@ -353,18 +353,18 @@ export async function getCampaignDetails(campaignId: string) {
       WHERE campaign.id = ${campaignId}
     `);
 
-    if (!campaign) {
+    if (!campaign || !campaign.campaign || !campaign.campaign_budget) {
       throw new Error("Campaign not found");
     }
 
     return {
-      id: campaign.campaign.id,
-      name: campaign.campaign.name,
-      status: campaign.campaign.status,
-      channelType: campaign.campaign.advertising_channel_type,
-      budgetId: campaign.campaign_budget.id,
-      budgetAmount: campaign.campaign_budget.amount_micros / 1000000,
-      budgetDeliveryMethod: campaign.campaign_budget.delivery_method,
+      id: campaign.campaign.id!,
+      name: campaign.campaign.name!,
+      status: campaign.campaign.status!,
+      channelType: campaign.campaign.advertising_channel_type!,
+      budgetId: campaign.campaign_budget.id!,
+      budgetAmount: (campaign.campaign_budget.amount_micros || 0) / 1000000,
+      budgetDeliveryMethod: campaign.campaign_budget.delivery_method!,
     };
   } catch (error: any) {
     console.error("Error fetching campaign details:", error);
