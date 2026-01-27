@@ -12,7 +12,7 @@ const anthropic = new Anthropic({
 });
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 120;
+export const maxDuration = 300; // 5 minutes for multi-agent collaboration
 
 interface AnalysisRequest {
   websiteUrl: string;
@@ -486,30 +486,45 @@ Output ONLY valid JSON:
       0.2
     );
 
-    // Parse JSON
-    let result;
+    // Parse JSON with multiple fallback strategies
+    let result = null;
+    let parseError = null;
+
     try {
-      const jsonMatch =
-        finalOutput.match(/```json\n([\s\S]*?)\n```/) ||
-        finalOutput.match(/```\n([\s\S]*?)\n```/) ||
-        finalOutput.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch
-        ? jsonMatch[1] || jsonMatch[0]
-        : finalOutput;
-      result = JSON.parse(jsonStr);
+      // Try multiple regex patterns
+      const patterns = [
+        /```json\n([\s\S]*?)\n```/,
+        /```json([\s\S]*?)```/,
+        /```\n([\s\S]*?)\n```/,
+        /\{[\s\S]*\}/,
+      ];
+
+      for (const pattern of patterns) {
+        const match = finalOutput.match(pattern);
+        if (match) {
+          const jsonStr = match[1] || match[0];
+          try {
+            result = JSON.parse(jsonStr.trim());
+            break;
+          } catch {
+            continue;
+          }
+        }
+      }
     } catch (e) {
+      parseError = e;
       console.error("JSON parse error:", e);
-      return NextResponse.json(
-        { success: false, error: "Failed to parse output", raw: finalOutput },
-        { status: 500 }
-      );
     }
 
     console.log("✅ Multi-agent Meta Ads analysis complete!");
 
+    // Return results even if JSON parsing failed - include raw outputs
     return NextResponse.json({
       success: true,
-      data: result,
+      data: result || {
+        strategy: { note: "JSON parsing failed, see agentOutputs for full results" },
+        ad_copy: { note: "See finalAds in agentOutputs" },
+      },
       collaboration: {
         phases: [
           "Data Gathering",
@@ -529,11 +544,14 @@ Output ONLY valid JSON:
         totalApiCalls: 8,
       },
       agentOutputs: {
-        pmBrief: pmBrief.slice(0, 1000) + "...",
-        marketing: marketingDraft.slice(0, 800) + "...",
-        facebook: facebookDraft.slice(0, 800) + "...",
-        instagram: instagramDraft.slice(0, 800) + "...",
-        ppc: ppcDraft.slice(0, 800) + "...",
+        pmBrief,
+        marketing: marketingDraft,
+        facebook: facebookDraft,
+        instagram: instagramDraft,
+        ppc: ppcDraft,
+        crossReview,
+        finalAds,
+        finalJson: finalOutput,
       },
       metadata: {
         websiteAnalyzed: websiteUrl,
@@ -541,6 +559,8 @@ Output ONLY valid JSON:
         language,
         platform: targetPlatform,
         budget: monthlyBudget,
+        jsonParsed: result !== null,
+        parseError: parseError ? String(parseError) : null,
       },
     });
   } catch (error: any) {

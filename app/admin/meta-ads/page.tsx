@@ -318,6 +318,9 @@ export default function MetaAdsPage() {
     }, 5000);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 min timeout
+
       const res = await fetch("/api/meta-ads/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -328,7 +331,10 @@ export default function MetaAdsPage() {
             .map((c) => c.trim())
             .filter(Boolean),
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
       const data = await res.json();
 
       clearInterval(progressInterval);
@@ -336,13 +342,20 @@ export default function MetaAdsPage() {
       if (data.success) {
         setAnalysisProgress(100);
         setAnalysisStep("✅ Hotovo!");
-        setAnalysisResult(data.data);
+        // Use agentOutputs if structured data failed
+        setAnalysisResult(data.data?.strategy?.note ? data.agentOutputs : data.data);
+        console.log("Full analysis response:", data);
       } else {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${data.error || "Unknown error"}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       clearInterval(progressInterval);
-      alert("Analysis failed");
+      if (err.name === 'AbortError') {
+        alert("Analýza trvala příliš dlouho (timeout). Zkuste to znovu.");
+      } else {
+        alert(`Analysis failed: ${err.message || "Unknown error"}`);
+        console.error("Analysis error:", err);
+      }
     } finally {
       setAnalyzing(false);
     }
