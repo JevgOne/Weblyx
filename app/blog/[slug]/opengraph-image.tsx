@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 import { getBlogPostBySlug } from '@/lib/turso/blog';
 
 // Route segment config
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Image metadata
 export const alt = 'Weblyx Blog';
