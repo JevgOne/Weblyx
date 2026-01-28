@@ -169,15 +169,17 @@ S čím ti můžu pomoct?
     setSending(true);
 
     try {
-      // For now, use Meta Ads analyze endpoint as a proxy
-      // In production, this would be a dedicated AI chat endpoint
-      const res = await fetch("/api/meta-ads/analyze", {
+      // Use dedicated AI chat endpoint
+      const config = JSON.parse(localStorage.getItem("weblyx-project-config") || "{}");
+      const res = await fetch("/api/ai-assistant/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          config: JSON.parse(localStorage.getItem("weblyx-project-config") || "{}"),
-          analysisType: "chat",
-          userMessage: text,
+          message: text,
+          context: {
+            connections,
+            config,
+          },
         }),
       });
 
@@ -187,7 +189,7 @@ S čím ti můžu pomoct?
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.success
-          ? formatAnalysisResponse(data.data)
+          ? data.response
           : `Došlo k chybě: ${data.error}. Zkus to prosím znovu.`,
         timestamp: new Date(),
       };
