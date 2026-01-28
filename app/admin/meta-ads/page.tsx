@@ -98,33 +98,26 @@ interface Campaign {
 }
 
 interface AnalysisResult {
+  business_analysis?: {
+    what_they_sell: string;
+    target_customer: string;
+    main_pain_point: string;
+    unique_advantage: string;
+    price_positioning: string;
+  };
   strategy: {
     campaign_objective?: string;
     target_audience: string;
     unique_value_proposition: string;
-    key_messages?: string[];
-    content_pillars?: string[];
     budget_split: { facebook: number; instagram: number };
     daily_budget?: number;
-    recommended_audiences?: Array<{ name: string; targeting: string; why: string }>;
-    funnel_strategy?: {
-      tofu?: string;
-      mofu?: string;
-      bofu?: string;
-      cold?: string;
-      warm?: string;
-      hot?: string;
-    };
-  };
-  facebook_ads?: {
-    recommended_formats: string[];
-    placements: string[];
-    audience_targeting: any;
-  };
-  instagram_ads?: {
-    content_style: string;
-    recommended_formats: string[];
-    reels_strategy: any;
+    recommended_audiences?: Array<{
+      name: string;
+      size?: string;
+      interests?: string[];
+      behaviors?: string[];
+      why: string;
+    }>;
   };
   ad_copy: {
     primary_texts: Array<{ text: string; angle: string }>;
@@ -136,15 +129,18 @@ interface AnalysisResult {
     name: string;
     format: string;
     description: string;
+    duration?: string;
     hook?: string;
     script?: string;
     text_overlay?: string;
-    music_style?: string;
-    image_prompt?: string;
+    visual_style?: string;
+    audio?: string;
+    thumbnail?: string;
+    slides?: Array<{ headline: string; visual: string; text: string }>;
+    dimensions?: string;
+    ai_prompt?: string;
   }>;
   hashtags: string[];
-  campaign_settings?: any;
-  testing_plan?: any;
   expert_notes: {
     project_manager: string;
     marketing: string;
@@ -158,7 +154,6 @@ interface AnalysisResult {
     step1_campaign: {
       name: string;
       objective: string;
-      special_ad_categories: string;
       budget_type: string;
       budget_amount: number;
       bid_strategy: string;
@@ -172,8 +167,7 @@ interface AnalysisResult {
         age_max: number;
         genders: string;
         detailed_targeting: string[];
-        custom_audiences: string;
-        lookalike: string;
+        exclusions?: string[];
       };
       placements: string;
       schedule: string;
@@ -191,6 +185,10 @@ interface AnalysisResult {
       week2: string;
       week4: string;
     };
+  };
+  ab_test_plan?: {
+    test1: { what: string; variants: string[]; success_metric: string };
+    test2: { what: string; variants: string[]; success_metric: string };
   };
 }
 
@@ -704,6 +702,36 @@ export default function MetaAdsPage() {
                     </div>
                   ) : (
                     <div className="space-y-6 py-4">
+                      {/* Business Analysis */}
+                      {analysisResult.business_analysis && (
+                        <Card className="border-purple-200 bg-purple-50/50">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Lightbulb className="h-5 w-5 text-purple-600" />
+                              Analýza byznysu
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="grid md:grid-cols-2 gap-3 text-sm">
+                            <div className="p-2 bg-white rounded">
+                              <strong className="text-purple-700">Co prodávají:</strong>
+                              <p>{analysisResult.business_analysis.what_they_sell}</p>
+                            </div>
+                            <div className="p-2 bg-white rounded">
+                              <strong className="text-purple-700">Ideální zákazník:</strong>
+                              <p>{analysisResult.business_analysis.target_customer}</p>
+                            </div>
+                            <div className="p-2 bg-white rounded">
+                              <strong className="text-purple-700">Hlavní problém:</strong>
+                              <p>{analysisResult.business_analysis.main_pain_point}</p>
+                            </div>
+                            <div className="p-2 bg-white rounded">
+                              <strong className="text-purple-700">Konkurenční výhoda:</strong>
+                              <p>{analysisResult.business_analysis.unique_advantage}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
                       {/* Strategy Summary */}
                       <Card className="border-blue-200 bg-blue-50/50">
                         <CardHeader>
@@ -823,35 +851,89 @@ export default function MetaAdsPage() {
                       {/* Creative Concepts */}
                       <Card>
                         <CardHeader>
-                          <CardTitle className="text-lg">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <PenTool className="h-5 w-5" />
                             Kreativní koncepty
                           </CardTitle>
+                          <CardDescription>
+                            Detailní briefingy pro grafika/kameramana
+                          </CardDescription>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
                             {analysisResult.creative_concepts?.map((concept, i) => (
                               <div
                                 key={i}
-                                className="p-4 border rounded-lg space-y-2"
+                                className="p-4 border rounded-lg space-y-3"
                               >
                                 <div className="flex items-center gap-2">
-                                  <Badge>{concept.format}</Badge>
-                                  <span className="font-medium">
+                                  <Badge variant={
+                                    concept.format === "video" ? "default" :
+                                    concept.format === "carousel" ? "secondary" : "outline"
+                                  }>
+                                    {concept.format}
+                                  </Badge>
+                                  <span className="font-semibold">
                                     {concept.name}
                                   </span>
+                                  {concept.duration && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {concept.duration}
+                                    </Badge>
+                                  )}
                                 </div>
                                 <p className="text-sm text-muted-foreground">
                                   {concept.description}
                                 </p>
                                 {concept.hook && (
-                                  <p className="text-sm">
-                                    <strong>Hook:</strong> {concept.hook}
-                                  </p>
+                                  <div className="p-2 bg-yellow-50 rounded text-sm">
+                                    <strong className="text-yellow-700">Hook (první 3s):</strong> {concept.hook}
+                                  </div>
                                 )}
                                 {concept.script && (
-                                  <p className="text-sm">
-                                    <strong>Script:</strong> {concept.script}
-                                  </p>
+                                  <div className="p-2 bg-blue-50 rounded text-sm">
+                                    <strong className="text-blue-700">Scénář:</strong>
+                                    <p className="whitespace-pre-wrap">{concept.script}</p>
+                                  </div>
+                                )}
+                                {concept.slides && (
+                                  <div className="space-y-2">
+                                    <strong className="text-sm">Slides:</strong>
+                                    <div className="grid grid-cols-5 gap-2">
+                                      {concept.slides.map((slide, si) => (
+                                        <div key={si} className="p-2 bg-gray-50 rounded text-xs">
+                                          <p className="font-semibold">{slide.headline}</p>
+                                          <p className="text-muted-foreground">{slide.visual}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {concept.text_overlay && (
+                                  <div className="p-2 bg-green-50 rounded text-sm">
+                                    <strong className="text-green-700">Text na obrázku:</strong> {concept.text_overlay}
+                                  </div>
+                                )}
+                                {concept.visual_style && (
+                                  <p className="text-sm"><strong>Vizuální styl:</strong> {concept.visual_style}</p>
+                                )}
+                                {concept.audio && (
+                                  <p className="text-sm"><strong>Audio:</strong> {concept.audio}</p>
+                                )}
+                                {concept.ai_prompt && (
+                                  <div className="p-2 bg-purple-50 rounded text-sm">
+                                    <strong className="text-purple-700">AI Prompt (Midjourney/DALL-E):</strong>
+                                    <p className="font-mono text-xs mt-1">{concept.ai_prompt}</p>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="mt-1 h-6 text-xs"
+                                      onClick={() => copyToClipboard(concept.ai_prompt!, `ai-prompt-${i}`)}
+                                    >
+                                      {copiedItem === `ai-prompt-${i}` ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                      Kopírovat
+                                    </Button>
+                                  </div>
                                 )}
                               </div>
                             ))}
