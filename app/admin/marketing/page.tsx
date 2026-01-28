@@ -480,9 +480,9 @@ export default function MarketingOverviewPage() {
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                     }}
-                    formatter={(value: number) =>
+                    formatter={(value) =>
                       chartMetric === "spend"
-                        ? [formatCurrency(value), ""]
+                        ? [formatCurrency(Number(value) || 0), ""]
                         : [value, ""]
                     }
                   />
