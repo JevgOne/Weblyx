@@ -98,6 +98,124 @@ interface Campaign {
 }
 
 interface AnalysisResult {
+  executive_summary?: string;
+  raw_analysis?: string;
+
+  alerts?: Array<{
+    level: "critical" | "warning" | "info";
+    message: string;
+    action: string;
+  }>;
+
+  performance?: {
+    current: {
+      spend: number;
+      conversions: number;
+      cpa: number;
+      roas: number;
+      ctr: number;
+    };
+    vs_target: {
+      cpa_status: "ok" | "warning" | "critical";
+      roas_status: "ok" | "warning" | "critical";
+      trend: "improving" | "stable" | "declining";
+    };
+  };
+
+  strategy?: {
+    target_audience?: {
+      primary_persona?: {
+        name: string;
+        demographics: string;
+        pain_points: string[];
+        motivations: string[];
+      };
+      meta_targeting?: {
+        interests: string[];
+        behaviors: string[];
+        lookalike_source: string;
+      };
+    };
+    unique_value_proposition?: string;
+    messaging_pillars?: string[];
+    funnel_allocation?: {
+      tofu_percent: number;
+      mofu_percent: number;
+      bofu_percent: number;
+    };
+  };
+
+  campaigns?: Array<{
+    name: string;
+    objective: string;
+    daily_budget: number;
+    audience: {
+      type: string;
+      targeting: string;
+      estimated_size: string;
+    };
+    status: "new" | "optimize" | "scale" | "pause";
+  }>;
+
+  ad_copy?: {
+    primary_texts: Array<{ text: string; angle: string }>;
+    headlines: Array<{ text: string }>;
+    descriptions: string[];
+    ctas: string[];
+  };
+
+  creative_concepts?: Array<{
+    name: string;
+    format: string;
+    description: string;
+    hook?: string;
+    script?: string;
+    specs?: {
+      dimensions: string;
+      duration?: string;
+    };
+    ai_image_prompt?: string;
+  }>;
+
+  optimization_actions?: Array<{
+    priority: "critical" | "high" | "medium" | "low";
+    action: string;
+    reason: string;
+    expected_impact: string;
+  }>;
+
+  setup_guide?: {
+    step1_campaign: {
+      name: string;
+      objective: string;
+      budget: number;
+      bid_strategy: string;
+    };
+    step2_adset: {
+      name: string;
+      audience: {
+        locations: string[];
+        age_min: number;
+        age_max: number;
+        interests: string[];
+      };
+      placements: string;
+      optimization: string;
+    };
+    step3_ad: {
+      format: string;
+      text: string;
+      headline: string;
+      cta: string;
+    };
+  };
+
+  next_steps?: Array<{
+    timeframe: string;
+    action: string;
+  }>;
+
+  // Legacy support
   business_analysis?: {
     what_they_sell: string;
     target_customer: string;
@@ -105,43 +223,8 @@ interface AnalysisResult {
     unique_advantage: string;
     price_positioning: string;
   };
-  strategy: {
-    campaign_objective?: string;
-    target_audience: string;
-    unique_value_proposition: string;
-    budget_split: { facebook: number; instagram: number };
-    daily_budget?: number;
-    recommended_audiences?: Array<{
-      name: string;
-      size?: string;
-      interests?: string[];
-      behaviors?: string[];
-      why: string;
-    }>;
-  };
-  ad_copy: {
-    primary_texts: Array<{ text: string; angle: string }>;
-    headlines: Array<{ text: string; angle?: string }>;
-    descriptions: string[];
-    ctas: string[];
-  };
-  creative_concepts: Array<{
-    name: string;
-    format: string;
-    description: string;
-    duration?: string;
-    hook?: string;
-    script?: string;
-    text_overlay?: string;
-    visual_style?: string;
-    audio?: string;
-    thumbnail?: string;
-    slides?: Array<{ headline: string; visual: string; text: string }>;
-    dimensions?: string;
-    ai_prompt?: string;
-  }>;
-  hashtags: string[];
-  expert_notes: {
+  hashtags?: string[];
+  expert_notes?: {
     project_manager: string;
     marketing: string;
     facebook: string;
@@ -150,46 +233,6 @@ interface AnalysisResult {
   };
   quick_wins?: string[];
   common_mistakes?: string[];
-  campaign_setup_guide?: {
-    step1_campaign: {
-      name: string;
-      objective: string;
-      budget_type: string;
-      budget_amount: number;
-      bid_strategy: string;
-    };
-    step2_adset: {
-      name: string;
-      optimization_event: string;
-      audience: {
-        locations: string[];
-        age_min: number;
-        age_max: number;
-        genders: string;
-        detailed_targeting: string[];
-        exclusions?: string[];
-      };
-      placements: string;
-      schedule: string;
-    };
-    step3_ad: {
-      format: string;
-      primary_text: string;
-      headline: string;
-      description: string;
-      cta_button: string;
-      destination: string;
-    };
-    testing_plan: {
-      week1: string;
-      week2: string;
-      week4: string;
-    };
-  };
-  ab_test_plan?: {
-    test1: { what: string; variants: string[]; success_metric: string };
-    test2: { what: string; variants: string[]; success_metric: string };
-  };
 }
 
 export default function MetaAdsPage() {
@@ -219,14 +262,32 @@ export default function MetaAdsPage() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStep, setAnalysisStep] = useState("");
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [analyzeForm, setAnalyzeForm] = useState({
-    websiteUrl: "https://weblyx.cz",
-    competitors: "",
-    language: "cs" as "cs" | "de" | "en",
-    businessGoal: "leads" as "leads" | "traffic" | "sales" | "brand",
+  // Project config (stored in localStorage)
+  const [projectConfig, setProjectConfig] = useState({
+    name: "Weblyx",
+    url: "https://weblyx.cz",
+    type: "services" as "ecommerce" | "services" | "lead_gen",
+    industry: "web_development",
+    averageOrderValue: 7990,
+    grossMargin: 0.7,
+    targetRoas: 3.0,
+    targetCpa: 2500,
     monthlyBudget: 15000,
-    targetPlatform: "both" as "both" | "facebook" | "instagram",
+    language: "cs" as "cs" | "en" | "de",
   });
+
+
+  // Load config from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("weblyx_project_config");
+    if (saved) {
+      try {
+        setProjectConfig(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error loading config:", e);
+      }
+    }
+  }, []);
 
   // Ad Generator state
   const [showGeneratorDialog, setShowGeneratorDialog] = useState(false);
@@ -368,15 +429,15 @@ export default function MetaAdsPage() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 min timeout
 
+      // Save config to localStorage
+      localStorage.setItem("weblyx_project_config", JSON.stringify(projectConfig));
+
       const res = await fetch("/api/meta-ads/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...analyzeForm,
-          competitors: analyzeForm.competitors
-            .split(",")
-            .map((c) => c.trim())
-            .filter(Boolean),
+          config: projectConfig,
+          analysisType: "full",
         }),
         signal: controller.signal,
       });
@@ -512,112 +573,201 @@ export default function MetaAdsPage() {
 
                   {!analysisResult ? (
                     <div className="space-y-6 py-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>URL webu</Label>
-                          <Input
-                            value={analyzeForm.websiteUrl}
-                            onChange={(e) =>
-                              setAnalyzeForm({
-                                ...analyzeForm,
-                                websiteUrl: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Jazyk</Label>
-                          <Select
-                            value={analyzeForm.language}
-                            onValueChange={(v: any) =>
-                              setAnalyzeForm({ ...analyzeForm, language: v })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="cs">Čeština</SelectItem>
-                              <SelectItem value="de">Němčina</SelectItem>
-                              <SelectItem value="en">Angličtina</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
+                      {/* Project Configuration */}
+                      <Card className="border-primary/50 bg-primary/5">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <Briefcase className="h-4 w-4" />
+                            Konfigurace projektu
+                          </CardTitle>
+                          <CardDescription>
+                            Tyto metriky určují cíle a výpočty (AOV, marže, ROAS)
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Název projektu</Label>
+                              <Input
+                                value={projectConfig.name}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    name: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>URL webu</Label>
+                              <Input
+                                value={projectConfig.url}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    url: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
 
-                      <div className="space-y-2">
-                        <Label>Konkurence (oddělené čárkou)</Label>
-                        <Input
-                          placeholder="https://competitor1.cz, https://competitor2.cz"
-                          value={analyzeForm.competitors}
-                          onChange={(e) =>
-                            setAnalyzeForm({
-                              ...analyzeForm,
-                              competitors: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+                          <div className="grid grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <Label>Typ byznysu</Label>
+                              <Select
+                                value={projectConfig.type}
+                                onValueChange={(v: any) =>
+                                  setProjectConfig({ ...projectConfig, type: v })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="ecommerce">E-commerce</SelectItem>
+                                  <SelectItem value="services">Služby</SelectItem>
+                                  <SelectItem value="lead_gen">Lead Gen</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Odvětví</Label>
+                              <Input
+                                value={projectConfig.industry}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    industry: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Jazyk</Label>
+                              <Select
+                                value={projectConfig.language}
+                                onValueChange={(v: any) =>
+                                  setProjectConfig({ ...projectConfig, language: v })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="cs">Čeština</SelectItem>
+                                  <SelectItem value="de">Němčina</SelectItem>
+                                  <SelectItem value="en">Angličtina</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
 
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <Label>Cíl</Label>
-                          <Select
-                            value={analyzeForm.businessGoal}
-                            onValueChange={(v: any) =>
-                              setAnalyzeForm({ ...analyzeForm, businessGoal: v })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="leads">Leady</SelectItem>
-                              <SelectItem value="traffic">Návštěvnost</SelectItem>
-                              <SelectItem value="sales">Prodeje</SelectItem>
-                              <SelectItem value="brand">Brand</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Měsíční rozpočet (CZK)</Label>
-                          <Input
-                            type="number"
-                            value={analyzeForm.monthlyBudget}
-                            onChange={(e) =>
-                              setAnalyzeForm({
-                                ...analyzeForm,
-                                monthlyBudget: parseInt(e.target.value) || 0,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Platforma</Label>
-                          <Select
-                            value={analyzeForm.targetPlatform}
-                            onValueChange={(v: any) =>
-                              setAnalyzeForm({
-                                ...analyzeForm,
-                                targetPlatform: v,
-                              })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="both">FB + IG</SelectItem>
-                              <SelectItem value="facebook">
-                                Jen Facebook
-                              </SelectItem>
-                              <SelectItem value="instagram">
-                                Jen Instagram
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
+                          <div className="grid grid-cols-4 gap-4">
+                            <div className="space-y-2">
+                              <Label>AOV (Kč)</Label>
+                              <Input
+                                type="number"
+                                value={projectConfig.averageOrderValue}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    averageOrderValue: parseInt(e.target.value) || 0,
+                                  })
+                                }
+                              />
+                              <p className="text-xs text-muted-foreground">Průměrná hodnota objednávky</p>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Marže (%)</Label>
+                              <Input
+                                type="number"
+                                value={Math.round(projectConfig.grossMargin * 100)}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    grossMargin: (parseInt(e.target.value) || 0) / 100,
+                                  })
+                                }
+                              />
+                              <p className="text-xs text-muted-foreground">Hrubá marže</p>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Target ROAS</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                value={projectConfig.targetRoas}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    targetRoas: parseFloat(e.target.value) || 0,
+                                  })
+                                }
+                              />
+                              <p className="text-xs text-muted-foreground">Cílová návratnost</p>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Target CPA (Kč)</Label>
+                              <Input
+                                type="number"
+                                value={projectConfig.targetCpa}
+                                onChange={(e) =>
+                                  setProjectConfig({
+                                    ...projectConfig,
+                                    targetCpa: parseInt(e.target.value) || 0,
+                                  })
+                                }
+                              />
+                              <p className="text-xs text-muted-foreground">Cílová cena za konverzi</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Měsíční rozpočet (Kč)</Label>
+                            <Input
+                              type="number"
+                              value={projectConfig.monthlyBudget}
+                              onChange={(e) =>
+                                setProjectConfig({
+                                  ...projectConfig,
+                                  monthlyBudget: parseInt(e.target.value) || 0,
+                                })
+                              }
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              = {Math.round(projectConfig.monthlyBudget / 30)} Kč/den
+                            </p>
+                          </div>
+
+                          {/* Calculated Metrics */}
+                          <div className="p-3 bg-muted rounded-lg">
+                            <p className="text-sm font-medium mb-2">Vypočítané metriky:</p>
+                            <div className="grid grid-cols-3 gap-2 text-sm">
+                              <div>
+                                <span className="text-muted-foreground">Break-even ROAS: </span>
+                                <span className="font-medium">
+                                  {projectConfig.grossMargin > 0
+                                    ? (1 / projectConfig.grossMargin).toFixed(2)
+                                    : "N/A"}x
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Max CPA: </span>
+                                <span className="font-medium">
+                                  {projectConfig.grossMargin > 0
+                                    ? Math.round(projectConfig.averageOrderValue / (1 / projectConfig.grossMargin))
+                                    : "N/A"} Kč
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Denní rozpočet: </span>
+                                <span className="font-medium">{Math.round(projectConfig.monthlyBudget / 30)} Kč</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
 
                       {analyzing && (
                         <div className="space-y-3 p-4 bg-muted rounded-lg">
@@ -633,50 +783,59 @@ export default function MetaAdsPage() {
                       )}
 
                       {/* Agent Cards */}
-                      <div className="grid grid-cols-5 gap-2">
+                      <div className="grid grid-cols-6 gap-2">
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
-                            <Briefcase className="h-4 w-4 text-blue-500" />
-                            <span>PM</span>
+                            <Brain className="h-4 w-4 text-purple-500" />
+                            <span>Orchestrátor</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Strategie
+                            Koordinace
                           </p>
                         </Card>
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
-                            <Megaphone className="h-4 w-4 text-green-500" />
-                            <span>Marketing</span>
+                            <BarChart3 className="h-4 w-4 text-blue-500" />
+                            <span>Analytik</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Messaging
+                            Data
+                          </p>
+                        </Card>
+                        <Card className="p-3">
+                          <div className="flex items-center gap-2 text-sm">
+                            <Target className="h-4 w-4 text-green-500" />
+                            <span>Stratég</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Plán
                           </p>
                         </Card>
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
                             <Facebook className="h-4 w-4 text-blue-600" />
-                            <span>FB Expert</span>
+                            <span>Meta</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Facebook
+                            Ads Expert
                           </p>
                         </Card>
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
-                            <Instagram className="h-4 w-4 text-pink-500" />
-                            <span>IG Expert</span>
+                            <PenTool className="h-4 w-4 text-pink-500" />
+                            <span>Creative</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Instagram
+                            Vizuály
                           </p>
                         </Card>
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
-                            <Target className="h-4 w-4 text-purple-500" />
-                            <span>PPC</span>
+                            <Megaphone className="h-4 w-4 text-orange-500" />
+                            <span>Copywriter</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Optimalizace
+                            Texty
                           </p>
                         </Card>
                       </div>
@@ -702,343 +861,476 @@ export default function MetaAdsPage() {
                     </div>
                   ) : (
                     <div className="space-y-6 py-4">
-                      {/* Business Analysis */}
-                      {analysisResult.business_analysis && (
-                        <Card className="border-purple-200 bg-purple-50/50">
+                      {/* Executive Summary */}
+                      {analysisResult.executive_summary && (
+                        <Card className="border-primary bg-primary/5">
                           <CardHeader className="pb-2">
                             <CardTitle className="text-lg flex items-center gap-2">
-                              <Lightbulb className="h-5 w-5 text-purple-600" />
-                              Analýza byznysu
+                              <Brain className="h-5 w-5 text-primary" />
+                              Executive Summary
                             </CardTitle>
                           </CardHeader>
-                          <CardContent className="grid md:grid-cols-2 gap-3 text-sm">
-                            <div className="p-2 bg-white rounded">
-                              <strong className="text-purple-700">Co prodávají:</strong>
-                              <p>{analysisResult.business_analysis.what_they_sell}</p>
+                          <CardContent>
+                            <p className="text-sm leading-relaxed">{analysisResult.executive_summary}</p>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Alerts */}
+                      {analysisResult.alerts && analysisResult.alerts.length > 0 && (
+                        <div className="space-y-2">
+                          {analysisResult.alerts.map((alert, i) => (
+                            <Card
+                              key={i}
+                              className={`border-l-4 ${
+                                alert.level === "critical"
+                                  ? "border-l-red-500 bg-red-50"
+                                  : alert.level === "warning"
+                                  ? "border-l-yellow-500 bg-yellow-50"
+                                  : "border-l-blue-500 bg-blue-50"
+                              }`}
+                            >
+                              <CardContent className="py-3">
+                                <div className="flex items-start gap-3">
+                                  <span className="text-lg">
+                                    {alert.level === "critical" ? "🔴" : alert.level === "warning" ? "🟡" : "🔵"}
+                                  </span>
+                                  <div>
+                                    <p className="font-medium">{alert.message}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                      <strong>Akce:</strong> {alert.action}
+                                    </p>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Performance vs Targets */}
+                      {analysisResult.performance && (
+                        <Card className="border-blue-200 bg-blue-50/50">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <BarChart3 className="h-5 w-5 text-blue-600" />
+                              Performance vs Targets
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-5 gap-3 text-center">
+                              <div className="p-2 bg-white rounded">
+                                <p className="text-2xl font-bold">{analysisResult.performance.current.spend.toLocaleString()} Kč</p>
+                                <p className="text-xs text-muted-foreground">Spend</p>
+                              </div>
+                              <div className="p-2 bg-white rounded">
+                                <p className="text-2xl font-bold">{analysisResult.performance.current.conversions}</p>
+                                <p className="text-xs text-muted-foreground">Konverze</p>
+                              </div>
+                              <div className={`p-2 rounded ${
+                                analysisResult.performance.vs_target.cpa_status === "ok" ? "bg-green-100" :
+                                analysisResult.performance.vs_target.cpa_status === "warning" ? "bg-yellow-100" : "bg-red-100"
+                              }`}>
+                                <p className="text-2xl font-bold">{analysisResult.performance.current.cpa.toLocaleString()} Kč</p>
+                                <p className="text-xs text-muted-foreground">CPA</p>
+                              </div>
+                              <div className={`p-2 rounded ${
+                                analysisResult.performance.vs_target.roas_status === "ok" ? "bg-green-100" :
+                                analysisResult.performance.vs_target.roas_status === "warning" ? "bg-yellow-100" : "bg-red-100"
+                              }`}>
+                                <p className="text-2xl font-bold">{analysisResult.performance.current.roas.toFixed(2)}x</p>
+                                <p className="text-xs text-muted-foreground">ROAS</p>
+                              </div>
+                              <div className="p-2 bg-white rounded">
+                                <p className="text-2xl font-bold">{(analysisResult.performance.current.ctr * 100).toFixed(2)}%</p>
+                                <p className="text-xs text-muted-foreground">CTR</p>
+                              </div>
                             </div>
-                            <div className="p-2 bg-white rounded">
-                              <strong className="text-purple-700">Ideální zákazník:</strong>
-                              <p>{analysisResult.business_analysis.target_customer}</p>
-                            </div>
-                            <div className="p-2 bg-white rounded">
-                              <strong className="text-purple-700">Hlavní problém:</strong>
-                              <p>{analysisResult.business_analysis.main_pain_point}</p>
-                            </div>
-                            <div className="p-2 bg-white rounded">
-                              <strong className="text-purple-700">Konkurenční výhoda:</strong>
-                              <p>{analysisResult.business_analysis.unique_advantage}</p>
+                            <div className="mt-3 flex items-center justify-center gap-2">
+                              <Badge variant={
+                                analysisResult.performance.vs_target.trend === "improving" ? "default" :
+                                analysisResult.performance.vs_target.trend === "stable" ? "secondary" : "destructive"
+                              }>
+                                {analysisResult.performance.vs_target.trend === "improving" ? "📈 Zlepšuje se" :
+                                 analysisResult.performance.vs_target.trend === "stable" ? "➡️ Stabilní" : "📉 Klesá"}
+                              </Badge>
                             </div>
                           </CardContent>
                         </Card>
                       )}
 
-                      {/* Strategy Summary */}
-                      <Card className="border-blue-200 bg-blue-50/50">
-                        <CardHeader>
-                          <CardTitle className="text-lg flex items-center gap-2">
-                            <Target className="h-5 w-5 text-blue-600" />
-                            Strategie
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          <div>
-                            <Label className="text-xs text-muted-foreground">
-                              Cílová skupina
-                            </Label>
-                            <p>{analysisResult.strategy.target_audience}</p>
-                          </div>
-                          <div>
-                            <Label className="text-xs text-muted-foreground">
-                              Hlavní hodnota
-                            </Label>
-                            <p className="font-medium text-primary">
-                              {analysisResult.strategy.unique_value_proposition}
-                            </p>
-                          </div>
-                          <div>
-                            <Label className="text-xs text-muted-foreground">
-                              Rozpočet
-                            </Label>
-                            <div className="flex gap-4">
-                              <Badge>
-                                Facebook:{" "}
-                                {analysisResult.strategy.budget_split?.facebook || 60}%
-                              </Badge>
-                              <Badge variant="secondary">
-                                Instagram:{" "}
-                                {analysisResult.strategy.budget_split?.instagram || 40}%
-                              </Badge>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Ad Copy */}
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-lg">
-                            Texty reklam (klikni pro kopírování)
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <Label className="text-xs">Primary Text</Label>
-                            <div className="space-y-2 mt-2">
-                              {analysisResult.ad_copy?.primary_texts?.map(
-                                (item, i) => (
-                                  <div
-                                    key={i}
-                                    onClick={() =>
-                                      copyToClipboard(item.text, `pt-${i}`)
-                                    }
-                                    className="flex items-center justify-between p-2 bg-muted rounded cursor-pointer hover:bg-muted/80"
-                                  >
-                                    <div>
-                                      <p>{item.text}</p>
-                                      <Badge variant="outline" className="text-xs">
-                                        {item.angle}
-                                      </Badge>
-                                    </div>
-                                    {copiedItem === `pt-${i}` ? (
-                                      <Check className="h-4 w-4 text-green-500" />
-                                    ) : (
-                                      <Copy className="h-4 w-4 text-muted-foreground" />
-                                    )}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </div>
-
-                          <div>
-                            <Label className="text-xs">Headlines</Label>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {analysisResult.ad_copy?.headlines?.map((item, i) => (
-                                <Badge
-                                  key={i}
-                                  className="cursor-pointer"
-                                  onClick={() =>
-                                    copyToClipboard(item.text, `h-${i}`)
-                                  }
-                                >
-                                  {item.text}
-                                  {copiedItem === `h-${i}` && (
-                                    <Check className="h-3 w-3 ml-1" />
-                                  )}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div>
-                            <Label className="text-xs">Hashtags</Label>
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {analysisResult.hashtags?.map((tag, i) => (
-                                <Badge
-                                  key={i}
-                                  variant="secondary"
-                                  className="cursor-pointer text-xs"
-                                  onClick={() => copyToClipboard(tag, `tag-${i}`)}
-                                >
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Creative Concepts */}
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-lg flex items-center gap-2">
-                            <PenTool className="h-5 w-5" />
-                            Kreativní koncepty
-                          </CardTitle>
-                          <CardDescription>
-                            Detailní briefingy pro grafika/kameramana
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-4">
-                            {analysisResult.creative_concepts?.map((concept, i) => (
-                              <div
-                                key={i}
-                                className="p-4 border rounded-lg space-y-3"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Badge variant={
-                                    concept.format === "video" ? "default" :
-                                    concept.format === "carousel" ? "secondary" : "outline"
-                                  }>
-                                    {concept.format}
-                                  </Badge>
-                                  <span className="font-semibold">
-                                    {concept.name}
-                                  </span>
-                                  {concept.duration && (
-                                    <Badge variant="outline" className="text-xs">
-                                      {concept.duration}
-                                    </Badge>
-                                  )}
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                  {concept.description}
+                      {/* Strategy */}
+                      {analysisResult.strategy && (
+                        <Card className="border-purple-200 bg-purple-50/50">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Target className="h-5 w-5 text-purple-600" />
+                              Strategie
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            {/* Persona */}
+                            {analysisResult.strategy.target_audience?.primary_persona && (
+                              <div className="p-3 bg-white rounded-lg">
+                                <h4 className="font-medium flex items-center gap-2 mb-2">
+                                  <Users className="h-4 w-4" />
+                                  {analysisResult.strategy.target_audience.primary_persona.name}
+                                </h4>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {analysisResult.strategy.target_audience.primary_persona.demographics}
                                 </p>
-                                {concept.hook && (
-                                  <div className="p-2 bg-yellow-50 rounded text-sm">
-                                    <strong className="text-yellow-700">Hook (první 3s):</strong> {concept.hook}
-                                  </div>
-                                )}
-                                {concept.script && (
-                                  <div className="p-2 bg-blue-50 rounded text-sm">
-                                    <strong className="text-blue-700">Scénář:</strong>
-                                    <p className="whitespace-pre-wrap">{concept.script}</p>
-                                  </div>
-                                )}
-                                {concept.slides && (
-                                  <div className="space-y-2">
-                                    <strong className="text-sm">Slides:</strong>
-                                    <div className="grid grid-cols-5 gap-2">
-                                      {concept.slides.map((slide, si) => (
-                                        <div key={si} className="p-2 bg-gray-50 rounded text-xs">
-                                          <p className="font-semibold">{slide.headline}</p>
-                                          <p className="text-muted-foreground">{slide.visual}</p>
-                                        </div>
+                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <p className="font-medium text-red-700">Pain Points:</p>
+                                    <ul className="list-disc list-inside">
+                                      {analysisResult.strategy.target_audience.primary_persona.pain_points?.map((p, i) => (
+                                        <li key={i}>{p}</li>
                                       ))}
-                                    </div>
+                                    </ul>
                                   </div>
-                                )}
-                                {concept.text_overlay && (
-                                  <div className="p-2 bg-green-50 rounded text-sm">
-                                    <strong className="text-green-700">Text na obrázku:</strong> {concept.text_overlay}
+                                  <div>
+                                    <p className="font-medium text-green-700">Motivace:</p>
+                                    <ul className="list-disc list-inside">
+                                      {analysisResult.strategy.target_audience.primary_persona.motivations?.map((m, i) => (
+                                        <li key={i}>{m}</li>
+                                      ))}
+                                    </ul>
                                   </div>
-                                )}
-                                {concept.visual_style && (
-                                  <p className="text-sm"><strong>Vizuální styl:</strong> {concept.visual_style}</p>
-                                )}
-                                {concept.audio && (
-                                  <p className="text-sm"><strong>Audio:</strong> {concept.audio}</p>
-                                )}
-                                {concept.ai_prompt && (
-                                  <div className="p-2 bg-purple-50 rounded text-sm">
-                                    <strong className="text-purple-700">AI Prompt (Midjourney/DALL-E):</strong>
-                                    <p className="font-mono text-xs mt-1">{concept.ai_prompt}</p>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="mt-1 h-6 text-xs"
-                                      onClick={() => copyToClipboard(concept.ai_prompt!, `ai-prompt-${i}`)}
-                                    >
-                                      {copiedItem === `ai-prompt-${i}` ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                      Kopírovat
-                                    </Button>
-                                  </div>
-                                )}
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
+                            )}
 
-                      {/* Expert Notes */}
-                      <Accordion type="single" collapsible>
-                        <AccordionItem value="notes">
-                          <AccordionTrigger>Poznámky od expertů</AccordionTrigger>
-                          <AccordionContent>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-blue-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-blue-700">
-                                  <Briefcase className="h-4 w-4" /> Project
-                                  Manager
-                                </div>
-                                <p className="text-sm mt-1">
-                                  {analysisResult.expert_notes?.project_manager}
+                            {/* Value Proposition */}
+                            {analysisResult.strategy.unique_value_proposition && (
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Unique Value Proposition</Label>
+                                <p className="font-medium text-primary mt-1">
+                                  {analysisResult.strategy.unique_value_proposition}
                                 </p>
                               </div>
-                              <div className="p-3 bg-green-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-green-700">
-                                  <Megaphone className="h-4 w-4" /> Marketing
-                                </div>
-                                <p className="text-sm mt-1">
-                                  {analysisResult.expert_notes?.marketing}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-blue-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-blue-700">
-                                  <Facebook className="h-4 w-4" /> Facebook
-                                </div>
-                                <p className="text-sm mt-1">
-                                  {analysisResult.expert_notes?.facebook}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-pink-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-pink-700">
-                                  <Instagram className="h-4 w-4" /> Instagram
-                                </div>
-                                <p className="text-sm mt-1">
-                                  {analysisResult.expert_notes?.instagram}
-                                </p>
-                              </div>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
+                            )}
 
-                      {/* Quick Wins & Common Mistakes */}
-                      {(analysisResult.quick_wins || analysisResult.common_mistakes) && (
-                        <div className="grid md:grid-cols-2 gap-4">
-                          {analysisResult.quick_wins && (
-                            <Card className="border-green-200 bg-green-50/50">
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2 text-green-700">
-                                  <Zap className="h-4 w-4" /> Quick Wins
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <ul className="space-y-1">
-                                  {analysisResult.quick_wins.map((win, i) => (
-                                    <li key={i} className="text-sm flex items-start gap-2">
-                                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                      {win}
-                                    </li>
+                            {/* Messaging Pillars */}
+                            {analysisResult.strategy.messaging_pillars && (
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Messaging Pillars</Label>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {analysisResult.strategy.messaging_pillars.map((pillar, i) => (
+                                    <Badge key={i} variant="outline">{pillar}</Badge>
                                   ))}
-                                </ul>
-                              </CardContent>
-                            </Card>
-                          )}
-                          {analysisResult.common_mistakes && (
-                            <Card className="border-red-200 bg-red-50/50">
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2 text-red-700">
-                                  <XCircle className="h-4 w-4" /> Časté chyby
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <ul className="space-y-1">
-                                  {analysisResult.common_mistakes.map((mistake, i) => (
-                                    <li key={i} className="text-sm flex items-start gap-2">
-                                      <XCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                                      {mistake}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </CardContent>
-                            </Card>
-                          )}
-                        </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Funnel Allocation */}
+                            {analysisResult.strategy.funnel_allocation && (
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Funnel Allocation</Label>
+                                <div className="flex gap-2 mt-1">
+                                  <Badge className="bg-blue-100 text-blue-700">
+                                    TOFU {analysisResult.strategy.funnel_allocation.tofu_percent}%
+                                  </Badge>
+                                  <Badge className="bg-yellow-100 text-yellow-700">
+                                    MOFU {analysisResult.strategy.funnel_allocation.mofu_percent}%
+                                  </Badge>
+                                  <Badge className="bg-green-100 text-green-700">
+                                    BOFU {analysisResult.strategy.funnel_allocation.bofu_percent}%
+                                  </Badge>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Meta Targeting */}
+                            {analysisResult.strategy.target_audience?.meta_targeting && (
+                              <div className="p-3 bg-white rounded-lg">
+                                <h4 className="font-medium text-sm mb-2">Meta Ads Targeting</h4>
+                                <div className="space-y-2 text-sm">
+                                  <div>
+                                    <span className="text-muted-foreground">Interests: </span>
+                                    {analysisResult.strategy.target_audience.meta_targeting.interests?.join(", ")}
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Behaviors: </span>
+                                    {analysisResult.strategy.target_audience.meta_targeting.behaviors?.join(", ")}
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">LAL Source: </span>
+                                    {analysisResult.strategy.target_audience.meta_targeting.lookalike_source}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
                       )}
 
-                      {/* Campaign Setup Guide */}
-                      {analysisResult.campaign_setup_guide && (
+                      {/* Campaigns */}
+                      {analysisResult.campaigns && analysisResult.campaigns.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Megaphone className="h-5 w-5" />
+                              Navržené kampaně
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              {analysisResult.campaigns.map((campaign, i) => (
+                                <div key={i} className="p-3 border rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-medium">{campaign.name}</span>
+                                    <div className="flex gap-2">
+                                      <Badge variant="outline">{campaign.objective}</Badge>
+                                      <Badge className={
+                                        campaign.status === "new" ? "bg-blue-500" :
+                                        campaign.status === "scale" ? "bg-green-500" :
+                                        campaign.status === "optimize" ? "bg-yellow-500" : "bg-red-500"
+                                      }>
+                                        {campaign.status}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    <p><strong>Rozpočet:</strong> {campaign.daily_budget} Kč/den</p>
+                                    <p><strong>Audience:</strong> {campaign.audience.type} - {campaign.audience.targeting}</p>
+                                    <p><strong>Est. velikost:</strong> {campaign.audience.estimated_size}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Ad Copy */}
+                      {analysisResult.ad_copy && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">
+                              Texty reklam (klikni pro kopírování)
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div>
+                              <Label className="text-xs">Primary Text (max 125 znaků)</Label>
+                              <div className="space-y-2 mt-2">
+                                {analysisResult.ad_copy?.primary_texts?.map(
+                                  (item, i) => (
+                                    <div
+                                      key={i}
+                                      onClick={() =>
+                                        copyToClipboard(item.text, `pt-${i}`)
+                                      }
+                                      className="flex items-center justify-between p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                                    >
+                                      <div className="flex-1">
+                                        <p className="text-sm">{item.text}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <Badge variant="outline" className="text-xs">
+                                            {item.angle}
+                                          </Badge>
+                                          <span className="text-xs text-muted-foreground">
+                                            {item.text.length}/125 znaků
+                                          </span>
+                                        </div>
+                                      </div>
+                                      {copiedItem === `pt-${i}` ? (
+                                        <Check className="h-4 w-4 text-green-500 ml-2" />
+                                      ) : (
+                                        <Copy className="h-4 w-4 text-muted-foreground ml-2" />
+                                      )}
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label className="text-xs">Headlines (max 40 znaků)</Label>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {analysisResult.ad_copy?.headlines?.map((item, i) => (
+                                  <Badge
+                                    key={i}
+                                    className="cursor-pointer hover:bg-primary/80"
+                                    onClick={() =>
+                                      copyToClipboard(item.text, `h-${i}`)
+                                    }
+                                  >
+                                    {item.text}
+                                    {copiedItem === `h-${i}` && (
+                                      <Check className="h-3 w-3 ml-1" />
+                                    )}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label className="text-xs">Descriptions (max 30 znaků)</Label>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {analysisResult.ad_copy?.descriptions?.map((desc, i) => (
+                                  <Badge
+                                    key={i}
+                                    variant="secondary"
+                                    className="cursor-pointer"
+                                    onClick={() => copyToClipboard(desc, `desc-${i}`)}
+                                  >
+                                    {desc}
+                                    {copiedItem === `desc-${i}` && (
+                                      <Check className="h-3 w-3 ml-1" />
+                                    )}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label className="text-xs">CTAs</Label>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {analysisResult.ad_copy?.ctas?.map((cta, i) => (
+                                  <Badge
+                                    key={i}
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                    onClick={() => copyToClipboard(cta, `cta-${i}`)}
+                                  >
+                                    {cta}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Creative Concepts */}
+                      {analysisResult.creative_concepts && analysisResult.creative_concepts.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <PenTool className="h-5 w-5" />
+                              Kreativní koncepty
+                            </CardTitle>
+                            <CardDescription>
+                              Detailní briefingy pro grafika/kameramana
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              {analysisResult.creative_concepts?.map((concept, i) => (
+                                <div
+                                  key={i}
+                                  className="p-4 border rounded-lg space-y-3"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant={
+                                      concept.format === "video" ? "default" :
+                                      concept.format === "carousel" ? "secondary" : "outline"
+                                    }>
+                                      {concept.format}
+                                    </Badge>
+                                    <span className="font-semibold">
+                                      {concept.name}
+                                    </span>
+                                    {concept.specs?.duration && (
+                                      <Badge variant="outline" className="text-xs">
+                                        {concept.specs.duration}
+                                      </Badge>
+                                    )}
+                                    {concept.specs?.dimensions && (
+                                      <Badge variant="outline" className="text-xs">
+                                        {concept.specs.dimensions}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">
+                                    {concept.description}
+                                  </p>
+                                  {concept.hook && (
+                                    <div className="p-2 bg-yellow-50 rounded text-sm">
+                                      <strong className="text-yellow-700">Hook (první 3s):</strong> {concept.hook}
+                                    </div>
+                                  )}
+                                  {concept.script && (
+                                    <div className="p-2 bg-blue-50 rounded text-sm">
+                                      <strong className="text-blue-700">Scénář:</strong>
+                                      <p className="whitespace-pre-wrap mt-1">{concept.script}</p>
+                                    </div>
+                                  )}
+                                  {concept.ai_image_prompt && (
+                                    <div className="p-2 bg-purple-50 rounded text-sm">
+                                      <strong className="text-purple-700">AI Prompt (Midjourney/DALL-E):</strong>
+                                      <p className="font-mono text-xs mt-1">{concept.ai_image_prompt}</p>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="mt-1 h-6 text-xs"
+                                        onClick={() => copyToClipboard(concept.ai_image_prompt!, `ai-prompt-${i}`)}
+                                      >
+                                        {copiedItem === `ai-prompt-${i}` ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                        Kopírovat
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Optimization Actions */}
+                      {analysisResult.optimization_actions && analysisResult.optimization_actions.length > 0 && (
+                        <Card className="border-orange-200 bg-orange-50/50">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Zap className="h-5 w-5 text-orange-600" />
+                              Optimalizační akce
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              {analysisResult.optimization_actions.map((action, i) => (
+                                <div key={i} className="p-3 bg-white rounded-lg border-l-4"
+                                  style={{
+                                    borderLeftColor: action.priority === "critical" ? "#ef4444" :
+                                      action.priority === "high" ? "#f97316" :
+                                      action.priority === "medium" ? "#eab308" : "#22c55e"
+                                  }}
+                                >
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Badge variant="outline" className={
+                                      action.priority === "critical" ? "text-red-600 border-red-300" :
+                                      action.priority === "high" ? "text-orange-600 border-orange-300" :
+                                      action.priority === "medium" ? "text-yellow-600 border-yellow-300" : "text-green-600 border-green-300"
+                                    }>
+                                      {action.priority.toUpperCase()}
+                                    </Badge>
+                                  </div>
+                                  <p className="font-medium">{action.action}</p>
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    <strong>Důvod:</strong> {action.reason}
+                                  </p>
+                                  <p className="text-sm text-green-700 mt-1">
+                                    <strong>Očekávaný dopad:</strong> {action.expected_impact}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Setup Guide */}
+                      {analysisResult.setup_guide && (
                         <Card className="border-primary">
                           <CardHeader>
                             <CardTitle className="text-lg flex items-center gap-2">
                               <Target className="h-5 w-5 text-primary" />
-                              Návod na setup kampaně
+                              Setup Guide - Copy & Paste do Meta Ads Manager
                             </CardTitle>
                             <CardDescription>
-                              Krok za krokem jak vytvořit kampaň v Meta Ads Manager
+                              Krok za krokem jak vytvořit kampaň
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="space-y-6">
@@ -1048,10 +1340,16 @@ export default function MetaAdsPage() {
                                 <Badge variant="outline">1</Badge> Vytvoření kampaně
                               </h4>
                               <div className="grid grid-cols-2 gap-2 text-sm pl-6">
-                                <div><strong>Název:</strong> {analysisResult.campaign_setup_guide.step1_campaign.name}</div>
-                                <div><strong>Cíl:</strong> {analysisResult.campaign_setup_guide.step1_campaign.objective}</div>
-                                <div><strong>Rozpočet:</strong> {analysisResult.campaign_setup_guide.step1_campaign.budget_amount} CZK/den</div>
-                                <div><strong>Bidding:</strong> {analysisResult.campaign_setup_guide.step1_campaign.bid_strategy}</div>
+                                <div
+                                  className="p-2 bg-muted rounded cursor-pointer hover:bg-muted/80"
+                                  onClick={() => copyToClipboard(analysisResult.setup_guide!.step1_campaign.name, "setup-name")}
+                                >
+                                  <strong>Název:</strong> {analysisResult.setup_guide.step1_campaign.name}
+                                  {copiedItem === "setup-name" && <Check className="h-3 w-3 inline ml-1 text-green-500" />}
+                                </div>
+                                <div><strong>Cíl:</strong> {analysisResult.setup_guide.step1_campaign.objective}</div>
+                                <div><strong>Rozpočet:</strong> {analysisResult.setup_guide.step1_campaign.budget} Kč/den</div>
+                                <div><strong>Bidding:</strong> {analysisResult.setup_guide.step1_campaign.bid_strategy}</div>
                               </div>
                             </div>
 
@@ -1061,19 +1359,23 @@ export default function MetaAdsPage() {
                                 <Badge variant="outline">2</Badge> Nastavení Ad Setu
                               </h4>
                               <div className="text-sm pl-6 space-y-2">
-                                <div><strong>Název:</strong> {analysisResult.campaign_setup_guide.step2_adset.name}</div>
-                                <div><strong>Optimalizace:</strong> {analysisResult.campaign_setup_guide.step2_adset.optimization_event}</div>
+                                <div
+                                  className="p-2 bg-muted rounded cursor-pointer hover:bg-muted/80"
+                                  onClick={() => copyToClipboard(analysisResult.setup_guide!.step2_adset.name, "adset-name")}
+                                >
+                                  <strong>Název:</strong> {analysisResult.setup_guide.step2_adset.name}
+                                  {copiedItem === "adset-name" && <Check className="h-3 w-3 inline ml-1 text-green-500" />}
+                                </div>
+                                <div><strong>Optimalizace:</strong> {analysisResult.setup_guide.step2_adset.optimization}</div>
                                 <div className="p-2 bg-muted rounded">
                                   <strong>Audience:</strong>
                                   <ul className="mt-1 space-y-1">
-                                    <li>Lokace: {analysisResult.campaign_setup_guide.step2_adset.audience.locations?.join(", ")}</li>
-                                    <li>Věk: {analysisResult.campaign_setup_guide.step2_adset.audience.age_min}-{analysisResult.campaign_setup_guide.step2_adset.audience.age_max} let</li>
-                                    <li>Pohlaví: {analysisResult.campaign_setup_guide.step2_adset.audience.genders}</li>
-                                    <li>Zájmy: {analysisResult.campaign_setup_guide.step2_adset.audience.detailed_targeting?.join(", ")}</li>
+                                    <li>Lokace: {analysisResult.setup_guide.step2_adset.audience.locations?.join(", ")}</li>
+                                    <li>Věk: {analysisResult.setup_guide.step2_adset.audience.age_min}-{analysisResult.setup_guide.step2_adset.audience.age_max} let</li>
+                                    <li>Zájmy: {analysisResult.setup_guide.step2_adset.audience.interests?.join(", ")}</li>
                                   </ul>
                                 </div>
-                                <div><strong>Placements:</strong> {analysisResult.campaign_setup_guide.step2_adset.placements}</div>
-                                <div><strong>Timing:</strong> {analysisResult.campaign_setup_guide.step2_adset.schedule}</div>
+                                <div><strong>Placements:</strong> {analysisResult.setup_guide.step2_adset.placements}</div>
                               </div>
                             </div>
 
@@ -1083,25 +1385,113 @@ export default function MetaAdsPage() {
                                 <Badge variant="outline">3</Badge> Vytvoření reklamy
                               </h4>
                               <div className="text-sm pl-6 space-y-2">
-                                <div><strong>Formát:</strong> {analysisResult.campaign_setup_guide.step3_ad.format}</div>
-                                <div><strong>Text:</strong> {analysisResult.campaign_setup_guide.step3_ad.primary_text}</div>
-                                <div><strong>Headline:</strong> {analysisResult.campaign_setup_guide.step3_ad.headline}</div>
-                                <div><strong>CTA:</strong> {analysisResult.campaign_setup_guide.step3_ad.cta_button}</div>
-                                <div><strong>Destinace:</strong> {analysisResult.campaign_setup_guide.step3_ad.destination}</div>
+                                <div><strong>Formát:</strong> {analysisResult.setup_guide.step3_ad.format}</div>
+                                <div
+                                  className="p-2 bg-muted rounded cursor-pointer hover:bg-muted/80"
+                                  onClick={() => copyToClipboard(analysisResult.setup_guide!.step3_ad.text, "ad-text")}
+                                >
+                                  <strong>Text:</strong> {analysisResult.setup_guide.step3_ad.text}
+                                  {copiedItem === "ad-text" && <Check className="h-3 w-3 inline ml-1 text-green-500" />}
+                                </div>
+                                <div
+                                  className="p-2 bg-muted rounded cursor-pointer hover:bg-muted/80"
+                                  onClick={() => copyToClipboard(analysisResult.setup_guide!.step3_ad.headline, "ad-headline")}
+                                >
+                                  <strong>Headline:</strong> {analysisResult.setup_guide.step3_ad.headline}
+                                  {copiedItem === "ad-headline" && <Check className="h-3 w-3 inline ml-1 text-green-500" />}
+                                </div>
+                                <div><strong>CTA:</strong> {analysisResult.setup_guide.step3_ad.cta}</div>
                               </div>
                             </div>
+                          </CardContent>
+                        </Card>
+                      )}
 
-                            {/* Testing Plan */}
-                            <div className="space-y-3">
-                              <h4 className="font-semibold flex items-center gap-2">
-                                <Badge variant="outline">4</Badge> Testovací plán
-                              </h4>
-                              <div className="text-sm pl-6 space-y-1">
-                                <div><strong>Týden 1:</strong> {analysisResult.campaign_setup_guide.testing_plan.week1}</div>
-                                <div><strong>Týden 2:</strong> {analysisResult.campaign_setup_guide.testing_plan.week2}</div>
-                                <div><strong>Týden 4:</strong> {analysisResult.campaign_setup_guide.testing_plan.week4}</div>
-                              </div>
+                      {/* Next Steps */}
+                      {analysisResult.next_steps && analysisResult.next_steps.length > 0 && (
+                        <Card className="border-green-200 bg-green-50/50">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <TrendingUp className="h-5 w-5 text-green-600" />
+                              Další kroky
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              {analysisResult.next_steps.map((step, i) => (
+                                <div key={i} className="flex items-start gap-3 p-2 bg-white rounded">
+                                  <Badge variant="outline" className="shrink-0">{step.timeframe}</Badge>
+                                  <p className="text-sm">{step.action}</p>
+                                </div>
+                              ))}
                             </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Legacy: Expert Notes */}
+                      {analysisResult.expert_notes && (
+                        <Accordion type="single" collapsible>
+                          <AccordionItem value="notes">
+                            <AccordionTrigger>Poznámky od expertů</AccordionTrigger>
+                            <AccordionContent>
+                              <div className="grid grid-cols-2 gap-3">
+                                {analysisResult.expert_notes.project_manager && (
+                                  <div className="p-3 bg-blue-50 rounded">
+                                    <div className="flex items-center gap-2 font-medium text-blue-700">
+                                      <Briefcase className="h-4 w-4" /> Project Manager
+                                    </div>
+                                    <p className="text-sm mt-1">
+                                      {analysisResult.expert_notes.project_manager}
+                                    </p>
+                                  </div>
+                                )}
+                                {analysisResult.expert_notes.marketing && (
+                                  <div className="p-3 bg-green-50 rounded">
+                                    <div className="flex items-center gap-2 font-medium text-green-700">
+                                      <Megaphone className="h-4 w-4" /> Marketing
+                                    </div>
+                                    <p className="text-sm mt-1">
+                                      {analysisResult.expert_notes.marketing}
+                                    </p>
+                                  </div>
+                                )}
+                                {analysisResult.expert_notes.facebook && (
+                                  <div className="p-3 bg-blue-50 rounded">
+                                    <div className="flex items-center gap-2 font-medium text-blue-700">
+                                      <Facebook className="h-4 w-4" /> Facebook
+                                    </div>
+                                    <p className="text-sm mt-1">
+                                      {analysisResult.expert_notes.facebook}
+                                    </p>
+                                  </div>
+                                )}
+                                {analysisResult.expert_notes.instagram && (
+                                  <div className="p-3 bg-pink-50 rounded">
+                                    <div className="flex items-center gap-2 font-medium text-pink-700">
+                                      <Instagram className="h-4 w-4" /> Instagram
+                                    </div>
+                                    <p className="text-sm mt-1">
+                                      {analysisResult.expert_notes.instagram}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      )}
+
+                      {/* Raw Analysis (fallback) */}
+                      {analysisResult.raw_analysis && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Raw Analysis</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <pre className="text-sm whitespace-pre-wrap bg-muted p-4 rounded overflow-auto max-h-96">
+                              {analysisResult.raw_analysis}
+                            </pre>
                           </CardContent>
                         </Card>
                       )}
