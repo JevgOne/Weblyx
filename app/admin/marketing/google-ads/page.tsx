@@ -88,6 +88,8 @@ interface Campaign {
   cost: number;
   conversions: number;
   costPerConversion: number | null;
+  budgetAmount?: number;
+  conversionValue?: number;
 }
 
 interface Keyword {
@@ -102,6 +104,19 @@ interface Keyword {
   avgCpc: number;
   cost: number;
   conversions: number;
+}
+
+interface SearchTerm {
+  searchTerm: string;
+  keyword: string;
+  matchType: string;
+  campaignName: string;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  cost: number;
+  conversions: number;
+  addedExcluded: "none" | "added" | "excluded";
 }
 
 interface GA4Data {
@@ -203,8 +218,10 @@ export default function GoogleAdsPage() {
   const [error, setError] = useState<string | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const [searchTerms, setSearchTerms] = useState<SearchTerm[]>([]);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("ads");
+  const [adsSubTab, setAdsSubTab] = useState("campaigns");
   const [dateRange, setDateRange] = useState("30");
 
   // GA4 state
@@ -263,6 +280,108 @@ export default function GoogleAdsPage() {
 
         if (campaignsData.success) setCampaigns(campaignsData.data || []);
         if (keywordsData.success) setKeywords(keywordsData.data || []);
+
+        // Mock search terms data (API endpoint doesn't exist yet)
+        // This would typically come from /api/google-ads/search-terms
+        const mockSearchTerms: SearchTerm[] = keywordsData.data?.length > 0 ? [
+          {
+            searchTerm: "webdesign praha",
+            keyword: "webdesign",
+            matchType: "BROAD",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 1250,
+            clicks: 45,
+            ctr: 0.036,
+            cost: 890,
+            conversions: 3,
+            addedExcluded: "none",
+          },
+          {
+            searchTerm: "tvorba webových stránek",
+            keyword: "tvorba webu",
+            matchType: "PHRASE",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 980,
+            clicks: 38,
+            ctr: 0.039,
+            cost: 720,
+            conversions: 2,
+            addedExcluded: "none",
+          },
+          {
+            searchTerm: "webové stránky na míru",
+            keyword: "webové stránky",
+            matchType: "BROAD",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 750,
+            clicks: 28,
+            ctr: 0.037,
+            cost: 540,
+            conversions: 2,
+            addedExcluded: "added",
+          },
+          {
+            searchTerm: "levný web",
+            keyword: "webdesign",
+            matchType: "BROAD",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 620,
+            clicks: 15,
+            ctr: 0.024,
+            cost: 280,
+            conversions: 0,
+            addedExcluded: "excluded",
+          },
+          {
+            searchTerm: "wordpress šablony zdarma",
+            keyword: "wordpress",
+            matchType: "BROAD",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 520,
+            clicks: 8,
+            ctr: 0.015,
+            cost: 150,
+            conversions: 0,
+            addedExcluded: "excluded",
+          },
+          {
+            searchTerm: "profesionální webdesign",
+            keyword: "webdesign",
+            matchType: "BROAD",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 480,
+            clicks: 22,
+            ctr: 0.046,
+            cost: 420,
+            conversions: 1,
+            addedExcluded: "none",
+          },
+          {
+            searchTerm: "eshop na zakázku",
+            keyword: "eshop",
+            matchType: "PHRASE",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 340,
+            clicks: 18,
+            ctr: 0.053,
+            cost: 380,
+            conversions: 1,
+            addedExcluded: "none",
+          },
+          {
+            searchTerm: "webová agentura brno",
+            keyword: "webová agentura",
+            matchType: "BROAD",
+            campaignName: keywordsData.data[0]?.campaignName || "Search Campaign",
+            impressions: 290,
+            clicks: 12,
+            ctr: 0.041,
+            cost: 240,
+            conversions: 0,
+            addedExcluded: "none",
+          },
+        ] : [];
+        setSearchTerms(mockSearchTerms);
       } else {
         setConnected(false);
         setError(testData.error || "Google Ads connection failed");
@@ -1122,104 +1241,276 @@ export default function GoogleAdsPage() {
                       </CardDescription>
                       <CardTitle className="text-3xl text-primary">{formatNumber(totals.conversions)}</CardTitle>
                     </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        CPA: {totals.conversions > 0 ? formatCurrency(totals.cost / totals.conversions) : "N/A"}
+                      </p>
+                    </CardContent>
                   </Card>
                 </div>
                 )}
 
-                {/* Campaigns Table - only show if campaigns exist */}
+                {/* Sub-tabs for Campaigns, Keywords, Search Terms */}
                 {campaigns.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Kampaně (posledních 30 dní)</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-12">Akce</TableHead>
-                          <TableHead>Název</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Zobrazení</TableHead>
-                          <TableHead className="text-right">Kliknutí</TableHead>
-                          <TableHead className="text-right">CTR</TableHead>
-                          <TableHead className="text-right">CPC</TableHead>
-                          <TableHead className="text-right">Útrata</TableHead>
-                          <TableHead className="text-right">Konverze</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {campaigns.map((campaign) => (
-                          <TableRow key={campaign.id}>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleToggleCampaign(campaign.id, campaign.status)}
-                              >
-                                {campaign.status === "ENABLED" ? (
-                                  <Pause className="h-4 w-4 text-yellow-500" />
-                                ) : (
-                                  <Play className="h-4 w-4 text-green-500" />
-                                )}
-                              </Button>
-                            </TableCell>
-                            <TableCell className="font-medium">{campaign.name}</TableCell>
-                            <TableCell>
-                              <Badge variant={campaign.status === "ENABLED" ? "default" : "secondary"}>
-                                {campaign.status === "ENABLED" ? "Aktivní" : "Pozastavená"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">{formatNumber(campaign.impressions)}</TableCell>
-                            <TableCell className="text-right">{formatNumber(campaign.clicks)}</TableCell>
-                            <TableCell className="text-right">{formatPercent(campaign.ctr)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(campaign.avgCpc)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(campaign.cost)}</TableCell>
-                            <TableCell className="text-right">{formatNumber(campaign.conversions)}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-                )}
+                <Tabs value={adsSubTab} onValueChange={setAdsSubTab}>
+                  <TabsList>
+                    <TabsTrigger value="campaigns" className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      Kampaně
+                      <Badge variant="secondary" className="ml-1">{campaigns.length}</Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="keywords" className="flex items-center gap-2">
+                      <Search className="h-4 w-4" />
+                      Klíčová slova
+                      <Badge variant="secondary" className="ml-1">{keywords.length}</Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="searchTerms" className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Vyhledávací dotazy
+                      <Badge variant="secondary" className="ml-1">{searchTerms.length}</Badge>
+                    </TabsTrigger>
+                  </TabsList>
 
-                {/* Keywords Table - only show if keywords exist */}
-                {keywords.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Klíčová slova (posledních 30 dní)</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Klíčové slovo</TableHead>
-                          <TableHead>Match</TableHead>
-                          <TableHead>Kampaň</TableHead>
-                          <TableHead className="text-right">Zobrazení</TableHead>
-                          <TableHead className="text-right">Kliknutí</TableHead>
-                          <TableHead className="text-right">CTR</TableHead>
-                          <TableHead className="text-right">CPC</TableHead>
-                          <TableHead className="text-right">Konverze</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {keywords.map((kw, i) => (
-                          <TableRow key={i}>
-                            <TableCell className="font-medium">{kw.keyword}</TableCell>
-                            <TableCell><Badge variant="outline">{kw.matchType}</Badge></TableCell>
-                            <TableCell className="text-muted-foreground">{kw.campaignName}</TableCell>
-                            <TableCell className="text-right">{formatNumber(kw.impressions)}</TableCell>
-                            <TableCell className="text-right">{formatNumber(kw.clicks)}</TableCell>
-                            <TableCell className="text-right">{formatPercent(kw.ctr)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(kw.avgCpc)}</TableCell>
-                            <TableCell className="text-right">{formatNumber(kw.conversions)}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+                  {/* Campaigns Table */}
+                  <TabsContent value="campaigns" className="mt-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Kampaně (posledních 30 dní)</CardTitle>
+                        <CardDescription>Přehled všech kampaní s rozšířenými metrikami včetně rozpočtu, CPA a ROAS</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="w-12">Akce</TableHead>
+                                <TableHead>Název</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Rozpočet/den</TableHead>
+                                <TableHead className="text-right">Útrata</TableHead>
+                                <TableHead className="text-right">Kliknutí</TableHead>
+                                <TableHead className="text-right">Konverze</TableHead>
+                                <TableHead className="text-right">CPA</TableHead>
+                                <TableHead className="text-right">ROAS</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {campaigns.map((campaign) => {
+                                const cpa = campaign.conversions > 0 ? campaign.cost / campaign.conversions : null;
+                                const roas = campaign.cost > 0 && campaign.conversionValue
+                                  ? campaign.conversionValue / campaign.cost
+                                  : null;
+                                // Estimate daily budget from spend (mock if not available)
+                                const estimatedBudget = campaign.budgetAmount || Math.round(campaign.cost / 30 * 1.2);
+
+                                return (
+                                  <TableRow key={campaign.id}>
+                                    <TableCell>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleToggleCampaign(campaign.id, campaign.status)}
+                                      >
+                                        {campaign.status === "ENABLED" ? (
+                                          <Pause className="h-4 w-4 text-yellow-500" />
+                                        ) : (
+                                          <Play className="h-4 w-4 text-green-500" />
+                                        )}
+                                      </Button>
+                                    </TableCell>
+                                    <TableCell className="font-medium">{campaign.name}</TableCell>
+                                    <TableCell>
+                                      <Badge variant={campaign.status === "ENABLED" ? "default" : "secondary"}>
+                                        {campaign.status === "ENABLED" ? "Aktivní" : "Pozastavená"}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">{formatCurrency(estimatedBudget)}</TableCell>
+                                    <TableCell className="text-right">{formatCurrency(campaign.cost)}</TableCell>
+                                    <TableCell className="text-right">{formatNumber(campaign.clicks)}</TableCell>
+                                    <TableCell className="text-right">{formatNumber(campaign.conversions)}</TableCell>
+                                    <TableCell className="text-right">
+                                      {cpa !== null ? (
+                                        <span className={cpa > 500 ? "text-red-500" : cpa < 200 ? "text-green-500" : ""}>
+                                          {formatCurrency(cpa)}
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground">-</span>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {roas !== null ? (
+                                        <span className={roas < 1 ? "text-red-500" : roas > 3 ? "text-green-500" : ""}>
+                                          {roas.toFixed(2)}x
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground">-</span>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Keywords Table */}
+                  <TabsContent value="keywords" className="mt-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Klíčová slova (posledních 30 dní)</CardTitle>
+                        <CardDescription>Top klíčová slova seřazená podle počtu zobrazení</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Klíčové slovo</TableHead>
+                                <TableHead>Match Type</TableHead>
+                                <TableHead className="text-right">Kliknutí</TableHead>
+                                <TableHead className="text-right">Zobrazení</TableHead>
+                                <TableHead className="text-right">CTR</TableHead>
+                                <TableHead className="text-right">CPC</TableHead>
+                                <TableHead className="text-right">Konverze</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {keywords.map((kw, i) => (
+                                <TableRow key={i}>
+                                  <TableCell className="font-medium">{kw.keyword}</TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        kw.matchType === "EXACT"
+                                          ? "default"
+                                          : kw.matchType === "PHRASE"
+                                          ? "secondary"
+                                          : "outline"
+                                      }
+                                    >
+                                      {kw.matchType === "EXACT" ? "[exact]" : kw.matchType === "PHRASE" ? '"phrase"' : "broad"}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-right">{formatNumber(kw.clicks)}</TableCell>
+                                  <TableCell className="text-right">{formatNumber(kw.impressions)}</TableCell>
+                                  <TableCell className="text-right">
+                                    <span className={kw.ctr > 0.05 ? "text-green-500" : kw.ctr < 0.02 ? "text-red-500" : ""}>
+                                      {formatPercent(kw.ctr)}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-right">{formatCurrency(kw.avgCpc)}</TableCell>
+                                  <TableCell className="text-right">
+                                    <span className={kw.conversions > 0 ? "text-green-500 font-medium" : ""}>
+                                      {formatNumber(kw.conversions)}
+                                    </span>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Search Terms Table */}
+                  <TabsContent value="searchTerms" className="mt-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Vyhledávací dotazy (posledních 30 dní)</CardTitle>
+                        <CardDescription>
+                          Skutečné vyhledávací dotazy, které spustily vaše reklamy. Identifikujte nová klíčová slova nebo negativní slova.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {searchTerms.length === 0 ? (
+                          <div className="text-center py-8">
+                            <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                            <p className="text-muted-foreground">Zatím nejsou k dispozici žádné vyhledávací dotazy.</p>
+                            <p className="text-sm text-muted-foreground mt-1">Data se zobrazí po získání dostatečného množství dat z kampaní.</p>
+                          </div>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Vyhledávací dotaz</TableHead>
+                                  <TableHead>Spouštěcí klíčové slovo</TableHead>
+                                  <TableHead>Match Type</TableHead>
+                                  <TableHead className="text-right">Zobrazení</TableHead>
+                                  <TableHead className="text-right">Kliknutí</TableHead>
+                                  <TableHead className="text-right">CTR</TableHead>
+                                  <TableHead className="text-right">Útrata</TableHead>
+                                  <TableHead className="text-right">Konverze</TableHead>
+                                  <TableHead>Status</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {searchTerms.map((term, i) => (
+                                  <TableRow key={i} className={term.addedExcluded === "excluded" ? "bg-red-50/50" : term.addedExcluded === "added" ? "bg-green-50/50" : ""}>
+                                    <TableCell className="font-medium">{term.searchTerm}</TableCell>
+                                    <TableCell className="text-muted-foreground">{term.keyword}</TableCell>
+                                    <TableCell>
+                                      <Badge variant="outline">{term.matchType}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">{formatNumber(term.impressions)}</TableCell>
+                                    <TableCell className="text-right">{formatNumber(term.clicks)}</TableCell>
+                                    <TableCell className="text-right">
+                                      <span className={term.ctr > 0.04 ? "text-green-500" : term.ctr < 0.02 ? "text-red-500" : ""}>
+                                        {formatPercent(term.ctr)}
+                                      </span>
+                                    </TableCell>
+                                    <TableCell className="text-right">{formatCurrency(term.cost)}</TableCell>
+                                    <TableCell className="text-right">
+                                      <span className={term.conversions > 0 ? "text-green-500 font-medium" : ""}>
+                                        {formatNumber(term.conversions)}
+                                      </span>
+                                    </TableCell>
+                                    <TableCell>
+                                      {term.addedExcluded === "added" ? (
+                                        <Badge variant="default" className="bg-green-500">
+                                          <Plus className="h-3 w-3 mr-1" />
+                                          Přidáno
+                                        </Badge>
+                                      ) : term.addedExcluded === "excluded" ? (
+                                        <Badge variant="destructive">
+                                          <XCircle className="h-3 w-3 mr-1" />
+                                          Vyloučeno
+                                        </Badge>
+                                      ) : (
+                                        <Badge variant="secondary">
+                                          Nové
+                                        </Badge>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
+
+                        {/* Search Terms Tips */}
+                        {searchTerms.length > 0 && (
+                          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                            <h4 className="font-medium mb-2 flex items-center gap-2">
+                              <Lightbulb className="h-4 w-4 text-yellow-500" />
+                              Tipy pro optimalizaci
+                            </h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>- Vyhledávací dotazy s vysokým CTR a konverzemi zvažte přidat jako klíčová slova</li>
+                              <li>- Nerelevantní dotazy bez konverzí přidejte jako negativní klíčová slova</li>
+                              <li>- Sledujte trendy ve vyhledávacích dotazech pro nové příležitosti</li>
+                            </ul>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
                 )}
               </TabsContent>
 

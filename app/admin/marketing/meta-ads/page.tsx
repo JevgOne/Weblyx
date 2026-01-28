@@ -98,6 +98,43 @@ interface Campaign {
   reach: number;
   frequency: number;
   conversions?: number;
+  dailyBudget?: number;
+  costPerConversion?: number;
+}
+
+interface AdSet {
+  adSetId: string;
+  adSetName: string;
+  campaignName: string;
+  status?: string;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  cpc: number;
+  spend: number;
+  reach: number;
+  frequency: number;
+  conversions?: number;
+  dailyBudget?: number;
+  targeting?: any;
+}
+
+interface Ad {
+  adId: string;
+  adName: string;
+  adSetName: string;
+  campaignName: string;
+  status?: string;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  cpc: number;
+  spend: number;
+  reach: number;
+  frequency: number;
+  conversions?: number;
+  creative?: any;
+  thumbnailUrl?: string;
 }
 
 interface AnalysisResult {
@@ -246,8 +283,11 @@ export default function MetaAdsPage() {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [adSets, setAdSets] = useState<AdSet[]>([]);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [accountInfo, setAccountInfo] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("campaigns");
+  const [dataTab, setDataTab] = useState("campaigns");
   const [dateRange, setDateRange] = useState("last_30d");
 
   // Create campaign state
@@ -330,6 +370,20 @@ export default function MetaAdsPage() {
         );
         const campaignsData = await campaignsRes.json();
         if (campaignsData.success) setCampaigns(campaignsData.data || []);
+
+        // Fetch ad sets with insights
+        const adSetsRes = await fetch(
+          `/api/meta-ads/ad-sets?insights=true&date_preset=${dateRange}`
+        );
+        const adSetsData = await adSetsRes.json();
+        if (adSetsData.success) setAdSets(adSetsData.data || []);
+
+        // Fetch ads with insights
+        const adsRes = await fetch(
+          `/api/meta-ads/ads?insights=true&date_preset=${dateRange}`
+        );
+        const adsData = await adsRes.json();
+        if (adsData.success) setAds(adsData.data || []);
       } else {
         setConnected(false);
         setError(testData.error || "Meta Ads connection failed");
@@ -1839,7 +1893,7 @@ export default function MetaAdsPage() {
               <TabsList>
                 <TabsTrigger value="campaigns" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
-                  Kampaně
+                  Data
                 </TabsTrigger>
                 <TabsTrigger
                   value="recommendations"
@@ -1852,7 +1906,7 @@ export default function MetaAdsPage() {
               </TabsList>
 
               <TabsContent value="campaigns" className="mt-6">
-                {campaigns.length === 0 ? (
+                {campaigns.length === 0 && adSets.length === 0 && ads.length === 0 ? (
                   <Card className="border-dashed border-2">
                     <CardContent className="pt-12 pb-12 text-center">
                       <Facebook className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -1869,155 +1923,378 @@ export default function MetaAdsPage() {
                     </CardContent>
                   </Card>
                 ) : (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle>Kampaně</CardTitle>
-                        <Dialog
-                          open={showCreateDialog}
-                          onOpenChange={setShowCreateDialog}
-                        >
-                          <DialogTrigger asChild>
-                            <Button size="sm">
-                              <Plus className="h-4 w-4 mr-2" />
-                              Nová
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Nová kampaň</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                              <div className="space-y-2">
-                                <Label>Název</Label>
-                                <Input
-                                  value={newCampaign.name}
-                                  onChange={(e) =>
-                                    setNewCampaign({
-                                      ...newCampaign,
-                                      name: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Cíl</Label>
-                                <Select
-                                  value={newCampaign.objective}
-                                  onValueChange={(v) =>
-                                    setNewCampaign({
-                                      ...newCampaign,
-                                      objective: v,
-                                    })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="OUTCOME_LEADS">
-                                      Leady
-                                    </SelectItem>
-                                    <SelectItem value="OUTCOME_TRAFFIC">
-                                      Návštěvnost
-                                    </SelectItem>
-                                    <SelectItem value="OUTCOME_SALES">
-                                      Prodeje
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Denní rozpočet (CZK)</Label>
-                                <Input
-                                  type="number"
-                                  value={newCampaign.dailyBudgetCzk}
-                                  onChange={(e) =>
-                                    setNewCampaign({
-                                      ...newCampaign,
-                                      dailyBudgetCzk:
-                                        parseInt(e.target.value) || 0,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <Button
-                                onClick={handleCreateCampaign}
-                                disabled={creating}
-                                className="w-full"
+                  <div className="space-y-4">
+                    {/* Data Sub-Tabs */}
+                    <Tabs value={dataTab} onValueChange={setDataTab}>
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="campaigns" className="flex items-center gap-2">
+                          <Megaphone className="h-4 w-4" />
+                          Kampaně ({campaigns.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="adsets" className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          Ad Sets ({adSets.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="ads" className="flex items-center gap-2">
+                          <ImageIcon className="h-4 w-4" />
+                          Reklamy ({ads.length})
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Campaigns Table */}
+                      <TabsContent value="campaigns" className="mt-4">
+                        <Card>
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <CardTitle>Kampaně</CardTitle>
+                              <Dialog
+                                open={showCreateDialog}
+                                onOpenChange={setShowCreateDialog}
                               >
-                                {creating ? "Vytvářím..." : "Vytvořit"}
-                              </Button>
+                                <DialogTrigger asChild>
+                                  <Button size="sm">
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Nová
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Nová kampaň</DialogTitle>
+                                  </DialogHeader>
+                                  <div className="space-y-4 py-4">
+                                    <div className="space-y-2">
+                                      <Label>Název</Label>
+                                      <Input
+                                        value={newCampaign.name}
+                                        onChange={(e) =>
+                                          setNewCampaign({
+                                            ...newCampaign,
+                                            name: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Cíl</Label>
+                                      <Select
+                                        value={newCampaign.objective}
+                                        onValueChange={(v) =>
+                                          setNewCampaign({
+                                            ...newCampaign,
+                                            objective: v,
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="OUTCOME_LEADS">
+                                            Leady
+                                          </SelectItem>
+                                          <SelectItem value="OUTCOME_TRAFFIC">
+                                            Návštěvnost
+                                          </SelectItem>
+                                          <SelectItem value="OUTCOME_SALES">
+                                            Prodeje
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Denní rozpočet (CZK)</Label>
+                                      <Input
+                                        type="number"
+                                        value={newCampaign.dailyBudgetCzk}
+                                        onChange={(e) =>
+                                          setNewCampaign({
+                                            ...newCampaign,
+                                            dailyBudgetCzk:
+                                              parseInt(e.target.value) || 0,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <Button
+                                      onClick={handleCreateCampaign}
+                                      disabled={creating}
+                                      className="w-full"
+                                    >
+                                      {creating ? "Vytvářím..." : "Vytvořit"}
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
                             </div>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-12"></TableHead>
-                            <TableHead>Název</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Dosah</TableHead>
-                            <TableHead className="text-right">Kliky</TableHead>
-                            <TableHead className="text-right">CTR</TableHead>
-                            <TableHead className="text-right">Útrata</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {campaigns.map((c) => (
-                            <TableRow key={c.campaignId}>
-                              <TableCell>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() =>
-                                    handleToggleCampaign(c.campaignId, c.status)
-                                  }
-                                >
-                                  {c.status === "ACTIVE" ? (
-                                    <Pause className="h-4 w-4 text-yellow-500" />
-                                  ) : (
-                                    <Play className="h-4 w-4 text-green-500" />
-                                  )}
-                                </Button>
-                              </TableCell>
-                              <TableCell className="font-medium">
-                                {c.campaignName}
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    c.status === "ACTIVE"
-                                      ? "default"
-                                      : "secondary"
-                                  }
-                                >
-                                  {c.status === "ACTIVE"
-                                    ? "Aktivní"
-                                    : "Pozastavená"}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {formatNumber(c.reach)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {formatNumber(c.clicks)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {formatPercent(c.ctr)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {formatCurrency(c.spend)}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
+                            <CardDescription>
+                              Přehled všech kampaní s detailními metrikami výkonu
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="overflow-x-auto">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className="w-12"></TableHead>
+                                    <TableHead>Název</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Cíl</TableHead>
+                                    <TableHead className="text-right">Rozpočet</TableHead>
+                                    <TableHead className="text-right">Útrata</TableHead>
+                                    <TableHead className="text-right">Zobrazení</TableHead>
+                                    <TableHead className="text-right">Kliky</TableHead>
+                                    <TableHead className="text-right">CTR</TableHead>
+                                    <TableHead className="text-right">Konverze</TableHead>
+                                    <TableHead className="text-right">CPA</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {campaigns.map((c) => {
+                                    const cpa = c.conversions && c.conversions > 0
+                                      ? c.spend / c.conversions
+                                      : 0;
+                                    return (
+                                      <TableRow key={c.campaignId}>
+                                        <TableCell>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() =>
+                                              handleToggleCampaign(c.campaignId, c.status)
+                                            }
+                                          >
+                                            {c.status === "ACTIVE" ? (
+                                              <Pause className="h-4 w-4 text-yellow-500" />
+                                            ) : (
+                                              <Play className="h-4 w-4 text-green-500" />
+                                            )}
+                                          </Button>
+                                        </TableCell>
+                                        <TableCell className="font-medium max-w-[200px] truncate">
+                                          {c.campaignName}
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              c.status === "ACTIVE"
+                                                ? "default"
+                                                : "secondary"
+                                            }
+                                          >
+                                            {c.status === "ACTIVE"
+                                              ? "Aktivní"
+                                              : "Pozastavená"}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge variant="outline" className="text-xs">
+                                            {c.objective?.replace("OUTCOME_", "") || "N/A"}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {c.dailyBudget ? formatCurrency(c.dailyBudget) : "-"}
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                          {formatCurrency(c.spend)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {formatNumber(c.impressions)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {formatNumber(c.clicks)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {formatPercent(c.ctr)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          <span className="font-medium text-primary">
+                                            {c.conversions || 0}
+                                          </span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {cpa > 0 ? formatCurrency(cpa) : "-"}
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  })}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* Ad Sets Table */}
+                      <TabsContent value="adsets" className="mt-4">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Ad Sets</CardTitle>
+                            <CardDescription>
+                              Skupiny reklam s cílením a rozpočtem
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            {adSets.length === 0 ? (
+                              <div className="text-center py-8 text-muted-foreground">
+                                Žádné ad sety k zobrazení
+                              </div>
+                            ) : (
+                              <div className="overflow-x-auto">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>Název</TableHead>
+                                      <TableHead>Kampaň</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead>Audience</TableHead>
+                                      <TableHead className="text-right">Rozpočet</TableHead>
+                                      <TableHead className="text-right">Útrata</TableHead>
+                                      <TableHead className="text-right">Dosah</TableHead>
+                                      <TableHead className="text-right">Frekvence</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {adSets.map((as) => {
+                                      // Extract audience info from targeting if available
+                                      const audienceInfo = as.targeting?.geo_locations?.countries?.join(", ")
+                                        || as.targeting?.interests?.map((i: any) => i.name)?.slice(0, 2)?.join(", ")
+                                        || "Custom";
+                                      return (
+                                        <TableRow key={as.adSetId}>
+                                          <TableCell className="font-medium max-w-[200px] truncate">
+                                            {as.adSetName}
+                                          </TableCell>
+                                          <TableCell className="max-w-[150px] truncate text-muted-foreground">
+                                            {as.campaignName}
+                                          </TableCell>
+                                          <TableCell>
+                                            <Badge
+                                              variant={
+                                                as.status === "ACTIVE"
+                                                  ? "default"
+                                                  : "secondary"
+                                              }
+                                            >
+                                              {as.status === "ACTIVE"
+                                                ? "Aktivní"
+                                                : as.status || "N/A"}
+                                            </Badge>
+                                          </TableCell>
+                                          <TableCell>
+                                            <span className="text-xs text-muted-foreground max-w-[120px] truncate block">
+                                              {audienceInfo}
+                                            </span>
+                                          </TableCell>
+                                          <TableCell className="text-right">
+                                            {as.dailyBudget ? formatCurrency(as.dailyBudget) : "-"}
+                                          </TableCell>
+                                          <TableCell className="text-right font-medium">
+                                            {formatCurrency(as.spend)}
+                                          </TableCell>
+                                          <TableCell className="text-right">
+                                            {formatNumber(as.reach)}
+                                          </TableCell>
+                                          <TableCell className="text-right">
+                                            {as.frequency.toFixed(2)}
+                                          </TableCell>
+                                        </TableRow>
+                                      );
+                                    })}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* Ads Table */}
+                      <TabsContent value="ads" className="mt-4">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Reklamy</CardTitle>
+                            <CardDescription>
+                              Jednotlivé reklamy a jejich výkon
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            {ads.length === 0 ? (
+                              <div className="text-center py-8 text-muted-foreground">
+                                Žádné reklamy k zobrazení
+                              </div>
+                            ) : (
+                              <div className="overflow-x-auto">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead className="w-16">Náhled</TableHead>
+                                      <TableHead>Název</TableHead>
+                                      <TableHead>Ad Set</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead className="text-right">Útrata</TableHead>
+                                      <TableHead className="text-right">Zobrazení</TableHead>
+                                      <TableHead className="text-right">Kliky</TableHead>
+                                      <TableHead className="text-right">CTR</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {ads.map((ad) => (
+                                      <TableRow key={ad.adId}>
+                                        <TableCell>
+                                          <div className="w-12 h-12 bg-muted rounded flex items-center justify-center overflow-hidden">
+                                            {ad.thumbnailUrl ? (
+                                              <img
+                                                src={ad.thumbnailUrl}
+                                                alt={ad.adName}
+                                                className="w-full h-full object-cover"
+                                              />
+                                            ) : (
+                                              <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                                            )}
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="font-medium max-w-[180px] truncate">
+                                          {ad.adName}
+                                        </TableCell>
+                                        <TableCell className="max-w-[150px] truncate text-muted-foreground">
+                                          {ad.adSetName}
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              ad.status === "ACTIVE"
+                                                ? "default"
+                                                : "secondary"
+                                            }
+                                          >
+                                            {ad.status === "ACTIVE"
+                                              ? "Aktivní"
+                                              : ad.status || "N/A"}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                          {formatCurrency(ad.spend)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {formatNumber(ad.impressions)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {formatNumber(ad.clicks)}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {formatPercent(ad.ctr)}
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
                 )}
               </TabsContent>
 
