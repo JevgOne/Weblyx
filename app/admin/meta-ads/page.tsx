@@ -79,6 +79,9 @@ import {
   Megaphone,
   PenTool,
   Zap,
+  Upload,
+  ImageIcon,
+  Loader2,
 } from "lucide-react";
 import MetaRecommendationsPanel from "./_components/RecommendationsPanel";
 
@@ -306,6 +309,10 @@ export default function MetaAdsPage() {
   // Copy state
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
+  // Creative images state
+  const [creativeImages, setCreativeImages] = useState<Record<number, string>>({});
+  const [generatingImage, setGeneratingImage] = useState<number | null>(null);
+
   const fetchData = async () => {
     try {
       setRefreshing(true);
@@ -356,6 +363,47 @@ export default function MetaAdsPage() {
     navigator.clipboard.writeText(text);
     setCopiedItem(id);
     setTimeout(() => setCopiedItem(null), 2000);
+  };
+
+  const handleGenerateImage = async (index: number, prompt: string) => {
+    setGeneratingImage(index);
+    try {
+      const res = await fetch("/api/meta-ads/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, aspectRatio: "1:1" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // For now, copy enhanced prompt to clipboard
+        copyToClipboard(data.data.enhancedDescription, `gen-${index}`);
+        alert("Vylepšený prompt zkopírován! Použij ho v Midjourney nebo DALL-E.");
+      } else {
+        alert(`Chyba: ${data.error}`);
+      }
+    } catch (err) {
+      alert("Nepodařilo se vygenerovat");
+    } finally {
+      setGeneratingImage(null);
+    }
+  };
+
+  const handleUploadImage = (index: number) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string;
+          setCreativeImages((prev) => ({ ...prev, [index]: dataUrl }));
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
   };
 
   const handleToggleCampaign = async (campaignId: string, currentStatus: string) => {
@@ -1257,6 +1305,66 @@ export default function MetaAdsPage() {
                                       <p className="whitespace-pre-wrap mt-1">{concept.script}</p>
                                     </div>
                                   )}
+                                  {/* Image Preview or Upload Area */}
+                                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                                    {creativeImages[i] ? (
+                                      <div className="relative">
+                                        <img
+                                          src={creativeImages[i]}
+                                          alt={concept.name}
+                                          className="w-full max-h-64 object-contain rounded"
+                                        />
+                                        <Button
+                                          size="sm"
+                                          variant="destructive"
+                                          className="absolute top-2 right-2 h-6 text-xs"
+                                          onClick={() => setCreativeImages((prev) => {
+                                            const next = { ...prev };
+                                            delete next[i];
+                                            return next;
+                                          })}
+                                        >
+                                          Odstranit
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div className="text-center space-y-3">
+                                        <ImageIcon className="h-12 w-12 mx-auto text-gray-400" />
+                                        <p className="text-sm text-muted-foreground">
+                                          Vygeneruj AI obrázek nebo nahraj vlastní
+                                        </p>
+                                        <div className="flex justify-center gap-2">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => handleGenerateImage(i, concept.ai_image_prompt || concept.description)}
+                                            disabled={generatingImage === i}
+                                          >
+                                            {generatingImage === i ? (
+                                              <>
+                                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                                Generuji...
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Sparkles className="h-4 w-4 mr-1" />
+                                                Vygenerovat AI
+                                              </>
+                                            )}
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => handleUploadImage(i)}
+                                          >
+                                            <Upload className="h-4 w-4 mr-1" />
+                                            Nahrát vlastní
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+
                                   {concept.ai_image_prompt && (
                                     <div className="p-2 bg-purple-50 rounded text-sm">
                                       <strong className="text-purple-700">AI Prompt (Midjourney/DALL-E):</strong>
@@ -1268,7 +1376,7 @@ export default function MetaAdsPage() {
                                         onClick={() => copyToClipboard(concept.ai_image_prompt!, `ai-prompt-${i}`)}
                                       >
                                         {copiedItem === `ai-prompt-${i}` ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                        Kopírovat
+                                        Kopírovat prompt
                                       </Button>
                                     </div>
                                   )}
