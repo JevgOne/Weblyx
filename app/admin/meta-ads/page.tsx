@@ -78,6 +78,7 @@ import {
   Facebook,
   Megaphone,
   PenTool,
+  Zap,
 } from "lucide-react";
 import MetaRecommendationsPanel from "./_components/RecommendationsPanel";
 
@@ -98,31 +99,36 @@ interface Campaign {
 
 interface AnalysisResult {
   strategy: {
-    campaign_objective: string;
+    campaign_objective?: string;
     target_audience: string;
     unique_value_proposition: string;
-    key_messages: string[];
-    content_pillars: string[];
+    key_messages?: string[];
+    content_pillars?: string[];
     budget_split: { facebook: number; instagram: number };
-    funnel_strategy: {
-      cold: string;
-      warm: string;
-      hot: string;
+    daily_budget?: number;
+    recommended_audiences?: Array<{ name: string; targeting: string; why: string }>;
+    funnel_strategy?: {
+      tofu?: string;
+      mofu?: string;
+      bofu?: string;
+      cold?: string;
+      warm?: string;
+      hot?: string;
     };
   };
-  facebook_ads: {
+  facebook_ads?: {
     recommended_formats: string[];
     placements: string[];
     audience_targeting: any;
   };
-  instagram_ads: {
+  instagram_ads?: {
     content_style: string;
     recommended_formats: string[];
     reels_strategy: any;
   };
   ad_copy: {
     primary_texts: Array<{ text: string; angle: string }>;
-    headlines: Array<{ text: string; angle: string }>;
+    headlines: Array<{ text: string; angle?: string }>;
     descriptions: string[];
     ctas: string[];
   };
@@ -132,16 +138,59 @@ interface AnalysisResult {
     description: string;
     hook?: string;
     script?: string;
+    text_overlay?: string;
+    music_style?: string;
+    image_prompt?: string;
   }>;
   hashtags: string[];
-  campaign_settings: any;
-  testing_plan: any;
+  campaign_settings?: any;
+  testing_plan?: any;
   expert_notes: {
     project_manager: string;
     marketing: string;
     facebook: string;
     instagram: string;
-    ppc: string;
+    ppc?: string;
+  };
+  quick_wins?: string[];
+  common_mistakes?: string[];
+  campaign_setup_guide?: {
+    step1_campaign: {
+      name: string;
+      objective: string;
+      special_ad_categories: string;
+      budget_type: string;
+      budget_amount: number;
+      bid_strategy: string;
+    };
+    step2_adset: {
+      name: string;
+      optimization_event: string;
+      audience: {
+        locations: string[];
+        age_min: number;
+        age_max: number;
+        genders: string;
+        detailed_targeting: string[];
+        custom_audiences: string;
+        lookalike: string;
+      };
+      placements: string;
+      schedule: string;
+    };
+    step3_ad: {
+      format: string;
+      primary_text: string;
+      headline: string;
+      description: string;
+      cta_button: string;
+      destination: string;
+    };
+    testing_plan: {
+      week1: string;
+      week2: string;
+      week4: string;
+    };
   };
 }
 
@@ -853,6 +902,127 @@ export default function MetaAdsPage() {
                           </AccordionContent>
                         </AccordionItem>
                       </Accordion>
+
+                      {/* Quick Wins & Common Mistakes */}
+                      {(analysisResult.quick_wins || analysisResult.common_mistakes) && (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {analysisResult.quick_wins && (
+                            <Card className="border-green-200 bg-green-50/50">
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm flex items-center gap-2 text-green-700">
+                                  <Zap className="h-4 w-4" /> Quick Wins
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <ul className="space-y-1">
+                                  {analysisResult.quick_wins.map((win, i) => (
+                                    <li key={i} className="text-sm flex items-start gap-2">
+                                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                      {win}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </CardContent>
+                            </Card>
+                          )}
+                          {analysisResult.common_mistakes && (
+                            <Card className="border-red-200 bg-red-50/50">
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm flex items-center gap-2 text-red-700">
+                                  <XCircle className="h-4 w-4" /> Časté chyby
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <ul className="space-y-1">
+                                  {analysisResult.common_mistakes.map((mistake, i) => (
+                                    <li key={i} className="text-sm flex items-start gap-2">
+                                      <XCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                                      {mistake}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Campaign Setup Guide */}
+                      {analysisResult.campaign_setup_guide && (
+                        <Card className="border-primary">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Target className="h-5 w-5 text-primary" />
+                              Návod na setup kampaně
+                            </CardTitle>
+                            <CardDescription>
+                              Krok za krokem jak vytvořit kampaň v Meta Ads Manager
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Step 1 - Campaign */}
+                            <div className="space-y-3">
+                              <h4 className="font-semibold flex items-center gap-2">
+                                <Badge variant="outline">1</Badge> Vytvoření kampaně
+                              </h4>
+                              <div className="grid grid-cols-2 gap-2 text-sm pl-6">
+                                <div><strong>Název:</strong> {analysisResult.campaign_setup_guide.step1_campaign.name}</div>
+                                <div><strong>Cíl:</strong> {analysisResult.campaign_setup_guide.step1_campaign.objective}</div>
+                                <div><strong>Rozpočet:</strong> {analysisResult.campaign_setup_guide.step1_campaign.budget_amount} CZK/den</div>
+                                <div><strong>Bidding:</strong> {analysisResult.campaign_setup_guide.step1_campaign.bid_strategy}</div>
+                              </div>
+                            </div>
+
+                            {/* Step 2 - Ad Set */}
+                            <div className="space-y-3">
+                              <h4 className="font-semibold flex items-center gap-2">
+                                <Badge variant="outline">2</Badge> Nastavení Ad Setu
+                              </h4>
+                              <div className="text-sm pl-6 space-y-2">
+                                <div><strong>Název:</strong> {analysisResult.campaign_setup_guide.step2_adset.name}</div>
+                                <div><strong>Optimalizace:</strong> {analysisResult.campaign_setup_guide.step2_adset.optimization_event}</div>
+                                <div className="p-2 bg-muted rounded">
+                                  <strong>Audience:</strong>
+                                  <ul className="mt-1 space-y-1">
+                                    <li>Lokace: {analysisResult.campaign_setup_guide.step2_adset.audience.locations?.join(", ")}</li>
+                                    <li>Věk: {analysisResult.campaign_setup_guide.step2_adset.audience.age_min}-{analysisResult.campaign_setup_guide.step2_adset.audience.age_max} let</li>
+                                    <li>Pohlaví: {analysisResult.campaign_setup_guide.step2_adset.audience.genders}</li>
+                                    <li>Zájmy: {analysisResult.campaign_setup_guide.step2_adset.audience.detailed_targeting?.join(", ")}</li>
+                                  </ul>
+                                </div>
+                                <div><strong>Placements:</strong> {analysisResult.campaign_setup_guide.step2_adset.placements}</div>
+                                <div><strong>Timing:</strong> {analysisResult.campaign_setup_guide.step2_adset.schedule}</div>
+                              </div>
+                            </div>
+
+                            {/* Step 3 - Ad */}
+                            <div className="space-y-3">
+                              <h4 className="font-semibold flex items-center gap-2">
+                                <Badge variant="outline">3</Badge> Vytvoření reklamy
+                              </h4>
+                              <div className="text-sm pl-6 space-y-2">
+                                <div><strong>Formát:</strong> {analysisResult.campaign_setup_guide.step3_ad.format}</div>
+                                <div><strong>Text:</strong> {analysisResult.campaign_setup_guide.step3_ad.primary_text}</div>
+                                <div><strong>Headline:</strong> {analysisResult.campaign_setup_guide.step3_ad.headline}</div>
+                                <div><strong>CTA:</strong> {analysisResult.campaign_setup_guide.step3_ad.cta_button}</div>
+                                <div><strong>Destinace:</strong> {analysisResult.campaign_setup_guide.step3_ad.destination}</div>
+                              </div>
+                            </div>
+
+                            {/* Testing Plan */}
+                            <div className="space-y-3">
+                              <h4 className="font-semibold flex items-center gap-2">
+                                <Badge variant="outline">4</Badge> Testovací plán
+                              </h4>
+                              <div className="text-sm pl-6 space-y-1">
+                                <div><strong>Týden 1:</strong> {analysisResult.campaign_setup_guide.testing_plan.week1}</div>
+                                <div><strong>Týden 2:</strong> {analysisResult.campaign_setup_guide.testing_plan.week2}</div>
+                                <div><strong>Týden 4:</strong> {analysisResult.campaign_setup_guide.testing_plan.week4}</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
 
                       <Button
                         onClick={() => setAnalysisResult(null)}

@@ -135,72 +135,149 @@ ${metaAdsData}
 
     const analysisResponse = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 4000,
-      temperature: 0.7,
-      system: `Jsi expert na Meta (Facebook/Instagram) reklamy. Vytvoř kompletní analýzu a strategii pro klienta.
+      max_tokens: 6000,
+      temperature: 0.8,
+      system: `Jsi SENIOR Meta Ads specialista s 10+ lety zkušeností. Tvoje analýzy jsou vždy:
+- KONKRÉTNÍ - žádné obecné fráze, vše specifické pro daný byznys
+- ACTIONABLE - každý tip jde okamžitě implementovat
+- DATA-DRIVEN - i bez dat víš co funguje v dané branži
 
-DŮLEŽITÉ: Veškerý text reklam MUSÍ být ${langMap[language]}.
-
-Odpověz POUZE validním JSON ve formátu níže. Žádný jiný text.`,
+DŮLEŽITÉ:
+- Veškerý reklamní text MUSÍ být ${langMap[language]}
+- Buď kreativní a originální - žádné generic texty
+- Každý koncept musí být unikátní a promyšlený`,
       messages: [{
         role: "user",
-        content: `Analyzuj následující data a vytvoř kompletní strategii pro Meta Ads:
+        content: `Vytvoř KOMPLETNÍ Meta Ads strategii pro tento byznys:
 
 ${dataContext}
+
+POŽADAVKY:
+1. Reklamní texty musí být chytlavé, s emoji, různými úhly pohledu
+2. Kreativní koncepty musí být detailní - přesně co natočit/vyfotit
+3. Expert notes musí obsahovat KONKRÉTNÍ tipy co dělat
 
 Vrať POUZE tento JSON (bez markdown bloků):
 {
   "strategy": {
-    "target_audience": "Detailní popis cílové skupiny - věk, pohlaví, zájmy, chování",
-    "unique_value_proposition": "Hlavní hodnota a důvod proč koupit/kontaktovat",
-    "budget_split": {"facebook": 60, "instagram": 40},
-    "campaign_objective": "doporučený cíl kampaně",
-    "daily_budget": ${Math.round(monthlyBudget / 30)}
+    "target_audience": "KONKRÉTNÍ popis: věk 25-45, ženy i muži, zájmy: [konkrétní zájmy relevantní pro byznys], chování: [konkrétní chování], lokace: Česká republika",
+    "unique_value_proposition": "Hlavní konkurenční výhoda - proč právě tento byznys a ne konkurenci",
+    "budget_split": {"facebook": 65, "instagram": 35},
+    "campaign_objective": "${businessGoal}",
+    "daily_budget": ${Math.round(monthlyBudget / 30)},
+    "recommended_audiences": [
+      {"name": "Název audience 1", "targeting": "Detailní popis cílení", "why": "Proč tato audience"},
+      {"name": "Název audience 2", "targeting": "Detailní popis cílení", "why": "Proč tato audience"}
+    ],
+    "funnel_strategy": {
+      "tofu": "TOFU (Top of Funnel) - jak oslovit studené publikum",
+      "mofu": "MOFU (Middle of Funnel) - jak zahřát zájemce",
+      "bofu": "BOFU (Bottom of Funnel) - jak konvertovat"
+    }
   },
   "ad_copy": {
     "primary_texts": [
-      {"text": "Hlavní text reklamy ${langMap[language]} - max 125 znaků", "angle": "benefit"},
-      {"text": "Druhý text reklamy ${langMap[language]}", "angle": "urgency"},
-      {"text": "Třetí text reklamy ${langMap[language]}", "angle": "social-proof"}
+      {"text": "🎯 Chytlavý text s emoji, max 125 znaků, konkrétní benefit", "angle": "benefit"},
+      {"text": "⚡ Urgentní text s časovým omezením nebo akcí", "angle": "urgency"},
+      {"text": "⭐ Text s social proof - reference, čísla, výsledky", "angle": "social-proof"},
+      {"text": "❓ Otázka která rezonuje s problémem cílovky", "angle": "question"},
+      {"text": "💡 Překvapivý fakt nebo statistika", "angle": "curiosity"}
     ],
     "headlines": [
-      {"text": "Headline 1 ${langMap[language]}"},
-      {"text": "Headline 2 ${langMap[language]}"},
-      {"text": "Headline 3 ${langMap[language]}"}
+      {"text": "Headline max 40 znaků", "angle": "benefit"},
+      {"text": "Headline s číslem", "angle": "specific"},
+      {"text": "Headline s urgencí", "angle": "urgency"},
+      {"text": "Headline otázka", "angle": "question"},
+      {"text": "Headline výsledek", "angle": "result"}
     ],
-    "descriptions": ["Krátký popis 1", "Krátký popis 2"],
-    "ctas": ["Learn More", "Contact Us"]
+    "descriptions": [
+      "Krátký popis 1 - max 30 znaků",
+      "Krátký popis 2 - max 30 znaků",
+      "Krátký popis 3 - max 30 znaků"
+    ],
+    "ctas": ["Zjistit více", "Kontaktovat", "Objednat"]
   },
   "creative_concepts": [
     {
-      "name": "Název konceptu 1",
+      "name": "Konkrétní název konceptu",
       "format": "video",
-      "description": "Detailní popis vizuálu/videa",
-      "hook": "První 3 sekundy - co zaujme",
-      "script": "Celý scénář: 0-3s: ..., 3-10s: ..., 10-15s: CTA",
-      "image_prompt": "Detailed English prompt for AI image generation"
+      "description": "DETAILNÍ popis: Co přesně je ve videu, jaké záběry, jaká atmosféra, jaké barvy",
+      "hook": "První 3 sekundy - konkrétně co divák uvidí/uslyší co ho zastaví při scrollování",
+      "script": "KOMPLETNÍ scénář: 0-3s: [hook - co přesně], 3-8s: [problém/pain point], 8-12s: [řešení/produkt], 12-15s: [CTA + urgence]",
+      "music_style": "Typ hudby - upbeat/emotional/corporate",
+      "image_prompt": "Detailed English prompt for Midjourney/DALL-E: style, composition, lighting, mood, colors"
     },
     {
-      "name": "Název konceptu 2",
+      "name": "Konkrétní název carousel konceptu",
       "format": "carousel",
-      "description": "Popis carousel reklamy",
-      "hook": "Úvodní hook",
-      "script": "Slide 1: ..., Slide 2: ..., Slide 3: ..."
+      "description": "Téma a účel carouselu",
+      "hook": "Proč někdo přejede na další slide",
+      "script": "Slide 1: [headline + vizuál], Slide 2: [headline + vizuál], Slide 3: [headline + vizuál], Slide 4: [headline + vizuál], Slide 5: [CTA slide]",
+      "image_prompt": "Style guide for all slides: colors, fonts, imagery style"
     },
     {
-      "name": "Název konceptu 3",
+      "name": "Konkrétní název image konceptu",
       "format": "image",
-      "description": "Popis statického obrázku",
-      "hook": "Hlavní sdělení",
-      "image_prompt": "Detailed English prompt for AI image generation"
+      "description": "Co přesně je na obrázku, kompozice, text overlay",
+      "hook": "Proč tento obrázek zastaví scroll",
+      "text_overlay": "Text který bude na obrázku",
+      "image_prompt": "Detailed English prompt: subject, background, lighting, style, composition, mood"
     }
   ],
-  "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5"],
+  "hashtags": ["#relevantní", "#hashtagy", "#pro", "#daný", "#byznys", "#minimum10"],
   "expert_notes": {
-    "project_manager": "Strategické doporučení a hlavní insight",
-    "marketing": "Tip pro messaging a positioning",
-    "facebook": "Specifické doporučení pro Facebook",
-    "instagram": "Specifické doporučení pro Instagram"
+    "project_manager": "KONKRÉTNÍ strategické doporučení: 1) První krok co udělat, 2) Na co si dát pozor, 3) Kdy očekávat výsledky",
+    "marketing": "KONKRÉTNÍ tip pro messaging: Jaký tone of voice použít, jaké emoce vyvolat, jaké námitky adresovat",
+    "facebook": "KONKRÉTNÍ tip pro FB: Který placement funguje nejlépe, jaký formát, jaká frekvence",
+    "instagram": "KONKRÉTNÍ tip pro IG: Jaký content style, kdy postovat, jak využít Reels",
+    "ppc": "KONKRÉTNÍ tip pro optimalizaci: Jaký bidding, jak nastavit rozpočet, kdy škálovat"
+  },
+  "quick_wins": [
+    "Konkrétní tip co udělat DNES pro rychlé výsledky",
+    "Druhý quick win",
+    "Třetí quick win"
+  ],
+  "common_mistakes": [
+    "Častá chyba kterou byznys v této branži dělá + jak se jí vyhnout",
+    "Druhá častá chyba"
+  ],
+  "campaign_setup_guide": {
+    "step1_campaign": {
+      "name": "Doporučený název kampaně",
+      "objective": "CONVERSIONS/TRAFFIC/LEADS - který vybrat",
+      "special_ad_categories": "Žádné / Housing / Credit / Employment",
+      "budget_type": "Daily budget / Lifetime budget",
+      "budget_amount": ${Math.round(monthlyBudget / 30)},
+      "bid_strategy": "Lowest cost / Cost cap - který a proč"
+    },
+    "step2_adset": {
+      "name": "Doporučený název ad setu",
+      "optimization_event": "Co optimalizovat - Lead, Purchase, Link Click",
+      "audience": {
+        "locations": ["Česká republika"],
+        "age_min": 25,
+        "age_max": 55,
+        "genders": "all / men / women",
+        "detailed_targeting": ["Konkrétní zájmy a chování k nastavení"],
+        "custom_audiences": "Jaké custom audiences vytvořit",
+        "lookalike": "Z čeho vytvořit lookalike a jaké %"
+      },
+      "placements": "Automatic / Manual - které vybrat",
+      "schedule": "Kdy spustit, jak dlouho testovat"
+    },
+    "step3_ad": {
+      "format": "Single image / Video / Carousel",
+      "primary_text": "Který z vygenerovaných textů použít první",
+      "headline": "Který headline",
+      "description": "Který popis",
+      "cta_button": "Které CTA tlačítko",
+      "destination": "Kam odkazovat - landing page URL"
+    },
+    "testing_plan": {
+      "week1": "Co testovat první týden",
+      "week2": "Jak vyhodnotit a co změnit",
+      "week4": "Kdy a jak škálovat"
+    }
   }
 }`
       }],
