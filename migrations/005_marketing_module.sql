@@ -68,3 +68,42 @@ CREATE TABLE IF NOT EXISTS marketing_ai_logs (
 
 CREATE INDEX IF NOT EXISTS idx_marketing_ai_logs_session ON marketing_ai_logs(session_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_marketing_ai_logs_created ON marketing_ai_logs(created_at DESC);
+
+-- Marketing Daily Metrics
+-- Stores daily metrics for historical data and trends
+CREATE TABLE IF NOT EXISTS marketing_metrics_daily (
+    id TEXT PRIMARY KEY,
+    date TEXT NOT NULL,                    -- YYYY-MM-DD
+    platform TEXT NOT NULL CHECK(platform IN ('google_ads', 'meta_ads')),
+    level TEXT NOT NULL DEFAULT 'account' CHECK(level IN ('account', 'campaign', 'adgroup', 'ad')),
+    entity_id TEXT,                        -- ID entity (campaign_id, ad_id, etc.)
+    entity_name TEXT,
+
+    -- Core metrics
+    impressions INTEGER DEFAULT 0,
+    clicks INTEGER DEFAULT 0,
+    spend REAL DEFAULT 0,
+    conversions REAL DEFAULT 0,
+    conversion_value REAL DEFAULT 0,
+
+    -- Calculated metrics
+    ctr REAL,                              -- clicks / impressions
+    cpc REAL,                              -- spend / clicks
+    cpm REAL,                              -- (spend / impressions) * 1000
+    cpa REAL,                              -- spend / conversions
+    roas REAL,                             -- conversion_value / spend
+
+    -- Platform specific
+    quality_score INTEGER,                 -- Google Ads
+    impression_share REAL,                 -- Google Ads
+    frequency REAL,                        -- Meta Ads
+    reach INTEGER,                         -- Meta Ads
+
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+
+    UNIQUE(date, platform, level, entity_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_metrics_date ON marketing_metrics_daily(date);
+CREATE INDEX IF NOT EXISTS idx_metrics_platform ON marketing_metrics_daily(platform);
+CREATE INDEX IF NOT EXISTS idx_metrics_entity ON marketing_metrics_daily(entity_id);

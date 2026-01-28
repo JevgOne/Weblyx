@@ -57,27 +57,27 @@ interface QuickAction {
 const quickActions: QuickAction[] = [
   {
     icon: <BarChart3 className="h-5 w-5" />,
-    label: "Weekly Report",
-    prompt: "Vytvoř týdenní report výkonu kampaní za posledních 7 dní",
-    description: "Shrnutí výkonu všech kampaní",
+    label: "📊 Týdenní Report",
+    prompt: "Vytvoř kompletní týdenní report výkonu všech kampaní. Zahrň Google Ads i Meta Ads, porovnej s targety a navrhni optimalizace.",
+    description: "Kompletní přehled výkonu",
   },
   {
     icon: <Target className="h-5 w-5" />,
-    label: "Analyze Performance",
-    prompt: "Analyzuj výkon kampaní a navrhni optimalizace",
-    description: "AI analýza s doporučeními",
+    label: "🔍 Analyzuj Výkon",
+    prompt: "Analyzuj výkon všech kampaní. Identifikuj winners a losers, navrhni konkrétní akce pro optimalizaci s očekávaným dopadem.",
+    description: "Winners & losers analýza",
   },
   {
     icon: <Rocket className="h-5 w-5" />,
-    label: "New Campaign",
-    prompt: "Navrhni novou kampaň pro získání více leadů",
-    description: "AI vytvoří strukturu kampaně",
+    label: "🚀 Nová Kampaň",
+    prompt: "Navrhni strukturu nové kampaně. Potřebuju doporučení pro Google Ads i Meta Ads - cílení, budget rozdělení, bidding strategii a ad copy.",
+    description: "Návrh struktury kampaně",
   },
   {
     icon: <Lightbulb className="h-5 w-5" />,
-    label: "Creative Ideas",
-    prompt: "Navrhni nové kreativní koncepty pro reklamy",
-    description: "Nápady na ad copy a vizuály",
+    label: "⚠️ Najdi Problémy",
+    prompt: "Najdi všechny problémy v kampaních - vysoké CPA, nízké CTR, špatné Quality Score, creative fatigue. Co řešit jako první?",
+    description: "Audit problémů",
   },
 ];
 

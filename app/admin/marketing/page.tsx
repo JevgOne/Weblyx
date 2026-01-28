@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import {
   ArrowLeft,
+  ArrowRight,
   TrendingUp,
   TrendingDown,
   DollarSign,
@@ -36,9 +37,12 @@ import {
   Lightbulb,
   ExternalLink,
   Brain,
+  Bot,
   Settings,
   ChevronRight,
   Zap,
+  Check,
+  X,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -108,6 +112,18 @@ interface OverviewData {
   };
 }
 
+interface Recommendation {
+  id: string;
+  platform: string;
+  type: string;
+  priority: "critical" | "high" | "medium" | "low";
+  title: string;
+  description: string;
+  expected_impact: string;
+  status: string;
+  created_at: number;
+}
+
 export default function MarketingOverviewPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
@@ -117,6 +133,7 @@ export default function MarketingOverviewPage() {
   const [data, setData] = useState<OverviewData | null>(null);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [chartMetric, setChartMetric] = useState<"spend" | "conversions">("spend");
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
 
   const fetchData = async () => {
     setRefreshing(true);
@@ -235,6 +252,19 @@ export default function MarketingOverviewPage() {
           targetCpa: config?.targetCpa || null,
         },
       });
+
+      // Fetch recommendations
+      try {
+        const recsRes = await fetch("/api/marketing/recommendations?status=pending");
+        if (recsRes.ok) {
+          const recsData = await recsRes.json();
+          if (recsData.success) {
+            setRecommendations(recsData.data || []);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch recommendations:", e);
+      }
     } catch (err) {
       console.error("Error fetching overview:", err);
     } finally {
@@ -266,6 +296,24 @@ export default function MarketingOverviewPage() {
         {isPositive ? "+" : ""}{value.toFixed(1)}%
       </span>
     );
+  };
+
+  const handleRecommendationAction = async (id: string, action: "apply" | "dismiss") => {
+    try {
+      const res = await fetch(`/api/marketing/recommendations/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: action === "apply" ? "applied" : "dismissed",
+        }),
+      });
+
+      if (res.ok) {
+        setRecommendations((prev) => prev.filter((r) => r.id !== id));
+      }
+    } catch (e) {
+      console.error("Failed to process recommendation action:", e);
+    }
   };
 
   if (!user || loading) {
@@ -676,19 +724,22 @@ export default function MarketingOverviewPage() {
 
       {/* AI Recommendations Panel */}
       <Card className="mb-8">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-500" />
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Bot className="w-5 h-5 text-purple-500" />
               AI Doporučení
             </CardTitle>
-            <Link href="/admin/ai-assistant">
-              <Button variant="ghost" size="sm">
-                Zobrazit vše
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </Link>
+            <CardDescription>
+              Automatická doporučení pro optimalizaci kampaní
+            </CardDescription>
           </div>
+          <Link href="/admin/ai-assistant">
+            <Button variant="outline" size="sm">
+              Otevřít AI Assistant
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
         </CardHeader>
         <CardContent>
           {!data?.google_ads.status.connected && !data?.meta_ads.status.connected ? (
@@ -704,26 +755,94 @@ export default function MarketingOverviewPage() {
                 </Button>
               </Link>
             </div>
+          ) : recommendations.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-500" />
+              <p>Žádná nová doporučení</p>
+              <p className="text-sm mt-1">Vše běží optimálně nebo nemáš dostatek dat</p>
+              <Link href="/admin/ai-assistant">
+                <Button variant="outline" size="sm" className="mt-4">
+                  Spustit AI analýzu
+                </Button>
+              </Link>
+            </div>
           ) : (
             <div className="space-y-3">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <span className="text-lg">💡</span>
-                  <div className="flex-1">
-                    <p className="font-medium text-blue-900">
-                      Spusť AI analýzu pro personalizovaná doporučení
-                    </p>
-                    <p className="text-sm text-blue-700 mt-1">
-                      AI analyzuje tvá data a navrhne konkrétní akce pro zlepšení výkonu
-                    </p>
+              {recommendations.slice(0, 5).map((rec) => (
+                <div
+                  key={rec.id}
+                  className={`p-4 rounded-lg border ${
+                    rec.priority === "critical"
+                      ? "bg-red-50 border-red-200"
+                      : rec.priority === "high"
+                      ? "bg-yellow-50 border-yellow-200"
+                      : "bg-green-50 border-green-200"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className={`text-lg ${
+                            rec.priority === "critical"
+                              ? "text-red-500"
+                              : rec.priority === "high"
+                              ? "text-yellow-500"
+                              : "text-green-500"
+                          }`}
+                        >
+                          {rec.priority === "critical"
+                            ? "🔴"
+                            : rec.priority === "high"
+                            ? "🟡"
+                            : "🟢"}
+                        </span>
+                        <span className="text-xs text-muted-foreground uppercase">
+                          {rec.platform}
+                        </span>
+                        <span className="text-xs text-muted-foreground">•</span>
+                        <span className="text-xs text-muted-foreground">{rec.type}</span>
+                      </div>
+                      <h4 className="font-medium">{rec.title}</h4>
+                      <p className="text-sm text-muted-foreground mt-1">{rec.description}</p>
+                      {rec.expected_impact && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          💡 Očekávaný dopad: {rec.expected_impact}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-green-600 border-green-300 hover:bg-green-50"
+                        onClick={() => handleRecommendationAction(rec.id, "apply")}
+                      >
+                        <Check className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 border-red-300 hover:bg-red-50"
+                        onClick={() => handleRecommendationAction(rec.id, "dismiss")}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
+                </div>
+              ))}
+
+              {recommendations.length > 5 && (
+                <div className="text-center pt-2">
                   <Link href="/admin/ai-assistant">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                      Spustit
+                    <Button variant="ghost" size="sm">
+                      Zobrazit všech {recommendations.length} doporučení
+                      <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </CardContent>

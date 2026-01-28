@@ -9,324 +9,324 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 // ===========================================
-// TYPES
+// SYSTEM PROMPT - AI MARKETING AGENCY
 // ===========================================
 
-interface PlatformConnection {
-  connected: boolean;
-  accountId?: string;
-  accountName?: string;
-  lastSync?: string;
-}
+const SYSTEM_PROMPT = `
+# AI MARKETING AGENCY
 
-interface Connections {
-  googleAds?: PlatformConnection;
-  metaAds?: PlatformConnection;
-  googleAnalytics?: PlatformConnection;
-  searchConsole?: PlatformConnection;
-}
+Jsi AI Marketing Agency - kompletní tým specialistů pro řízení Google Ads a Meta Ads kampaní. Nahrazuješ celou marketingovou agenturu.
 
-interface ProjectConfig {
-  name?: string;
-  url?: string;
-  type?: "ecommerce" | "services" | "lead_gen";
-  industry?: string;
-  averageOrderValue?: number;
-  grossMargin?: number;
-  targetRoas?: number;
-  targetCpa?: number;
-  monthlyBudget?: number;
-  language?: "cs" | "en" | "de";
-}
+## TVÉ ROLE (aktivuješ podle potřeby)
 
-interface ChatContext {
-  connections?: Connections;
-  config?: ProjectConfig;
-}
+1. **ORCHESTRATOR** - Koordinátor týmu, deleguje úkoly
+2. **ANALYST** - Analyzuje data, vytváří reporty, identifikuje problémy
+3. **STRATEGIST** - Vytváří strategie, definuje cílové skupiny
+4. **GOOGLE ADS SPECIALIST** - Expert na Google Ads
+5. **META ADS SPECIALIST** - Expert na Facebook/Instagram Ads
+6. **CREATIVE DIRECTOR** - Vizuální koncepty, creative briefs
+7. **CONTENT WRITER** - Ad copy pro všechny platformy
 
-interface ChatRequest {
-  message: string;
-  context?: ChatContext;
-  stream?: boolean;
-}
+## JAK PRACUJEŠ
 
-interface ChatResponse {
-  success: boolean;
-  response?: string;
-  error?: string;
-}
+### Při analýze dat:
+1. Zkontroluj dostupná data
+2. Vypočítej klíčové metriky (CPA, ROAS, CTR)
+3. Porovnej s targety z konfigurace
+4. Identifikuj winners a losers
+5. Navrhni konkrétní akce
 
-// ===========================================
-// SYSTEM PROMPT
-// ===========================================
+### Metriky a jejich hodnocení:
+- CTR Search: dobrý > 3%, warning 1.5-3%, špatný < 1.5%
+- CTR Display: dobrý > 0.5%, warning 0.2-0.5%, špatný < 0.2%
+- CTR Meta Feed: dobrý > 1.5%, warning 0.8-1.5%, špatný < 0.8%
+- Quality Score (Google): dobrý ≥ 7, warning 5-6, špatný < 5
+- Frequency (Meta): dobrý < 2, warning 2-3, špatný > 3
 
-const MARKETING_AI_SYSTEM_PROMPT = `You are an AI Marketing Assistant - a team of expert marketing professionals helping with digital advertising campaigns.
+### Rozhodovací pravidla:
+- SCALE UP: ROAS > target * 1.2 po 3+ dny → +20% budget
+- SCALE DOWN: ROAS < target * 0.5 po 5+ dní → -30% budget nebo pause
+- PAUSE: 50+ clicks a 0 conversions → pausni keyword/ad
+- ADD NEGATIVE: 10+ clicks, 0 conversions, irelevantní → přidej negative keyword
 
-YOUR ROLE:
-You are a complete AI Marketing team with expertise in:
+## FORMÁT ODPOVĚDÍ
 
-1. **Google Ads Specialist**
-   - Campaign structure and optimization
-   - Keyword research and match type strategies
-   - Ad copy creation (headlines max 30 chars, descriptions max 90 chars)
-   - Quality Score optimization
-   - Bidding strategies (Target CPA, Target ROAS, Maximize Conversions)
-   - Search, Display, Performance Max campaigns
-   - Negative keyword management
-   - Ad extensions (sitelinks, callouts, structured snippets)
+Vždy odpovídej strukturovaně:
 
-2. **Meta Ads Specialist (Facebook & Instagram)**
-   - Campaign objectives (Awareness, Consideration, Conversion)
-   - Audience targeting (Interests, Behaviors, Custom, Lookalike)
-   - Ad creative best practices (Image specs: 1080x1080, 1080x1350, 1080x1920)
-   - Creative fatigue detection (Frequency > 3 with declining CTR)
-   - Funnel strategies (TOFU, MOFU, BOFU)
-   - A/B testing recommendations
-   - Retargeting strategies (Website visitors, Engaged users, ATC)
+### Pro reporty:
+📊 **SHRNUTÍ** (3-5 vět)
 
-3. **Campaign Analyst**
-   - Performance metrics interpretation (CTR, CPC, CPA, ROAS, CPM)
-   - Data-driven recommendations
-   - Trend analysis and forecasting
-   - Attribution modeling
-   - Conversion tracking setup
-   - ROI calculations
+**KLÍČOVÉ METRIKY**
+| Metrika | Hodnota | Target | Status |
+|---------|---------|--------|--------|
 
-4. **Budget Strategist**
-   - Budget allocation across platforms
-   - Scaling strategies (increase 20% if ROAS > target for 3+ days)
-   - Pause criteria (50+ clicks, 0 conversions, 5+ days = PAUSE)
-   - Break-even ROAS calculation (1 / margin)
-   - Daily vs monthly budget planning
-   - Channel mix optimization
+**DOPORUČENÍ**
+🔴 Kritické: [ihned provést]
+🟡 Důležité: [tento týden]
+🟢 Nice-to-have: [k zvážení]
 
-5. **Creative Director**
-   - Ad copy writing in multiple languages
-   - Visual concept recommendations
-   - Hook creation for video ads (first 3 seconds)
-   - Messaging pillars and value propositions
-   - Emotional triggers and persuasion techniques
-   - Brand voice consistency
+### Pro analýzy kampaní:
+Vždy uveď:
+- Co funguje (winners)
+- Co nefunguje (losers)
+- Konkrétní akce k provedení
+- Očekávaný dopad
 
-RESPONSE GUIDELINES:
-- Be concise but thorough
-- Provide actionable recommendations
-- Use data and metrics to support suggestions
-- Structure complex answers with headers and bullet points
-- Include specific examples when helpful
-- Always consider the user's context (budget, industry, goals)
-- For ad copy, always respect character limits:
-  - Google Headlines: max 30 characters
-  - Google Descriptions: max 90 characters
-  - Meta Primary Text: ideally under 125 characters
-  - Meta Headlines: max 40 characters
+## ČESKÝ KONTEXT
 
-PERFORMANCE THRESHOLDS:
-- Good CTR (Search): > 3%
-- Good CTR (Display/Meta): > 1%
-- Warning CPA: > target x 1.2
-- Critical ROAS: < break-even ROAS
-- Scaling threshold: ROAS > target x 1.2 for 3+ days
-- Creative fatigue: Frequency > 3 with declining CTR
+- Měna: Kč
+- Formát čísel: 9 990 Kč (mezera jako oddělovač)
+- Benchmarky CZ trh:
+  - E-commerce: CPC 5-12 Kč, CPA 200-500 Kč
+  - B2B služby: CPC 15-50 Kč, CPA 500-2000 Kč
+  - Web development: CPC 20-60 Kč, CPA 800-3000 Kč
 
-LANGUAGE:
-- Respond in the same language the user writes in
-- Default to Czech if context indicates a Czech market
-- Technical terms can remain in English (CTR, CPC, ROAS, etc.)
+## PRAVIDLA
 
-Remember: You are here to help marketers succeed. Be helpful, specific, and data-driven.`;
+1. Vždy používej data která dostaneš - neodhaduj
+2. Pokud chybí data, řekni co potřebuješ
+3. Konkrétní čísla > vágní doporučení
+4. Každý insight = konkrétní akce
+5. Komunikuj česky, srozumitelně, bez zbytečného žargonu
+6. Pokud nemáš dost dat pro rozhodnutí, řekni to
+`;
 
 // ===========================================
 // HELPER FUNCTIONS
 // ===========================================
 
-function buildContextPrompt(context?: ChatContext): string {
-  if (!context) return "";
+// Fetch marketing data from internal APIs
+async function fetchMarketingData(baseUrl: string) {
+  const data: {
+    google_ads: any[] | null;
+    meta_ads: any[] | null;
+  } = {
+    google_ads: null,
+    meta_ads: null,
+  };
 
-  const parts: string[] = [];
-
-  // Add connection status
-  if (context.connections) {
-    const connectionStatus: string[] = [];
-
-    if (context.connections.googleAds?.connected) {
-      connectionStatus.push(`Google Ads: Connected (${context.connections.googleAds.accountName || context.connections.googleAds.accountId})`);
+  try {
+    // Google Ads data
+    const googleRes = await fetch(`${baseUrl}/api/google-ads/campaigns`, {
+      cache: "no-store",
+    });
+    if (googleRes.ok) {
+      const googleData = await googleRes.json();
+      if (googleData.success) {
+        data.google_ads = googleData.data;
+      }
     }
-    if (context.connections.metaAds?.connected) {
-      connectionStatus.push(`Meta Ads: Connected (${context.connections.metaAds.accountName || context.connections.metaAds.accountId})`);
-    }
-    if (context.connections.googleAnalytics?.connected) {
-      connectionStatus.push(`Google Analytics: Connected`);
-    }
-    if (context.connections.searchConsole?.connected) {
-      connectionStatus.push(`Search Console: Connected`);
-    }
-
-    if (connectionStatus.length > 0) {
-      parts.push(`[Connected Platforms]\n${connectionStatus.join("\n")}`);
-    }
+  } catch (e) {
+    console.error("Failed to fetch Google Ads:", e);
   }
 
-  // Add project config
-  if (context.config) {
-    const config = context.config;
-    const configDetails: string[] = [];
-
-    if (config.name) configDetails.push(`Project: ${config.name}`);
-    if (config.url) configDetails.push(`Website: ${config.url}`);
-    if (config.type) configDetails.push(`Business Type: ${config.type}`);
-    if (config.industry) configDetails.push(`Industry: ${config.industry}`);
-    if (config.averageOrderValue) configDetails.push(`AOV: ${config.averageOrderValue} CZK`);
-    if (config.grossMargin) configDetails.push(`Gross Margin: ${(config.grossMargin * 100).toFixed(0)}%`);
-    if (config.targetRoas) configDetails.push(`Target ROAS: ${config.targetRoas}x`);
-    if (config.targetCpa) configDetails.push(`Target CPA: ${config.targetCpa} CZK`);
-    if (config.monthlyBudget) configDetails.push(`Monthly Budget: ${config.monthlyBudget} CZK`);
-    if (config.language) configDetails.push(`Language: ${config.language.toUpperCase()}`);
-
-    // Calculate derived metrics
-    if (config.grossMargin && config.grossMargin > 0) {
-      const breakEvenRoas = 1 / config.grossMargin;
-      configDetails.push(`Break-even ROAS: ${breakEvenRoas.toFixed(2)}x`);
+  try {
+    // Meta Ads data
+    const metaRes = await fetch(`${baseUrl}/api/meta-ads/campaigns`, {
+      cache: "no-store",
+    });
+    if (metaRes.ok) {
+      const metaData = await metaRes.json();
+      if (metaData.success) {
+        data.meta_ads = metaData.data;
+      }
     }
-
-    if (configDetails.length > 0) {
-      parts.push(`[Project Configuration]\n${configDetails.join("\n")}`);
-    }
+  } catch (e) {
+    console.error("Failed to fetch Meta Ads:", e);
   }
 
-  return parts.length > 0 ? `\n\n${parts.join("\n\n")}` : "";
+  return data;
+}
+
+// Format data for AI context
+function formatDataForAI(data: { google_ads: any[] | null; meta_ads: any[] | null }, config: any) {
+  let context = "";
+
+  // Project config
+  if (config) {
+    context += `
+## KONFIGURACE PROJEKTU
+- Průměrná hodnota objednávky (AOV): ${config.averageOrderValue || "nenastaveno"} Kč
+- Marže: ${config.grossMarginPercent || "nenastaveno"}%
+- Target ROAS: ${config.targetRoas || "nenastaveno"}x
+- Target CPA: ${config.targetCpa || "nenastaveno"} Kč
+- Měsíční budget: ${config.monthlyBudget || "nenastaveno"} Kč
+- Break-even ROAS: ${config.breakEvenRoas || "nenastaveno"}x
+- Max CPA: ${config.maxCpa || "nenastaveno"} Kč
+`;
+  }
+
+  // Google Ads data
+  if (data.google_ads && data.google_ads.length > 0) {
+    context += `
+## GOOGLE ADS DATA
+
+### Kampaně
+| Kampaň | Status | Spend | Clicks | Conv | CPA | ROAS |
+|--------|--------|-------|--------|------|-----|------|
+`;
+    data.google_ads.forEach((c: any) => {
+      const spend = c.spend || c.cost || 0;
+      const conversions = c.conversions || 0;
+      const convValue = c.conversionValue || c.conversionsValue || 0;
+      const cpa = conversions > 0 ? (spend / conversions).toFixed(0) : "-";
+      const roas = spend > 0 ? (convValue / spend).toFixed(2) : "-";
+      context += `| ${c.name} | ${c.status} | ${spend.toFixed(0)} Kč | ${c.clicks || 0} | ${conversions} | ${cpa} Kč | ${roas}x |\n`;
+    });
+
+    // Souhrn
+    const totals = data.google_ads.reduce(
+      (acc: any, c: any) => ({
+        spend: acc.spend + (c.spend || c.cost || 0),
+        clicks: acc.clicks + (c.clicks || 0),
+        conversions: acc.conversions + (c.conversions || 0),
+        convValue: acc.convValue + (c.conversionValue || c.conversionsValue || 0),
+      }),
+      { spend: 0, clicks: 0, conversions: 0, convValue: 0 }
+    );
+
+    context += `
+**Celkem Google Ads:**
+- Spend: ${totals.spend.toFixed(0)} Kč
+- Clicks: ${totals.clicks}
+- Conversions: ${totals.conversions}
+- CPA: ${totals.conversions > 0 ? (totals.spend / totals.conversions).toFixed(0) : "-"} Kč
+- ROAS: ${totals.spend > 0 ? (totals.convValue / totals.spend).toFixed(2) : "-"}x
+`;
+  } else {
+    context += `
+## GOOGLE ADS
+Žádná data - buď není připojeno nebo nemáš aktivní kampaně.
+`;
+  }
+
+  // Meta Ads data
+  if (data.meta_ads && data.meta_ads.length > 0) {
+    context += `
+## META ADS DATA
+
+### Kampaně
+| Kampaň | Status | Spend | Reach | Clicks | Conv | CPA | ROAS |
+|--------|--------|-------|-------|--------|------|-----|------|
+`;
+    data.meta_ads.forEach((c: any) => {
+      const spend = c.spend || 0;
+      const conversions = c.conversions || 0;
+      const convValue = c.conversionValue || c.purchaseValue || 0;
+      const cpa = conversions > 0 ? (spend / conversions).toFixed(0) : "-";
+      const roas = spend > 0 ? (convValue / spend).toFixed(2) : "-";
+      context += `| ${c.name} | ${c.status || c.effectiveStatus} | ${spend.toFixed(0)} Kč | ${c.reach || "-"} | ${c.clicks || 0} | ${conversions} | ${cpa} Kč | ${roas}x |\n`;
+    });
+
+    // Souhrn
+    const totals = data.meta_ads.reduce(
+      (acc: any, c: any) => ({
+        spend: acc.spend + (c.spend || 0),
+        clicks: acc.clicks + (c.clicks || 0),
+        conversions: acc.conversions + (c.conversions || 0),
+        convValue: acc.convValue + (c.conversionValue || c.purchaseValue || 0),
+        reach: acc.reach + (c.reach || 0),
+      }),
+      { spend: 0, clicks: 0, conversions: 0, convValue: 0, reach: 0 }
+    );
+
+    context += `
+**Celkem Meta Ads:**
+- Spend: ${totals.spend.toFixed(0)} Kč
+- Reach: ${totals.reach}
+- Clicks: ${totals.clicks}
+- Conversions: ${totals.conversions}
+- CPA: ${totals.conversions > 0 ? (totals.spend / totals.conversions).toFixed(0) : "-"} Kč
+- ROAS: ${totals.spend > 0 ? (totals.convValue / totals.spend).toFixed(2) : "-"}x
+`;
+  } else {
+    context += `
+## META ADS
+Žádná data - buď není připojeno nebo nemáš aktivní kampaně.
+`;
+  }
+
+  return context;
 }
 
 // ===========================================
 // API HANDLERS
 // ===========================================
 
-export async function POST(request: NextRequest): Promise<NextResponse<ChatResponse>> {
+export async function POST(request: NextRequest) {
   try {
-    const body: ChatRequest = await request.json();
-    const { message, context, stream = false } = body;
+    const body = await request.json();
+    const { message, context } = body;
 
-    // Validate request
-    if (!message || typeof message !== "string" || message.trim().length === 0) {
+    if (!message) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Message is required and must be a non-empty string",
-        },
+        { success: false, error: "Message is required" },
         { status: 400 }
       );
     }
 
-    // Check for API key
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Anthropic API key is not configured",
-        },
+        { success: false, error: "Anthropic API key not configured" },
         { status: 500 }
       );
     }
 
-    // Build the user message with context
-    const contextPrompt = buildContextPrompt(context);
-    const userMessage = contextPrompt
-      ? `${message}${contextPrompt}`
-      : message;
+    // Get base URL for internal API calls
+    const protocol = request.headers.get("x-forwarded-proto") || "http";
+    const host = request.headers.get("host") || "localhost:3000";
+    const baseUrl = `${protocol}://${host}`;
 
-    // Handle streaming response
-    if (stream) {
-      const streamResponse = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
-        temperature: 0.7,
-        system: MARKETING_AI_SYSTEM_PROMPT,
-        stream: true,
-        messages: [
-          {
-            role: "user",
-            content: userMessage,
-          },
-        ],
-      });
+    // Fetch current data from platforms
+    const marketingData = await fetchMarketingData(baseUrl);
 
-      // Create a ReadableStream for the response
-      const encoder = new TextEncoder();
-      const readableStream = new ReadableStream({
-        async start(controller) {
-          try {
-            for await (const event of streamResponse) {
-              if (
-                event.type === "content_block_delta" &&
-                event.delta.type === "text_delta"
-              ) {
-                const text = event.delta.text;
-                controller.enqueue(
-                  encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
-                );
-              }
-            }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
-          } catch (error) {
-            controller.error(error);
-          }
-        },
-      });
+    // Format data for AI
+    const dataContext = formatDataForAI(marketingData, context?.config);
 
-      return new NextResponse(readableStream, {
-        headers: {
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-        },
-      }) as NextResponse<ChatResponse>;
-    }
+    // Build user message with context
+    const userMessageWithContext = `
+${message}
 
-    // Non-streaming response
+---
+# AKTUÁLNÍ DATA (použij pro analýzu)
+${dataContext}
+
+# PŘIPOJENÉ PLATFORMY
+- Google Ads: ${context?.connections?.google_ads ? "✅ Připojeno" : "❌ Nepřipojeno"}
+- Meta Ads: ${context?.connections?.meta_ads ? "✅ Připojeno" : "❌ Nepřipojeno"}
+- GA4: ${context?.connections?.ga4 ? "✅ Připojeno" : "❌ Nepřipojeno"}
+- GSC: ${context?.connections?.gsc ? "✅ Připojeno" : "❌ Nepřipojeno"}
+`;
+
+    // Call Anthropic API
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 4096,
-      temperature: 0.7,
-      system: MARKETING_AI_SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT,
       messages: [
         {
           role: "user",
-          content: userMessage,
+          content: userMessageWithContext,
         },
       ],
     });
 
-    // Extract text response
-    const textContent = response.content.find((block) => block.type === "text");
-    const responseText = textContent?.type === "text" ? textContent.text : "";
+    // Extract text from response
+    const aiResponse = response.content
+      .filter((block) => block.type === "text")
+      .map((block) => (block as { type: "text"; text: string }).text)
+      .join("");
 
     return NextResponse.json({
       success: true,
-      response: responseText,
+      response: aiResponse,
     });
-  } catch (error: unknown) {
-    console.error("AI Assistant chat error:", error);
-
-    // Handle Anthropic API errors
-    if (error instanceof Anthropic.APIError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `API Error: ${error.message}`,
-        },
-        { status: error.status || 500 }
-      );
-    }
-
-    // Handle other errors
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-
+  } catch (error: any) {
+    console.error("AI Chat Error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: errorMessage,
+        error: error.message || "Failed to process chat message",
       },
       { status: 500 }
     );
@@ -334,7 +334,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ChatRespo
 }
 
 // Health check endpoint
-export async function GET(): Promise<NextResponse> {
+export async function GET() {
   return NextResponse.json({
     status: "ok",
     endpoint: "/api/ai-assistant/chat",
