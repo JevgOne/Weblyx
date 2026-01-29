@@ -73,6 +73,10 @@ import {
   Tablet,
   Globe,
   Lightbulb,
+  AlertTriangle,
+  Megaphone,
+  Calendar,
+  UserCircle,
 } from "lucide-react";
 import RecommendationsPanel from "./_components/RecommendationsPanel";
 
@@ -172,16 +176,50 @@ interface SearchConsoleData {
   }>;
 }
 
+interface ExpertNote {
+  insight: string;
+  test_first: string;
+  warning: string;
+}
+
 interface AnalysisResult {
   strategy: {
     campaign_objective: string;
     target_audience: string;
     unique_value_proposition: string;
     key_differentiators: string[];
+    brand_positioning?: string;
     recommended_budget_split: { search: number; display: number; remarketing: number };
   };
+  personas?: Array<{
+    name: string;
+    age: string;
+    position: string;
+    pain_points: string[];
+    goals: string[];
+    objections: string[];
+  }>;
+  uvp_angles?: Array<{
+    name: string;
+    positioning: string;
+  }>;
   headlines: Array<{ text: string; angle: string; chars: number }>;
+  headlines_by_angle?: Array<{
+    angle: string;
+    headlines: Array<{ text: string; formula: string; chars: number }>;
+  }>;
   descriptions: Array<{ text: string; angle: string; chars: number }>;
+  descriptions_by_type?: {
+    benefit: Array<{ text: string; chars: number }>;
+    problem_solution: Array<{ text: string; chars: number }>;
+    social_proof: Array<{ text: string; chars: number }>;
+  };
+  meta_ads?: {
+    primary_texts: Array<{ text: string; angle: string }>;
+    headlines: Array<{ text: string }>;
+    descriptions: Array<{ text: string }>;
+    creative_recommendations: string;
+  };
   keywords: {
     high_intent: Array<{ text: string; matchType: string; intent: string }>;
     medium_intent: Array<{ text: string; matchType: string; intent: string }>;
@@ -201,11 +239,16 @@ interface AnalysisResult {
     locations: string[];
     devices: string;
   };
+  testing_plan?: {
+    week_1: string;
+    week_2: string;
+    week_4: string;
+  };
   expert_notes: {
-    project_manager: string;
-    marketing: string;
-    seo: string;
-    ppc: string;
+    project_manager: string | ExpertNote;
+    marketing: string | ExpertNote;
+    seo: string | ExpertNote;
+    ppc: string | ExpertNote;
   };
 }
 
@@ -432,6 +475,22 @@ export default function GoogleAdsPage() {
   useEffect(() => {
     if (user) fetchData();
   }, [user, dateRange]);
+
+  // Load persisted analysis result on mount
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/google-ads/analyze/history")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          setAnalysisResult(json.data);
+          setAgentOutputs(json.agentOutputs || null);
+        }
+      })
+      .catch(() => {
+        // Silently ignore — no saved analysis yet
+      });
+  }, [user]);
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }).format(value);
@@ -806,7 +865,7 @@ export default function GoogleAdsPage() {
                     </div>
                   ) : (
                     <div className="space-y-6 py-4">
-                      {/* Strategy Summary */}
+                      {/* 1. Strategy Summary */}
                       <Card className="border-green-200 bg-green-50/50">
                         <CardHeader>
                           <CardTitle className="text-lg flex items-center gap-2">
@@ -827,6 +886,12 @@ export default function GoogleAdsPage() {
                             <Label className="text-xs text-muted-foreground">Unique Value Proposition</Label>
                             <p className="font-medium text-primary">{analysisResult.strategy.unique_value_proposition}</p>
                           </div>
+                          {analysisResult.strategy.brand_positioning && (
+                            <div>
+                              <Label className="text-xs text-muted-foreground">Brand Positioning</Label>
+                              <p>{analysisResult.strategy.brand_positioning}</p>
+                            </div>
+                          )}
                           <div>
                             <Label className="text-xs text-muted-foreground">Diferenciátory</Label>
                             <div className="flex flex-wrap gap-1 mt-1">
@@ -838,68 +903,377 @@ export default function GoogleAdsPage() {
                         </CardContent>
                       </Card>
 
-                      {/* Headlines */}
+                      {/* 2. Personas */}
+                      {analysisResult.personas && analysisResult.personas.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <UserCircle className="h-5 w-5 text-blue-600" />
+                              Persony
+                            </CardTitle>
+                            <CardDescription>Cílové zákaznické profily</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {analysisResult.personas.map((p, i) => (
+                                <div key={i} className="border rounded-lg p-4 space-y-3">
+                                  <div>
+                                    <p className="font-semibold text-base">{p.name}</p>
+                                    <p className="text-sm text-muted-foreground">{p.age} | {p.position}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs text-red-600">Bolesti</Label>
+                                    <ul className="text-sm space-y-1 mt-1">
+                                      {p.pain_points.map((pp, j) => (
+                                        <li key={j} className="flex items-start gap-1.5">
+                                          <span className="text-red-400 mt-0.5 shrink-0">-</span>
+                                          <span>{pp}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs text-green-600">Cíle</Label>
+                                    <ul className="text-sm space-y-1 mt-1">
+                                      {p.goals.map((g, j) => (
+                                        <li key={j} className="flex items-start gap-1.5">
+                                          <span className="text-green-400 mt-0.5 shrink-0">-</span>
+                                          <span>{g}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs text-yellow-600">Námitky</Label>
+                                    <ul className="text-sm space-y-1 mt-1">
+                                      {p.objections.map((o, j) => (
+                                        <li key={j} className="flex items-start gap-1.5">
+                                          <span className="text-yellow-400 mt-0.5 shrink-0">-</span>
+                                          <span>{o}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 3. UVP Angles */}
+                      {analysisResult.uvp_angles && analysisResult.uvp_angles.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Lightbulb className="h-5 w-5 text-yellow-600" />
+                              UVP Úhly
+                            </CardTitle>
+                            <CardDescription>3 úhly pro A/B testování</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {analysisResult.uvp_angles.map((a, i) => (
+                                <div key={i} className="border rounded-lg p-4 bg-gradient-to-b from-yellow-50/50 to-transparent">
+                                  <p className="font-semibold text-base">{a.name}</p>
+                                  <p className="text-sm text-muted-foreground mt-2">{a.positioning}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 4. Headlines */}
                       <Card>
                         <CardHeader>
                           <CardTitle className="text-lg">Headlines (max 30 znaků)</CardTitle>
                           <CardDescription>Klikni pro zkopírování</CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="grid grid-cols-2 gap-2">
-                            {analysisResult.headlines.map((h, i) => (
-                              <div
-                                key={i}
-                                onClick={() => copyToClipboard(h.text, `h-${i}`)}
-                                className="flex items-center justify-between p-2 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
-                              >
-                                <div className="flex-1">
-                                  <span className="font-medium">{h.text}</span>
-                                  <div className="flex gap-2 mt-1">
-                                    <Badge variant="outline" className="text-xs">{h.angle}</Badge>
-                                    <span className="text-xs text-muted-foreground">{h.chars || h.text.length} zn.</span>
+                          {analysisResult.headlines_by_angle && analysisResult.headlines_by_angle.length > 0 ? (
+                            <Tabs defaultValue={analysisResult.headlines_by_angle[0]?.angle}>
+                              <TabsList className="mb-4 flex-wrap h-auto gap-1">
+                                {analysisResult.headlines_by_angle.map((group, i) => (
+                                  <TabsTrigger key={i} value={group.angle} className="text-xs">
+                                    {group.angle}
+                                  </TabsTrigger>
+                                ))}
+                              </TabsList>
+                              {analysisResult.headlines_by_angle.map((group, gi) => (
+                                <TabsContent key={gi} value={group.angle}>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {group.headlines.map((h, hi) => {
+                                      const id = `ha-${gi}-${hi}`;
+                                      return (
+                                        <div
+                                          key={hi}
+                                          onClick={() => copyToClipboard(h.text, id)}
+                                          className="flex items-center justify-between p-2 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                                        >
+                                          <div className="flex-1">
+                                            <span className="font-medium">{h.text}</span>
+                                            <div className="flex gap-2 mt-1">
+                                              <Badge variant="outline" className="text-xs">{h.formula}</Badge>
+                                              <span className="text-xs text-muted-foreground">{h.chars || h.text.length} zn.</span>
+                                            </div>
+                                          </div>
+                                          {copiedItem === id ? (
+                                            <Check className="h-4 w-4 text-green-500" />
+                                          ) : (
+                                            <Copy className="h-4 w-4 text-muted-foreground" />
+                                          )}
+                                        </div>
+                                      );
+                                    })}
                                   </div>
+                                </TabsContent>
+                              ))}
+                            </Tabs>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-2">
+                              {analysisResult.headlines.map((h, i) => (
+                                <div
+                                  key={i}
+                                  onClick={() => copyToClipboard(h.text, `h-${i}`)}
+                                  className="flex items-center justify-between p-2 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                                >
+                                  <div className="flex-1">
+                                    <span className="font-medium">{h.text}</span>
+                                    <div className="flex gap-2 mt-1">
+                                      <Badge variant="outline" className="text-xs">{h.angle}</Badge>
+                                      <span className="text-xs text-muted-foreground">{h.chars || h.text.length} zn.</span>
+                                    </div>
+                                  </div>
+                                  {copiedItem === `h-${i}` ? (
+                                    <Check className="h-4 w-4 text-green-500" />
+                                  ) : (
+                                    <Copy className="h-4 w-4 text-muted-foreground" />
+                                  )}
                                 </div>
-                                {copiedItem === `h-${i}` ? (
-                                  <Check className="h-4 w-4 text-green-500" />
-                                ) : (
-                                  <Copy className="h-4 w-4 text-muted-foreground" />
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
 
-                      {/* Descriptions */}
+                      {/* 5. Descriptions */}
                       <Card>
                         <CardHeader>
                           <CardTitle className="text-lg">Descriptions (max 90 znaků)</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                          {analysisResult.descriptions.map((d, i) => (
-                            <div
-                              key={i}
-                              onClick={() => copyToClipboard(d.text, `d-${i}`)}
-                              className="flex items-center justify-between p-3 bg-muted rounded cursor-pointer hover:bg-muted/80"
-                            >
-                              <div className="flex-1">
-                                <p>{d.text}</p>
-                                <div className="flex gap-2 mt-1">
-                                  <Badge variant="outline" className="text-xs">{d.angle}</Badge>
-                                  <span className="text-xs text-muted-foreground">{d.chars || d.text.length} zn.</span>
-                                </div>
+                        <CardContent>
+                          {analysisResult.descriptions_by_type &&
+                           (analysisResult.descriptions_by_type.benefit?.length > 0 ||
+                            analysisResult.descriptions_by_type.problem_solution?.length > 0 ||
+                            analysisResult.descriptions_by_type.social_proof?.length > 0) ? (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {/* Benefit */}
+                              <div className="space-y-2">
+                                <Label className="text-xs text-green-600 font-semibold">Benefit</Label>
+                                {analysisResult.descriptions_by_type.benefit?.map((d, i) => {
+                                  const id = `db-${i}`;
+                                  return (
+                                    <div
+                                      key={i}
+                                      onClick={() => copyToClipboard(d.text, id)}
+                                      className="flex items-center justify-between p-2 bg-green-50/50 border border-green-100 rounded cursor-pointer hover:bg-green-50 transition-colors"
+                                    >
+                                      <div className="flex-1">
+                                        <p className="text-sm">{d.text}</p>
+                                        <span className="text-xs text-muted-foreground">{d.chars || d.text.length} zn.</span>
+                                      </div>
+                                      {copiedItem === id ? (
+                                        <Check className="h-4 w-4 text-green-500 shrink-0" />
+                                      ) : (
+                                        <Copy className="h-4 w-4 text-muted-foreground shrink-0" />
+                                      )}
+                                    </div>
+                                  );
+                                })}
                               </div>
-                              {copiedItem === `d-${i}` ? (
-                                <Check className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <Copy className="h-4 w-4 text-muted-foreground" />
-                              )}
+                              {/* Problem-Solution */}
+                              <div className="space-y-2">
+                                <Label className="text-xs text-orange-600 font-semibold">Problem-Solution</Label>
+                                {analysisResult.descriptions_by_type.problem_solution?.map((d, i) => {
+                                  const id = `dp-${i}`;
+                                  return (
+                                    <div
+                                      key={i}
+                                      onClick={() => copyToClipboard(d.text, id)}
+                                      className="flex items-center justify-between p-2 bg-orange-50/50 border border-orange-100 rounded cursor-pointer hover:bg-orange-50 transition-colors"
+                                    >
+                                      <div className="flex-1">
+                                        <p className="text-sm">{d.text}</p>
+                                        <span className="text-xs text-muted-foreground">{d.chars || d.text.length} zn.</span>
+                                      </div>
+                                      {copiedItem === id ? (
+                                        <Check className="h-4 w-4 text-green-500 shrink-0" />
+                                      ) : (
+                                        <Copy className="h-4 w-4 text-muted-foreground shrink-0" />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              {/* Social Proof */}
+                              <div className="space-y-2">
+                                <Label className="text-xs text-blue-600 font-semibold">Social Proof</Label>
+                                {analysisResult.descriptions_by_type.social_proof?.map((d, i) => {
+                                  const id = `ds-${i}`;
+                                  return (
+                                    <div
+                                      key={i}
+                                      onClick={() => copyToClipboard(d.text, id)}
+                                      className="flex items-center justify-between p-2 bg-blue-50/50 border border-blue-100 rounded cursor-pointer hover:bg-blue-50 transition-colors"
+                                    >
+                                      <div className="flex-1">
+                                        <p className="text-sm">{d.text}</p>
+                                        <span className="text-xs text-muted-foreground">{d.chars || d.text.length} zn.</span>
+                                      </div>
+                                      {copiedItem === id ? (
+                                        <Check className="h-4 w-4 text-green-500 shrink-0" />
+                                      ) : (
+                                        <Copy className="h-4 w-4 text-muted-foreground shrink-0" />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          ))}
+                          ) : (
+                            <div className="space-y-2">
+                              {analysisResult.descriptions.map((d, i) => (
+                                <div
+                                  key={i}
+                                  onClick={() => copyToClipboard(d.text, `d-${i}`)}
+                                  className="flex items-center justify-between p-3 bg-muted rounded cursor-pointer hover:bg-muted/80"
+                                >
+                                  <div className="flex-1">
+                                    <p>{d.text}</p>
+                                    <div className="flex gap-2 mt-1">
+                                      <Badge variant="outline" className="text-xs">{d.angle}</Badge>
+                                      <span className="text-xs text-muted-foreground">{d.chars || d.text.length} zn.</span>
+                                    </div>
+                                  </div>
+                                  {copiedItem === `d-${i}` ? (
+                                    <Check className="h-4 w-4 text-green-500" />
+                                  ) : (
+                                    <Copy className="h-4 w-4 text-muted-foreground" />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
 
-                      {/* Keywords */}
+                      {/* 6. Meta Ads */}
+                      {analysisResult.meta_ads && (
+                        analysisResult.meta_ads.primary_texts?.length > 0 ||
+                        analysisResult.meta_ads.headlines?.length > 0
+                      ) && (
+                        <Card className="border-blue-200 bg-blue-50/30">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Megaphone className="h-5 w-5 text-blue-600" />
+                              Meta Ads (Facebook / Instagram)
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            {/* Primary Texts */}
+                            {analysisResult.meta_ads.primary_texts?.length > 0 && (
+                              <div>
+                                <Label className="text-xs font-semibold">Primary Text (max 125 viditelných / 500 celkem)</Label>
+                                <div className="space-y-2 mt-2">
+                                  {analysisResult.meta_ads.primary_texts.map((t, i) => {
+                                    const id = `mp-${i}`;
+                                    return (
+                                      <div
+                                        key={i}
+                                        onClick={() => copyToClipboard(t.text, id)}
+                                        className="p-3 bg-white border rounded cursor-pointer hover:border-blue-300 transition-colors"
+                                      >
+                                        <div className="flex items-start justify-between gap-2">
+                                          <div className="flex-1">
+                                            <p className="text-sm">{t.text}</p>
+                                            <Badge variant="outline" className="text-xs mt-2">{t.angle}</Badge>
+                                          </div>
+                                          {copiedItem === id ? (
+                                            <Check className="h-4 w-4 text-green-500 shrink-0 mt-1" />
+                                          ) : (
+                                            <Copy className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                            {/* Meta Headlines + Descriptions */}
+                            <div className="grid grid-cols-2 gap-4">
+                              {analysisResult.meta_ads.headlines?.length > 0 && (
+                                <div>
+                                  <Label className="text-xs font-semibold">Headlines (max 40 zn.)</Label>
+                                  <div className="space-y-1 mt-2">
+                                    {analysisResult.meta_ads.headlines.map((h, i) => {
+                                      const id = `mh-${i}`;
+                                      return (
+                                        <div
+                                          key={i}
+                                          onClick={() => copyToClipboard(h.text, id)}
+                                          className="flex items-center justify-between p-2 bg-white border rounded cursor-pointer hover:border-blue-300 transition-colors"
+                                        >
+                                          <span className="text-sm font-medium">{h.text}</span>
+                                          {copiedItem === id ? (
+                                            <Check className="h-4 w-4 text-green-500 shrink-0" />
+                                          ) : (
+                                            <Copy className="h-4 w-4 text-muted-foreground shrink-0" />
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                              {analysisResult.meta_ads.descriptions?.length > 0 && (
+                                <div>
+                                  <Label className="text-xs font-semibold">Descriptions (max 30 zn.)</Label>
+                                  <div className="space-y-1 mt-2">
+                                    {analysisResult.meta_ads.descriptions.map((d, i) => {
+                                      const id = `md-${i}`;
+                                      return (
+                                        <div
+                                          key={i}
+                                          onClick={() => copyToClipboard(d.text, id)}
+                                          className="flex items-center justify-between p-2 bg-white border rounded cursor-pointer hover:border-blue-300 transition-colors"
+                                        >
+                                          <span className="text-sm">{d.text}</span>
+                                          {copiedItem === id ? (
+                                            <Check className="h-4 w-4 text-green-500 shrink-0" />
+                                          ) : (
+                                            <Copy className="h-4 w-4 text-muted-foreground shrink-0" />
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            {/* Creative Recommendations */}
+                            {analysisResult.meta_ads.creative_recommendations && (
+                              <div className="p-3 bg-white border rounded">
+                                <Label className="text-xs font-semibold">Creative doporučení</Label>
+                                <p className="text-sm mt-1">{analysisResult.meta_ads.creative_recommendations}</p>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 7. Keywords */}
                       <Card>
                         <CardHeader>
                           <CardTitle className="text-lg">Klíčová slova</CardTitle>
@@ -952,7 +1326,7 @@ export default function GoogleAdsPage() {
                         </CardContent>
                       </Card>
 
-                      {/* Extensions & Settings */}
+                      {/* 8. Extensions & Settings */}
                       <div className="grid grid-cols-2 gap-4">
                         <Card>
                           <CardHeader>
@@ -1006,36 +1380,74 @@ export default function GoogleAdsPage() {
                         </Card>
                       </div>
 
-                      {/* Expert Notes */}
+                      {/* 9. Testing Plan */}
+                      {analysisResult.testing_plan && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Calendar className="h-5 w-5 text-indigo-600" />
+                              Testovací plán
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="border rounded-lg p-4">
+                                <Badge variant="default" className="mb-2">Týden 1</Badge>
+                                <p className="text-sm">{analysisResult.testing_plan.week_1}</p>
+                              </div>
+                              <div className="border rounded-lg p-4">
+                                <Badge variant="secondary" className="mb-2">Týden 2</Badge>
+                                <p className="text-sm">{analysisResult.testing_plan.week_2}</p>
+                              </div>
+                              <div className="border rounded-lg p-4">
+                                <Badge variant="outline" className="mb-2">Týden 4</Badge>
+                                <p className="text-sm">{analysisResult.testing_plan.week_4}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 10. Expert Notes */}
                       <Accordion type="single" collapsible>
                         <AccordionItem value="notes">
                           <AccordionTrigger>Poznámky od expertů</AccordionTrigger>
                           <AccordionContent>
                             <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-blue-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-blue-700">
-                                  <Briefcase className="h-4 w-4" /> Project Manager
-                                </div>
-                                <p className="text-sm mt-1">{analysisResult.expert_notes?.project_manager}</p>
-                              </div>
-                              <div className="p-3 bg-green-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-green-700">
-                                  <TrendingUp className="h-4 w-4" /> Marketing
-                                </div>
-                                <p className="text-sm mt-1">{analysisResult.expert_notes?.marketing}</p>
-                              </div>
-                              <div className="p-3 bg-orange-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-orange-700">
-                                  <Search className="h-4 w-4" /> SEO
-                                </div>
-                                <p className="text-sm mt-1">{analysisResult.expert_notes?.seo}</p>
-                              </div>
-                              <div className="p-3 bg-purple-50 rounded">
-                                <div className="flex items-center gap-2 font-medium text-purple-700">
-                                  <Target className="h-4 w-4" /> PPC
-                                </div>
-                                <p className="text-sm mt-1">{analysisResult.expert_notes?.ppc}</p>
-                              </div>
+                              {([
+                                { key: "project_manager" as const, label: "Project Manager", icon: <Briefcase className="h-4 w-4" />, bg: "bg-blue-50", text: "text-blue-700" },
+                                { key: "marketing" as const, label: "Marketing", icon: <TrendingUp className="h-4 w-4" />, bg: "bg-green-50", text: "text-green-700" },
+                                { key: "seo" as const, label: "SEO", icon: <Search className="h-4 w-4" />, bg: "bg-orange-50", text: "text-orange-700" },
+                                { key: "ppc" as const, label: "PPC", icon: <Target className="h-4 w-4" />, bg: "bg-purple-50", text: "text-purple-700" },
+                              ]).map(({ key, label, icon, bg, text }) => {
+                                const note = analysisResult.expert_notes?.[key];
+                                const isStructured = note && typeof note === "object";
+                                return (
+                                  <div key={key} className={`p-3 ${bg} rounded`}>
+                                    <div className={`flex items-center gap-2 font-medium ${text}`}>
+                                      {icon} {label}
+                                    </div>
+                                    {isStructured ? (
+                                      <div className="mt-2 space-y-2 text-sm">
+                                        <div>
+                                          <span className="font-medium">Insight:</span>
+                                          <p className="text-muted-foreground">{(note as ExpertNote).insight}</p>
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Testovat první:</span>
+                                          <p className="text-muted-foreground">{(note as ExpertNote).test_first}</p>
+                                        </div>
+                                        <div className="flex items-start gap-1">
+                                          <AlertTriangle className="h-3.5 w-3.5 text-yellow-600 mt-0.5 shrink-0" />
+                                          <p className="text-muted-foreground">{(note as ExpertNote).warning}</p>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm mt-1">{note as string}</p>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           </AccordionContent>
                         </AccordionItem>
