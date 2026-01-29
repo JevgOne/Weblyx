@@ -3,6 +3,7 @@ import { turso } from '@/lib/turso';
 import { GoPay } from '@/lib/gopay';
 import { generateInvoicePDF, uploadInvoicePDF, generateInvoiceNumber } from '@/lib/pdf-invoice';
 import { sendInvoiceEmail } from '@/lib/email/send-invoice';
+import { upsertClientFromInvoice } from '@/lib/turso/clients';
 import type { CreateInvoiceInput, InvoiceItem } from '@/types/payments';
 
 /**
@@ -205,6 +206,38 @@ export async function POST(request: NextRequest) {
       sql: 'UPDATE company_settings SET next_invoice_number = ?, updated_at = unixepoch() WHERE id = ?',
       args: [(company.next_invoice_number as number) + 1, 'weblyx'],
     });
+
+    // Auto-upsert client (non-blocking — invoice creation must not fail because of this)
+    let clientId: string | null = null;
+    try {
+      clientId = await upsertClientFromInvoice({
+        name: input.client_name,
+        email: input.client_email || null,
+        phone: (input as any).client_phone || null,
+        street: input.client_street || null,
+        city: input.client_city || null,
+        zip: input.client_zip || null,
+        country: input.client_country || null,
+        ico: input.client_ico || null,
+        dic: input.client_dic || null,
+        invoiceAmountHalere: amountWithVat,
+      });
+
+      // Try to add client_id column if not exists, then update the invoice
+      try {
+        await turso.execute(`ALTER TABLE invoices ADD COLUMN client_id TEXT`);
+      } catch {
+        // Column already exists — ignore
+      }
+      if (clientId) {
+        await turso.execute({
+          sql: 'UPDATE invoices SET client_id = ? WHERE invoice_number = ?',
+          args: [clientId, nextInvoiceNumber],
+        });
+      }
+    } catch (clientError) {
+      console.warn('⚠️ Client upsert failed (non-blocking):', clientError);
+    }
 
     console.log('✅ Invoice generated:', {
       invoice_number: nextInvoiceNumber,

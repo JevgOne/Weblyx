@@ -338,5 +338,54 @@ WHERE i.status IN ('issued', 'sent')
 ORDER BY i.due_date ASC;
 
 -- =====================================================
+-- TABLE: clients
+-- Purpose: Reusable client records for invoicing
+-- =====================================================
+CREATE TABLE IF NOT EXISTS clients (
+  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+
+  -- Client info
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+
+  -- Address
+  street TEXT,
+  city TEXT,
+  zip TEXT,
+  country TEXT DEFAULT 'Česká republika',
+
+  -- Tax IDs
+  ico TEXT,
+  dic TEXT,
+
+  -- Metadata
+  notes TEXT,
+  invoice_count INTEGER DEFAULT 0,
+  total_invoiced INTEGER DEFAULT 0,  -- v haléřích
+
+  -- Timestamps
+  created_at INTEGER DEFAULT (unixepoch()),
+  updated_at INTEGER DEFAULT (unixepoch())
+);
+
+-- Indexes for clients
+CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name);
+CREATE INDEX IF NOT EXISTS idx_clients_ico ON clients(ico);
+CREATE INDEX IF NOT EXISTS idx_clients_email ON clients(email);
+
+-- Trigger for clients
+CREATE TRIGGER IF NOT EXISTS update_clients_timestamp
+AFTER UPDATE ON clients
+BEGIN
+  UPDATE clients SET updated_at = unixepoch() WHERE id = NEW.id;
+END;
+
+-- Add client_id to invoices (optional, backward-compatible)
+-- Note: SQLite ALTER TABLE ADD COLUMN does not support REFERENCES,
+-- so the foreign key is logical only.
+-- ALTER TABLE invoices ADD COLUMN client_id TEXT;
+
+-- =====================================================
 -- END OF SCHEMA
 -- =====================================================

@@ -8,6 +8,41 @@
  */
 
 // =====================================================
+// CLIENT TYPES
+// =====================================================
+
+export interface Client {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  street: string | null;
+  city: string | null;
+  zip: string | null;
+  country: string;
+  ico: string | null;
+  dic: string | null;
+  notes: string | null;
+  invoice_count: number;
+  total_invoiced: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CreateClientInput {
+  name: string;
+  email?: string;
+  phone?: string;
+  street?: string;
+  city?: string;
+  zip?: string;
+  country?: string;
+  ico?: string;
+  dic?: string;
+  notes?: string;
+}
+
+// =====================================================
 // PAYMENT TYPES
 // =====================================================
 
