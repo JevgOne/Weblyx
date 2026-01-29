@@ -547,9 +547,9 @@ export default function GoogleAdsPage() {
       } else {
         alert(`Error: ${data.error}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       clearInterval(progressInterval);
-      alert("Analysis failed");
+      alert(`Analysis failed: ${err?.message || "Network timeout - zkuste to znovu"}`);
     } finally {
       setAnalyzing(false);
     }

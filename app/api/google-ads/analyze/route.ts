@@ -9,7 +9,7 @@ const anthropic = new Anthropic({
 });
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 120; // Allow up to 2 minutes for thorough multi-agent collaboration
+export const maxDuration = 300; // Allow up to 5 minutes for thorough multi-agent collaboration
 
 interface AnalysisRequest {
   websiteUrl: string;
