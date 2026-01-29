@@ -114,14 +114,24 @@ TOP ORGANIC PAGES: ${topPages.map((p: any) => `${p.page.replace(/https?:\/\/[^/]
 }
 
 async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 3000): Promise<string> {
-  const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: maxTokens,
-    temperature,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userPrompt }],
-  });
-  return response.content[0].type === "text" ? response.content[0].text : "";
+  const maxRetries = 2;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: maxTokens,
+        temperature,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
+      });
+      return response.content[0].type === "text" ? response.content[0].text : "";
+    } catch (error: any) {
+      console.error(`Agent call attempt ${attempt + 1} failed:`, error?.message || error);
+      if (attempt === maxRetries) throw error;
+      await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+    }
+  }
+  return "";
 }
 
 export async function POST(request: NextRequest) {
@@ -433,7 +443,7 @@ NOW CREATE THE FINAL ADS in ${langFull}:
    - Sitelinks (4) with descriptions:
    - Structured snippet header and values:`,
       0.7,
-      4500
+      4000
     );
 
     // ========================================
@@ -476,23 +486,33 @@ Create the final campaign recommendations:
     // ========================================
     console.log("🎯 Phase 7: Generating final structured output...");
 
-    const finalOutput = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 6000,
-      temperature: 0.2,
-      messages: [
-        {
-          role: "user",
-          content: `Compile all team outputs into a final JSON structure.
+    // Truncate inputs to avoid exceeding API limits / socket errors
+    const marketingTrunc = marketingDraft.slice(0, 3000);
+    const ppcTrunc = ppcFinal.slice(0, 6000);
+    const pmTrunc = pmFinalReview.slice(0, 3000);
+    const pmBriefTrunc = pmBrief.slice(0, 2000);
+
+    const phase7Call = async () => {
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 6000,
+        temperature: 0.2,
+        messages: [
+          {
+            role: "user",
+            content: `Compile all team outputs into a final JSON structure.
+
+PM BRIEF (contains personas and UVP angles):
+${pmBriefTrunc}
 
 MARKETING STRATEGY:
-${marketingDraft}
+${marketingTrunc}
 
 FINAL ADS (in ${langFull}):
-${ppcFinal}
+${ppcTrunc}
 
 PROJECT MANAGER RECOMMENDATIONS:
-${pmFinalReview}
+${pmTrunc}
 
 CRITICAL: Extract the actual headlines and descriptions from the PPC output. They MUST be in ${langFull}.
 - Headlines max 30 chars
@@ -572,8 +592,23 @@ Output ONLY valid JSON:
         },
       ],
     });
+      return response;
+    };
 
-    const responseText = finalOutput.content[0].type === "text" ? finalOutput.content[0].text : "";
+    // Retry logic for Phase 7
+    let finalOutput;
+    for (let attempt = 0; attempt <= 2; attempt++) {
+      try {
+        finalOutput = await phase7Call();
+        break;
+      } catch (error: any) {
+        console.error(`Phase 7 attempt ${attempt + 1} failed:`, error?.message || error);
+        if (attempt === 2) throw error;
+        await new Promise((r) => setTimeout(r, 3000 * (attempt + 1)));
+      }
+    }
+
+    const responseText = finalOutput!.content[0].type === "text" ? finalOutput!.content[0].text : "";
 
     let result;
     try {
