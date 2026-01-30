@@ -139,6 +139,11 @@ export function ContactWow() {
         throw new Error(t('errors.somethingWrong'));
       }
 
+      // Google Ads conversion tracking
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
+      }
+
       // Success! 🎉
       setIsSuccess(true);
 

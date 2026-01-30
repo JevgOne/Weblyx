@@ -191,6 +191,11 @@ export function Contact({ isMainPage = false }: ContactProps) {
         message: t('messages.successMessage'),
       });
 
+      // Google Ads conversion tracking
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
+      }
+
       // 🎉 Celebrate with confetti!
       celebrateSuccess();
 
