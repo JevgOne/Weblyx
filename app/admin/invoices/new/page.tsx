@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Plus, Trash2, FileText, Loader2, Download, Search, UserCheck, UserPlus } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, FileText, Loader2, Download, UserCheck, UserPlus } from "lucide-react";
 import type { InvoiceType, InvoiceItem, PaymentMethod, InvoiceStatus, Client } from "@/types/payments";
 
 export default function NewInvoicePage() {
@@ -56,7 +56,6 @@ export default function NewInvoicePage() {
   ]);
 
   // Client search state
-  const [clientSearch, setClientSearch] = useState("");
   const [clientResults, setClientResults] = useState<Client[]>([]);
   const [clientSearching, setClientSearching] = useState(false);
   const [showClientDropdown, setShowClientDropdown] = useState(false);
@@ -64,9 +63,9 @@ export default function NewInvoicePage() {
   const clientSearchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounced client search
+  // Debounced client search (integrated into Jméno / Firma field)
   const handleClientSearch = useCallback((query: string) => {
-    setClientSearch(query);
+    setFormData(prev => ({ ...prev, client_name: query }));
     setSelectedClientId(null);
 
     if (debounceRef.current) {
@@ -102,7 +101,6 @@ export default function NewInvoicePage() {
   // Select client from dropdown
   const handleSelectClient = (client: Client) => {
     setSelectedClientId(client.id);
-    setClientSearch(client.name);
     setShowClientDropdown(false);
     setFormData((prev) => ({
       ...prev,
@@ -384,49 +382,6 @@ export default function NewInvoicePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Client search */}
-            <div ref={clientSearchRef} className="relative">
-              <Label htmlFor="client_search">Vyhledat klienta</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="client_search"
-                  placeholder="Hledat dle jména, IČO nebo emailu..."
-                  value={clientSearch}
-                  onChange={(e) => handleClientSearch(e.target.value)}
-                  className="pl-10"
-                />
-                {clientSearching && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-                )}
-              </div>
-
-              {/* Dropdown results */}
-              {showClientDropdown && clientResults.length > 0 && (
-                <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg">
-                  {clientResults.map((client) => (
-                    <button
-                      key={client.id}
-                      type="button"
-                      className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md"
-                      onClick={() => handleSelectClient(client)}
-                    >
-                      <UserCheck className="h-4 w-4 flex-shrink-0 text-teal-500" />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{client.name}</div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {[client.ico && `IČO: ${client.ico}`, client.email].filter(Boolean).join(" · ")}
-                        </div>
-                      </div>
-                      <span className="text-xs text-muted-foreground flex-shrink-0">
-                        {client.invoice_count} {client.invoice_count === 1 ? "faktura" : client.invoice_count < 5 ? "faktury" : "faktur"}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* Selected / New client indicator */}
             {selectedClientId ? (
               <div className="flex items-center gap-2 text-sm text-teal-600 bg-teal-50 dark:bg-teal-950/30 rounded-md px-3 py-2">
@@ -437,7 +392,7 @@ export default function NewInvoicePage() {
                   className="ml-auto text-xs underline hover:no-underline"
                   onClick={() => {
                     setSelectedClientId(null);
-                    setClientSearch("");
+                    setFormData(prev => ({ ...prev, client_name: "" }));
                   }}
                 >
                   Zrušit výběr
@@ -451,17 +406,45 @@ export default function NewInvoicePage() {
             ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
+              <div ref={clientSearchRef} className="relative space-y-2">
                 <Label htmlFor="client_name">Jméno / Firma *</Label>
-                <Input
-                  id="client_name"
-                  value={formData.client_name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, client_name: e.target.value });
-                    if (selectedClientId) setSelectedClientId(null);
-                  }}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="client_name"
+                    placeholder="Začněte psát pro vyhledání klienta..."
+                    value={formData.client_name}
+                    onChange={(e) => handleClientSearch(e.target.value)}
+                    required
+                  />
+                  {clientSearching && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+
+                {/* Autocomplete dropdown */}
+                {showClientDropdown && clientResults.length > 0 && (
+                  <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg">
+                    {clientResults.map((client) => (
+                      <button
+                        key={client.id}
+                        type="button"
+                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md"
+                        onClick={() => handleSelectClient(client)}
+                      >
+                        <UserCheck className="h-4 w-4 flex-shrink-0 text-teal-500" />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate">{client.name}</div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {[client.ico && `IČO: ${client.ico}`, client.email].filter(Boolean).join(" · ")}
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground flex-shrink-0">
+                          {client.invoice_count} {client.invoice_count === 1 ? "faktura" : client.invoice_count < 5 ? "faktury" : "faktur"}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
