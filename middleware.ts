@@ -221,8 +221,9 @@ export function middleware(request: NextRequest) {
   //   return new NextResponse('Forbidden', { status: 403 });
   // }
 
-  // 3. Block suspicious query patterns
-  if (isSuspiciousQuery(pathname)) {
+  // 3. Block suspicious query patterns (skip for blog posts — they may contain tech keywords like "wordpress")
+  const isBlogRoute = pathname.startsWith('/blog/');
+  if (!isBlogRoute && isSuspiciousQuery(pathname)) {
     console.log(`🚫 [SUSPICIOUS PATH] Blocked: ${pathname} | IP: ${ip}`);
     return new NextResponse('Not Found', { status: 404 });
   }
