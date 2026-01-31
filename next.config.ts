@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
   },
 
   // Exclude heavy packages from lambda bundle
-  serverComponentsExternalPackages: [
+  serverExternalPackages: [
     'puppeteer',
     'puppeteer-core',
     '@sparticuz/chromium',
