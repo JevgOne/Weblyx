@@ -103,23 +103,36 @@ export default async function FAQPage() {
         <section className="py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-4xl">
             {enabledFaqs.length > 0 ? (
-              <Accordion type="single" collapsible className="space-y-4">
-                {enabledFaqs.map((faq) => (
-                  <AccordionItem
-                    key={faq.id}
-                    value={faq.id || ''}
-                    id={faq.id}
-                    className="bg-background rounded-lg px-6 border"
-                  >
-                    <AccordionTrigger className="text-left hover:no-underline py-6">
-                      <span className="font-semibold text-lg">{faq.question}</span>
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground pb-6 leading-relaxed">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+              <>
+                {/* Interactive accordion for users with JS */}
+                <Accordion type="single" collapsible className="space-y-4">
+                  {enabledFaqs.map((faq) => (
+                    <AccordionItem
+                      key={faq.id}
+                      value={faq.id || ''}
+                      id={faq.id}
+                      className="bg-background rounded-lg px-6 border"
+                    >
+                      <AccordionTrigger className="text-left hover:no-underline py-6">
+                        <span className="font-semibold text-lg faq-question">{faq.question}</span>
+                      </AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground pb-6 leading-relaxed faq-answer">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+
+                {/* Hidden FAQ content for crawlers/SEO — Radix Accordion doesn't render collapsed content in DOM */}
+                <div className="sr-only" aria-hidden="true">
+                  {enabledFaqs.map((faq) => (
+                    <div key={`seo-${faq.id}`}>
+                      <h3 className="faq-question">{faq.question}</h3>
+                      <p className="faq-answer">{faq.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg">
