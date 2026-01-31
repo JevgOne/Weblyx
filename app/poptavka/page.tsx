@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { QuoteForm } from "@/components/poptavka/QuoteForm";
 
+// ISR: revalidate every hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Nezávazná poptávka – webové stránky od 7 990 Kč | Weblyx",
   description:

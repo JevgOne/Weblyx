@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Contact } from "@/components/home/contact";
+
+// ISR: revalidate every hour
+export const revalidate = 3600;
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateContactPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
