@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getBlogPostBySlug, getPublishedBlogPostsByLanguage } from "@/lib/turso/blog";
+import { getBlogPostBySlug, getPublishedBlogPostsByLanguage, getPostTranslations } from "@/lib/turso/blog";
 import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
@@ -44,6 +44,49 @@ const blogDetailContent = {
 
 export const revalidate = 60;
 export const dynamicParams = true;
+
+/**
+ * Build hreflang alternates for a blog post using the parent_post_id
+ * relationship to find the correct slug in each language.
+ */
+async function getBlogAlternateLanguages(
+  post: { id: string; language: string; parentPostId?: string },
+  currentSlug: string,
+  baseUrl: string
+): Promise<Record<string, string>> {
+  const csBase = "https://www.weblyx.cz";
+  const deBase = "https://seitelyx.de";
+
+  // Default: current slug on both domains (fallback)
+  const alternates: Record<string, string> = {
+    "x-default": `${csBase}/blog/${currentSlug}`,
+  };
+
+  // Set the current language
+  if (post.language === "cs") {
+    alternates["cs"] = `${csBase}/blog/${currentSlug}`;
+  } else {
+    alternates["de"] = `${deBase}/blog/${currentSlug}`;
+  }
+
+  // Look up translations via parent_post_id
+  try {
+    const translations = await getPostTranslations(post.id);
+    for (const translation of translations) {
+      if (translation.language === "de" && translation.published) {
+        alternates["de"] = `${deBase}/blog/${translation.slug}`;
+      } else if (translation.language === "cs" && translation.published) {
+        alternates["cs"] = `${csBase}/blog/${translation.slug}`;
+        alternates["x-default"] = `${csBase}/blog/${translation.slug}`;
+      }
+    }
+  } catch (e) {
+    // Graceful fallback — keep current slug on both domains
+    console.error("Failed to fetch blog translations for hreflang:", e);
+  }
+
+  return alternates;
+}
 
 export async function generateMetadata({
   params
@@ -96,7 +139,7 @@ export async function generateMetadata({
       },
       alternates: {
         canonical: `${baseUrl}/blog/${slug}`,
-        languages: getAlternateLanguages('/blog/' + slug),
+        languages: await getBlogAlternateLanguages(post, slug, baseUrl),
       },
       robots: {
         index: true,
