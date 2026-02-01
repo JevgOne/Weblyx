@@ -107,7 +107,8 @@ const FAQS = [
       "Profesionální web pro ostravskou firmu pořídíte od 7 990 Kč. Za tuto cenu dostanete moderní responzivní design, SEO optimalizaci, rychlé načítání a 30 dní podpory. Oproti ostravským agenturám nabízíme technologicky pokročilejší řešení za srovnatelnou nebo nižší cenu.",
   },
   {
-    question: "Jak můžete pracovat pro firmy v Ostravě, když sídlíte v Praze?",
+    question:
+      "Jak můžete pracovat pro firmy v Ostravě, když sídlíte v Praze?",
     answer:
       "V roce 2025 není vzdálenost překážkou. Komunikujeme přes video hovory, sdílené nástroje a jsme dostupní na telefonu po celý pracovní den. S klienty z Ostravy spolupracujeme stejně efektivně jako s pražskými — jen ušetříte čas na zbytečné schůzky. Pracujeme s klienty z celé ČR.",
   },
@@ -196,15 +197,20 @@ export default function TvorbaWebuOstravaPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Ostrava se mění — a s ní i místní firmy. Pomáháme ostravským
-              podnikatelům vybudovat silnou online přítomnost s moderními weby,
+              podnikatelům vybudovat <strong>silnou online přítomnost</strong> s moderními weby,
               které přitahují zákazníky z celého Moravskoslezského kraje.
+              Věděli jste, že{" "}
+              <Link href="/blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43" className="text-primary hover:underline">
+                průměrný PageSpeed českých webů je pouhých 43 bodů
+              </Link>?
+              S námi budete výrazně nad průměrem.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/poptavka" size="lg" showArrow>
                 Nezávazná poptávka zdarma
               </LeadButton>
               <Button asChild variant="outline" size="lg">
-                <Link href="/portfolio">Naše realizace</Link>
+                <Link href="/portfolio">Prohlédněte si naše realizace</Link>
               </Button>
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
@@ -215,7 +221,10 @@ export default function TvorbaWebuOstravaPage() {
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
               </span>
               <span className="flex items-center gap-1">
-                <Zap className="h-4 w-4 text-primary" /> PageSpeed 90+
+                <Zap className="h-4 w-4 text-primary" />{" "}
+                <Link href="/pagespeed-garance" className="hover:text-primary transition-colors">
+                  Garance PageSpeed 90+
+                </Link>
               </span>
             </div>
           </div>
@@ -225,7 +234,9 @@ export default function TvorbaWebuOstravaPage() {
         <section className="py-16 md:py-24 px-4 bg-muted/30">
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-12 space-y-3">
-              <Badge variant="outline">Proč Ostrava potřebuje moderní weby</Badge>
+              <Badge variant="outline">
+                Proč Ostrava potřebuje moderní weby
+              </Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
                 Ostrava prochází{" "}
                 <span className="text-primary">digitální transformací</span>
@@ -237,20 +248,25 @@ export default function TvorbaWebuOstravaPage() {
                   <Factory className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Z průmyslu do digitálu</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Ostrava se transformuje z průmyslového města na moderní hub
-                    služeb a technologií. Dolní oblast Vítkovice se stala
-                    symbolem této změny — a místní firmy potřebují weby, které
-                    odrážejí tuto novou identitu.
+                    Ostrava se transformuje z průmyslového města na{" "}
+                    <strong>moderní hub služeb a technologií</strong>. Dolní oblast Vítkovice
+                    se stala symbolem této změny — a místní firmy potřebují
+                    weby, které odrážejí tuto novou identitu. Přečtěte si{" "}
+                    <Link href="/blog/wordpress-vs-nextjs-srovnani-2026" className="text-primary hover:underline">
+                      proč stavíme na Next.js místo WordPressu
+                    </Link>.
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-border/60">
                 <CardContent className="p-6 space-y-3">
                   <Lightbulb className="h-8 w-8 text-primary" />
-                  <h3 className="text-lg font-bold">Méně konkurence online</h3>
+                  <h3 className="text-lg font-bold">
+                    Méně konkurence online
+                  </h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Oproti Praze a Brnu je v Ostravě výrazně nižší konkurence ve
-                    vyhledávání. S kvalitním SEO se na první stránku Googlu
+                    Oproti Praze a Brnu je v Ostravě <strong>výrazně nižší konkurence
+                    ve vyhledávání</strong>. S kvalitním SEO se na první stránku Googlu
                     dostanete rychleji a levněji — ideální příležitost pro
                     lokální podnikatele.
                   </p>
@@ -262,8 +278,9 @@ export default function TvorbaWebuOstravaPage() {
                   <h3 className="text-lg font-bold">300 000+ obyvatel</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
                     Třetí největší město ČR s obrovským potenciálem. Přidejte
-                    k tomu celý Moravskoslezský kraj a máte trh s milionem
-                    potenciálních zákazníků, kteří hledají online.
+                    k tomu celý Moravskoslezský kraj a máte{" "}
+                    <strong>trh s milionem potenciálních zákazníků</strong>, kteří hledají
+                    služby online.
                   </p>
                 </CardContent>
               </Card>
@@ -272,8 +289,10 @@ export default function TvorbaWebuOstravaPage() {
               <p className="text-muted-foreground">
                 <MapPin className="h-4 w-4 inline mr-1" />
                 Sídlíme na adrese Revoluční 8, Praha 1 —{" "}
-                <strong>pracujeme s klienty z celé ČR</strong>, včetně Ostravy
-                a Moravskoslezského kraje.
+                <strong>pracujeme s klienty z celé ČR</strong>. Poznejte{" "}
+                <Link href="/o-nas" className="text-primary hover:underline">
+                  náš tým a příběh agentury Weblyx
+                </Link>.
               </p>
             </div>
           </div>
@@ -288,8 +307,11 @@ export default function TvorbaWebuOstravaPage() {
                 <span className="text-primary">ostravské podnikatele</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Komplexní řešení od jednoduchého webu po digitální transformaci
-                celé firmy
+                Komplexní řešení od jednoduchého webu po <strong>digitální transformaci celé firmy</strong>.
+                Mrkněte na{" "}
+                <Link href="/sluzby" className="text-primary hover:underline">
+                  ceník a přehled všech služeb
+                </Link>.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
@@ -314,7 +336,9 @@ export default function TvorbaWebuOstravaPage() {
             </div>
             <div className="text-center mt-8">
               <Button asChild variant="outline" size="lg">
-                <Link href="/sluzby">Kompletní nabídka služeb →</Link>
+                <Link href="/sluzby">
+                  Kompletní nabídka webových služeb →
+                </Link>
               </Button>
             </div>
           </div>
@@ -333,12 +357,15 @@ export default function TvorbaWebuOstravaPage() {
                       <span className="text-primary">7 990 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
-                      Pražská technologie a kvalita za ceny přístupné ostravským
-                      podnikatelům. Žádné měsíční poplatky, žádné skryté
-                      náklady. Web je po zaplacení kompletně váš.
+                      <strong>Pražská technologie a kvalita</strong> za ceny přístupné
+                      ostravským podnikatelům. Žádné měsíční poplatky, žádné
+                      skryté náklady. Nenechte se nachytat na{" "}
+                      <Link href="/blog/predrazene-sablony-webovych-agentur-jak-je-poznat" className="text-primary hover:underline">
+                        předražené šablony, které agentury vydávají za web na míru
+                      </Link>.
                     </p>
                     <LeadButton href="/poptavka" showArrow>
-                      Získat nabídku pro Ostravu
+                      Poptat web pro ostravskou firmu
                     </LeadButton>
                   </div>
                   <div className="space-y-3">
@@ -380,6 +407,16 @@ export default function TvorbaWebuOstravaPage() {
                 </div>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8">
+              Podívejte se na{" "}
+              <Link href="/portfolio" className="text-primary hover:underline">
+                naše portfolio a realizované projekty
+              </Link>{" "}
+              nebo si přečtěte{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                odpovědi na nejčastější dotazy
+              </Link>.
+            </p>
           </div>
         </section>
 
@@ -407,11 +444,62 @@ export default function TvorbaWebuOstravaPage() {
                 </Card>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Potřebujete vědět víc? Projděte si{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                celý seznam často kladených otázek
+              </Link>{" "}
+              nebo se nám{" "}
+              <Link href="/kontakt" className="text-primary hover:underline">
+                ozvěte přes kontaktní formulář
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* MĚSTA KDE PŮSOBÍME */}
+        <section className="py-12 md:py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-8 space-y-3">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Města kde <span className="text-primary">působíme</span>
+              </h2>
+              <p className="text-muted-foreground">
+                Tvoříme webové stránky pro firmy po celé České republice
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <Link href="/tvorba-webu-praha" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">Praha</p>
+                    <p className="text-sm text-muted-foreground">Webové stránky pro pražské firmy</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/tvorba-webu-brno" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">Brno</p>
+                    <p className="text-sm text-muted-foreground">Tvorba webu pro brněnské firmy</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="p-5 text-center">
+                  <MapPin className="h-6 w-6 text-primary mx-auto mb-2" />
+                  <p className="font-bold text-lg">Ostrava</p>
+                  <p className="text-sm text-muted-foreground">Právě se díváte</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24 px-4">
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
               <CardContent className="p-8 md:p-12 text-center space-y-6">
@@ -420,16 +508,16 @@ export default function TvorbaWebuOstravaPage() {
                   <span className="text-primary">v Ostravě online</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Vyplňte krátký dotazník a do 24 hodin vám pošleme cenovou
-                  nabídku na míru. Spolupracujeme vzdáleně — efektivně a bez
-                  zbytečného cestování.
+                  Vyplňte krátký dotazník a do 24 hodin vám pošleme{" "}
+                  <strong>cenovou nabídku na míru</strong>. Spolupracujeme
+                  vzdáleně — efektivně a bez zbytečného cestování.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <LeadButton href="/poptavka" size="lg" showArrow>
-                    Nezávazná poptávka
+                    Odeslat nezávaznou poptávku
                   </LeadButton>
                   <Button asChild variant="outline" size="lg">
-                    <Link href="/kontakt">Kontaktujte nás</Link>
+                    <Link href="/kontakt">Kontaktujte nás přímo</Link>
                   </Button>
                 </div>
               </CardContent>

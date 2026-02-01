@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Monitor,
   Car,
+  MapPin,
 } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -201,16 +202,22 @@ export default function WebsiteErstellenMuenchenPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               München steht für Qualität und Präzision — genau wie unsere
-              Websites. Moderne Next.js Technologie, blitzschnelle Ladezeiten
-              und ein Design, das Ihre Münchner Kunden begeistert. Zum
-              Festpreis, ohne Münchner Agentur-Aufschlag.
+              Websites. <strong>Moderne Next.js Technologie</strong>,
+              blitzschnelle Ladezeiten und ein Design, das Ihre Münchner Kunden
+              begeistert. Zum Festpreis,{" "}
+              <strong>ohne Münchner Agentur-Aufschlag</strong>. Erfahren Sie in
+              unserem{" "}
+              <Link href="/blog" className="text-primary hover:underline">
+                Webdesign-Blog
+              </Link>
+              , warum wir kein WordPress verwenden.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/anfrage" size="lg" showArrow>
                 Kostenloses Angebot anfordern
               </LeadButton>
               <Button asChild variant="outline" size="lg">
-                <Link href="/portfolio">Unsere Arbeiten</Link>
+                <Link href="/portfolio">Unsere Arbeiten im Portfolio</Link>
               </Button>
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
@@ -245,10 +252,10 @@ export default function WebsiteErstellenMuenchenPage() {
                   <Briefcase className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Kaufkraft-Champion</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    München hat die höchste Kaufkraft aller deutschen
-                    Großstädte. Ihre Kunden erwarten Premium-Qualität — auch
-                    online. Eine langsame oder veraltete Website kostet Sie
-                    hier bares Geld.
+                    München hat die{" "}
+                    <strong>höchste Kaufkraft aller deutschen Großstädte</strong>
+                    . Ihre Kunden erwarten Premium-Qualität — auch online. Eine
+                    langsame oder veraltete Website kostet Sie hier bares Geld.
                   </p>
                 </CardContent>
               </Card>
@@ -257,21 +264,31 @@ export default function WebsiteErstellenMuenchenPage() {
                   <Car className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Starke Branchen</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    BMW, Siemens, Allianz — München ist Heimat von
-                    Weltkonzernen und tausenden Mittelständlern. Ob Automotive,
-                    Finanzen oder IT: Jede Branche braucht eine digitale
-                    Visitenkarte, die überzeugt.
+                    BMW, Siemens, Allianz — München ist Heimat von{" "}
+                    <strong>Weltkonzernen und tausenden Mittelständlern</strong>.
+                    Ob Automotive, Finanzen oder IT: Jede Branche braucht eine
+                    digitale Visitenkarte, die überzeugt. Erfahren Sie mehr{" "}
+                    <Link
+                      href="/uber-uns"
+                      className="text-primary hover:underline"
+                    >
+                      über unser Team und unsere Arbeitsweise
+                    </Link>
+                    .
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-border/60">
                 <CardContent className="p-6 space-y-3">
                   <Building className="h-8 w-8 text-primary" />
-                  <h3 className="text-lg font-bold">Tradition trifft Digital</h3>
+                  <h3 className="text-lg font-bold">
+                    Tradition trifft Digital
+                  </h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Viele traditionsreiche Münchner Unternehmen stehen vor der
-                    digitalen Transformation. Der erste Schritt: eine moderne
-                    Website, die Vertrauen schafft und Kunden online gewinnt.
+                    Viele traditionsreiche Münchner Unternehmen stehen vor der{" "}
+                    <strong>digitalen Transformation</strong>. Der erste Schritt:
+                    eine moderne Website, die Vertrauen schafft und Kunden
+                    online gewinnt.
                   </p>
                 </CardContent>
               </Card>
@@ -296,7 +313,14 @@ export default function WebsiteErstellenMuenchenPage() {
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Maßgeschneiderte Web-Lösungen für Münchner Unternehmen — vom
-                Handwerker bis zur Beratung
+                Handwerker bis zur Beratung. Sehen Sie unser{" "}
+                <Link
+                  href="/leistungen"
+                  className="text-primary hover:underline"
+                >
+                  vollständiges Leistungsspektrum
+                </Link>
+                .
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
@@ -321,7 +345,9 @@ export default function WebsiteErstellenMuenchenPage() {
             </div>
             <div className="text-center mt-8">
               <Button asChild variant="outline" size="lg">
-                <Link href="/leistungen">Alle Leistungen →</Link>
+                <Link href="/leistungen">
+                  Alle Leistungen und Preise ansehen →
+                </Link>
               </Button>
             </div>
           </div>
@@ -341,12 +367,20 @@ export default function WebsiteErstellenMuenchenPage() {
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                       Während Münchner Agenturen 5.000–15.000 € berechnen,
-                      liefern wir vergleichbare Qualität ab 320 €. Gleiche
+                      liefern wir{" "}
+                      <strong>vergleichbare Qualität ab 320 €</strong>. Gleiche
                       Technologie, gleiches Ergebnis — nur ohne den
-                      Standort-Aufschlag.
+                      Standort-Aufschlag. Alle Details finden Sie in unserer{" "}
+                      <Link
+                        href="/preise"
+                        className="text-primary hover:underline"
+                      >
+                        transparenten Preisübersicht
+                      </Link>
+                      .
                     </p>
                     <LeadButton href="/anfrage" showArrow>
-                      Angebot für München anfordern
+                      Angebot für Münchner Unternehmen
                     </LeadButton>
                   </div>
                   <div className="space-y-3">
@@ -388,6 +422,20 @@ export default function WebsiteErstellenMuenchenPage() {
                 </div>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8">
+              Überzeugen Sie sich selbst:{" "}
+              <Link
+                href="/portfolio"
+                className="text-primary hover:underline"
+              >
+                realisierte Projekte in unserem Portfolio
+              </Link>{" "}
+              oder lesen Sie unsere{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                Antworten auf häufige Fragen
+              </Link>
+              .
+            </p>
           </div>
         </section>
 
@@ -415,11 +463,61 @@ export default function WebsiteErstellenMuenchenPage() {
                 </Card>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Noch Fragen? Besuchen Sie unsere{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                ausführliche FAQ-Seite
+              </Link>{" "}
+              oder{" "}
+              <Link href="/kontakt" className="text-primary hover:underline">
+                schreiben Sie uns eine Nachricht
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
+        {/* STÄDTE WO WIR ARBEITEN */}
+        <section className="py-12 md:py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-8 space-y-3">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Städte in denen wir{" "}
+                <span className="text-primary">tätig sind</span>
+              </h2>
+              <p className="text-muted-foreground">
+                Wir erstellen Websites für Unternehmen in ganz Deutschland
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              <Link href="/website-erstellen-berlin" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">
+                      Berlin
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Website erstellen lassen in Berlin
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="p-5 text-center">
+                  <MapPin className="h-6 w-6 text-primary mx-auto mb-2" />
+                  <p className="font-bold text-lg">München</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sie sind hier
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24 px-4">
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
               <CardContent className="p-8 md:p-12 text-center space-y-6">
@@ -429,15 +527,16 @@ export default function WebsiteErstellenMuenchenPage() {
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Münchner Qualität muss nicht Münchner Preise bedeuten. Fordern
-                  Sie jetzt Ihr kostenloses Angebot an — innerhalb von 24
-                  Stunden erhalten Sie eine maßgeschneiderte Offerte.
+                  Sie jetzt Ihr <strong>kostenloses Angebot</strong> an —
+                  innerhalb von 24 Stunden erhalten Sie eine maßgeschneiderte
+                  Offerte.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <LeadButton href="/anfrage" size="lg" showArrow>
-                    Kostenloses Angebot
+                    Unverbindliches Angebot anfordern
                   </LeadButton>
                   <Button asChild variant="outline" size="lg">
-                    <Link href="/portfolio">Referenzen ansehen</Link>
+                    <Link href="/kontakt">Direkt Kontakt aufnehmen</Link>
                   </Button>
                 </div>
               </CardContent>

@@ -201,16 +201,20 @@ export default function WebsiteErstellenBerlinPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Berlin denkt digital — und Ihre Website sollte das widerspiegeln.
-              Wir erstellen moderne, blitzschnelle Websites auf Next.js für
-              Berliner Unternehmen, Startups und Freelancer. Ohne WordPress,
-              ohne monatliche Kosten.
+              Wir erstellen <strong>moderne, blitzschnelle Websites auf Next.js</strong> für
+              Berliner Unternehmen, Startups und Freelancer. Ohne WordPress,{" "}
+              <strong>ohne monatliche Kosten</strong>. Lesen Sie in unserem{" "}
+              <Link href="/blog" className="text-primary hover:underline">
+                Webdesign-Blog
+              </Link>
+              , warum Next.js die Zukunft ist.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/anfrage" size="lg" showArrow>
-                Kostenloses Angebot anfordern
+                Unverbindliche Anfrage stellen
               </LeadButton>
               <Button asChild variant="outline" size="lg">
-                <Link href="/portfolio">Referenzen ansehen</Link>
+                <Link href="/portfolio">Unsere Referenzen ansehen</Link>
               </Button>
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
@@ -218,7 +222,8 @@ export default function WebsiteErstellenBerlinPage() {
                 <Check className="h-4 w-4 text-primary" /> Ab 320 € Festpreis
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="h-4 w-4 text-primary" /> Lieferung in 5–7 Tagen
+                <Clock className="h-4 w-4 text-primary" /> Lieferung in 5–7
+                Tagen
               </span>
               <span className="flex items-center gap-1">
                 <Shield className="h-4 w-4 text-primary" /> DSGVO-konform
@@ -244,10 +249,10 @@ export default function WebsiteErstellenBerlinPage() {
                   <Rocket className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Startup-Metropole</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Berlin beherbergt über 3.500 Startups und zieht jährlich
+                    Berlin beherbergt über <strong>3.500 Startups</strong> und zieht jährlich
                     Milliarden an Risikokapital an. In diesem hart umkämpften
-                    Markt brauchen Sie eine Website, die sofort überzeugt —
-                    schnell, modern und professionell.
+                    Markt brauchen Sie eine Website, die sofort überzeugt —{" "}
+                    <strong>schnell, modern und professionell</strong>.
                   </p>
                 </CardContent>
               </Card>
@@ -256,10 +261,13 @@ export default function WebsiteErstellenBerlinPage() {
                   <Users className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">3,7 Mio. Einwohner</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Berlins riesiger Markt mit internationaler Community bietet
+                    Berlins riesiger Markt mit <strong>internationaler Community</strong> bietet
                     enormes Potenzial. Eine professionelle, mehrsprachige Website
                     erschließt Ihnen Kunden aus aller Welt — direkt in der
-                    Hauptstadt.
+                    Hauptstadt. Erfahren Sie mehr{" "}
+                    <Link href="/uber-uns" className="text-primary hover:underline">
+                      über unsere Agentur und unser Team
+                    </Link>.
                   </p>
                 </CardContent>
               </Card>
@@ -268,8 +276,8 @@ export default function WebsiteErstellenBerlinPage() {
                   <Palette className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Kreativszene</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Von Kreuzberg bis Prenzlauer Berg — Berlins Kreativwirtschaft
-                    boomt. Designer, Fotografen, Agenturen brauchen Websites,
+                    Von Kreuzberg bis Prenzlauer Berg — <strong>Berlins Kreativwirtschaft
+                    boomt</strong>. Designer, Fotografen, Agenturen brauchen Websites,
                     die ihre Arbeit perfekt in Szene setzen. Genau dafür sind
                     wir da.
                   </p>
@@ -295,8 +303,12 @@ export default function WebsiteErstellenBerlinPage() {
                 <span className="text-primary">Berlin</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Von der Unternehmenswebsite bis zum Online-Shop — alles auf
-                modernster Technologie
+                Von der Unternehmenswebsite bis zum Online-Shop — alles auf{" "}
+                <strong>modernster Technologie ohne WordPress</strong>.
+                Entdecken Sie unser{" "}
+                <Link href="/leistungen" className="text-primary hover:underline">
+                  vollständiges Leistungsangebot und Preise
+                </Link>.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
@@ -321,7 +333,9 @@ export default function WebsiteErstellenBerlinPage() {
             </div>
             <div className="text-center mt-8">
               <Button asChild variant="outline" size="lg">
-                <Link href="/leistungen">Alle Leistungen ansehen →</Link>
+                <Link href="/leistungen">
+                  Alle Webdesign-Leistungen im Überblick →
+                </Link>
               </Button>
             </div>
           </div>
@@ -341,12 +355,16 @@ export default function WebsiteErstellenBerlinPage() {
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                       Berliner Agenturen verlangen oft das 10-fache. Wir
-                      liefern Premium-Qualität zum Festpreis — ohne versteckte
+                      liefern <strong>Premium-Qualität zum Festpreis</strong> — ohne versteckte
                       Kosten, ohne monatliche Hosting-Gebühren. Einmal zahlen,
-                      Website gehört Ihnen.
+                      Website gehört Ihnen. Schauen Sie sich unsere{" "}
+                      <Link href="/preise" className="text-primary hover:underline">
+                        transparente Preisübersicht
+                      </Link>{" "}
+                      an.
                     </p>
                     <LeadButton href="/anfrage" showArrow>
-                      Angebot für Berlin anfordern
+                      Angebot für Berliner Unternehmen
                     </LeadButton>
                   </div>
                   <div className="space-y-3">
@@ -388,6 +406,16 @@ export default function WebsiteErstellenBerlinPage() {
                 </div>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8">
+              Sehen Sie sich unsere{" "}
+              <Link href="/portfolio" className="text-primary hover:underline">
+                abgeschlossenen Projekte im Portfolio
+              </Link>{" "}
+              an oder lesen Sie die{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                häufig gestellten Fragen zu Webdesign
+              </Link>.
+            </p>
           </div>
         </section>
 
@@ -415,11 +443,60 @@ export default function WebsiteErstellenBerlinPage() {
                 </Card>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Weitere Antworten finden Sie in unseren{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                FAQ zum Thema Website erstellen lassen
+              </Link>{" "}
+              oder{" "}
+              <Link href="/kontakt" className="text-primary hover:underline">
+                kontaktieren Sie uns direkt
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* STÄDTE WO WIR ARBEITEN */}
+        <section className="py-12 md:py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-8 space-y-3">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Städte in denen wir{" "}
+                <span className="text-primary">tätig sind</span>
+              </h2>
+              <p className="text-muted-foreground">
+                Wir erstellen Websites für Unternehmen in ganz Deutschland
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="p-5 text-center">
+                  <MapPin className="h-6 w-6 text-primary mx-auto mb-2" />
+                  <p className="font-bold text-lg">Berlin</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sie sind hier
+                  </p>
+                </CardContent>
+              </Card>
+              <Link href="/website-erstellen-muenchen" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">
+                      München
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Website erstellen lassen in München
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24 px-4">
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
               <CardContent className="p-8 md:p-12 text-center space-y-6">
@@ -429,15 +506,16 @@ export default function WebsiteErstellenBerlinPage() {
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Füllen Sie unseren kurzen Fragebogen aus und erhalten Sie
-                  innerhalb von 24 Stunden ein individuelles Angebot.
+                  innerhalb von 24 Stunden ein{" "}
+                  <strong>individuelles Angebot</strong>.
                   Unverbindlich und kostenlos.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <LeadButton href="/anfrage" size="lg" showArrow>
-                    Kostenloses Angebot
+                    Kostenloses Angebot anfordern
                   </LeadButton>
                   <Button asChild variant="outline" size="lg">
-                    <Link href="/blog">Zum Blog</Link>
+                    <Link href="/kontakt">Direkt Kontakt aufnehmen</Link>
                   </Button>
                 </div>
               </CardContent>

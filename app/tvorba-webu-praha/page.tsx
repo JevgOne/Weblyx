@@ -12,7 +12,6 @@ import {
   MapPin,
   Check,
   Clock,
-  Award,
   TrendingUp,
   ChevronDown,
   Building2,
@@ -196,16 +195,20 @@ export default function TvorbaWebuPrahaPage() {
               <span className="text-primary">Praha</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Sídlíme přímo v centru Prahy a tvoříme weby, které prodávají.
-              Moderní technologie, bleskové načítání a design, který vás odliší
-              od konkurence na přeplněném pražském trhu.
+              Sídlíme přímo v centru Prahy a tvoříme <strong>moderní weby na Next.js</strong>, které prodávají.
+              Bleskové načítání, <strong>SEO optimalizace v ceně</strong> a design, který vás odliší
+              od konkurence na přeplněném pražském trhu. Přečtěte si{" "}
+              <Link href="/blog/wordpress-vs-nextjs-srovnani-2026" className="text-primary hover:underline">
+                proč je WordPress mrtvý
+              </Link>{" "}
+              a proč stavíme jinak.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/poptavka" size="lg" showArrow>
                 Nezávazná poptávka zdarma
               </LeadButton>
               <Button asChild variant="outline" size="lg">
-                <Link href="/portfolio">Ukázky naší práce</Link>
+                <Link href="/portfolio">Prohlédněte si naše reference</Link>
               </Button>
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
@@ -216,7 +219,10 @@ export default function TvorbaWebuPrahaPage() {
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
               </span>
               <span className="flex items-center gap-1">
-                <Zap className="h-4 w-4 text-primary" /> PageSpeed 90+
+                <Zap className="h-4 w-4 text-primary" />{" "}
+                <Link href="/pagespeed-garance" className="hover:text-primary transition-colors">
+                  Garance PageSpeed 90+
+                </Link>
               </span>
             </div>
           </div>
@@ -228,7 +234,8 @@ export default function TvorbaWebuPrahaPage() {
             <div className="text-center mb-12 space-y-3">
               <Badge variant="outline">Proč zrovna Praha?</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Praha je <span className="text-primary">hlavní město podnikání</span>
+                Praha je{" "}
+                <span className="text-primary">hlavní město podnikání</span>
               </h2>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
@@ -240,9 +247,12 @@ export default function TvorbaWebuPrahaPage() {
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Praha je sídlem více než půl milionu podnikatelských
-                    subjektů. V tak silné konkurenci rozhoduje první dojem — a
-                    ten dnes začíná na webu. Bez profesionálních stránek
-                    ztrácíte zákazníky dřív, než o vás vůbec uslyší.
+                    subjektů. V tak silné konkurenci rozhoduje <strong>první dojem</strong> — a
+                    ten dnes začíná na webu. Naše{" "}
+                    <Link href="/blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43" className="text-primary hover:underline">
+                      analýza 50 českých webů ukázala průměrný PageSpeed pouze 43
+                    </Link>
+                    {" "}— s naším webem budete v top 5 %.
                   </p>
                 </CardContent>
               </Card>
@@ -254,9 +264,12 @@ export default function TvorbaWebuPrahaPage() {
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Praha přitahuje miliony turistů ročně a je domovem velké
-                    mezinárodní komunity. Vícejazyčný web s rychlým načítáním
+                    mezinárodní komunity. <strong>Vícejazyčný web s rychlým načítáním</strong>{" "}
                     vám otevírá dveře k zákazníkům, kteří hledají služby v
-                    češtině i angličtině.
+                    češtině i angličtině. Zjistěte více{" "}
+                    <Link href="/o-nas" className="text-primary hover:underline">
+                      o naší agentuře
+                    </Link>.
                   </p>
                 </CardContent>
               </Card>
@@ -270,7 +283,11 @@ export default function TvorbaWebuPrahaPage() {
                     Na rozdíl od vzdálených agentur sídlíme přímo na{" "}
                     <strong>Revoluční 8, Praha 1</strong>. Rádi se s vámi
                     sejdeme osobně, probereme vaše potřeby a navrhneme řešení
-                    přesně pro váš byznys. Kávu máme na nás.
+                    přesně pro váš byznys. Dávejte si pozor na{" "}
+                    <Link href="/blog/predrazene-sablony-webovych-agentur-jak-je-poznat" className="text-primary hover:underline">
+                      předražené šablony webových agentur
+                    </Link>{" "}
+                    — u nás dostanete <strong>web na míru za férovou cenu</strong>.
                   </p>
                 </CardContent>
               </Card>
@@ -287,7 +304,10 @@ export default function TvorbaWebuPrahaPage() {
                 <span className="text-primary">vytvoříme</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Kompletní webové služby pro pražské firmy a živnostníky
+                Kompletní <strong>webové služby pro pražské firmy</strong> a živnostníky — podívejte se na{" "}
+                <Link href="/sluzby" className="text-primary hover:underline">
+                  kompletní přehled služeb a ceník
+                </Link>
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
@@ -312,7 +332,7 @@ export default function TvorbaWebuPrahaPage() {
             </div>
             <div className="text-center mt-8">
               <Button asChild variant="outline" size="lg">
-                <Link href="/sluzby">Kompletní přehled služeb →</Link>
+                <Link href="/sluzby">Nabídka všech webových služeb →</Link>
               </Button>
             </div>
           </div>
@@ -331,12 +351,15 @@ export default function TvorbaWebuPrahaPage() {
                       <span className="text-primary">7 990 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
-                      Žádné skryté poplatky, žádné měsíční paušály za hosting.
+                      Žádné skryté poplatky, <strong>žádné měsíční paušály za hosting</strong>.
                       Finální cenu znáte předem. V ceně je responzivní design,
-                      SEO základ, rychlé načítání a 30 dní podpory zdarma.
+                      SEO základ a{" "}
+                      <Link href="/pagespeed-garance" className="text-primary hover:underline">
+                        garance rychlého načítání pod 2 sekundy
+                      </Link>.
                     </p>
                     <LeadButton href="/poptavka" showArrow>
-                      Získat cenovou nabídku
+                      Poptat web pro pražskou firmu
                     </LeadButton>
                   </div>
                   <div className="space-y-3">
@@ -378,6 +401,16 @@ export default function TvorbaWebuPrahaPage() {
                 </div>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8">
+              Podívejte se na{" "}
+              <Link href="/portfolio" className="text-primary hover:underline">
+                ukázky dokončených projektů v portfoliu
+              </Link>{" "}
+              nebo si přečtěte{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                často kladené otázky o tvorbě webu
+              </Link>.
+            </p>
           </div>
         </section>
 
@@ -405,11 +438,62 @@ export default function TvorbaWebuPrahaPage() {
                 </Card>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Máte další dotazy? Podívejte se na{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                kompletní seznam FAQ
+              </Link>{" "}
+              nebo nám{" "}
+              <Link href="/kontakt" className="text-primary hover:underline">
+                napište přes kontaktní formulář
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* MĚSTA KDE PŮSOBÍME */}
+        <section className="py-12 md:py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-8 space-y-3">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Města kde <span className="text-primary">působíme</span>
+              </h2>
+              <p className="text-muted-foreground">
+                Tvoříme webové stránky pro firmy po celé České republice
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="p-5 text-center">
+                  <MapPin className="h-6 w-6 text-primary mx-auto mb-2" />
+                  <p className="font-bold text-lg">Praha</p>
+                  <p className="text-sm text-muted-foreground">Právě se díváte</p>
+                </CardContent>
+              </Card>
+              <Link href="/tvorba-webu-brno" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">Brno</p>
+                    <p className="text-sm text-muted-foreground">Tvorba webu pro brněnské firmy</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/tvorba-webu-ostrava" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">Ostrava</p>
+                    <p className="text-sm text-muted-foreground">Webové stránky pro ostravské podnikatele</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24 px-4">
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
               <CardContent className="p-8 md:p-12 text-center space-y-6">
@@ -418,16 +502,16 @@ export default function TvorbaWebuPrahaPage() {
                   <span className="text-primary">Sejdeme se v Praze</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Vyplňte krátký dotazník a do 24 hodin vám pošleme cenovou
-                  nabídku. Nebo se zastavte osobně — sídlíme na Revoluční 8,
-                  Praha 1.
+                  Vyplňte krátký dotazník a do 24 hodin vám pošleme{" "}
+                  <strong>cenovou nabídku na míru</strong>. Nebo se zastavte
+                  osobně — sídlíme na Revoluční 8, Praha 1.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <LeadButton href="/poptavka" size="lg" showArrow>
-                    Nezávazná poptávka
+                    Odeslat nezávaznou poptávku
                   </LeadButton>
                   <Button asChild variant="outline" size="lg">
-                    <Link href="/kontakt">Kontaktujte nás</Link>
+                    <Link href="/kontakt">Kontaktujte nás přímo</Link>
                   </Button>
                 </div>
               </CardContent>

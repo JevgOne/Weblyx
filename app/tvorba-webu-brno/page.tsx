@@ -195,16 +195,20 @@ export default function TvorbaWebuBrnoPage() {
               <span className="text-primary">Brno</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Brno žije technologiemi — a váš web by měl taky. Tvoříme moderní
-              webové stránky na Next.js pro brněnské startupy, firmy a
-              živnostníky. Rychlé, bezpečné a optimalizované pro vyhledávače.
+              Brno žije technologiemi — a váš web by měl taky. Tvoříme{" "}
+              <strong>moderní webové stránky na Next.js</strong> pro brněnské startupy, firmy a
+              živnostníky. Proč Next.js? Přečtěte si{" "}
+              <Link href="/blog/wordpress-vs-nextjs-srovnani-2026" className="text-primary hover:underline">
+                srovnání WordPress vs. Next.js
+              </Link>{" "}
+              — rozdíl je obrovský.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/poptavka" size="lg" showArrow>
                 Nezávazná poptávka zdarma
               </LeadButton>
               <Button asChild variant="outline" size="lg">
-                <Link href="/portfolio">Ukázky projektů</Link>
+                <Link href="/portfolio">Ukázky dokončených projektů</Link>
               </Button>
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
@@ -215,7 +219,10 @@ export default function TvorbaWebuBrnoPage() {
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
               </span>
               <span className="flex items-center gap-1">
-                <Zap className="h-4 w-4 text-primary" /> PageSpeed 90+
+                <Zap className="h-4 w-4 text-primary" />{" "}
+                <Link href="/pagespeed-garance" className="hover:text-primary transition-colors">
+                  Garance PageSpeed 90+
+                </Link>
               </span>
             </div>
           </div>
@@ -228,7 +235,9 @@ export default function TvorbaWebuBrnoPage() {
               <Badge variant="outline">Proč právě Brno?</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
                 Brno je{" "}
-                <span className="text-primary">technologické srdce Moravy</span>
+                <span className="text-primary">
+                  technologické srdce Moravy
+                </span>
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -237,9 +246,9 @@ export default function TvorbaWebuBrnoPage() {
                   <Cpu className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Tech hub ČR</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Sídlo Red Hat, Kiwi.com, Y Soft a desítek dalších tech
+                    Sídlo <strong>Red Hat, Kiwi.com, Y Soft</strong> a desítek dalších tech
                     firem. Brno přitahuje talenty a investice — a firmy zde
-                    potřebují weby, které odpovídají jejich inovativnímu duchu.
+                    potřebují weby, které odpovídají jejich <strong>inovativnímu duchu</strong>.
                   </p>
                 </CardContent>
               </Card>
@@ -248,9 +257,13 @@ export default function TvorbaWebuBrnoPage() {
                   <GraduationCap className="h-8 w-8 text-primary" />
                   <h3 className="text-lg font-bold">Univerzitní město</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Masarykova univerzita, VUT, Mendelu — 90 000 studentů, kteří
+                    Masarykova univerzita, VUT, Mendelu — <strong>90 000 studentů</strong>, kteří
                     jsou budoucí zákazníci. Mladá, digitálně gramotná populace
-                    očekává rychlé a moderní weby.
+                    očekává rychlé a moderní weby. Naše{" "}
+                    <Link href="/blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43" className="text-primary hover:underline">
+                      analýza PageSpeed českých webů
+                    </Link>{" "}
+                    ukazuje, jak moc zaostávají.
                   </p>
                 </CardContent>
               </Card>
@@ -260,8 +273,8 @@ export default function TvorbaWebuBrnoPage() {
                   <h3 className="text-lg font-bold">Rostoucí byznys scéna</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
                     JIC, CzechInvest a lokální inkubátory pomáhají stovkám
-                    startupů ročně. Kvalitní web je pro ně vstupenka k prvním
-                    zákazníkům a investorům.
+                    startupů ročně. <strong>Kvalitní web je vstupenka k prvním
+                    zákazníkům</strong> a investorům — a my ho dodáme za 5–7 dní.
                   </p>
                 </CardContent>
               </Card>
@@ -269,9 +282,11 @@ export default function TvorbaWebuBrnoPage() {
             <div className="text-center mt-8">
               <p className="text-muted-foreground">
                 <MapPin className="h-4 w-4 inline mr-1" />
-                Sídlíme v Praze, ale{" "}
-                <strong>pracujeme s klienty z celé ČR</strong> — včetně
-                desítek firem z Brna a okolí.
+                Sídlíme na adrese Revoluční 8, Praha 1 —{" "}
+                <strong>pracujeme s klienty z celé ČR</strong>. Zjistěte více{" "}
+                <Link href="/o-nas" className="text-primary hover:underline">
+                  o naší agentuře a týmu
+                </Link>.
               </p>
             </div>
           </div>
@@ -286,8 +301,12 @@ export default function TvorbaWebuBrnoPage() {
                 <span className="text-primary">brněnské firmy</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Od prezentačních webů po komplexní e-shopy — vše na moderních
-                technologiích
+                Od prezentačních webů po komplexní e-shopy — vše na{" "}
+                <strong>moderních technologiích bez WordPressu</strong>.
+                Prohlédněte si{" "}
+                <Link href="/sluzby" className="text-primary hover:underline">
+                  kompletní přehled služeb a ceník
+                </Link>.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
@@ -312,7 +331,9 @@ export default function TvorbaWebuBrnoPage() {
             </div>
             <div className="text-center mt-8">
               <Button asChild variant="outline" size="lg">
-                <Link href="/sluzby">Všechny služby →</Link>
+                <Link href="/sluzby">
+                  Všechny naše webové služby →
+                </Link>
               </Button>
             </div>
           </div>
@@ -331,12 +352,15 @@ export default function TvorbaWebuBrnoPage() {
                       <span className="text-primary">7 990 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
-                      Pražská kvalita za férovou cenu. Bez měsíčních poplatků
-                      za hosting, bez skrytých nákladů. Jednou zaplatíte, web
-                      je váš navždy.
+                      <strong>Pražská kvalita za férovou cenu.</strong> Bez měsíčních poplatků
+                      za hosting, bez skrytých nákladů. Dejte si pozor na{" "}
+                      <Link href="/blog/predrazene-sablony-webovych-agentur-jak-je-poznat" className="text-primary hover:underline">
+                        předražené šablony webových agentur
+                      </Link>{" "}
+                      — u nás platíte jednou a web je váš navždy.
                     </p>
                     <LeadButton href="/poptavka" showArrow>
-                      Získat nabídku pro Brno
+                      Získat nabídku pro brněnskou firmu
                     </LeadButton>
                   </div>
                   <div className="space-y-3">
@@ -378,6 +402,16 @@ export default function TvorbaWebuBrnoPage() {
                 </div>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8">
+              Prohlédněte si{" "}
+              <Link href="/portfolio" className="text-primary hover:underline">
+                naše reference a dokončené projekty
+              </Link>{" "}
+              nebo navštivte{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                často kladené otázky o tvorbě webu
+              </Link>.
+            </p>
           </div>
         </section>
 
@@ -405,11 +439,62 @@ export default function TvorbaWebuBrnoPage() {
                 </Card>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Další odpovědi najdete v{" "}
+              <Link href="/faq" className="text-primary hover:underline">
+                kompletním FAQ
+              </Link>{" "}
+              nebo nám rovnou{" "}
+              <Link href="/kontakt" className="text-primary hover:underline">
+                napište přes kontaktní stránku
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* MĚSTA KDE PŮSOBÍME */}
+        <section className="py-12 md:py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-8 space-y-3">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Města kde <span className="text-primary">působíme</span>
+              </h2>
+              <p className="text-muted-foreground">
+                Tvoříme webové stránky pro firmy po celé České republice
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <Link href="/tvorba-webu-praha" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">Praha</p>
+                    <p className="text-sm text-muted-foreground">Tvorba webových stránek v Praze</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="p-5 text-center">
+                  <MapPin className="h-6 w-6 text-primary mx-auto mb-2" />
+                  <p className="font-bold text-lg">Brno</p>
+                  <p className="text-sm text-muted-foreground">Právě se díváte</p>
+                </CardContent>
+              </Card>
+              <Link href="/tvorba-webu-ostrava" className="group">
+                <Card className="border-border/60 transition-all group-hover:border-primary/40 group-hover:shadow-md h-full">
+                  <CardContent className="p-5 text-center">
+                    <MapPin className="h-6 w-6 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">Ostrava</p>
+                    <p className="text-sm text-muted-foreground">Webové stránky pro ostravské podnikatele</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24 px-4">
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
               <CardContent className="p-8 md:p-12 text-center space-y-6">
@@ -418,16 +503,16 @@ export default function TvorbaWebuBrnoPage() {
                   <span className="text-primary">brněnský byznys</span>?
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Vyplňte krátký dotazník a do 24 hodin obdržíte cenovou
-                  nabídku šitou na míru. Spolupracujeme online — žádné
-                  zbytečné schůzky, žádné zdržení.
+                  Vyplňte krátký dotazník a do 24 hodin obdržíte{" "}
+                  <strong>cenovou nabídku šitou na míru</strong>. Spolupracujeme
+                  online — žádné zbytečné schůzky, žádné zdržení.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <LeadButton href="/poptavka" size="lg" showArrow>
-                    Chci cenovou nabídku
+                    Odeslat poptávku na web
                   </LeadButton>
                   <Button asChild variant="outline" size="lg">
-                    <Link href="/blog">Čtěte náš blog</Link>
+                    <Link href="/blog">Přečtěte si náš odborný blog</Link>
                   </Button>
                 </div>
               </CardContent>
