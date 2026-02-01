@@ -89,6 +89,16 @@ function czkToEur(czk: number): number {
 }
 
 // Helper function to transform database services to pricing packages (German)
+function getIdealForTextDE(title: string): string {
+  const lower = title.toLowerCase();
+  if (lower.includes("landing")) return "Freelancer, Kampagnen und einfache Präsentationen";
+  if (lower.includes("basis")) return "Kleine Unternehmen und lokale Dienstleister";
+  if (lower.includes("standard")) return "Wachsende Unternehmen mit mehreren Dienstleistungen";
+  if (lower.includes("mini")) return "Kleine Online-Shops mit bis zu 50 Produkten";
+  if (lower.includes("premium")) return "Große Online-Shops mit Tausenden von Produkten";
+  return "Unternehmen jeder Größe";
+}
+
 function transformServicesToPricingPackages(services: Service[]): PricingPackage[] {
   // Filter services that have pricing (priceFrom is not null)
   const pricingServices = services
@@ -117,7 +127,7 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
       included: service.features.includes(featureName),
     })),
     cta: `${service.title} bestellen`,
-    ideal: service.description,
+    ideal: getIdealForTextDE(service.title),
   }));
 }
 
