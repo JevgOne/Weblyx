@@ -130,6 +130,7 @@ export async function updatePortfolio(
     clientName: string;
     projectUrl: string;
     imageUrl: string;
+    beforeImageUrl: string;
     technologies: string[];
     category: string;
     featured: boolean;
@@ -160,6 +161,10 @@ export async function updatePortfolio(
   if (data.imageUrl !== undefined) {
     updates.push('image_url = ?');
     args.push(data.imageUrl);
+  }
+  if (data.beforeImageUrl !== undefined) {
+    updates.push('before_image_url = ?');
+    args.push(data.beforeImageUrl || null);
   }
   if (data.technologies !== undefined) {
     updates.push('technologies = ?');

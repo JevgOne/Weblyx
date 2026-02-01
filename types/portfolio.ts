@@ -30,6 +30,7 @@ export interface PortfolioFormData {
   description: string;
   technologies: string[];
   imageUrl: string;
+  beforeImageUrl?: string; // Screenshot before redesign
   projectUrl?: string; // URL of the live project
   pagespeedMobile?: number;
   pagespeedDesktop?: number;

@@ -106,6 +106,7 @@ export async function PUT(request: NextRequest) {
       clientName: body.clientName,
       projectUrl: body.projectUrl,
       imageUrl: body.imageUrl,
+      beforeImageUrl: body.beforeImageUrl,
       technologies: body.technologies,
       category: body.category,
       featured: body.featured,

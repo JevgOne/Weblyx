@@ -35,9 +35,12 @@ export default function EditPortfolioPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingBefore, setUploadingBefore] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [beforeImagePreview, setBeforeImagePreview] = useState<string>("");
   const [techInput, setTechInput] = useState("");
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [beforeMediaPickerOpen, setBeforeMediaPickerOpen] = useState(false);
   const [formData, setFormData] = useState<PortfolioFormData>({
     title: "",
     category: "",
@@ -68,6 +71,7 @@ export default function EditPortfolioPage() {
           description: data.description || "",
           technologies: data.technologies || [],
           imageUrl: data.imageUrl || "",
+          beforeImageUrl: data.beforeImageUrl || "",
           projectUrl: data.projectUrl || "",
           published: data.published || false,
           featured: data.featured || false,
@@ -76,6 +80,9 @@ export default function EditPortfolioPage() {
         setFormData(projectData);
         if (projectData.imageUrl) {
           setImagePreview(projectData.imageUrl);
+        }
+        if (projectData.beforeImageUrl) {
+          setBeforeImagePreview(projectData.beforeImageUrl);
         }
       } else {
         alert("Projekt nenalezen");
@@ -145,6 +152,38 @@ export default function EditPortfolioPage() {
   const handleMediaSelect = (url: string) => {
     setImagePreview(url);
     setFormData((prev) => ({ ...prev, imageUrl: url }));
+  };
+
+  const handleBeforeMediaSelect = (url: string) => {
+    setBeforeImagePreview(url);
+    setFormData((prev) => ({ ...prev, beforeImageUrl: url }));
+  };
+
+  const handleBeforeImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+
+    setUploadingBefore(true);
+    try {
+      const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
+      const compressedFile = await imageCompression(file, options);
+
+      const reader = new FileReader();
+      reader.onloadend = () => setBeforeImagePreview(reader.result as string);
+      reader.readAsDataURL(compressedFile);
+
+      const fd = new FormData();
+      fd.append("file", compressedFile, file.name);
+      const response = await fetch("/api/upload", { method: "POST", body: fd });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || "Upload failed");
+      setFormData((prev) => ({ ...prev, beforeImageUrl: result.url }));
+    } catch (error) {
+      console.error("Error uploading before image:", error);
+      alert("Chyba při nahrávání obrázku");
+    } finally {
+      setUploadingBefore(false);
+    }
   };
 
   const addTechnology = () => {
@@ -370,6 +409,77 @@ export default function EditPortfolioPage() {
                 </div>
               </div>
 
+              {/* Before Image Upload (optional — for redesigns) */}
+              <div className="space-y-2">
+                <Label htmlFor="beforeImage">
+                  🔄 Obrázek PŘED redesignem (volitelné)
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Nahrajte screenshot starého webu. Zobrazí se jako before/after slider na detailu projektu.
+                </p>
+                <div className="flex flex-col items-center gap-4">
+                  {beforeImagePreview ? (
+                    <div className="w-full max-w-md relative">
+                      <img
+                        src={beforeImagePreview}
+                        alt="Before preview"
+                        className="w-full h-48 object-cover rounded-lg border-2 border-dashed border-orange-300"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={() => {
+                          setBeforeImagePreview("");
+                          setFormData((prev) => ({ ...prev, beforeImageUrl: "" }));
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="w-full max-w-md h-32 border-2 border-dashed border-orange-200 rounded-lg flex flex-col items-center justify-center gap-1 text-muted-foreground bg-orange-50/50">
+                      <ImageIcon className="h-8 w-8 text-orange-300" />
+                      <p className="text-xs">Screenshot starého webu (volitelné)</p>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={uploadingBefore}
+                      onClick={() => document.getElementById("beforeImage")?.click()}
+                    >
+                      {uploadingBefore ? (
+                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Nahrávám...</>
+                      ) : (
+                        <><Upload className="mr-2 h-4 w-4" />{beforeImagePreview ? "Změnit" : "Nahrát before"}</>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      disabled={uploadingBefore}
+                      onClick={() => setBeforeMediaPickerOpen(true)}
+                    >
+                      <FolderOpen className="mr-2 h-4 w-4" />
+                      Z knihovny
+                    </Button>
+                  </div>
+                  <input
+                    id="beforeImage"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleBeforeImageUpload}
+                    disabled={uploadingBefore}
+                  />
+                </div>
+              </div>
+
               {/* Title */}
               <div className="space-y-2">
                 <Label htmlFor="title">Název projektu *</Label>
@@ -530,6 +640,11 @@ export default function EditPortfolioPage() {
         open={mediaPickerOpen}
         onOpenChange={setMediaPickerOpen}
         onSelect={handleMediaSelect}
+      />
+      <MediaPicker
+        open={beforeMediaPickerOpen}
+        onOpenChange={setBeforeMediaPickerOpen}
+        onSelect={handleBeforeMediaSelect}
       />
     </div>
   );
