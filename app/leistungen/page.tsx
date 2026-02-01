@@ -109,7 +109,7 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
     price: czkToEur(service.priceFrom!),
     priceNote: "einmalig",
     // Mark "Basis" package as popular
-    popular: service.title.toLowerCase().includes("basis") || service.title.toLowerCase().includes("standard"),
+    popular: service.title.toLowerCase().includes("basis"),
     // For cards: show only service's own features
     // For table: show all features with true/false
     features: Array.from(allFeatureNames).map(featureName => ({
