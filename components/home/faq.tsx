@@ -30,6 +30,8 @@ async function getFAQData(): Promise<{ section: FAQSection | null; items: FAQIte
 export async function FAQ() {
   const t = await getTranslations('faqComponent');
   const tFaq = await getTranslations('faq');
+  const locale = await getLocale();
+  const isDE = locale === 'de';
   const { section, items: faqData } = await getFAQData();
 
   // Filter only enabled FAQs
@@ -53,15 +55,19 @@ export async function FAQ() {
     return null;
   }
 
+  // For DE locale, use translated heading/subheading instead of Czech DB values
+  const heading = isDE ? tFaq('title') : section.heading;
+  const subheading = isDE ? tFaq('subtitle') : section.subheading;
+
   return (
     <section className="py-16 md:py-24 px-4 bg-muted/50">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            {section.heading}
+            {heading}
           </h2>
           <p className="text-lg text-muted-foreground">
-            {section.subheading}
+            {subheading}
           </p>
         </div>
 
