@@ -1,9 +1,24 @@
 import type { Metadata } from "next";
+import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 
-export const metadata: Metadata = {
-  title: "Zásady cookies",
-  description: "Informace o používání cookies na webu Weblyx. Zjistěte, jaké cookies používáme a jak můžete spravovat své preference.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const brand = await getRequestBrandConfig();
+
+  if (locale === "de") {
+    return {
+      title: "Cookie-Richtlinien | Seitelyx",
+      description:
+        "Informationen zur Verwendung von Cookies auf der Seitelyx-Website. Erfahren Sie, welche Cookies wir verwenden und wie Sie Ihre Einstellungen verwalten können.",
+    };
+  }
+
+  return {
+    title: "Zásady cookies | Weblyx",
+    description:
+      "Informace o používání cookies na webu Weblyx. Zjistěte, jaké cookies používáme a jak můžete spravovat své preference.",
+  };
+}
 
 export default function CookiesPage() {
   return (
@@ -160,7 +175,7 @@ export default function CookiesPage() {
             </p>
             <div className="bg-muted/50 rounded-lg p-6 space-y-2">
               <p><strong>Email:</strong> <a href="mailto:info@weblyx.cz" className="text-primary hover:underline">info@weblyx.cz</a></p>
-              <p><strong>Telefon:</strong> <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a></p>
+              <p><strong>Telefon:</strong> <a href="tel:+420777447464" className="text-primary hover:underline">+420 777 447 464</a></p>
             </div>
           </section>
         </div>

@@ -1,14 +1,27 @@
 import { Metadata } from "next";
 import { Star, ExternalLink, Quote } from "lucide-react";
 import { getPublishedReviews } from "@/lib/turso/reviews";
+import { getRequestLocale } from "@/lib/brand-server";
 
 export const revalidate = 3600; // ISR: 1 hour
 
-export const metadata: Metadata = {
-  title: "Recenze | Weblyx – co říkají naši klienti",
-  description:
-    "Přečtěte si recenze od našich spokojených klientů. Weblyx – tvorba webových stránek s hodnocením 5.0 na Google.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+
+  if (locale === "de") {
+    return {
+      title: "Kundenbewertungen | Seitelyx",
+      description:
+        "Lesen Sie Bewertungen unserer zufriedenen Kunden. Seitelyx – Webdesign mit 5.0 Google-Bewertung.",
+    };
+  }
+
+  return {
+    title: "Recenze klientů | Weblyx",
+    description:
+      "Přečtěte si recenze od našich spokojených klientů. Weblyx – tvorba webových stránek s hodnocením 5.0 na Google.",
+  };
+}
 
 const GOOGLE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=ChIJu9LD5DuVC0cRaH6kYvXkDbM";
