@@ -277,10 +277,11 @@
     "afterSecurity": "Maximale Sicherheit",
     "afterPrice": "320 - 600 €",
     "ctaTitle": "💡",
-    "ctaHighlight": "Sparen Sie bis zu 50%",
-    "ctaText": "und erhalten Sie eine schnellere Website",
-    "ctaSubtitle": "Moderne Technologie = niedrigere Kosten, höhere Leistung, zufriedene Kunden",
-    "ctaLink": "/anfrage"
+    "ctaHighlight": "Schnelle Website = mehr Kunden",
+    "ctaText": "Schnelle Website anfragen",
+    "ctaSubtitle": "Unsere Websites laden in unter 2 Sekunden — das garantieren wir, oder Geld zurück",
+    "ctaLink": "/anfrage",
+    "ctaStat": "53% der Nutzer verlassen eine Website, die länger als 3 Sekunden lädt"
   },
   "socialProof": {
     "title": "Vertrauen von",

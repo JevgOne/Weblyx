@@ -119,10 +119,13 @@ export function BeforeAfter() {
 
         {/* Bottom CTA */}
         <div className="text-center mt-12 p-8 rounded-2xl bg-primary/5 border border-primary/20">
-          <p className="text-lg font-semibold mb-2">
-            {t("ctaTitle")} <span className="text-primary">{t("ctaHighlight")}</span> {t("ctaText")}
+          <p className="text-lg font-semibold mb-1">
+            {t("ctaTitle")} <span className="text-primary">{t("ctaHighlight")}</span>
           </p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-base font-bold mb-2">
+            {t("ctaStat")}
+          </p>
+          <p className="text-sm text-muted-foreground mb-5">
             {t("ctaSubtitle")}
           </p>
           <LeadButton href={t("ctaLink")} size="lg">

@@ -300,9 +300,10 @@
     "afterPrice": "7 990 - 14 990 Kč",
     "ctaTitle": "💡",
     "ctaHighlight": "Rychlý web = více zákazníků",
-    "ctaText": "53% lidí opustí web, který se načítá déle než 3 sekundy",
-    "ctaSubtitle": "Naše weby se načítají pod 2 sekundy – garantujeme to, nebo vrátíme peníze",
-    "ctaLink": "/poptavka"
+    "ctaText": "Chci rychlý web",
+    "ctaSubtitle": "Naše weby se načítají pod 2 sekundy — garantujeme to, nebo vrátíme peníze",
+    "ctaLink": "/poptavka",
+    "ctaStat": "53% lidí opustí web, který se načítá déle než 3 sekundy"
   },
   "socialProof": {
     "title": "Více než",
