@@ -14,10 +14,36 @@ export async function GET(request: NextRequest) {
     const withInsights = searchParams.get("insights") !== "false";
 
     if (withInsights) {
-      const campaigns = await getCampaignPerformance(datePreset as any);
+      // Try to get campaigns with insights first
+      const campaignsWithInsights = await getCampaignPerformance(datePreset as any);
+      
+      // If insights returns empty (new campaigns with no data yet), 
+      // fallback to just listing campaigns
+      if (campaignsWithInsights.length === 0) {
+        const allCampaigns = await getCampaigns();
+        const fallbackData = allCampaigns.map(c => ({
+          campaignId: c.id,
+          campaignName: c.name,
+          status: c.status,
+          objective: c.objective,
+          impressions: 0,
+          clicks: 0,
+          ctr: 0,
+          cpc: 0,
+          spend: 0,
+          reach: 0,
+          frequency: 0,
+          conversions: 0,
+        }));
+        return NextResponse.json({
+          success: true,
+          data: fallbackData,
+        });
+      }
+      
       return NextResponse.json({
         success: true,
-        data: campaigns,
+        data: campaignsWithInsights,
       });
     } else {
       const campaigns = await getCampaigns();
