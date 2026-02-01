@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Calendar, Clock, User, ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { getBlogPostBySlug, getPublishedBlogPosts } from "@/lib/turso/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { marked } from "marked";
 import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
-import { getLocaleFromDomain } from "@/lib/seo-metadata";
 
-// Use ISR: Render on-demand and cache for 60 seconds
 export const revalidate = 60;
-
-// Allow all blog posts to be rendered dynamically
 export const dynamicParams = true;
 
 export async function generateMetadata({
@@ -28,17 +26,11 @@ export async function generateMetadata({
     const post = await getBlogPostBySlug(slug);
 
     if (!post || !post.published) {
-      return {
-        title: "Článek nenalezen | Weblyx Blog",
-      };
+      return { title: "Článek nenalezen | Weblyx Blog" };
     }
 
-    const locale = getLocaleFromDomain();
-    const baseUrl = locale === 'de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
-    const siteName = locale === 'de' ? 'Seitelyx' : 'Weblyx';
-
     return {
-      title: post.metaTitle || `${post.title} | ${siteName} Blog`,
+      title: post.metaTitle || `${post.title} | Weblyx Blog`,
       description: post.metaDescription || post.excerpt || post.title,
       keywords: post.tags || [],
       authors: post.authorName ? [{ name: post.authorName }] : undefined,
@@ -55,19 +47,19 @@ export async function generateMetadata({
           height: 630,
           alt: post.title
         }] : [],
-        url: `${baseUrl}/blog/${slug}`,
-        siteName,
-        locale: locale === 'de' ? 'de_DE' : 'cs_CZ',
+        url: `https://www.weblyx.cz/blog/${slug}`,
+        siteName: "Weblyx",
+        locale: "cs_CZ",
       },
       twitter: {
         card: "summary_large_image",
         title: post.metaTitle || post.title,
         description: post.metaDescription || post.excerpt || '',
         images: post.featuredImage ? [post.featuredImage] : [],
-        creator: `@${siteName.toLowerCase()}`,
+        creator: "@weblyx",
       },
       alternates: {
-        canonical: `${baseUrl}/blog/${slug}`,
+        canonical: `https://www.weblyx.cz/blog/${slug}`,
       },
       robots: {
         index: true,
@@ -83,9 +75,7 @@ export async function generateMetadata({
     };
   } catch (error) {
     console.error('Error generating metadata:', error);
-    return {
-      title: "Článek nenalezen | Weblyx Blog",
-    };
+    return { title: "Článek nenalezen | Weblyx Blog" };
   }
 }
 
@@ -103,93 +93,45 @@ export default async function BlogPostPage({
       notFound();
     }
 
-    // Fetch related posts (other published posts, excluding current one)
     const allPosts = await getPublishedBlogPosts();
     const relatedPosts = allPosts
       .filter((p) => p.slug !== slug)
-      .slice(0, 3)
-      .map((p) => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        excerpt: p.excerpt || '',
-        featuredImage: p.featuredImage,
-        publishedAt: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('cs-CZ', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        }) : new Date(p.createdAt).toLocaleDateString('cs-CZ', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        }),
-      }));
+      .slice(0, 3);
 
-    // Format dates
     const publishedDate = post.publishedAt
-      ? new Date(post.publishedAt).toLocaleDateString('cs-CZ', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        })
-      : new Date(post.createdAt).toLocaleDateString('cs-CZ', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        });
+      ? new Date(post.publishedAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
+      : new Date(post.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    // Convert Markdown to HTML
-    const htmlContent = await marked.parse(post.content, {
-      gfm: true, // GitHub Flavored Markdown
-      breaks: true, // Convert \n to <br>
-    });
+    const htmlContent = await marked.parse(post.content, { gfm: true, breaks: true });
 
-    // Calculate read time (rough estimate: 200 words per minute)
     const wordCount = post.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
 
-    // Strip HTML tags for plain text content
     const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const plainTextContent = stripHtml(htmlContent);
 
-    // Generate Article schema with E-E-A-T signals (2025 best practices)
+    // Schema.org
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.excerpt || '',
-      "image": post.featuredImage ? {
-        "@type": "ImageObject",
-        "url": post.featuredImage,
-        "width": 1200,
-        "height": 630
-      } : undefined,
+      "image": post.featuredImage ? { "@type": "ImageObject", "url": post.featuredImage, "width": 1200, "height": 630 } : undefined,
       "author": {
         "@type": "Person",
         "name": post.authorName || "Weblyx Team",
         "jobTitle": "Senior Web Developer & SEO Specialist",
         "url": "https://weblyx.cz/o-nas",
-        "sameAs": [
-          "https://www.linkedin.com/company/weblyx"
-        ]
       },
       "publisher": {
         "@type": "Organization",
         "name": "Weblyx",
         "url": "https://weblyx.cz",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://weblyx.cz/logo.png",
-          "width": 200,
-          "height": 60
-        }
+        "logo": { "@type": "ImageObject", "url": "https://weblyx.cz/logo.png", "width": 200, "height": 60 }
       },
       "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date(post.createdAt).toISOString(),
       "dateModified": post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date(post.createdAt).toISOString(),
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": `https://weblyx.cz/blog/${slug}`
-      },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": `https://weblyx.cz/blog/${slug}` },
       "keywords": post.tags?.join(', ') || '',
       "articleBody": plainTextContent,
       "wordCount": wordCount,
@@ -197,52 +139,37 @@ export default async function BlogPostPage({
       "timeRequired": `PT${readTime}M`,
     };
 
-    // Speakable schema for voice search optimization (2025/2026 trend)
-    const speakableSchema = {
+    const breadcrumbSchema = {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      "speakable": {
-        "@type": "SpeakableSpecification",
-        "cssSelector": ["h1", "h2", "article p"]
-      }
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Domů", "item": "https://weblyx.cz" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://weblyx.cz/blog" },
+        { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://weblyx.cz/blog/${slug}` }
+      ]
     };
 
-    // Detect if this is a tutorial/how-to post
-    const isTutorial = post.tags?.some(tag =>
-      ['tutorial', 'návod', 'guide', 'how-to', 'jak'].some(keyword =>
-        tag.toLowerCase().includes(keyword)
-      )
-    );
-
-    // Extract HowTo steps from markdown content if it's a tutorial
+    // HowTo schema for tutorials
     let howToSchema = null;
+    const isTutorial = post.tags?.some(tag =>
+      ['tutorial', 'návod', 'guide', 'how-to', 'jak'].some(kw => tag.toLowerCase().includes(kw))
+    );
     if (isTutorial) {
-      // Extract steps from markdown headers (## 1., ## Krok 1, ## Step 1, etc.)
       const stepRegex = /^##\s*(?:(\d+)[\.:]?\s*)?(?:Krok|Step|Schritt)?\s*(.+)$/gim;
       const steps: HowToStep[] = [];
       let match;
-
       while ((match = stepRegex.exec(post.content)) !== null) {
         const stepNumber = match[1] || (steps.length + 1).toString();
         const stepName = match[2].trim();
-
-        // Find the content after this header until next ## header
         const headerIndex = match.index + match[0].length;
         const nextHeaderMatch = post.content.slice(headerIndex).match(/^##\s/m);
         const nextHeaderIndex = nextHeaderMatch ? headerIndex + nextHeaderMatch.index! : post.content.length;
         const stepContent = post.content.slice(headerIndex, nextHeaderIndex).trim();
-
-        // Strip markdown and get plain text (max 500 chars)
         const plainStepText = stripHtml(await marked(stepContent)).slice(0, 500);
-
         if (plainStepText.length > 10) {
-          steps.push({
-            name: `${stepNumber}. ${stepName}`,
-            text: plainStepText
-          });
+          steps.push({ name: `${stepNumber}. ${stepName}`, text: plainStepText });
         }
       }
-
       if (steps.length >= 2) {
         howToSchema = generateHowToSchema({
           name: post.title,
@@ -254,266 +181,191 @@ export default async function BlogPostPage({
       }
     }
 
-    // Generate Breadcrumbs schema
-    const breadcrumbSchema = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Domů",
-          "item": "https://weblyx.cz"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Blog",
-          "item": "https://weblyx.cz/blog"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": post.title,
-          "item": `https://weblyx.cz/blog/${slug}`
-        }
-      ]
-    };
-
     return (
       <>
-        {/* Schema.org JSON-LD */}
         <JsonLd data={articleSchema} />
         <JsonLd data={breadcrumbSchema} />
-        <JsonLd data={speakableSchema} />
         {howToSchema && <JsonLd data={howToSchema} />}
 
-        <main className="min-h-screen relative">
-          {/* Background gradients */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/5 -z-10"></div>
+        <main className="min-h-screen bg-[#FAFAF9] dark:bg-background">
+          <article>
+            {/* Hero image — full width, cinematic */}
+            {post.featuredImage ? (
+              <div className="relative w-full aspect-[21/9] md:aspect-[3/1]">
+                <Image
+                  src={post.featuredImage}
+                  alt={post.title}
+                  fill
+                  priority
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAF9] dark:from-background via-transparent to-transparent" />
+              </div>
+            ) : (
+              <div className="w-full h-32 md:h-48 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
+            )}
 
-          <article className="py-12 md:py-20 px-4">
-            <div className="container mx-auto max-w-4xl">
-              {/* Back button with better styling */}
-              <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
-                <div className="p-2 rounded-full bg-muted group-hover:bg-primary/10 transition-colors">
-                  <ArrowLeft className="h-4 w-4" />
-                </div>
-                <span>Zpět na blog</span>
+            {/* Article content */}
+            <div className="container mx-auto max-w-3xl px-4 -mt-16 md:-mt-24 relative z-10">
+              {/* Back link */}
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-primary transition-colors mb-8"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Zpět na blog
               </Link>
 
-              {/* Featured Image with better styling */}
-              {post.featuredImage ? (
-                <div className="aspect-video bg-cover bg-center rounded-2xl mb-12 overflow-hidden shadow-2xl border-2 border-primary/10">
-                  <img
-                    src={post.featuredImage}
-                    alt={post.title}
-                    width={1200}
-                    height={675}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video relative overflow-hidden rounded-2xl mb-12 bg-gradient-to-br from-primary/20 via-primary/10 to-background border-2 border-primary/10 shadow-2xl">
-                  {/* Animated gradient orbs */}
-                  <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-                  <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-primary/15 rounded-full blur-2xl animate-pulse delay-1000"></div>
-
-                  {/* Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full"></div>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-primary/40 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Header with enhanced styling */}
-              <header className="mb-16 space-y-6">
-                {/* Meta information with pills */}
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20">
-                    <Calendar className="h-4 w-4" />
-                    <span className="text-sm font-medium">{publishedDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border">
-                    <Clock className="h-4 w-4" />
-                    <span className="text-sm font-medium">{readTime} min čtení</span>
-                  </div>
-                  {post.authorName && (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border">
-                      <User className="h-4 w-4" />
-                      <span className="text-sm font-medium">{post.authorName}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Title with gradient accent */}
-                <div className="relative">
-                  <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/50 to-transparent rounded-full"></div>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                    {post.title}
-                  </h1>
-                </div>
-
-                {/* Excerpt with better styling */}
-                {post.excerpt && (
-                  <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed border-l-4 border-primary/20 pl-6 py-2">
-                    {post.excerpt}
-                  </p>
+              {/* Meta */}
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <span className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {publishedDate}
+                </span>
+                <span className="text-neutral-300 dark:text-border">·</span>
+                <span className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" />
+                  {readTime} min čtení
+                </span>
+                {post.authorName && (
+                  <>
+                    <span className="text-neutral-300 dark:text-border">·</span>
+                    <span className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-muted-foreground">
+                      <User className="h-3.5 w-3.5" />
+                      {post.authorName}
+                    </span>
+                  </>
                 )}
-              </header>
-
-              {/* Content with premium typography */}
-              <div className="relative">
-                {/* Subtle gradient background for content area */}
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] via-transparent to-primary/[0.02] rounded-3xl -z-10"></div>
-
-                <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-primary/5 shadow-sm">
-                  <div
-                    className="prose prose-xl max-w-none dark:prose-invert
-                      prose-headings:font-extrabold prose-headings:text-foreground prose-headings:tracking-tight prose-headings:scroll-mt-20
-                      prose-h2:text-4xl prose-h2:mt-20 prose-h2:mb-8 prose-h2:pb-4 prose-h2:border-b-2 prose-h2:border-primary/20 prose-h2:bg-gradient-to-r prose-h2:from-primary/10 prose-h2:to-transparent prose-h2:pl-6 prose-h2:pr-6 prose-h2:-mx-6 prose-h2:rounded-lg
-                      prose-h3:text-2xl prose-h3:mt-14 prose-h3:mb-6 prose-h3:text-primary prose-h3:font-bold
-                      prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:mb-8 prose-p:text-[18px] prose-p:font-normal
-                      prose-ul:my-10 prose-ul:text-foreground/90 prose-ul:space-y-3 prose-ul:text-[17px]
-                      prose-ol:my-10 prose-ol:text-foreground/90 prose-ol:space-y-3 prose-ol:text-[17px]
-                      prose-li:my-3 prose-li:pl-2 prose-li:leading-relaxed
-                      prose-li:marker:text-primary prose-li:marker:font-bold
-                      prose-strong:text-foreground prose-strong:font-bold prose-strong:bg-primary/5 prose-strong:px-1 prose-strong:rounded
-                      prose-a:text-primary prose-a:no-underline prose-a:font-semibold prose-a:underline-offset-4 hover:prose-a:underline prose-a:transition-all prose-a:decoration-2 prose-a:decoration-primary/50
-                      prose-code:text-primary prose-code:bg-primary/10 prose-code:px-3 prose-code:py-1.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[15px] prose-code:font-semibold prose-code:border prose-code:border-primary/20
-                      prose-pre:bg-muted prose-pre:border-2 prose-pre:border-primary/10 prose-pre:rounded-2xl prose-pre:shadow-2xl prose-pre:p-6
-                      prose-img:rounded-2xl prose-img:shadow-2xl prose-img:border-2 prose-img:border-primary/10 prose-img:my-12
-                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:my-10 prose-blockquote:font-medium prose-blockquote:text-foreground/90 prose-blockquote:italic"
-                    dangerouslySetInnerHTML={{ __html: htmlContent }}
-                  />
-                </div>
               </div>
 
-              {/* Share Buttons */}
-              <div className="mt-12 pt-8 border-t">
-                <ShareButtons
-                  url={`/blog/${slug}`}
-                  title={post.title}
-                  description={post.excerpt || undefined}
-                />
-              </div>
+              {/* Title */}
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-foreground tracking-tight leading-[1.15] mb-6">
+                {post.title}
+              </h1>
 
-              {/* Tags with better design */}
+              {/* Excerpt */}
+              {post.excerpt && (
+                <p className="text-lg md:text-xl text-neutral-500 dark:text-muted-foreground leading-relaxed mb-8">
+                  {post.excerpt}
+                </p>
+              )}
+
+              {/* Tags */}
               {post.tags && post.tags.length > 0 && (
-                <div className="mt-16 pt-8 border-t border-primary/10">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-bold">
-                      Štítky
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag: string, index: number) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-medium hover:bg-primary/20 transition-colors cursor-pointer"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-2 mb-10">
+                  {post.tags.map((tag: string, i: number) => (
+                    <Badge
+                      key={i}
+                      variant="outline"
+                      className="border-primary/30 text-primary bg-primary/5 font-normal text-xs"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
                 </div>
               )}
+
+              <Separator className="mb-12 bg-neutral-200 dark:bg-border" />
+
+              {/* Article body — clean typography */}
+              <div
+                className="prose prose-lg max-w-none dark:prose-invert
+                  prose-headings:font-bold prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
+                  prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-14 prose-h2:mb-6
+                  prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-neutral-800 dark:prose-h3:text-foreground/90
+                  prose-p:text-neutral-600 dark:prose-p:text-foreground/80 prose-p:leading-[1.85] prose-p:mb-6 prose-p:text-[17px]
+                  prose-ul:my-6 prose-ul:text-neutral-600 dark:prose-ul:text-foreground/80 prose-ul:text-[17px]
+                  prose-ol:my-6 prose-ol:text-neutral-600 dark:prose-ol:text-foreground/80 prose-ol:text-[17px]
+                  prose-li:my-2 prose-li:leading-relaxed
+                  prose-li:marker:text-primary
+                  prose-strong:text-neutral-900 dark:prose-strong:text-foreground prose-strong:font-semibold
+                  prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:underline-offset-4
+                  prose-code:text-primary prose-code:bg-primary/5 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-[15px] prose-code:font-mono
+                  prose-pre:bg-neutral-900 prose-pre:rounded-xl prose-pre:shadow-lg prose-pre:p-5
+                  prose-img:rounded-xl prose-img:shadow-lg prose-img:my-10
+                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:my-8 prose-blockquote:text-neutral-700 dark:prose-blockquote:text-foreground/80 prose-blockquote:italic prose-blockquote:not-italic
+                  prose-hr:border-neutral-200 dark:prose-hr:border-border"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+
+              {/* Share */}
+              <Separator className="mt-14 mb-8 bg-neutral-200 dark:bg-border" />
+              <ShareButtons
+                url={`/blog/${slug}`}
+                title={post.title}
+                description={post.excerpt || undefined}
+              />
             </div>
           </article>
 
-          {/* Related Posts Section with enhanced design */}
+          {/* Related posts — minimal */}
           {relatedPosts.length > 0 && (
-            <section className="py-16 md:py-20 px-4 bg-muted/30">
-              <div className="container mx-auto max-w-6xl">
-                <div className="text-center mb-12">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                    </svg>
-                    <span className="text-sm font-medium text-primary">Pokračujte ve čtení</span>
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                    Další články z blogu
-                  </h2>
-                  <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Objevte více užitečných tipů a návodů
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8">
-                  {relatedPosts.map((relatedPost) => (
-                    <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`} className="group">
-                      <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/20">
-                        {relatedPost.featuredImage ? (
-                          <div className="aspect-video relative overflow-hidden">
-                            <img src={relatedPost.featuredImage} alt={relatedPost.title} className="w-full h-full object-cover" loading="lazy" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          </div>
-                        ) : (
-                          <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/15 via-primary/8 to-background">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/15 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                            <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700 delay-100"></div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                              </svg>
+            <section className="border-t border-neutral-200 dark:border-border mt-20">
+              <div className="container mx-auto max-w-3xl px-4 py-16">
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-foreground mb-10">
+                  Další články
+                </h2>
+                <div className="space-y-0">
+                  {relatedPosts.map((rp, idx) => (
+                    <div key={rp.id}>
+                      <Link href={`/blog/${rp.slug}`} className="group block py-6">
+                        <div className="flex gap-6 items-start">
+                          {rp.featuredImage && (
+                            <div className="relative w-28 h-20 md:w-40 md:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                              <Image
+                                src={rp.featuredImage}
+                                alt={rp.title}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
                             </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs text-neutral-400 dark:text-muted-foreground">
+                              {rp.publishedAt
+                                ? new Date(rp.publishedAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
+                                : new Date(rp.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
+                              }
+                            </span>
+                            <h3 className="text-lg font-bold text-neutral-900 dark:text-foreground group-hover:text-primary transition-colors leading-snug mt-1 line-clamp-2">
+                              {rp.title}
+                            </h3>
+                            {rp.excerpt && (
+                              <p className="text-sm text-neutral-500 dark:text-muted-foreground line-clamp-2 mt-1.5">
+                                {rp.excerpt}
+                              </p>
+                            )}
                           </div>
-                        )}
-                        <CardContent className="p-6 space-y-3">
-                          <h3 className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                            {relatedPost.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                            {relatedPost.excerpt}
-                          </p>
-                          <div className="flex items-center justify-between pt-3 border-t">
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {relatedPost.publishedAt}
-                            </div>
-                            <div className="text-primary opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
+                          <ChevronRight className="h-5 w-5 text-neutral-300 group-hover:text-primary transition-colors flex-shrink-0 mt-2" />
+                        </div>
+                      </Link>
+                      {idx < relatedPosts.length - 1 && (
+                        <Separator className="bg-neutral-200 dark:bg-border" />
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
             </section>
           )}
 
-          {/* CTA Section */}
-          <section className="py-12 px-4 bg-muted/30">
-            <div className="container mx-auto max-w-4xl text-center space-y-6">
-              <h2 className="text-2xl md:text-3xl font-bold">
+          {/* CTA */}
+          <section className="border-t border-neutral-200 dark:border-border bg-white dark:bg-card">
+            <div className="container mx-auto max-w-3xl px-4 py-16 text-center space-y-6">
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-foreground">
                 Potřebujete pomoc s webem?
-              </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              </h3>
+              <p className="text-neutral-500 dark:text-muted-foreground max-w-md mx-auto">
                 Vytvoříme pro vás moderní web přesně podle vašich představ. Rychle, kvalitně a za férovou cenu.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
                 <Link href="/poptavka">
-                  <Button size="lg">
+                  <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-3 text-base">
                     Nezávazná poptávka
                   </Button>
                 </Link>
                 <Link href="/portfolio">
-                  <Button size="lg" variant="outline">
+                  <Button variant="outline" className="rounded-full px-8 py-3 text-base">
                     Naše projekty
                   </Button>
                 </Link>
