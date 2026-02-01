@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search, Mail, Loader2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 interface AuditMetric {
   label: string;
@@ -58,6 +59,7 @@ function MetricRow({ metric }: { metric: AuditMetric }) {
 }
 
 export function FreeAudit() {
+  const t = useTranslations('freeAudit');
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,11 +72,11 @@ export function FreeAudit() {
     setResult(null);
 
     if (!url.trim()) {
-      setError("Zadejte URL webu");
+      setError(t('errorUrl'));
       return;
     }
     if (!email.trim() || !email.includes("@")) {
-      setError("Zadejte platný email");
+      setError(t('errorEmail'));
       return;
     }
 
@@ -89,13 +91,13 @@ export function FreeAudit() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Něco se pokazilo");
+        setError(data.error || t('errorGeneric'));
         return;
       }
 
       setResult(data);
     } catch {
-      setError("Nepodařilo se připojit k serveru");
+      setError(t('errorConnection'));
     } finally {
       setLoading(false);
     }
@@ -108,14 +110,13 @@ export function FreeAudit() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 text-teal-500 text-xs font-medium mb-4">
             <Search className="w-3.5 h-3.5" />
-            Zdarma, bez závazků
+            {t('badge')}
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            Jak rychlý je váš web?
+            {t('title')}
           </h2>
           <p className="text-muted-foreground text-lg max-w-md mx-auto">
-            Zadejte URL a my vám pošleme detailní audit výkonu, SEO a
-            přístupnosti.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -129,7 +130,7 @@ export function FreeAudit() {
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="www.vas-web.cz"
+                  placeholder={t('urlPlaceholder')}
                   className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all"
                   disabled={loading}
                 />
@@ -140,7 +141,7 @@ export function FreeAudit() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="vas@email.cz"
+                  placeholder={t('emailPlaceholder')}
                   className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all"
                   disabled={loading}
                 />
@@ -162,18 +163,18 @@ export function FreeAudit() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Analyzuji web… (10–20 sekund)
+                  {t('buttonLoading')}
                 </>
               ) : (
                 <>
-                  Spustit audit zdarma
+                  {t('buttonSubmit')}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
 
             <p className="text-xs text-center text-muted-foreground">
-              Žádný spam. Pošleme jen výsledek auditu.
+              {t('noSpam')}
             </p>
           </form>
         )}
@@ -185,7 +186,7 @@ export function FreeAudit() {
             <div className="text-center">
               <ScoreCircle score={result.score} />
               <p className="text-sm text-muted-foreground mt-3">
-                Performance skóre pro <strong>{result.url}</strong>
+                {t('scoreLabel')} <strong>{result.url}</strong>
               </p>
             </div>
 
@@ -200,10 +201,10 @@ export function FreeAudit() {
             {result.issueCount > 0 && (
               <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-5 text-center">
                 <p className="text-2xl font-bold text-red-500 mb-1">
-                  {result.issueCount} problémů
+                  {result.issueCount} {t('issuesCount')}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  nalezeno na vašem webu
+                  {t('issuesFound')}
                 </p>
               </div>
             )}
@@ -213,11 +214,10 @@ export function FreeAudit() {
               <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium text-sm">
-                  Kompletní report posíláme na váš email
+                  {t('reportSending')}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Obsahuje detailní výpis všech {result.issueCount} problémů,
-                  doporučení ke zlepšení a konkrétní kroky.
+                  {t('reportDetails', { count: result.issueCount })}
                 </p>
               </div>
             </div>
@@ -225,13 +225,13 @@ export function FreeAudit() {
             {/* CTA */}
             <div className="text-center space-y-3 pt-2">
               <p className="text-muted-foreground text-sm">
-                Chcete tyto problémy vyřešit?
+                {t('ctaQuestion')}
               </p>
               <a
-                href="/poptavka"
+                href={t('ctaLink')}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-xl transition-all hover:-translate-y-0.5"
               >
-                Nezávazná konzultace zdarma
+                {t('ctaButton')}
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
@@ -246,7 +246,7 @@ export function FreeAudit() {
                 }}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Analyzovat jiný web →
+                {t('resetButton')}
               </button>
             </div>
           </div>

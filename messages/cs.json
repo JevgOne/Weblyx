@@ -502,5 +502,28 @@
   "pricingCalculator": {
     "freeConsultation": "Nezávazná konzultace zdarma",
     "infoNote": "💡 <strong>Ceny jsou orientační.</strong> Finální cena může být nižší při využití AI nástrojů a automatizace. Kontaktujte nás pro přesnou cenovou nabídku na míru."
+  },
+  "freeAudit": {
+    "badge": "Zdarma, bez závazků",
+    "title": "Jak rychlý je váš web?",
+    "subtitle": "Zadejte URL a my vám pošleme detailní audit výkonu, SEO a přístupnosti.",
+    "urlPlaceholder": "www.vas-web.cz",
+    "emailPlaceholder": "vas@email.cz",
+    "errorUrl": "Zadejte URL webu",
+    "errorEmail": "Zadejte platný email",
+    "errorGeneric": "Něco se pokazilo",
+    "errorConnection": "Nepodařilo se připojit k serveru",
+    "buttonLoading": "Analyzuji web… (10–20 sekund)",
+    "buttonSubmit": "Spustit audit zdarma",
+    "noSpam": "Žádný spam. Pošleme jen výsledek auditu.",
+    "scoreLabel": "Performance skóre pro",
+    "issuesCount": "problémů",
+    "issuesFound": "nalezeno na vašem webu",
+    "reportSending": "Kompletní report posíláme na váš email",
+    "reportDetails": "Obsahuje detailní výpis všech {count} problémů, doporučení ke zlepšení a konkrétní kroky.",
+    "ctaQuestion": "Chcete tyto problémy vyřešit?",
+    "ctaButton": "Nezávazná konzultace zdarma",
+    "ctaLink": "/poptavka",
+    "resetButton": "Analyzovat jiný web →"
   }
 }

@@ -480,5 +480,28 @@
   "pricingCalculator": {
     "freeConsultation": "Kostenlose Beratung",
     "infoNote": "💡 <strong>Preise sind unverbindlich.</strong> Der Endpreis kann durch den Einsatz von KI-Tools und Automatisierung niedriger ausfallen. Kontaktieren Sie uns für ein maßgeschneidertes Angebot."
+  },
+  "freeAudit": {
+    "badge": "Kostenlos, unverbindlich",
+    "title": "Wie schnell ist Ihre Website?",
+    "subtitle": "Geben Sie die URL ein und wir senden Ihnen ein detailliertes Audit zu Performance, SEO und Barrierefreiheit.",
+    "urlPlaceholder": "www.ihre-website.de",
+    "emailPlaceholder": "ihre@email.de",
+    "errorUrl": "Bitte geben Sie eine URL ein",
+    "errorEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "errorGeneric": "Etwas ist schiefgelaufen",
+    "errorConnection": "Verbindung zum Server fehlgeschlagen",
+    "buttonLoading": "Website wird analysiert… (10–20 Sekunden)",
+    "buttonSubmit": "Kostenloses Audit starten",
+    "noSpam": "Kein Spam. Wir senden nur das Audit-Ergebnis.",
+    "scoreLabel": "Performance-Score für",
+    "issuesCount": "Probleme",
+    "issuesFound": "auf Ihrer Website gefunden",
+    "reportSending": "Vollständiger Bericht wird an Ihre E-Mail gesendet",
+    "reportDetails": "Enthält eine detaillierte Auflistung aller {count} Probleme, Verbesserungsvorschläge und konkrete Maßnahmen.",
+    "ctaQuestion": "Möchten Sie diese Probleme lösen?",
+    "ctaButton": "Kostenlose unverbindliche Beratung",
+    "ctaLink": "/anfrage",
+    "resetButton": "Andere Website analysieren →"
   }
 }
