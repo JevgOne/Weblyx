@@ -184,14 +184,7 @@ export default async function PortfolioPage() {
                         </span>
                       </div>
 
-                      {/* PageSpeed */}
-                      {project.pagespeedMobile && (
-                        <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/90 backdrop-blur-sm">
-                          <span className="text-[10px] font-bold text-white">
-                            ⚡ {project.pagespeedMobile}
-                          </span>
-                        </div>
-                      )}
+                      {/* No individual badges — consistent card look */}
                     </div>
 
                     {/* Content */}

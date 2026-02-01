@@ -145,7 +145,21 @@ export default async function PortfolioDetailPage({
       ]
     };
 
-    const hasPerformanceData = project.pagespeedMobile || project.pagespeedDesktop || project.loadTimeBefore || project.loadTimeAfter;
+    const perfStats = [
+      project.pagespeedMobile ? { label: 'PageSpeed Mobile', value: project.pagespeedMobile, unit: '/ 100', highlight: true } : null,
+      project.pagespeedDesktop ? { label: 'PageSpeed Desktop', value: project.pagespeedDesktop, unit: '/ 100', highlight: true } : null,
+      project.loadTimeBefore ? { label: isDE ? 'Vorher' : 'Před redesignem', value: `${project.loadTimeBefore}s`, unit: isDE ? 'Ladezeit' : 'načítání', highlight: false } : null,
+      project.loadTimeAfter ? { label: isDE ? 'Ladezeit' : 'Načítání', value: `${project.loadTimeAfter}s`, unit: isDE ? 'nach Optimierung' : 'po optimalizaci', highlight: true } : null,
+    ].filter(Boolean) as { label: string; value: string | number; unit: string; highlight: boolean }[];
+
+    const showPerformance = perfStats.length >= 2;
+
+    // Adaptive grid class
+    const perfGridClass = perfStats.length === 2
+      ? 'grid grid-cols-2 max-w-lg mx-auto gap-4'
+      : perfStats.length === 3
+        ? 'grid grid-cols-3 max-w-2xl mx-auto gap-4'
+        : 'grid grid-cols-2 md:grid-cols-4 gap-4';
 
     return (
       <>
@@ -161,52 +175,45 @@ export default async function PortfolioDetailPage({
                 <span>{isDE ? 'Alle Projekte' : 'Všechny projekty'}</span>
               </Link>
 
-              {/* Header */}
+              {/* Header — fixed structure for all projects */}
               <header className="mb-10 space-y-4">
-                {project.category && (
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {project.category}
-                  </span>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {project.category && (
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      {project.category}
+                    </span>
+                  )}
+                </div>
 
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
                   {project.title}
                 </h1>
 
+                {/* Short intro — first paragraph only */}
                 {project.description && (
-                  <div className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-3xl space-y-3">
-                    {project.description.split('\n').map((line: string, i: number) => {
-                      const trimmed = line.trim();
-                      if (!trimmed) return null;
-                      if (trimmed.startsWith('•')) {
-                        return (
-                          <div key={i} className="flex gap-2 pl-1">
-                            <span className="text-primary shrink-0">•</span>
-                            <span>{trimmed.slice(1).trim()}</span>
-                          </div>
-                        );
-                      }
-                      if (trimmed.startsWith('Hlavní funkce') || trimmed.startsWith('Hauptfunktionen') || trimmed.startsWith('Výsledek:') || trimmed.startsWith('Ergebnis:')) {
-                        return <p key={i} className="font-semibold text-foreground pt-2">{trimmed}</p>;
-                      }
-                      return <p key={i}>{trimmed}</p>;
-                    })}
-                  </div>
+                  <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl">
+                    {project.description.split('\n')[0].trim()}
+                  </p>
                 )}
 
-                {project.projectUrl && (
-                  <div className="pt-2">
+                {/* Always show a button — live link or placeholder */}
+                <div className="pt-2">
+                  {project.projectUrl ? (
                     <Button asChild size="default" className="group">
                       <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
                         {isDE ? 'Website besuchen' : 'Navštívit web'}
                         <ExternalLink className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-0.5" />
                       </a>
                     </Button>
-                  </div>
-                )}
+                  ) : (
+                    <Button variant="outline" size="default" disabled className="opacity-60">
+                      {isDE ? 'Internes Projekt' : 'Interní projekt'}
+                    </Button>
+                  )}
+                </div>
               </header>
 
-              {/* Project Image — with before/after slider for redesigns */}
+              {/* Project Image — slider for redesigns, static for others */}
               {project.imageUrl && project.beforeImageUrl ? (
                 <div className="mb-12">
                   <BeforeAfterSlider
@@ -235,50 +242,58 @@ export default async function PortfolioDetailPage({
                 </div>
               ) : null}
 
-              {/* Performance Stats */}
-              {hasPerformanceData && (
+              {/* Performance Stats — adaptive grid, shown when ≥2 stats */}
+              {showPerformance && (
                 <div className="mb-12">
                   <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
                     <Gauge className="h-5 w-5 text-primary" />
                     {isDE ? 'Performance' : 'Výkon'}
                   </h2>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {project.pagespeedMobile && (
-                      <div className="p-5 rounded-xl bg-muted/50 border border-border/60 text-center space-y-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Mobile</div>
-                        <div className="text-3xl font-bold text-primary">{project.pagespeedMobile}</div>
-                        <div className="text-[10px] text-muted-foreground">/ 100</div>
-                      </div>
-                    )}
-                    {project.pagespeedDesktop && (
-                      <div className="p-5 rounded-xl bg-muted/50 border border-border/60 text-center space-y-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Desktop</div>
-                        <div className="text-3xl font-bold text-primary">{project.pagespeedDesktop}</div>
-                        <div className="text-[10px] text-muted-foreground">/ 100</div>
-                      </div>
-                    )}
-                    {project.loadTimeBefore && (
-                      <div className="p-5 rounded-xl bg-muted/50 border border-border/60 text-center space-y-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">{isDE ? 'Vorher' : 'Před'}</div>
-                        <div className="text-3xl font-bold text-muted-foreground/60">{project.loadTimeBefore}s</div>
-                        <div className="text-[10px] text-muted-foreground">{isDE ? 'Ladezeit' : 'načítání'}</div>
-                      </div>
-                    )}
-                    {project.loadTimeAfter && (
-                      <div className="p-5 rounded-xl bg-muted/50 border border-border/60 text-center space-y-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-1">
-                          <Zap className="h-3 w-3 text-primary" />
-                          {isDE ? 'Nachher' : 'Po'}
+                  <div className={perfGridClass}>
+                    {perfStats.map((stat, i) => (
+                      <div key={i} className="p-5 rounded-xl bg-muted/50 border border-border/60 text-center space-y-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">{stat.label}</div>
+                        <div className={`text-3xl font-bold ${stat.highlight ? 'text-primary' : 'text-muted-foreground/60'}`}>
+                          {stat.value}
                         </div>
-                        <div className="text-3xl font-bold text-primary">{project.loadTimeAfter}s</div>
-                        <div className="text-[10px] text-muted-foreground">{isDE ? 'Ladezeit' : 'načítání'}</div>
+                        <div className="text-[10px] text-muted-foreground">{stat.unit}</div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 </div>
               )}
 
-              {/* Technologies */}
+              {/* Full Description — structured with bullet points */}
+              {project.description && project.description.includes('\n') && (
+                <div className="mb-12">
+                  <h2 className="text-xl font-semibold mb-4">
+                    {isDE ? 'Über das Projekt' : 'O projektu'}
+                  </h2>
+                  <div className="text-base text-muted-foreground leading-relaxed space-y-2">
+                    {project.description.split('\n').slice(1).map((line: string, i: number) => {
+                      const trimmed = line.trim();
+                      if (!trimmed) return null;
+                      if (trimmed.startsWith('•')) {
+                        return (
+                          <div key={i} className="flex gap-2.5 pl-1 py-0.5">
+                            <span className="text-primary shrink-0 mt-0.5">•</span>
+                            <span>{trimmed.slice(1).trim()}</span>
+                          </div>
+                        );
+                      }
+                      if (trimmed.startsWith('Hlavní funkce') || trimmed.startsWith('Hauptfunktionen')) {
+                        return <p key={i} className="font-semibold text-foreground pt-3 pb-1">{trimmed}</p>;
+                      }
+                      if (trimmed.startsWith('Výsledek:') || trimmed.startsWith('Ergebnis:')) {
+                        return <p key={i} className="font-semibold text-foreground pt-3 border-t border-border/40 mt-3">{trimmed}</p>;
+                      }
+                      return <p key={i}>{trimmed}</p>;
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Technologies — always shown */}
               {project.technologies && project.technologies.length > 0 && (
                 <div className="mb-12">
                   <h2 className="text-xl font-semibold mb-4">{isDE ? 'Technologien' : 'Technologie'}</h2>
