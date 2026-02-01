@@ -9,19 +9,17 @@ export function GoogleAnalytics() {
 
   return (
     <>
-      {/* Google Consent Mode v2 - TEMPORARILY SET TO GRANTED FOR TESTING */}
+      {/* Google Consent Mode v2 - Default to DENIED (GDPR compliant) */}
       <Script id="google-consent-mode" strategy="beforeInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
 
-          // TEMPORARILY: Default consent to GRANTED for Facebook Ads testing
-          // TODO: Change back to 'denied' after tracking is verified
           gtag('consent', 'default', {
-            'analytics_storage': 'granted',
-            'ad_storage': 'granted',
-            'ad_user_data': 'granted',
-            'ad_personalization': 'granted',
+            'analytics_storage': 'denied',
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
             'wait_for_update': 500
           });
         `}

@@ -58,9 +58,8 @@ const BLOCKED_USER_AGENTS = [
   // Archive/snapshot tools
   'archive', 'wayback', 'snapshot', 'mirror', 'httrack', 'teleport',
 
-  // Monitoring/testing tools
+  // Monitoring/testing tools (NOT lighthouse/pagespeed/gtmetrix — those are legitimate)
   'pingdom', 'uptime', 'monitor', 'check', 'test', 'benchmark',
-  'lighthouse', 'pagespeed', 'gtmetrix',
 
   // Generic patterns
   'auto', 'script', 'program', 'library', 'framework',
@@ -315,7 +314,7 @@ export function middleware(request: NextRequest) {
 
   // Anti-scraping headers (ALLOW indexing, just prevent archiving/snippets for copyright)
   // NOTE: Removed 'nofollow' to allow Google Search Console indexing!
-  response.headers.set('X-Robots-Tag', 'noarchive, noimageindex');
+  response.headers.set('X-Robots-Tag', 'noarchive');
 
   // PERFORMANCE FIX: Only apply aggressive no-cache for admin/API routes
   // Let Next.js ISR work normally for public pages
@@ -333,11 +332,6 @@ export function middleware(request: NextRequest) {
   // Content protection
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Download-Options', 'noopen');
-
-  // Prevent right-click save (additional layer, JS still needed for full protection)
-  if (!pathname.startsWith('/api')) {
-    response.headers.set('Content-Disposition', 'inline');
-  }
 
   return response;
 }

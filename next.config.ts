@@ -64,6 +64,34 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
+  // Non-www to www redirect (301 permanent instead of Vercel's default 307)
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'weblyx.cz',
+          },
+        ],
+        destination: 'https://www.weblyx.cz/:path*',
+        permanent: true, // 301
+      },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'seitelyx.de',
+          },
+        ],
+        destination: 'https://www.seitelyx.de/:path*',
+        permanent: true, // 301
+      },
+    ];
+  },
+
   // Security headers
   async headers() {
     return [
