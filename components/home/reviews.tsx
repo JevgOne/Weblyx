@@ -4,8 +4,10 @@ import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getTranslations, getLocale } from "next-intl/server";
 import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBadge";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { generateReviewsSchema } from "@/lib/schema-generators";
+// NOTE: Individual Review JSON-LD schemas were removed (2026-02-01)
+// Google does NOT support Review rich results for @type:Service (itemReviewed).
+// The AggregateRating on LocalBusiness schema (in app/page.tsx) handles star ratings in search.
+// See: https://developers.google.com/search/docs/appearance/structured-data/review-snippet
 
 // Now using unified approach: Google reviews are imported to DB and approved in admin
 // Both Google and manual reviews are displayed from Turso DB
@@ -49,15 +51,8 @@ export async function Reviews() {
     return null;
   }
 
-  // Generate Review schemas for SEO
-  const reviewSchemas = generateReviewsSchema(reviews);
-
   return (
     <section id="recenze" className="py-24 bg-muted/30">
-      {/* Review Schemas for Rich Snippets */}
-      {reviewSchemas.map((schema, index) => (
-        <JsonLd key={`review-schema-${index}`} data={schema} />
-      ))}
 
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
