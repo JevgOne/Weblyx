@@ -1,6 +1,5 @@
 import { getPublishedPortfolio } from "@/lib/turso/portfolio";
-import { getPublishedReviews } from "@/lib/turso/reviews";
-import { ArrowDown, Clock, Gauge, TrendingUp, Quote, Zap } from "lucide-react";
+import { ArrowDown, Clock, Gauge, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface CaseMetric {
@@ -19,10 +18,6 @@ export async function CaseStudy() {
   );
 
   if (!caseProject) return null;
-
-  // Find matching review for this project (by author matching or just pick featured)
-  const reviews = await getPublishedReviews("cs");
-  const bestReview = reviews.find((r) => r.featured) || reviews[0];
 
   const speedImprovement = caseProject.loadTimeBefore && caseProject.loadTimeAfter
     ? Math.round(((caseProject.loadTimeBefore - caseProject.loadTimeAfter) / caseProject.loadTimeBefore) * 100)
@@ -114,40 +109,6 @@ export async function CaseStudy() {
             </div>
           ))}
         </div>
-
-        {/* Client quote */}
-        {bestReview && (
-          <div className="relative bg-card border border-border/60 rounded-2xl p-8 md:p-10">
-            <Quote className="absolute top-6 left-6 w-10 h-10 text-teal-500/10" />
-            <blockquote className="relative z-10 space-y-4">
-              <p className="text-base md:text-lg leading-relaxed italic text-foreground/80 pl-6 border-l-2 border-teal-500/30">
-                {bestReview.text.length > 250
-                  ? bestReview.text.slice(0, 250).trim() + "…"
-                  : bestReview.text}
-              </p>
-              <footer className="flex items-center gap-3 pl-6">
-                <div className="w-8 h-8 rounded-full bg-teal-500/10 flex items-center justify-center">
-                  <span className="text-teal-500 font-semibold text-xs">
-                    {bestReview.authorName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-semibold text-sm">{bestReview.authorName}</p>
-                  {bestReview.authorRole && (
-                    <p className="text-xs text-muted-foreground">
-                      {bestReview.authorRole}
-                    </p>
-                  )}
-                </div>
-              </footer>
-            </blockquote>
-          </div>
-        )}
 
         {/* CTA */}
         <div className="text-center mt-10">
