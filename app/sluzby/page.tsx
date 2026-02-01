@@ -61,6 +61,11 @@ export const metadata: Metadata = {
         height: 630,
         alt: "Weblyx - Služby"
       }
+  twitter: {
+    card: "summary_large_image",
+    title: "Tvorba webových stránek | Od 7 990 Kč | Weblyx",
+    description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
+  },
     ],
   },
   alternates: {

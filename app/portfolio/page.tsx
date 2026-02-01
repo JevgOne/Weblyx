@@ -29,6 +29,11 @@ export const metadata: Metadata = isSeitelyx ? {
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Seitelyx - Portfolio" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Portfolio | Unsere Projekte – Websites und Online-Shops",
+    description: "Sehen Sie sich Beispiele von Websites und Online-Shops an, die wir für unsere Kunden erstellt haben.",
+  },
   alternates: {
     canonical: "https://www.seitelyx.de/portfolio",
     languages: getAlternateLanguages('/portfolio'),
@@ -50,6 +55,11 @@ export const metadata: Metadata = isSeitelyx ? {
     url: "https://www.weblyx.cz/portfolio",
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Portfolio" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Portfolio | Naše projekty – weby a e-shopy",
+    description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili pro naše klienty.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/portfolio",

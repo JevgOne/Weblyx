@@ -29,6 +29,11 @@ export const metadata: Metadata = {
         height: 630,
         alt: "Weblyx - O nás"
       }
+  twitter: {
+    card: "summary_large_image",
+    title: "O nás | Weblyx – moderní webová agentura",
+    description: "Moderní webová agentura z Prahy zaměřená na rychlé a kvalitní webové stránky.",
+  },
     ],
   },
   alternates: {

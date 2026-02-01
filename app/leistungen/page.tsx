@@ -58,6 +58,11 @@ export const metadata: Metadata = {
         height: 630,
         alt: "Seitelyx - Leistungen",
       },
+  twitter: {
+    card: "summary_large_image",
+    title: "Webseiten erstellen lassen | Ab 320 € | Seitelyx",
+    description: "⚡ Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Deutsche Agentur.",
+  },
     ],
   },
   alternates: {

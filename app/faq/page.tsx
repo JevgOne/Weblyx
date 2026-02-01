@@ -19,6 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
+    twitter: {
+      card: "summary_large_image",
+      title: t('metaTitle'),
+      description: t('metaDescription'),
+    },
     alternates: {
       canonical: 'https://www.weblyx.cz/faq',
       languages: getAlternateLanguages('/faq'),

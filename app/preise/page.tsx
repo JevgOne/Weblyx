@@ -14,6 +14,11 @@ export const metadata: Metadata = {
     "webdesign preise",
     "festpreis website",
   ],
+  twitter: {
+    card: "summary_large_image",
+    title: "Webseite erstellen lassen - Transparente Preise | Seitelyx",
+    description: "Website erstellen lassen ab 349€ Festpreis. Design, SEO, DSGVO inklusive. Keine monatlichen Kosten.",
+  },
 };
 
 const pricingTiers = [

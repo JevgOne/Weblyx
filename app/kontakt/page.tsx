@@ -29,6 +29,11 @@ export const metadata: Metadata = isSeitelyx ? {
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Seitelyx - Kontakt" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kontakt | Seitelyx – kostenlose Beratung",
+    description: "Interesse an einer neuen Website? Schreiben Sie uns und wir melden uns innerhalb von 24 Stunden.",
+  },
   alternates: {
     canonical: "https://www.seitelyx.de/kontakt",
     languages: getAlternateLanguages('/kontakt')
@@ -49,6 +54,11 @@ export const metadata: Metadata = isSeitelyx ? {
     url: "https://www.weblyx.cz/kontakt",
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Kontakt" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kontakt | Weblyx – nezávazná konzultace zdarma",
+    description: "Máte zájem o nový web? Napište nám a my se vám ozveme do 24 hodin s návrhem řešení.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/kontakt",
