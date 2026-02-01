@@ -53,3 +53,8 @@ next-env.d.ts
 
 # Claude Code project config
 .claude/
+MARKETING_DASHBOARD_SETUP.md
+GOOGLE_*
+VERCEL_ENV_SETUP.md
+AI-BROWSER-TASK-COMPLETE.md
+tmp-*.ts
