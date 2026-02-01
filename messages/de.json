@@ -378,7 +378,10 @@
       "address": "Prag, EU",
       "hours": "Erreichbarkeit",
       "weekdays": "Mo - Fr: 9:00 - 18:00",
-      "weekend": "Sa - So: Geschlossen"
+      "weekend": "Sa - So: Geschlossen",
+      "mapTitle": "So finden Sie uns",
+      "getDirections": "Route planen",
+      "mapAddress": "Revoluční 8, Prag 1, 110 00"
     },
     "contactWow": {
       "title": "Schreib uns",

@@ -7,7 +7,7 @@ export const revalidate = 3600;
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateContactPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Navigation } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Kontakt – nezávazná konzultace zdarma",
@@ -129,6 +129,46 @@ export default function ContactPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Google Maps Section */}
+        <section className="py-12 md:py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center space-y-2 mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Kde nás najdete
+              </h2>
+              <p className="text-muted-foreground">
+                Revoluční 8, Praha 1, 110 00
+              </p>
+            </div>
+
+            <div className="rounded-xl overflow-hidden border border-border shadow-lg">
+              <iframe
+                src="https://www.google.com/maps?q=Revoluční+8,+Praha+1,+110+00,+Czech+Republic&output=embed"
+                width="100%"
+                height="400"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Weblyx - Revoluční 8, Praha 1"
+                className="w-full h-[300px] md:h-[400px]"
+              />
+            </div>
+
+            <div className="flex justify-center mt-6">
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=Revoluční+8,+Praha+1,+110+00,+Czech+Republic"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-md"
+              >
+                <Navigation className="h-5 w-5" />
+                Navigovat
+              </a>
             </div>
           </div>
         </section>
