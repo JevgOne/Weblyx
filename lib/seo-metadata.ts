@@ -22,6 +22,13 @@ const pathMapping: Record<string, { cs: string; de: string }> = {
   '/tvorba-webu-ostrava': { cs: '/tvorba-webu-ostrava', de: '/tvorba-webu-ostrava' },
   '/website-erstellen-berlin': { cs: '/website-erstellen-berlin', de: '/website-erstellen-berlin' },
   '/website-erstellen-muenchen': { cs: '/website-erstellen-muenchen', de: '/website-erstellen-muenchen' },
+  // Comparison pages (CZ)
+  '/webnode-alternativa': { cs: '/webnode-alternativa', de: '/webnode-alternativa' },
+  '/wordpress-alternativa': { cs: '/wordpress-alternativa', de: '/wordpress-alternative' },
+  // German service pages
+  '/onlineshop-erstellen': { cs: '/onlineshop-erstellen', de: '/onlineshop-erstellen' },
+  '/wordpress-alternative': { cs: '/wordpress-alternativa', de: '/wordpress-alternative' },
+  '/website-fuer-aerzte': { cs: '/website-fuer-aerzte', de: '/website-fuer-aerzte' },
 };
 
 interface SEOContent {

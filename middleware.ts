@@ -314,8 +314,8 @@ export function middleware(request: NextRequest) {
 
   // Cross-locale noindex: German pages on weblyx.cz and Czech pages on seitelyx.de
   // Prevents Google from indexing wrong-language content under the wrong domain
-  const germanOnlyRoutes = ['/leistungen', '/uber-uns', '/anfrage', '/preise', '/impressum', '/datenschutz', '/schreiben-sie-eine-bewertung', '/website-erstellen-berlin', '/website-erstellen-muenchen'];
-  const czechOnlyRoutes = ['/sluzby', '/o-nas', '/poptavka', '/napiste-recenzi', '/pagespeed-garance', '/ochrana-udaju', '/obchodni-podminky', '/cookies', '/tvorba-webu-praha', '/tvorba-webu-brno', '/tvorba-webu-ostrava'];
+  const germanOnlyRoutes = ['/leistungen', '/uber-uns', '/anfrage', '/preise', '/impressum', '/datenschutz', '/schreiben-sie-eine-bewertung', '/website-erstellen-berlin', '/website-erstellen-muenchen', '/onlineshop-erstellen', '/wordpress-alternative', '/website-fuer-aerzte'];
+  const czechOnlyRoutes = ['/sluzby', '/o-nas', '/poptavka', '/napiste-recenzi', '/pagespeed-garance', '/ochrana-udaju', '/obchodni-podminky', '/cookies', '/tvorba-webu-praha', '/tvorba-webu-brno', '/tvorba-webu-ostrava', '/webnode-alternativa', '/wordpress-alternativa'];
   const isGermanPage = germanOnlyRoutes.some(r => pathname === r || pathname.startsWith(r + '/'));
   const isCzechPage = czechOnlyRoutes.some(r => pathname === r || pathname.startsWith(r + '/'));
   const isSeitelyx = hostname.includes('seitelyx.de');
