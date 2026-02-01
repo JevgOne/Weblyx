@@ -38,10 +38,11 @@ function formatDate(date: Date): string {
 }
 
 export default async function BewertungenPage() {
-  const reviews = await getPublishedReviews("de");
-  // Fallback: if no DE reviews, show all reviews
+  const deReviews = await getPublishedReviews("de");
+  // Fallback: if no DE reviews, show all reviews (Czech clients)
+  const isFallback = deReviews.length === 0;
   const allReviews =
-    reviews.length > 0 ? reviews : await getPublishedReviews();
+    deReviews.length > 0 ? deReviews : await getPublishedReviews();
 
   const reviewCount = allReviews.length;
   const avgRating =
@@ -80,6 +81,17 @@ export default async function BewertungenPage() {
           </div>
         </div>
       </section>
+
+      {/* Note about Czech reviews */}
+      {isFallback && allReviews.length > 0 && (
+        <section className="px-4 -mt-4 mb-0">
+          <div className="container mx-auto max-w-3xl">
+            <div className="bg-muted/60 border border-border/40 rounded-xl px-5 py-3 text-center text-sm text-muted-foreground">
+              🇨🇿 Diese Bewertungen stammen von unseren tschechischen Kunden und werden in der Originalsprache angezeigt.
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Reviews grid */}
       <section className="py-12 md:py-16 px-4">
