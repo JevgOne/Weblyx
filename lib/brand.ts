@@ -69,41 +69,6 @@ export function buildBrandConfig(domain: string): BrandConfig {
 export function getBrandConfig(): BrandConfig {
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'weblyx.cz';
   return buildBrandConfig(domain);
-
-  if (isSeitelyx) {
-    return {
-      name: 'Seitelyx',
-      domain: 'seitelyx.de',
-      locale: 'de',
-      logo: {
-        src: '/logos/seitelyx-logo.svg',
-        alt: 'Seitelyx - Website erstellen lassen',
-        width: 150,
-        height: 40,
-      },
-      colors: {
-        primary: '#14B8A6', // Teal
-        secondary: '#0F766E',
-      },
-    };
-  }
-
-  // Default: Weblyx (Czech)
-  return {
-    name: 'Weblyx',
-    domain: 'weblyx.cz',
-    locale: 'cs',
-    logo: {
-      src: '/logos/weblyx-logo.svg',
-      alt: 'Weblyx - Tvorba webových stránek',
-      width: 150,
-      height: 40,
-    },
-    colors: {
-      primary: '#14B8A6', // Teal
-      secondary: '#0F766E',
-    },
-  };
 }
 
 /**
