@@ -164,7 +164,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       streetAddress: 'Revoluční 8, Praha 1',
       postalCode: '110 00',
       priceRange: '10000 Kč - 50000 Kč',
-      openingHours: ['Mo-Fr 09:00-18:00'],
+      openingHours: ['Mo-Fr 08:00-18:00'],
       areaServedName: 'Czech Republic',
     },
     de: {
@@ -178,7 +178,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       streetAddress: 'Revoluční 8, Prag 1',
       postalCode: '110 00',
       priceRange: '349€ - 1299€',
-      openingHours: ['Mo-Fr 09:00-18:00'],
+      openingHours: ['Mo-Fr 08:00-18:00'],
       areaServedName: 'Germany, Austria, Switzerland',
     },
   };

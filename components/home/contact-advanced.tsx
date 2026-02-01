@@ -267,7 +267,7 @@ export function ContactAdvanced() {
             <div className="space-y-2">
               <h3 className="font-semibold">Otevírací doba</h3>
               <div className="text-sm text-muted-foreground space-y-1">
-                <p>Po - Pá: 9:00 - 18:00</p>
+                <p>Po - Pá: 8:00 - 18:00</p>
                 <p>So - Ne: po domluvě</p>
               </div>
             </div>

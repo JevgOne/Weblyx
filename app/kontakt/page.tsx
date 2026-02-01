@@ -124,7 +124,7 @@ export default function ContactPage() {
                 <div>
                   <h2 className="font-semibold mb-1">Otevírací doba</h2>
                   <p className="text-muted-foreground text-sm">
-                    Po–Pá: 9:00–18:00<br />
+                    Po–Pá: 8:00–18:00<br />
                     So–Ne: po domluvě
                   </p>
                 </div>

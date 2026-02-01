@@ -186,7 +186,7 @@
     "address": "Anschrift",
     "location": "Prag, EU",
     "hours": "Erreichbarkeit",
-    "weekdays": "Mo - Fr: 9:00 - 18:00 Uhr",
+    "weekdays": "Mo - Fr: 8:00 - 18:00 Uhr",
     "weekend": "Sa - So: nach Vereinbarung",
     "companyInfo": "Betreiber: Altro Servis Group GmbH | Steuernummer: 23673389 | Revoluční 8, Prag 1, 110 00",
     "mapsTooltip": "Finden Sie uns auf Google Maps",
@@ -377,7 +377,7 @@
       "title": "Kontakt",
       "address": "Prag, EU",
       "hours": "Erreichbarkeit",
-      "weekdays": "Mo - Fr: 9:00 - 18:00",
+      "weekdays": "Mo - Fr: 8:00 - 18:00",
       "weekend": "Sa - So: nach Vereinbarung",
       "mapTitle": "So finden Sie uns",
       "getDirections": "Route planen",
@@ -441,7 +441,7 @@
         "address": "Adresse",
         "addressValue": "Prag, Tschechien",
         "hours": "Öffnungszeiten",
-        "weekdays": "Mo - Fr: 9:00 - 18:00",
+        "weekdays": "Mo - Fr: 8:00 - 18:00",
         "weekend": "Sa - So: nach Vereinbarung"
       }
     }
