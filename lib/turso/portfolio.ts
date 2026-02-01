@@ -57,14 +57,14 @@ export async function getAllPortfolio(locale?: string): Promise<PortfolioItem[]>
   return result.rows.map((row) => rowToPortfolio(row as unknown as PortfolioRow, locale));
 }
 
-export async function getPortfolioById(id: string): Promise<PortfolioItem | null> {
+export async function getPortfolioById(id: string, locale?: string): Promise<PortfolioItem | null> {
   const result = await turso.execute({
     sql: 'SELECT * FROM portfolio WHERE id = ?',
     args: [id],
   });
 
   if (result.rows.length === 0) return null;
-  return rowToPortfolio(result.rows[0] as unknown as PortfolioRow);
+  return rowToPortfolio(result.rows[0] as unknown as PortfolioRow, locale);
 }
 
 export async function getPublishedPortfolio(locale?: string): Promise<PortfolioItem[]> {

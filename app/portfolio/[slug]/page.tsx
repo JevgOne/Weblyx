@@ -25,7 +25,7 @@ export async function generateMetadata({
   try {
     const locale = await getLocale();
     const isDE = locale === 'de';
-    const project = await getPortfolioById(slug);
+    const project = await getPortfolioById(slug, locale);
 
     if (!project || !project.published) {
       return {
@@ -95,7 +95,7 @@ export default async function PortfolioDetailPage({
   try {
     const locale = await getLocale();
     const isDE = locale === 'de';
-    const project = await getPortfolioById(slug);
+    const project = await getPortfolioById(slug, locale);
 
     if (!project || !project.published) {
       notFound();
