@@ -24,6 +24,7 @@ interface ServiceRow {
   icon: string | null;
   image_url: string | null;
   features: string | null;
+  features_de: string | null;
   price_from: number | null;
   price_to: number | null;
   order: number;
@@ -43,7 +44,7 @@ function rowToService(row: ServiceRow, locale?: string): Service {
     description: (useDE && row.description_de) ? row.description_de : row.description,
     icon: row.icon || undefined,
     imageUrl: row.image_url || undefined,
-    features: row.features ? JSON.parse(row.features) : [],
+    features: (useDE && row.features_de) ? JSON.parse(row.features_de) : (row.features ? JSON.parse(row.features) : []),
     priceFrom: row.price_from || undefined,
     priceTo: row.price_to || undefined,
     order: row.order,

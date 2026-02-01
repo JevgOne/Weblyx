@@ -1,11 +1,12 @@
 import { ImageResponse } from 'next/og';
 import { getBlogPostBySlug } from '@/lib/turso/blog';
+import { getDomainLocale, getBrandConfig } from '@/lib/brand';
 
 // Route segment config
 export const runtime = 'nodejs';
 
 // Image metadata
-export const alt = 'Weblyx Blog';
+export const alt = 'Blog';
 export const size = {
   width: 1200,
   height: 630,
@@ -15,6 +16,7 @@ export const contentType = 'image/png';
 // Image generation
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const brand = getBrandConfig();
 
   try {
     const post = await getBlogPostBySlug(slug);
@@ -135,7 +137,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                   color: 'white',
                 }}
               >
-                W
+                {brand.name[0]}
               </div>
               <div
                 style={{
@@ -144,7 +146,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                   color: 'white',
                 }}
               >
-                Weblyx
+                {brand.name}
               </div>
             </div>
             {post.authorName && (
@@ -185,7 +187,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               color: 'white',
             }}
           >
-            Weblyx Blog
+            {brand.name} Blog
           </div>
         </div>
       ),

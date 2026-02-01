@@ -6,11 +6,40 @@ import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getBlogPostBySlug, getPublishedBlogPosts } from "@/lib/turso/blog";
+import { getBlogPostBySlug, getPublishedBlogPostsByLanguage } from "@/lib/turso/blog";
+import { getDomainLocale, getBrandConfig } from "@/lib/brand";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { marked } from "marked";
 import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
+
+// Locale-specific UI strings for blog detail
+const blogDetailContent = {
+  cs: {
+    notFoundTitle: "Článek nenalezen | Weblyx Blog",
+    readTimeSuffix: "min čtení",
+    authorPrefix: "od",
+    relatedLabel: "Další články",
+    endLabel: "— konec článku —",
+    backToBlog: "← Zpět na blog",
+    ctaLabel: "Poptávka →",
+    ctaLink: "/poptavka",
+    dateLocale: "cs-CZ",
+    schemaLocale: "cs-CZ",
+  },
+  de: {
+    notFoundTitle: "Artikel nicht gefunden | Seitelyx Blog",
+    readTimeSuffix: "Min. Lesezeit",
+    authorPrefix: "von",
+    relatedLabel: "Weitere Artikel",
+    endLabel: "— Ende des Artikels —",
+    backToBot: "← Zurück zum Blog",
+    ctaLabel: "Anfrage →",
+    ctaLink: "/anfrage",
+    dateLocale: "de-DE",
+    schemaLocale: "de-DE",
+  },
+} as const;
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -21,16 +50,20 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params;
+  const locale = getDomainLocale();
+  const brand = getBrandConfig();
+  const t = blogDetailContent[locale];
+  const baseUrl = brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
   try {
     const post = await getBlogPostBySlug(slug);
 
     if (!post || !post.published) {
-      return { title: "Článek nenalezen | Weblyx Blog" };
+      return { title: t.notFoundTitle };
     }
 
     return {
-      title: post.metaTitle || `${post.title} | Weblyx Blog`,
+      title: post.metaTitle || `${post.title} | ${brand.name} Blog`,
       description: post.metaDescription || post.excerpt || post.title,
       keywords: post.tags || [],
       authors: post.authorName ? [{ name: post.authorName }] : undefined,
@@ -47,19 +80,19 @@ export async function generateMetadata({
           height: 630,
           alt: post.title
         }] : [],
-        url: `https://www.weblyx.cz/blog/${slug}`,
-        siteName: "Weblyx",
-        locale: "cs_CZ",
+        url: `${baseUrl}/blog/${slug}`,
+        siteName: brand.name,
+        locale: locale === 'de' ? 'de_DE' : 'cs_CZ',
       },
       twitter: {
         card: "summary_large_image",
         title: post.metaTitle || post.title,
         description: post.metaDescription || post.excerpt || '',
         images: post.featuredImage ? [post.featuredImage] : [],
-        creator: "@weblyx",
+        creator: `@${brand.name.toLowerCase()}`,
       },
       alternates: {
-        canonical: `https://www.weblyx.cz/blog/${slug}`,
+        canonical: `${baseUrl}/blog/${slug}`,
         languages: getAlternateLanguages('/blog/' + slug),
       },
       robots: {
@@ -76,7 +109,7 @@ export async function generateMetadata({
     };
   } catch (error) {
     console.error('Error generating metadata:', error);
-    return { title: "Článek nenalezen | Weblyx Blog" };
+    return { title: t.notFoundTitle };
   }
 }
 
@@ -87,6 +120,11 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
 
+  const locale = getDomainLocale();
+  const brand = getBrandConfig();
+  const t = blogDetailContent[locale];
+  const baseUrl = brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+
   try {
     const post = await getBlogPostBySlug(slug);
 
@@ -94,13 +132,13 @@ export default async function BlogPostPage({
       notFound();
     }
 
-    // Related posts
-    const allPosts = await getPublishedBlogPosts();
+    // Related posts — same language
+    const allPosts = await getPublishedBlogPostsByLanguage(post.language);
     const relatedPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
     const publishedDate = post.publishedAt
-      ? new Date(post.publishedAt).toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" })
-      : new Date(post.createdAt).toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
+      ? new Date(post.publishedAt).toLocaleDateString(t.dateLocale, { day: "numeric", month: "long", year: "numeric" })
+      : new Date(post.createdAt).toLocaleDateString(t.dateLocale, { day: "numeric", month: "long", year: "numeric" });
 
     const isoDate = post.publishedAt
       ? new Date(post.publishedAt).toISOString().split("T")[0]
@@ -125,21 +163,21 @@ export default async function BlogPostPage({
         "@type": "Person",
         "name": post.authorName || "Weblyx Team",
         "jobTitle": "Senior Web Developer & SEO Specialist",
-        "url": "https://weblyx.cz/o-nas",
+        "url": `${baseUrl}/${locale === 'de' ? 'uber-uns' : 'o-nas'}`,
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Weblyx",
-        "url": "https://weblyx.cz",
-        "logo": { "@type": "ImageObject", "url": "https://weblyx.cz/logo.png", "width": 200, "height": 60 }
+        "name": brand.name,
+        "url": baseUrl,
+        "logo": { "@type": "ImageObject", "url": `${baseUrl}/logo.png`, "width": 200, "height": 60 }
       },
       "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date(post.createdAt).toISOString(),
       "dateModified": post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date(post.createdAt).toISOString(),
-      "mainEntityOfPage": { "@type": "WebPage", "@id": `https://weblyx.cz/blog/${slug}` },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": `${baseUrl}/blog/${slug}` },
       "keywords": post.tags?.join(', ') || '',
       "articleBody": plainTextContent,
       "wordCount": wordCount,
-      "inLanguage": "cs-CZ",
+      "inLanguage": t.schemaLocale,
       "timeRequired": `PT${readTime}M`,
     };
 
@@ -147,9 +185,9 @@ export default async function BlogPostPage({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Domů", "item": "https://weblyx.cz" },
-        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://weblyx.cz/blog" },
-        { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://weblyx.cz/blog/${slug}` }
+        { "@type": "ListItem", "position": 1, "name": locale === 'de' ? "Startseite" : "Domů", "item": baseUrl },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${baseUrl}/blog` },
+        { "@type": "ListItem", "position": 3, "name": post.title, "item": `${baseUrl}/blog/${slug}` }
       ]
     };
 
@@ -214,7 +252,7 @@ export default async function BlogPostPage({
                 </time>
                 <span className="text-neutral-200 dark:text-border">·</span>
                 <span className="text-sm text-neutral-400 dark:text-muted-foreground font-mono">
-                  {readTime} min čtení
+                  {readTime} {t.readTimeSuffix}
                 </span>
               </div>
 
@@ -227,7 +265,7 @@ export default async function BlogPostPage({
 
                   {post.authorName && (
                     <p className="text-sm text-neutral-400 dark:text-muted-foreground">
-                      od{" "}
+                      {t.authorPrefix}{" "}
                       <span className="text-neutral-600 dark:text-foreground/70 font-medium">
                         {post.authorName}
                       </span>
@@ -310,7 +348,7 @@ export default async function BlogPostPage({
                 <Separator className="bg-neutral-100 dark:bg-border mt-8 mb-10" />
                 <div className="space-y-6">
                   <p className="text-xs text-neutral-300 dark:text-border uppercase tracking-widest font-mono">
-                    Další články
+                    {t.relatedLabel}
                   </p>
                   {relatedPosts.map((rp) => (
                     <Link
@@ -349,20 +387,20 @@ export default async function BlogPostPage({
             <Separator className="bg-neutral-100 dark:bg-border mt-10 mb-8" />
             <div className="text-center space-y-3">
               <p className="text-xs text-neutral-300 dark:text-border uppercase tracking-widest font-mono">
-                — konec článku —
+                {t.endLabel}
               </p>
               <div className="flex items-center justify-center gap-4 pt-2">
                 <Link
                   href="/blog"
                   className="text-sm text-neutral-400 hover:text-primary transition-colors"
                 >
-                  ← Zpět na blog
+                  {locale === 'de' ? '← Zurück zum Blog' : '← Zpět na blog'}
                 </Link>
                 <Link
-                  href="/poptavka"
+                  href={t.ctaLink}
                   className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
                 >
-                  Poptávka →
+                  {t.ctaLabel}
                 </Link>
               </div>
             </div>

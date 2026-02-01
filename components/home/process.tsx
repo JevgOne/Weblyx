@@ -1,13 +1,13 @@
 import { ProcessSection, ProcessStep } from "@/types/cms";
 import { getProcessSection, getAllProcessSteps } from "@/lib/turso/cms";
 import { getIcon } from "@/lib/icon-map";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 
-async function getProcessData(): Promise<{ section: ProcessSection | null; steps: ProcessStep[] }> {
+async function getProcessData(locale?: string): Promise<{ section: ProcessSection | null; steps: ProcessStep[] }> {
   try {
     const [section, steps] = await Promise.all([
-      getProcessSection(),
-      getAllProcessSteps()
+      getProcessSection(locale),
+      getAllProcessSteps(locale)
     ]);
 
     return {
@@ -22,7 +22,8 @@ async function getProcessData(): Promise<{ section: ProcessSection | null; steps
 
 export async function Process() {
   const t = await getTranslations('process');
-  const { section, steps } = await getProcessData();
+  const locale = await getLocale();
+  const { section, steps } = await getProcessData(locale);
 
   // Filter enabled steps
   const enabledSteps = steps.filter(step => step.enabled);

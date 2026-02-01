@@ -350,7 +350,7 @@ export async function deletePricingTier(id: string): Promise<void> {
 }
 
 // Process Section & Steps
-export async function getProcessSection(): Promise<ProcessSection | null> {
+export async function getProcessSection(locale?: string): Promise<ProcessSection | null> {
   try {
     const result = await executeOne<any>(
       'SELECT * FROM process_section WHERE id = ?',
@@ -358,9 +358,10 @@ export async function getProcessSection(): Promise<ProcessSection | null> {
     );
 
     if (result) {
+      const useDE = locale === 'de';
       return {
-        heading: result.title || '',
-        subheading: result.subtitle || '',
+        heading: (useDE && result.title_de) ? result.title_de : (result.title || ''),
+        subheading: (useDE && result.subtitle_de) ? result.subtitle_de : (result.subtitle || ''),
         enabled: true,
       };
     }
@@ -389,17 +390,18 @@ export async function updateProcessSection(section: ProcessSection): Promise<voi
   }
 }
 
-export async function getAllProcessSteps(): Promise<ProcessStep[]> {
+export async function getAllProcessSteps(locale?: string): Promise<ProcessStep[]> {
   try {
     const results = await executeQuery<any>(
       'SELECT * FROM process_steps ORDER BY "order" ASC'
     );
 
+    const useDE = locale === 'de';
     return results.map(row => ({
       id: row.id,
       number: row.number || '1',
-      title: row.title,
-      description: row.description,
+      title: (useDE && row.title_de) ? row.title_de : row.title,
+      description: (useDE && row.description_de) ? row.description_de : row.description,
       icon: row.icon || '',
       order: row.order,
       enabled: true,

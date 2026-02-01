@@ -1,4 +1,5 @@
-import { getPublishedBlogPosts } from '@/lib/turso/blog';
+import { getPublishedBlogPostsByLanguage } from '@/lib/turso/blog';
+import { getDomainLocale, getBrandConfig } from '@/lib/brand';
 
 export const revalidate = 3600; // 1 hour
 
@@ -12,11 +13,13 @@ function escapeXml(text: string): string {
 }
 
 export async function GET() {
-  const baseUrl = 'https://www.weblyx.cz';
+  const locale = getDomainLocale();
+  const brand = getBrandConfig();
+  const baseUrl = brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
   let posts: any[] = [];
   try {
-    posts = await getPublishedBlogPosts();
+    posts = await getPublishedBlogPostsByLanguage(locale);
   } catch {
     posts = [];
   }
@@ -40,10 +43,10 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Weblyx Blog</title>
+    <title>${brand.name} Blog</title>
     <link>${baseUrl}/blog</link>
-    <description>Tipy a trendy ze sveta webu a online marketingu</description>
-    <language>cs</language>
+    <description>${locale === 'de' ? 'Tipps und Trends aus der Welt des Webs und Online-Marketings' : 'Tipy a trendy ze sveta webu a online marketingu'}</description>
+    <language>${locale}</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${baseUrl}/feed.xml" rel="self" type="application/rss+xml" />
 ${items.join('\n')}

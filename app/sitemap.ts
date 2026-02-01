@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllPortfolio } from '@/lib/turso/portfolio';
-import { getPublishedBlogPosts } from '@/lib/turso/blog';
+import { getPublishedBlogPostsByLanguage } from '@/lib/turso/blog';
 
 /**
  * Dynamic sitemap generation for better SEO
@@ -154,10 +154,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching portfolio for sitemap:', error);
   }
 
-  // Fetch dynamic blog posts from Turso
+  // Fetch dynamic blog posts from Turso — filtered by locale
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
-    const publishedPosts = await getPublishedBlogPosts();
+    const blogLocale = isGermanSite ? 'de' : 'cs';
+    const publishedPosts = await getPublishedBlogPostsByLanguage(blogLocale);
 
     blogRoutes = publishedPosts.map((post) => ({
       url: `${baseUrl}/blog/${post.slug}`,
