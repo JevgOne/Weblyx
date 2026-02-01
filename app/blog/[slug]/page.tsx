@@ -64,7 +64,9 @@ export async function generateMetadata({
     }
 
     return {
-      title: post.metaTitle || `${post.title} | ${brand.name} Blog`,
+      title: post.metaTitle
+        ? post.metaTitle.replace(/\s*\|\s*(Weblyx|Seitelyx)(\s+Blog)?$/i, '')
+        : post.title,
       description: post.metaDescription || post.excerpt || post.title,
       keywords: post.tags || [],
       authors: post.authorName ? [{ name: post.authorName }] : undefined,
