@@ -174,9 +174,24 @@ export default async function PortfolioDetailPage({
                 </h1>
 
                 {project.description && (
-                  <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl">
-                    {project.description}
-                  </p>
+                  <div className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-3xl space-y-3">
+                    {project.description.split('\n').map((line: string, i: number) => {
+                      const trimmed = line.trim();
+                      if (!trimmed) return null;
+                      if (trimmed.startsWith('•')) {
+                        return (
+                          <div key={i} className="flex gap-2 pl-1">
+                            <span className="text-primary shrink-0">•</span>
+                            <span>{trimmed.slice(1).trim()}</span>
+                          </div>
+                        );
+                      }
+                      if (trimmed.startsWith('Hlavní funkce') || trimmed.startsWith('Hauptfunktionen') || trimmed.startsWith('Výsledek:') || trimmed.startsWith('Ergebnis:')) {
+                        return <p key={i} className="font-semibold text-foreground pt-2">{trimmed}</p>;
+                      }
+                      return <p key={i}>{trimmed}</p>;
+                    })}
+                  </div>
                 )}
 
                 {project.projectUrl && (
