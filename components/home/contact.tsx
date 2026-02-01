@@ -10,7 +10,7 @@ import { HoneypotInput } from "@/components/security/HoneypotInput";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import confetti from "canvas-confetti";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface ContactProps {
   isMainPage?: boolean; // If true, use H1 instead of H2
@@ -19,6 +19,9 @@ interface ContactProps {
 export function Contact({ isMainPage = false }: ContactProps) {
   // i18n translations
   const t = useTranslations('contactForm');
+  const locale = useLocale();
+  const isDE = locale === 'de';
+  const contactEmail = isDE ? 'kontakt@seitelyx.de' : 'info@weblyx.cz';
 
   const [formData, setFormData] = useState({
     projectType: "",
@@ -252,10 +255,10 @@ export function Contact({ isMainPage = false }: ContactProps) {
                   <div>
                     <h3 className="font-semibold mb-1 text-lg">Email</h3>
                     <a
-                      href="mailto:info@weblyx.cz"
+                      href={`mailto:${contactEmail}`}
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      info@weblyx.cz
+                      {contactEmail}
                     </a>
                   </div>
                 </div>

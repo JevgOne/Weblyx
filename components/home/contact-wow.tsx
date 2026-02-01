@@ -26,10 +26,13 @@ import {
   Check,
   ArrowRight
 } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export function ContactWow() {
   const t = useTranslations('contactForm.contactWow');
+  const locale = useLocale();
+  const isDE = locale === 'de';
+  const contactEmail = isDE ? 'kontakt@seitelyx.de' : 'info@weblyx.cz';
 
   const formFields = [
     { id: "name", label: t('fields.name'), icon: User, placeholder: t('fields.namePlaceholder'), type: "text", required: true },
@@ -347,10 +350,10 @@ export function ContactWow() {
                   <div>
                     <h3 className="font-semibold mb-1">{t('contact.email')}</h3>
                     <a
-                      href="mailto:info@weblyx.cz"
+                      href={`mailto:${contactEmail}`}
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      info@weblyx.cz
+                      {contactEmail}
                     </a>
                   </div>
                 </div>
