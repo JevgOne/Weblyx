@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowLeft, ExternalLink, Gauge, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
 import { getPortfolioById, getAllPortfolio } from "@/lib/turso/portfolio";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateCreativeWorkSchema } from "@/lib/schema-org";
@@ -190,8 +191,23 @@ export default async function PortfolioDetailPage({
                 )}
               </header>
 
-              {/* Project Image */}
-              {project.imageUrl && (
+              {/* Project Image — with before/after slider for redesigns */}
+              {project.imageUrl && project.beforeImageUrl ? (
+                <div className="mb-12">
+                  <BeforeAfterSlider
+                    beforeImage={project.beforeImageUrl}
+                    afterImage={project.imageUrl}
+                    beforeLabel={isDE ? "Vorher" : "Před"}
+                    afterLabel={isDE ? "Nachher" : "Po"}
+                    alt={project.title}
+                  />
+                  <p className="text-center text-sm text-muted-foreground mt-3">
+                    {isDE
+                      ? "← Ziehen Sie den Schieberegler, um den Vorher/Nachher-Vergleich zu sehen →"
+                      : "← Přejeďte posuvníkem pro srovnání před a po →"}
+                  </p>
+                </div>
+              ) : project.imageUrl ? (
                 <div className="aspect-video relative rounded-2xl overflow-hidden mb-12 border border-border/60 shadow-lg">
                   <Image
                     src={project.imageUrl}
@@ -202,7 +218,7 @@ export default async function PortfolioDetailPage({
                     priority
                   />
                 </div>
-              )}
+              ) : null}
 
               {/* Performance Stats */}
               {hasPerformanceData && (

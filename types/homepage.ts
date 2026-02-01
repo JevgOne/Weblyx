@@ -39,6 +39,7 @@ export interface PortfolioProject {
   description: string;
   technologies: string[];
   imageUrl: string;
+  beforeImageUrl?: string;
   projectUrl?: string;
   clientName?: string;
   pagespeedMobile?: number;

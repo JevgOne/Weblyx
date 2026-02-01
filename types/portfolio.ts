@@ -7,6 +7,7 @@ export interface PortfolioProject {
   description: string;
   technologies: string[];
   imageUrl: string;
+  beforeImageUrl?: string; // Screenshot before redesign (for before/after slider)
   projectUrl?: string; // URL of the live project
   clientName?: string; // Optional client name
   pagespeedMobile?: number; // PageSpeed score mobile (0-100)

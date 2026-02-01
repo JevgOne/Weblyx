@@ -12,6 +12,7 @@ interface PortfolioRow {
   client_name: string | null;
   project_url: string | null;
   image_url: string | null;
+  before_image_url: string | null;
   technologies: string | null;
   category: string | null;
   pagespeed_mobile: number | null;
@@ -34,6 +35,7 @@ function rowToPortfolio(row: PortfolioRow, locale?: string): PortfolioItem {
     clientName: row.client_name || undefined,
     projectUrl: row.project_url || '',
     imageUrl: row.image_url || '',
+    beforeImageUrl: row.before_image_url || undefined,
     technologies: parseJSON<string[]>(row.technologies) || [],
     category: row.category || '',
     pagespeedMobile: row.pagespeed_mobile || undefined,
