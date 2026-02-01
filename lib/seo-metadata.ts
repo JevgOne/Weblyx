@@ -16,6 +16,12 @@ const pathMapping: Record<string, { cs: string; de: string }> = {
   '/ochrana-udaju': { cs: '/ochrana-udaju', de: '/datenschutz' },
   '/obchodni-podminky': { cs: '/obchodni-podminky', de: '/impressum' },
   '/napiste-recenzi': { cs: '/napiste-recenzi', de: '/schreiben-sie-eine-bewertung' },
+  // City-specific SEO landing pages (no cross-language equivalent)
+  '/tvorba-webu-praha': { cs: '/tvorba-webu-praha', de: '/tvorba-webu-praha' },
+  '/tvorba-webu-brno': { cs: '/tvorba-webu-brno', de: '/tvorba-webu-brno' },
+  '/tvorba-webu-ostrava': { cs: '/tvorba-webu-ostrava', de: '/tvorba-webu-ostrava' },
+  '/website-erstellen-berlin': { cs: '/website-erstellen-berlin', de: '/website-erstellen-berlin' },
+  '/website-erstellen-muenchen': { cs: '/website-erstellen-muenchen', de: '/website-erstellen-muenchen' },
 };
 
 interface SEOContent {

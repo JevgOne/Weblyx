@@ -92,3 +92,8 @@ export function isSeitelyxDomain(): boolean {
 export function isWeblyxDomain(): boolean {
   return !isSeitelyxDomain();
 }
+
+/**
+ * Shorthand alias for isSeitelyxDomain()
+ */
+export const isSeitelyx = isSeitelyxDomain();

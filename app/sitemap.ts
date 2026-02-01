@@ -112,6 +112,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ]
     : [];
 
+  // City-specific SEO landing pages
+  const cityRoutes: MetadataRoute.Sitemap = isGermanSite
+    ? [
+        {
+          url: `${baseUrl}/website-erstellen-berlin`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/website-erstellen-muenchen`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+      ]
+    : [
+        {
+          url: `${baseUrl}/tvorba-webu-praha`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/tvorba-webu-brno`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/tvorba-webu-ostrava`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+      ];
+
   // Czech-specific routes
   const czechRoutes: MetadataRoute.Sitemap = !isGermanSite
     ? [
@@ -148,7 +185,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ]
     : [];
 
-  const allStaticRoutes = [...staticRoutes, ...languageRoutes, ...germanRoutes, ...czechRoutes];
+  const allStaticRoutes = [...staticRoutes, ...languageRoutes, ...germanRoutes, ...czechRoutes, ...cityRoutes];
 
   // Fetch dynamic portfolio items from Turso
   let portfolioRoutes: MetadataRoute.Sitemap = [];
