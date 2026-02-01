@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "PageSpeed Garance 90+ | Weblyx",
+  title: "PageSpeed Garance 90+",
   description: "Detailní podmínky naší garance rychlosti načítání PageSpeed 90+ nebo vrácení peněz.",
 };
 

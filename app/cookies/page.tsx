@@ -7,14 +7,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (locale === "de") {
     return {
-      title: "Cookie-Richtlinien | Seitelyx",
+      title: "Cookie-Richtlinien",
       description:
         "Informationen zur Verwendung von Cookies auf der Seitelyx-Website. Erfahren Sie, welche Cookies wir verwenden und wie Sie Ihre Einstellungen verwalten können.",
     };
   }
 
   return {
-    title: "Zásady cookies | Weblyx",
+    title: "Zásady cookies",
     description:
       "Informace o používání cookies na webu Weblyx. Zjistěte, jaké cookies používáme a jak můžete spravovat své preference.",
   };

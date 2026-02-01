@@ -120,9 +120,9 @@ const seoContent: Record<Locale, SEOContent> = {
     alternateUrl: 'https://seitelyx.de',
   },
   de: {
-    title: 'Website erstellen lassen | Festpreis ab 399€ | Seitelyx',
+    title: 'Website erstellen lassen | Festpreis ab 320 € | Seitelyx',
     titleTemplate: '%s | Seitelyx',
-    description: 'Website erstellen lassen ab 399€ Festpreis. 3× schneller als WordPress, Lieferung in 3-7 Tagen, DSGVO-konform. Webdesign Agentur für moderne Next.js Websites ohne monatliche Kosten.',
+    description: 'Website erstellen lassen ab 320 € Festpreis. 3× schneller als WordPress, Lieferung in 3-7 Tagen, DSGVO-konform. Webdesign Agentur für moderne Next.js Websites ohne monatliche Kosten.',
     keywords: [
       'website erstellen lassen',
       'webdesign agentur',

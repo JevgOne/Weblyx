@@ -10,14 +10,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (locale === "de") {
     return {
-      title: "Kundenbewertungen | Seitelyx",
+      title: "Kundenbewertungen",
       description:
         "Lesen Sie Bewertungen unserer zufriedenen Kunden. Seitelyx – Webdesign mit 5.0 Google-Bewertung.",
     };
   }
 
   return {
-    title: "Recenze klientů | Weblyx",
+    title: "Recenze klientů",
     description:
       "Přečtěte si recenze od našich spokojených klientů. Weblyx – tvorba webových stránek s hodnocením 5.0 na Google.",
   };
