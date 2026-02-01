@@ -10,6 +10,7 @@ import { getBlogPostBySlug, getPublishedBlogPostsByLanguage } from "@/lib/turso/
 import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
+import { BlogCTA } from "@/components/blog/BlogCTA";
 import { marked } from "marked";
 import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
 
@@ -332,6 +333,9 @@ export default async function BlogPostPage({
                 prose-hr:border-neutral-100 dark:prose-hr:border-border"
               dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
+
+            {/* CTA after article */}
+            <BlogCTA locale={locale} />
 
             <Separator className="bg-neutral-100 dark:bg-border mt-12 mb-8" />
 

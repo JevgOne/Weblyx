@@ -7,6 +7,7 @@ import { Services } from "@/components/home/services";
 import { Process } from "@/components/home/process";
 import { Portfolio } from "@/components/home/portfolio";
 import { Reviews } from "@/components/home/reviews";
+import { ClientLogos } from "@/components/home/client-logos";
 import { TrustBadges } from "@/components/home/trust-badges";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
@@ -135,6 +136,7 @@ export default async function HomePage() {
         <Process />
         <Portfolio />
         <Reviews />
+        <ClientLogos />
         <TrustBadges />
         <Pricing />
         <FAQ />
