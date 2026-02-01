@@ -147,7 +147,7 @@ export default function ContactPage() {
 
             <div className="rounded-xl overflow-hidden border border-border shadow-lg">
               <iframe
-                src="https://www.google.com/maps?q=Revoluční+8,+Praha+1,+110+00,+Czech+Republic&output=embed"
+                src="https://maps.google.com/maps?q=Revolučn%C3%AD%208%2C%20Praha%201%2C%20110%2000%2C%20Czech%20Republic&t=&z=16&ie=UTF8&iwloc=B&output=embed"
                 width="100%"
                 height="400"
                 style={{ border: 0 }}
