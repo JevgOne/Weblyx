@@ -67,9 +67,10 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Non-www to www redirect (301 permanent instead of Vercel's default 307)
+  // Redirects: non-www → www, German route aliases, URL normalization
   async redirects() {
     return [
+      // Non-www to www redirect (301 permanent instead of Vercel's default 307)
       {
         source: '/:path*',
         has: [
@@ -91,6 +92,18 @@ const nextConfig: NextConfig = {
         ],
         destination: 'https://www.seitelyx.de/:path*',
         permanent: true, // 301
+      },
+      // German route aliases: /referenzen → /portfolio (nav says "Referenzen" but page is /portfolio)
+      {
+        source: '/referenzen',
+        destination: '/portfolio',
+        permanent: true,
+      },
+      // URL normalization: /über-uns (with umlaut) → /uber-uns
+      {
+        source: '/%C3%BCber-uns',
+        destination: '/uber-uns',
+        permanent: true,
       },
     ];
   },
