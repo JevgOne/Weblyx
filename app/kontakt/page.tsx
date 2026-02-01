@@ -112,7 +112,7 @@ export default function ContactPage() {
                 <div>
                   <h2 className="font-semibold mb-1">Adresa</h2>
                   <p className="text-muted-foreground">
-                    Školská 660/3,<br />110 00 Praha
+                    Revoluční 8,<br />Praha 1, 110 00
                   </p>
                 </div>
               </div>
