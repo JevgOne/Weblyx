@@ -55,7 +55,7 @@ export default function PageSpeedGuaranteePage() {
 
         <h3>3.1 Rozsah garance</h3>
         <ul>
-          <li>Garance se vztahuje na <strong>základní webové stránky</strong> (balíček od 10 000 Kč)</li>
+          <li>Garance se vztahuje na <strong>základní webové stránky</strong> (od balíčku Základní Web za 9 990 Kč)</li>
           <li>Měří se <strong>domovská stránka</strong> ve stavu, v jakém byla předána klientovi</li>
           <li>Platí pro <strong>mobilní verzi</strong> webu (Mobile Performance Score)</li>
         </ul>
