@@ -23,11 +23,52 @@ export interface BrandConfig {
 }
 
 /**
- * Get brand configuration based on domain
+ * Build brand config for a given domain
+ */
+export function buildBrandConfig(domain: string): BrandConfig {
+  const isSeitelyx = domain.includes('seitelyx.de');
+
+  if (isSeitelyx) {
+    return {
+      name: 'Seitelyx',
+      domain: 'seitelyx.de',
+      locale: 'de',
+      logo: {
+        src: '/logos/seitelyx-logo.svg',
+        alt: 'Seitelyx - Website erstellen lassen',
+        width: 150,
+        height: 40,
+      },
+      colors: {
+        primary: '#14B8A6',
+        secondary: '#0F766E',
+      },
+    };
+  }
+
+  return {
+    name: 'Weblyx',
+    domain: 'weblyx.cz',
+    locale: 'cs',
+    logo: {
+      src: '/logos/weblyx-logo.svg',
+      alt: 'Weblyx - Tvorba webových stránek',
+      width: 150,
+      height: 40,
+    },
+    colors: {
+      primary: '#14B8A6',
+      secondary: '#0F766E',
+    },
+  };
+}
+
+/**
+ * Get brand configuration based on domain (sync, uses env var only)
  */
 export function getBrandConfig(): BrandConfig {
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'weblyx.cz';
-  const isSeitelyx = domain.includes('seitelyx.de');
+  return buildBrandConfig(domain);
 
   if (isSeitelyx) {
     return {

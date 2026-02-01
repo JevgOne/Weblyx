@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { getBlogPostBySlug } from '@/lib/turso/blog';
-import { getDomainLocale, getBrandConfig } from '@/lib/brand';
+import { getRequestBrandConfig } from '@/lib/brand-server';
 
 // Route segment config
 export const runtime = 'nodejs';
@@ -16,7 +16,7 @@ export const contentType = 'image/png';
 // Image generation
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const brand = getBrandConfig();
+  const brand = await getRequestBrandConfig();
 
   try {
     const post = await getBlogPostBySlug(slug);
