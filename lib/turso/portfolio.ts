@@ -7,6 +7,8 @@ interface PortfolioRow {
   id: string;
   title: string;
   description: string | null;
+  title_de: string | null;
+  description_de: string | null;
   client_name: string | null;
   project_url: string | null;
   image_url: string | null;
@@ -23,11 +25,12 @@ interface PortfolioRow {
   updated_at: number;
 }
 
-function rowToPortfolio(row: PortfolioRow): PortfolioItem {
+function rowToPortfolio(row: PortfolioRow, locale?: string): PortfolioItem {
+  const useDE = locale === 'de';
   return {
     id: row.id,
-    title: row.title,
-    description: row.description || '',
+    title: (useDE && row.title_de) ? row.title_de : row.title,
+    description: (useDE && row.description_de) ? row.description_de : (row.description || ''),
     clientName: row.client_name || undefined,
     projectUrl: row.project_url || '',
     imageUrl: row.image_url || '',
@@ -45,11 +48,11 @@ function rowToPortfolio(row: PortfolioRow): PortfolioItem {
   };
 }
 
-export async function getAllPortfolio(): Promise<PortfolioItem[]> {
+export async function getAllPortfolio(locale?: string): Promise<PortfolioItem[]> {
   const result = await turso.execute(
     'SELECT * FROM portfolio ORDER BY "order" ASC'
   );
-  return result.rows.map((row) => rowToPortfolio(row as unknown as PortfolioRow));
+  return result.rows.map((row) => rowToPortfolio(row as unknown as PortfolioRow, locale));
 }
 
 export async function getPortfolioById(id: string): Promise<PortfolioItem | null> {
@@ -62,11 +65,11 @@ export async function getPortfolioById(id: string): Promise<PortfolioItem | null
   return rowToPortfolio(result.rows[0] as unknown as PortfolioRow);
 }
 
-export async function getPublishedPortfolio(): Promise<PortfolioItem[]> {
+export async function getPublishedPortfolio(locale?: string): Promise<PortfolioItem[]> {
   const result = await turso.execute(
     'SELECT * FROM portfolio WHERE published = 1 ORDER BY "order" ASC'
   );
-  return result.rows.map((row) => rowToPortfolio(row as unknown as PortfolioRow));
+  return result.rows.map((row) => rowToPortfolio(row as unknown as PortfolioRow, locale));
 }
 
 export async function createPortfolio(data: {

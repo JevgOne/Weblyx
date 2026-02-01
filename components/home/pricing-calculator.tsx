@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, Sparkles, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface PricingOption {
   id: string;
@@ -159,6 +159,7 @@ const addOns: AddOn[] = [
 
 export function PricingCalculator() {
   const t = useTranslations('pricingCalculator');
+  const locale = useLocale();
   const [selectedBase, setSelectedBase] = useState<string>("basic");
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
   const [expandedPackage, setExpandedPackage] = useState<string | null>(null);
@@ -278,7 +279,7 @@ export function PricingCalculator() {
                               }}
                               className="text-xs text-primary hover:underline mb-2"
                             >
-                              {expandedPackage === option.id ? "Skrýt detaily" : "Zobrazit detaily"}
+                              {expandedPackage === option.id ? (locale === 'de' ? "Details ausblenden" : "Skrýt detaily") : (locale === 'de' ? "Details anzeigen" : "Zobrazit detaily")}
                             </button>
 
                             <p className="text-lg font-bold text-primary mt-2">

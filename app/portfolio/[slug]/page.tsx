@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { getPortfolioById, getAllPortfolio } from "@/lib/turso/portfolio";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateCreativeWorkSchema } from "@/lib/schema-org";
+import { getLocale } from "next-intl/server";
 
 // Use ISR: Render on-demand and cache for 60 seconds
 export const revalidate = 60;
@@ -24,19 +25,22 @@ export async function generateMetadata({
   const { slug } = await params;
 
   try {
+    const locale = await getLocale();
+    const isDE = locale === 'de';
     const project = await getPortfolioById(slug);
 
     if (!project || !project.published) {
       return {
-        title: "Projekt nenalezen | Weblyx Portfolio",
+        title: isDE ? "Projekt nicht gefunden | Seitelyx Portfolio" : "Projekt nenalezen | Weblyx Portfolio",
       };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+    const baseUrl = isDE ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+    const brandName = isDE ? 'Seitelyx' : 'Weblyx';
 
     return {
-      title: `${project.title} | Weblyx Portfolio`,
-      description: project.description || `Ukázka projektu: ${project.title}`,
+      title: `${project.title} | ${brandName} Portfolio`,
+      description: project.description || (isDE ? `Projektbeispiel: ${project.title}` : `Ukázka projektu: ${project.title}`),
       keywords: project.technologies || [],
       openGraph: {
         title: project.title,
@@ -49,8 +53,8 @@ export async function generateMetadata({
           alt: project.title
         }] : [],
         url: `${baseUrl}/portfolio/${slug}`,
-        siteName: "Weblyx",
-        locale: "cs_CZ",
+        siteName: brandName,
+        locale: isDE ? "de_DE" : "cs_CZ",
       },
       twitter: {
         card: "summary_large_image",
@@ -78,7 +82,7 @@ export async function generateMetadata({
   } catch (error) {
     console.error('Error generating metadata:', error);
     return {
-      title: "Projekt nenalezen | Weblyx Portfolio",
+      title: "Portfolio",
     };
   }
 }
@@ -91,16 +95,18 @@ export default async function PortfolioDetailPage({
   const { slug } = await params;
 
   try {
+    const locale = await getLocale();
+    const isDE = locale === 'de';
     const project = await getPortfolioById(slug);
 
     if (!project || !project.published) {
       notFound();
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+    const baseUrl = isDE ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
     // Fetch related projects (other published projects, excluding current one)
-    const allProjects = await getAllPortfolio();
+    const allProjects = await getAllPortfolio(locale);
     const relatedProjects = allProjects
       .filter((p) => p.published && p.id !== slug)
       .slice(0, 3);
@@ -124,7 +130,7 @@ export default async function PortfolioDetailPage({
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Domů",
+          "name": isDE ? "Startseite" : "Domů",
           "item": baseUrl
         },
         {
@@ -159,7 +165,7 @@ export default async function PortfolioDetailPage({
                 <div className="p-2 rounded-full bg-muted group-hover:bg-primary/10 transition-colors">
                   <ArrowLeft className="h-4 w-4" />
                 </div>
-                <span>Zpět na portfolio</span>
+                <span>{isDE ? 'Zurück zum Portfolio' : 'Zpět na portfolio'}</span>
               </Link>
 
               {/* Project Image */}
@@ -199,7 +205,7 @@ export default async function PortfolioDetailPage({
                   )}
                   {project.clientName && (
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border">
-                      <span className="text-sm font-medium">Klient: {project.clientName}</span>
+                      <span className="text-sm font-medium">{isDE ? 'Kunde' : 'Klient'}: {project.clientName}</span>
                     </div>
                   )}
                 </div>
@@ -224,7 +230,7 @@ export default async function PortfolioDetailPage({
                   <div className="pt-4">
                     <Button asChild size="lg" className="group">
                       <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
-                        <span>Navštívit web</span>
+                        <span>{isDE ? 'Website besuchen' : 'Navštívit web'}</span>
                         <ExternalLink className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </a>
                     </Button>
@@ -237,7 +243,7 @@ export default async function PortfolioDetailPage({
                 <div className="mb-12">
                   <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
                     <Gauge className="h-6 w-6 text-primary" />
-                    Výkonnostní metriky
+                    {isDE ? 'Performance-Kennzahlen' : 'Výkonnostní metriky'}
                   </h2>
                   <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {project.pagespeedMobile && (
@@ -261,9 +267,9 @@ export default async function PortfolioDetailPage({
                     {project.loadTimeBefore && (
                       <Card>
                         <CardContent className="p-6 text-center space-y-2">
-                          <div className="text-sm text-muted-foreground">Původní načítání</div>
+                          <div className="text-sm text-muted-foreground">{isDE ? 'Ursprüngliche Ladezeit' : 'Původní načítání'}</div>
                           <div className="text-4xl font-bold text-muted-foreground">{project.loadTimeBefore}s</div>
-                          <div className="text-xs text-muted-foreground">před optimalizací</div>
+                          <div className="text-xs text-muted-foreground">{isDE ? 'vor der Optimierung' : 'před optimalizací'}</div>
                         </CardContent>
                       </Card>
                     )}
@@ -272,10 +278,10 @@ export default async function PortfolioDetailPage({
                         <CardContent className="p-6 text-center space-y-2">
                           <div className="text-sm text-muted-foreground flex items-center justify-center gap-2">
                             <Zap className="h-4 w-4 text-primary" />
-                            Nové načítání
+                            {isDE ? 'Neue Ladezeit' : 'Nové načítání'}
                           </div>
                           <div className="text-4xl font-bold text-primary">{project.loadTimeAfter}s</div>
-                          <div className="text-xs text-muted-foreground">po optimalizaci</div>
+                          <div className="text-xs text-muted-foreground">{isDE ? 'nach der Optimierung' : 'po optimalizaci'}</div>
                         </CardContent>
                       </Card>
                     )}
@@ -286,7 +292,7 @@ export default async function PortfolioDetailPage({
               {/* Technologies */}
               {project.technologies && project.technologies.length > 0 && (
                 <div className="mb-12 pt-8 border-t border-primary/10">
-                  <h2 className="text-2xl font-bold mb-6">Použité technologie</h2>
+                  <h2 className="text-2xl font-bold mb-6">{isDE ? 'Verwendete Technologien' : 'Použité technologie'}</h2>
                   <div className="flex flex-wrap gap-3">
                     {project.technologies.map((tech: string, index: number) => (
                       <Badge key={index} variant="outline" className="px-4 py-2 text-sm">
@@ -305,10 +311,10 @@ export default async function PortfolioDetailPage({
               <div className="container mx-auto max-w-6xl">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                    Další projekty
+                    {isDE ? 'Weitere Projekte' : 'Další projekty'}
                   </h2>
                   <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Podívejte se na další ukázky naší práce
+                    {isDE ? 'Sehen Sie sich weitere Beispiele unserer Arbeit an' : 'Podívejte se na další ukázky naší práce'}
                   </p>
                 </div>
 
@@ -364,20 +370,22 @@ export default async function PortfolioDetailPage({
           <section className="py-12 px-4 bg-muted/30">
             <div className="container mx-auto max-w-4xl text-center space-y-6">
               <h2 className="text-2xl md:text-3xl font-bold">
-                Líbí se vám tento projekt?
+                {isDE ? 'Gefällt Ihnen dieses Projekt?' : 'Líbí se vám tento projekt?'}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Vytvoříme podobný web i pro vás. Rychle, kvalitně a za férovou cenu.
+                {isDE
+                  ? 'Wir erstellen eine ähnliche Website für Sie. Schnell, hochwertig und zu fairen Preisen.'
+                  : 'Vytvoříme podobný web i pro vás. Rychle, kvalitně a za férovou cenu.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/poptavka">
+                <Link href={isDE ? '/anfrage' : '/poptavka'}>
                   <Button size="lg">
-                    Nezávazná poptávka
+                    {isDE ? 'Unverbindliche Anfrage' : 'Nezávazná poptávka'}
                   </Button>
                 </Link>
                 <Link href="/portfolio">
                   <Button size="lg" variant="outline">
-                    Další projekty
+                    {isDE ? 'Weitere Projekte' : 'Další projekty'}
                   </Button>
                 </Link>
               </div>

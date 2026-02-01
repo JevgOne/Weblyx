@@ -7,10 +7,10 @@ import { getAllPortfolio } from "@/lib/turso/portfolio";
 import { getPageContent } from "@/lib/firestore-pages";
 import { PortfolioProject } from "@/types/homepage";
 
-async function getPortfolioProjects(): Promise<PortfolioProject[]> {
+async function getPortfolioProjects(locale?: string): Promise<PortfolioProject[]> {
   try {
-    // Fetch from Turso
-    const allProjects = await getAllPortfolio();
+    // Fetch from Turso with locale support
+    const allProjects = await getAllPortfolio(locale);
 
     // Filter for published only, then sort and limit
     const projects = allProjects
@@ -41,11 +41,12 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
   }
 }
 
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export async function Portfolio() {
   const t = await getTranslations("portfolio");
-  const projects = await getPortfolioProjects();
+  const locale = await getLocale();
+  const projects = await getPortfolioProjects(locale);
   const sectionContent = await getPageContent('homepage-portfolio');
 
   // Use content from page_content collection or fallback to translations
@@ -94,7 +95,7 @@ export async function Portfolio() {
                 )}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button variant="secondary" size="sm">
-                    Zobrazit detail
+                    {t("viewWebsite")}
                   </Button>
                 </div>
               </div>
@@ -161,14 +162,18 @@ export async function Portfolio() {
           <div className="text-center space-y-6 mt-8">
             <div className="max-w-2xl mx-auto p-6 rounded-lg bg-muted/50 border border-border">
               <p className="text-muted-foreground mb-2">
-                💼 <strong>Více než 15 projektů realizováno</strong>
+                💼 <strong>{locale === 'de' ? 'Über 15 Projekte realisiert' : 'Více než 15 projektů realizováno'}</strong>
               </p>
               <p className="text-sm text-muted-foreground">
-                Portfolio obsahuje vybrané projekty. Pro kompletní reference a další ukázky nás kontaktujte.
+                {locale === 'de'
+                  ? 'Das Portfolio zeigt ausgewählte Projekte. Kontaktieren Sie uns für weitere Referenzen und Beispiele.'
+                  : 'Portfolio obsahuje vybrané projekty. Pro kompletní reference a další ukázky nás kontaktujte.'}
               </p>
             </div>
             <Button asChild variant="outline" size="lg">
-              <Link href="/kontakt">Konzultace zdarma</Link>
+              <Link href={locale === 'de' ? '/anfrage' : '/kontakt'}>
+                {locale === 'de' ? 'Kostenlose Beratung' : 'Konzultace zdarma'}
+              </Link>
             </Button>
           </div>
         )}

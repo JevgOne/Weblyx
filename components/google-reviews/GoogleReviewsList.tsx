@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
+import { useLocale } from "next-intl";
 
 interface GoogleReview {
   id: string;
@@ -33,6 +34,7 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export function GoogleReviewsList() {
+  const locale = useLocale();
   const [reviews, setReviews] = useState<GoogleReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -136,7 +138,7 @@ export function GoogleReviewsList() {
                 rel="noopener noreferrer"
                 className="text-xs text-primary hover:underline block"
               >
-                Zobrazit na Google
+                {locale === 'de' ? 'Auf Google ansehen' : 'Zobrazit na Google'}
               </a>
             )}
           </CardContent>

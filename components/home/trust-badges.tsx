@@ -1,11 +1,12 @@
 "use client";
 
 import { Shield, Award, Clock, Ban } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 
 export function TrustBadges() {
   const t = useTranslations("trustBadges");
+  const locale = useLocale();
 
   const badges = [
     {
@@ -73,7 +74,7 @@ export function TrustBadges() {
                 >
                   {content}
                   <div className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    Zobrazit podmínky →
+                    {locale === 'de' ? 'Bedingungen anzeigen →' : 'Zobrazit podmínky →'}
                   </div>
                 </Link>
               );

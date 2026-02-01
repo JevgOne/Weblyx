@@ -8,8 +8,32 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateContactPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Mail, Phone, MapPin, Clock, Navigation } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
+const isSeitelyx = process.env.NEXT_PUBLIC_DOMAIN?.includes('seitelyx.de');
+
+export const metadata: Metadata = isSeitelyx ? {
+  title: "Kontakt – kostenlose unverbindliche Beratung",
+  description: "Interesse an einer neuen Website oder einem Redesign? Schreiben Sie uns und wir melden uns innerhalb von 24 Stunden mit einem Angebot. Beratung kostenlos.",
+  keywords: [
+    "Kontakt Webagentur",
+    "Website erstellen",
+    "kostenlose Beratung",
+    "Website-Anfrage",
+    "Website für Unternehmen",
+  ],
+  openGraph: {
+    title: "Kontakt | Seitelyx – kostenlose Beratung",
+    description: "Interesse an einer neuen Website? Schreiben Sie uns und wir melden uns innerhalb von 24 Stunden.",
+    url: "https://www.seitelyx.de/kontakt",
+    type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Seitelyx - Kontakt" }],
+  },
+  alternates: {
+    canonical: "https://www.seitelyx.de/kontakt",
+    languages: getAlternateLanguages('/kontakt')
+  }
+} : {
   title: "Kontakt – nezávazná konzultace zdarma",
   description: "Máte zájem o nový web nebo redesign? Napište nám a do 24 hodin se ozveme s návrhem řešení a orientační cenou. Konzultace zdarma.",
   keywords: [
@@ -24,14 +48,7 @@ export const metadata: Metadata = {
     description: "Máte zájem o nový web? Napište nám a my se vám ozveme do 24 hodin s návrhem řešení.",
     url: "https://www.weblyx.cz/kontakt",
     type: "website",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Weblyx - Kontakt"
-      }
-    ],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Kontakt" }],
   },
   alternates: {
     canonical: "https://www.weblyx.cz/kontakt",
@@ -39,20 +56,25 @@ export const metadata: Metadata = {
   }
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await getLocale();
+  const isDE = locale === 'de';
+  const baseUrl = isDE ? 'https://www.seitelyx.de' : 'https://www.weblyx.cz';
+  const brandName = isDE ? 'Seitelyx' : 'Weblyx';
+
   // Generate schemas
   const contactPageSchema = generateContactPageSchema();
 
   // Generate breadcrumb
   const breadcrumbs: BreadcrumbItem[] = [
-    { name: 'Domů', url: 'https://www.weblyx.cz' },
-    { name: 'Kontakt', url: 'https://www.weblyx.cz/kontakt' },
+    { name: isDE ? 'Startseite' : 'Domů', url: baseUrl },
+    { name: 'Kontakt', url: `${baseUrl}/kontakt` },
   ];
 
   const webpageSchema = generateWebPageSchema({
     name: 'Kontakt',
-    description: 'Kontaktujte Weblyx - moderní webovou agenturu',
-    url: 'https://www.weblyx.cz/kontakt',
+    description: isDE ? `Kontaktieren Sie ${brandName} - moderne Webagentur` : `Kontaktujte ${brandName} - moderní webovou agenturu`,
+    url: `${baseUrl}/kontakt`,
     breadcrumbs,
   });
 
@@ -74,10 +96,12 @@ export default function ContactPage() {
         <section className="py-12 md:py-16 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
-              Kontaktujte nás
+              {isDE ? 'Kontaktieren Sie uns' : 'Kontaktujte nás'}
             </h1>
             <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-10">
-              Máte zájem o nový web nebo potřebujete poradit? Ozvěte se nám a do 24 hodin vám odpovíme s návrhem řešení.
+              {isDE
+                ? 'Interesse an einer neuen Website oder Beratung? Schreiben Sie uns und wir antworten innerhalb von 24 Stunden.'
+                : 'Máte zájem o nový web nebo potřebujete poradit? Ozvěte se nám a do 24 hodin vám odpovíme s návrhem řešení.'}
             </p>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -86,9 +110,9 @@ export default function ContactPage() {
                   <Mail className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-semibold mb-1">Email</h2>
-                  <a href="mailto:info@weblyx.cz" className="text-muted-foreground hover:text-primary transition-colors">
-                    info@weblyx.cz
+                  <h2 className="font-semibold mb-1">E-Mail</h2>
+                  <a href={isDE ? "mailto:kontakt@seitelyx.de" : "mailto:info@weblyx.cz"} className="text-muted-foreground hover:text-primary transition-colors">
+                    {isDE ? 'kontakt@seitelyx.de' : 'info@weblyx.cz'}
                   </a>
                 </div>
               </div>
@@ -98,7 +122,7 @@ export default function ContactPage() {
                   <Phone className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-semibold mb-1">Telefon</h2>
+                  <h2 className="font-semibold mb-1">{isDE ? 'Telefon' : 'Telefon'}</h2>
                   <a href="tel:+420702110166" className="text-muted-foreground hover:text-primary transition-colors">
                     +420 702 110 166
                   </a>
@@ -110,9 +134,9 @@ export default function ContactPage() {
                   <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-semibold mb-1">Adresa</h2>
+                  <h2 className="font-semibold mb-1">{isDE ? 'Adresse' : 'Adresa'}</h2>
                   <p className="text-muted-foreground">
-                    Revoluční 8,<br />Praha 1, 110 00
+                    Revoluční 8,<br />{isDE ? 'Prag 1, 110 00' : 'Praha 1, 110 00'}
                   </p>
                 </div>
               </div>
@@ -122,10 +146,10 @@ export default function ContactPage() {
                   <Clock className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-semibold mb-1">Otevírací doba</h2>
+                  <h2 className="font-semibold mb-1">{isDE ? 'Erreichbarkeit' : 'Otevírací doba'}</h2>
                   <p className="text-muted-foreground text-sm">
-                    Po–Pá: 8:00–18:00<br />
-                    So–Ne: po domluvě
+                    {isDE ? 'Mo–Fr: 8:00–18:00' : 'Po–Pá: 8:00–18:00'}<br />
+                    {isDE ? 'Sa–So: nach Vereinbarung' : 'So–Ne: po domluvě'}
                   </p>
                 </div>
               </div>
@@ -138,10 +162,10 @@ export default function ContactPage() {
           <div className="container mx-auto max-w-4xl">
             <div className="text-center space-y-2 mb-8">
               <h2 className="text-2xl md:text-3xl font-bold">
-                Kde nás najdete
+                {isDE ? 'So finden Sie uns' : 'Kde nás najdete'}
               </h2>
               <p className="text-muted-foreground">
-                Revoluční 8, Praha 1, 110 00
+                Revoluční 8, {isDE ? 'Prag 1' : 'Praha 1'}, 110 00
               </p>
             </div>
 
@@ -154,7 +178,7 @@ export default function ContactPage() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Weblyx - Revoluční 8, Praha 1"
+                title={`${brandName} - Revoluční 8, ${isDE ? 'Prag 1' : 'Praha 1'}`}
                 className="w-full h-[300px] md:h-[400px]"
               />
             </div>
@@ -167,7 +191,7 @@ export default function ContactPage() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-md"
               >
                 <Navigation className="h-5 w-5" />
-                Navigovat
+                {isDE ? 'Route planen' : 'Navigovat'}
               </a>
             </div>
           </div>
