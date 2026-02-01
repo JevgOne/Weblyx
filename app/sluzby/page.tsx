@@ -29,6 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getActiveServices, Service } from "@/lib/turso/services";
+import { getLocale } from 'next-intl/server';
 
 // Force dynamic rendering to avoid build timeout
 export const dynamic = 'force-dynamic';
@@ -177,8 +178,9 @@ const ADDITIONAL_SERVICES = [
 ];
 
 export default async function ServicesPage() {
-  // Fetch active services from database
-  const dbServices = await getActiveServices();
+  // Fetch active services from database (locale-aware)
+  const locale = await getLocale();
+  const dbServices = await getActiveServices(locale);
 
   // Transform database services to pricing packages
   const PRICING_PACKAGES = transformServicesToPricingPackages(dbServices);

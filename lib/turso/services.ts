@@ -30,13 +30,17 @@ interface ServiceRow {
   active: number;
   created_at: number;
   updated_at: number;
+  title_de: string | null;
+  description_de: string | null;
 }
 
-function rowToService(row: ServiceRow): Service {
+function rowToService(row: ServiceRow, locale?: string): Service {
+  // Use locale-specific columns if available, fall back to default (Czech)
+  const useDE = locale === 'de';
   return {
     id: row.id,
-    title: row.title,
-    description: row.description,
+    title: (useDE && row.title_de) ? row.title_de : row.title,
+    description: (useDE && row.description_de) ? row.description_de : row.description,
     icon: row.icon || undefined,
     imageUrl: row.image_url || undefined,
     features: row.features ? JSON.parse(row.features) : [],
@@ -49,11 +53,11 @@ function rowToService(row: ServiceRow): Service {
   };
 }
 
-export async function getAllServices(): Promise<Service[]> {
+export async function getAllServices(locale?: string): Promise<Service[]> {
   const result = await turso.execute(
     'SELECT * FROM services ORDER BY "order" ASC'
   );
-  return result.rows.map((row) => rowToService(row as unknown as ServiceRow));
+  return result.rows.map((row) => rowToService(row as unknown as ServiceRow, locale));
 }
 
 export async function getServiceById(id: string): Promise<Service | null> {
@@ -66,11 +70,11 @@ export async function getServiceById(id: string): Promise<Service | null> {
   return rowToService(result.rows[0] as unknown as ServiceRow);
 }
 
-export async function getActiveServices(): Promise<Service[]> {
+export async function getActiveServices(locale?: string): Promise<Service[]> {
   const result = await turso.execute(
     'SELECT * FROM services WHERE active = 1 ORDER BY "order" ASC'
   );
-  return result.rows.map((row) => rowToService(row as unknown as ServiceRow));
+  return result.rows.map((row) => rowToService(row as unknown as ServiceRow, locale));
 }
 
 export async function createService(data: {

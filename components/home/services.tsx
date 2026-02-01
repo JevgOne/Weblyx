@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { getActiveServices } from "@/lib/turso/services";
 import { getPageContent } from "@/lib/firestore-pages";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { LeadButton } from "@/components/tracking/LeadButton";
 
 // Icon mapping
@@ -22,10 +22,10 @@ const iconMap: Record<string, any> = {
   HeadphonesIcon,
 };
 
-async function getServices() {
+async function getServices(locale?: string) {
   try {
-    // Fetch active services from Turso
-    const services = await getActiveServices();
+    // Fetch active services from Turso (locale-aware)
+    const services = await getActiveServices(locale);
     return services;
   } catch (error) {
     console.error('Error fetching services:', error);
@@ -35,7 +35,8 @@ async function getServices() {
 
 export async function Services() {
   const t = await getTranslations('services');
-  const servicesData = await getServices();
+  const locale = await getLocale();
+  const servicesData = await getServices(locale);
   const sectionContent = await getPageContent('homepage-services');
 
   // Fallback data if fetch fails
