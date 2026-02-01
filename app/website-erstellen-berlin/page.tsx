@@ -92,7 +92,7 @@ const SERVICES = [
     icon: Search,
     title: "SEO für den Berliner Markt",
     description:
-      "Lokale SEO-Optimierung für Berlin. Sichtbar werden bei Google für „website erstellen Berlin" und weitere relevante Suchbegriffe in Ihrer Branche.",
+      "Lokale SEO-Optimierung für Berlin. Sichtbar werden bei Google für 'website erstellen Berlin' und weitere relevante Suchbegriffe in Ihrer Branche.",
   },
   {
     icon: Shield,

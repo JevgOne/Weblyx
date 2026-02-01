@@ -90,7 +90,7 @@ const SERVICES = [
     icon: Search,
     title: "Lokální SEO pro Brno",
     description:
-      "Dostaňte se na první stránku Googlu pro „tvorba webu Brno" a další lokální klíčová slova. Kompletní on-page i technické SEO v ceně každého projektu.",
+      "Dostaňte se na první stránku Googlu pro 'tvorba webu Brno' a další lokální klíčová slova. Kompletní on-page i technické SEO v ceně každého projektu.",
   },
   {
     icon: ShoppingCart,

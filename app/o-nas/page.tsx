@@ -29,12 +29,12 @@ export const metadata: Metadata = {
         height: 630,
         alt: "Weblyx - O nás"
       }
+    ],
+  },
   twitter: {
     card: "summary_large_image",
     title: "O nás | Weblyx – moderní webová agentura",
     description: "Moderní webová agentura z Prahy zaměřená na rychlé a kvalitní webové stránky.",
-  },
-    ],
   },
   alternates: {
     canonical: "https://www.weblyx.cz/o-nas",
@@ -135,13 +135,13 @@ export default function AboutPage() {
               <h2 className="text-3xl md:text-4xl font-bold">Náš příběh</h2>
               <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
                 <p>
-                  Myšlenka na Weblyx se zrodila v únoru 2024. Potřebovali jsme vlastní web – moderní, rychlý a přizpůsobený tomu, kdo jsme a jak chceme působit. Obcházeli jsme studia, freelancery i „levné weby" a všude slyšeli to samé: šablonové WordPress řešení, dlouhé dodací lhůty a spoustu kompromisů.
+                  Myšlenka na Weblyx se zrodila v únoru 2024. Potřebovali jsme vlastní web – moderní, rychlý a přizpůsobený tomu, kdo jsme a jak chceme působit. Obcházeli jsme studia, freelancery i 'levné weby' a všude slyšeli to samé: šablonové WordPress řešení, dlouhé dodací lhůty a spoustu kompromisů.
                 </p>
                 <p>
-                  V jednu chvíli nám došla trpělivost a řekli jsme si jednoduché: „OK, tak si to radši uděláme sami." Začaly večery a noci strávené u tutoriálů, kurzů a kódu – Next.js, React, SEO, rychlost načítání, UX, AI nástroje. První web jsme postavili pro sebe. Nebyl dokonalý, ale byl náš. Rychlý, moderní a přesně takový, jaký jsme chtěli od začátku.
+                  V jednu chvíli nám došla trpělivost a řekli jsme si jednoduché: 'OK, tak si to radši uděláme sami.' Začaly večery a noci strávené u tutoriálů, kurzů a kódu – Next.js, React, SEO, rychlost načítání, UX, AI nástroje. První web jsme postavili pro sebe. Nebyl dokonalý, ale byl náš. Rychlý, moderní a přesně takový, jaký jsme chtěli od začátku.
                 </p>
                 <p>
-                  Pak přišel kamarád, který potřeboval web. Potom další. Doporučení se začala nabalovat a z jednoho „uděláme si to sami" se postupně stal plnohodnotný projekt. Z koníčku vznikla značka Weblyx 🚀
+                  Pak přišel kamarád, který potřeboval web. Potom další. Doporučení se začala nabalovat a z jednoho 'uděláme si to sami' se postupně stal plnohodnotný projekt. Z koníčku vznikla značka Weblyx 🚀
                 </p>
                 <p>
                   Dnes pomáháme firmám, které jsou ve stejné situaci, jako jsme byli my: chtějí web, který dává smysl, vypadá profesionálně a funguje rychle – ale nechtějí platit statisíce nebo čekat měsíce. Každý nový web bereme trochu osobně, protože moc dobře víme, jak frustrující je hledat někoho, kdo vás opravdu poslouchá.
@@ -179,7 +179,7 @@ export default function AboutPage() {
                     <li>a dá se dál rozvíjet, ne rovnou zahodit při první změně.</li>
                   </ul>
                   <p>
-                    Nechceme být další agentura, která „prodá web a zmizí". Naším cílem je být partner, za kterým můžete kdykoliv přijít s tím, že chcete něco zlepšit, zrychlit, napojit nebo rozšířit. 🚀
+                    Nechceme být další agentura, která 'prodá web a zmizí'. Naším cílem je být partner, za kterým můžete kdykoliv přijít s tím, že chcete něco zlepšit, zrychlit, napojit nebo rozšířit. 🚀
                   </p>
                 </div>
               </CardContent>
@@ -196,7 +196,7 @@ export default function AboutPage() {
                     Naší vizí je vybudovat značku, která bude v Česku vnímaná jako:
                   </p>
                   <p className="font-semibold">
-                    „Ti, co dělají nejrychlejší a nejrozumnější weby za normální peníze."
+                    'Ti, co dělají nejrychlejší a nejrozumnější weby za normální peníze.'
                   </p>
                   <p>
                     Chceme, aby si každý, kdo uvažuje o novém webu, vybavil tři věci:

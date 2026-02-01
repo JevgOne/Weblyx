@@ -115,7 +115,7 @@ const FAQS = [
   {
     question: "Potřebuji SEO, když mám PPC reklamu?",
     answer:
-      "SEO a PPC se doplňují. PPC přináší okamžité výsledky, ale stojí peníze za každý klik. SEO je investice, která přináší organickou návštěvnost „zdarma". Weby s dobrým SEO platí za reklamu méně a mají vyšší konverze díky důvěryhodnosti organických výsledků.",
+      "SEO a PPC se doplňují. PPC přináší okamžité výsledky, ale stojí peníze za každý klik. SEO je investice, která přináší organickou návštěvnost 'zdarma'. Weby s dobrým SEO platí za reklamu méně a mají vyšší konverze díky důvěryhodnosti organických výsledků.",
   },
 ];
 

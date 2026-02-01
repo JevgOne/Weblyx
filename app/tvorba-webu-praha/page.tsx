@@ -90,7 +90,7 @@ const SERVICES = [
     icon: Search,
     title: "SEO pro pražský trh",
     description:
-      "Lokální SEO, které vás dostane na první stránku Googlu pro klíčová slova jako „tvorba webu Praha". Měřitelné výsledky od prvního měsíce.",
+      "Lokální SEO, které vás dostane na první stránku Googlu pro klíčová slova jako 'tvorba webu Praha'. Měřitelné výsledky od prvního měsíce.",
   },
   {
     icon: Zap,

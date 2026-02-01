@@ -94,7 +94,7 @@ const LAWYER_FEATURES = [
   {
     icon: Search,
     title: "SEO optimalizace",
-    description: "Dostaňte se na první pozice pro „advokát [město]" a vaše specializace. Lokální SEO pro právníky.",
+    description: "Dostaňte se na první pozice pro 'advokát [město]' a vaše specializace. Lokální SEO pro právníky.",
   },
   {
     icon: BookOpen,
@@ -212,7 +212,7 @@ export default function WebProPravnikyPage() {
                   <Users className="h-8 w-8 text-primary" />
                   <h3 className="text-xl font-bold">Nový klienti</h3>
                   <p className="text-muted-foreground">
-                    SEO optimalizovaný web přivádí nové klienty automaticky. Kdo hledá „<strong>advokát Praha</strong>", najde právě vás.
+                    SEO optimalizovaný web přivádí nové klienty automaticky. Kdo hledá '<strong>advokát Praha</strong>', najde právě vás.
                   </p>
                 </CardContent>
               </Card>

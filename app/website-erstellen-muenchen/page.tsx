@@ -87,7 +87,7 @@ const SERVICES = [
     icon: Search,
     title: "SEO für München & Bayern",
     description:
-      "Lokale SEO-Optimierung für den Münchner Markt. Werden Sie sichtbar bei Suchanfragen wie „website erstellen München" und generieren Sie qualifizierte Anfragen aus der Region.",
+      "Lokale SEO-Optimierung für den Münchner Markt. Werden Sie sichtbar bei Suchanfragen wie 'website erstellen München' und generieren Sie qualifizierte Anfragen aus der Region.",
   },
   {
     icon: ShoppingCart,
