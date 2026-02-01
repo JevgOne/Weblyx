@@ -257,7 +257,7 @@ export function ContactAdvanced() {
                   <div>
                     <h3 className="font-semibold mb-1">Adresa</h3>
                     <p className="text-muted-foreground">
-                      Praha, Česká republika
+                      Revoluční 8, Praha 1, 110 00
                     </p>
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export function ContactAdvanced() {
               <h3 className="font-semibold">Otevírací doba</h3>
               <div className="text-sm text-muted-foreground space-y-1">
                 <p>Po - Pá: 9:00 - 18:00</p>
-                <p>So - Ne: Zavřeno</p>
+                <p>So - Ne: po domluvě</p>
               </div>
             </div>
 

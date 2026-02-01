@@ -206,10 +206,10 @@
     "email": "Email",
     "phone": "Telefon",
     "address": "Adresa",
-    "location": "Praha, Česká republika",
+    "location": "Revoluční 8, Praha 1, 110 00",
     "hours": "Otevírací doba",
     "weekdays": "Po - Pá: 9:00 - 18:00",
-    "weekend": "So - Ne: Zavřeno",
+    "weekend": "So - Ne: po domluvě",
     "companyInfo": "Provozovatel: Altro Servis Group s.r.o. | IČO: 23673389 | Revoluční 8, Praha 1, 110 00",
     "mapsTooltip": "Najděte nás na Google Maps",
     "tagline": "Vytvořeno s ❤️ a ☕️ v Česku",
@@ -397,10 +397,10 @@
     },
     "contact": {
       "title": "Kontakt",
-      "address": "Praha, Česká republika",
+      "address": "Revoluční 8, Praha 1, 110 00",
       "hours": "Otevírací doba",
       "weekdays": "Po - Pá: 9:00 - 18:00",
-      "weekend": "So - Ne: Zavřeno",
+      "weekend": "So - Ne: po domluvě",
       "mapTitle": "Kde nás najdete",
       "getDirections": "Navigovat",
       "mapAddress": "Revoluční 8, Praha 1, 110 00"
@@ -461,10 +461,10 @@
         "email": "Email",
         "phone": "Telefon",
         "address": "Adresa",
-        "addressValue": "Praha, Česká republika",
+        "addressValue": "Revoluční 8, Praha 1, 110 00",
         "hours": "Otevírací doba",
         "weekdays": "Po - Pá: 9:00 - 18:00",
-        "weekend": "So - Ne: Zavřeno"
+        "weekend": "So - Ne: po domluvě"
       }
     }
   },
