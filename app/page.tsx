@@ -12,6 +12,7 @@ import { TrustBadges } from "@/components/home/trust-badges";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
 import { FreeAudit } from "@/components/home/free-audit";
+import { CaseStudy } from "@/components/home/case-study";
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
@@ -136,6 +137,7 @@ export default async function HomePage() {
         <Services />
         <Process />
         <Portfolio />
+        <CaseStudy />
         <Reviews />
         <ClientLogos />
         <TrustBadges />
