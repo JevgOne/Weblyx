@@ -77,7 +77,7 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-title" content={brand.name} />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content={brand.colors.primary} />
-        <link rel="alternate" type="application/rss+xml" title="Weblyx Blog" href="/feed.xml" />
+        <link rel="alternate" type="application/rss+xml" title={`${brand.name} Blog`} href="/feed.xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Analytics - placed in head for optimal tracking */}
         <GoogleAnalytics />
