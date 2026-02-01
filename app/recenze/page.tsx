@@ -1,78 +1,196 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { Star, Heart, ExternalLink, MessageSquare } from "lucide-react";
+import { Star, ExternalLink, Quote } from "lucide-react";
+import { getPublishedReviews } from "@/lib/turso/reviews";
+
+export const revalidate = 3600; // ISR: 1 hour
 
 export const metadata: Metadata = {
-  title: "Ohodnoťte nás | Weblyx",
+  title: "Recenze | Weblyx – co říkají naši klienti",
   description:
-    "Vaše zpětná vazba nám pomáhá růst. Zanechte nám recenzi na Google — zabere to jen minutku.",
-  robots: { index: false, follow: false },
+    "Přečtěte si recenze od našich spokojených klientů. Weblyx – tvorba webových stránek s hodnocením 5.0 na Google.",
 };
 
 const GOOGLE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=ChIJu9LD5DuVC0cRaH6kYvXkDbM";
 
-export default function RecenzePage() {
+function Stars({ rating }: { rating: number }) {
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 py-20 bg-gradient-to-b from-background to-muted/30">
-      <div className="w-full max-w-lg text-center space-y-8">
-        {/* Icon */}
-        <div className="mx-auto w-20 h-20 rounded-full bg-teal-500/10 flex items-center justify-center">
-          <Heart className="w-10 h-10 text-teal-500" />
-        </div>
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i <= rating
+              ? "text-yellow-400 fill-yellow-400"
+              : "text-muted-foreground/20"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 
-        {/* Heading */}
-        <div className="space-y-3">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Děkujeme za spolupráci!
+function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat("cs-CZ", {
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+export default async function RecenzePage() {
+  const reviews = await getPublishedReviews("cs");
+
+  const reviewCount = reviews.length;
+  const avgRating =
+    reviewCount > 0
+      ? Math.round(
+          (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10
+        ) / 10
+      : 5;
+
+  return (
+    <main className="min-h-screen">
+      {/* Hero */}
+      <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-background to-muted/30">
+        <div className="container mx-auto max-w-3xl text-center space-y-4">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+            Co říkají naši klienti
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto">
-            Jsme rádi, že jste si vybrali Weblyx. Vaše zpětná vazba nám
-            pomáhá zlepšovat služby a pomáhat dalším klientům.
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            Reálné recenze od lidí, kterým jsme pomohli s webem.
           </p>
+
+          {/* Aggregate rating */}
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Star
+                  key={i}
+                  className="w-6 h-6 text-yellow-400 fill-yellow-400"
+                />
+              ))}
+            </div>
+            <span className="text-2xl font-bold">{avgRating}</span>
+            <span className="text-muted-foreground">
+              ({reviewCount} recenzí)
+            </span>
+          </div>
         </div>
+      </section>
 
-        {/* Stars decoration */}
-        <div className="flex items-center justify-center gap-1">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Star
-              key={i}
-              className="w-8 h-8 text-yellow-400 fill-yellow-400"
-            />
-          ))}
+      {/* Reviews grid */}
+      <section className="py-12 md:py-16 px-4">
+        <div className="container mx-auto max-w-4xl">
+          {reviews.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="relative bg-card border border-border/60 rounded-2xl p-6 space-y-4 hover:shadow-md transition-shadow"
+                >
+                  {/* Quote icon */}
+                  <Quote className="absolute top-4 right-4 w-8 h-8 text-teal-500/10" />
+
+                  {/* Header: name + stars */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      {/* Avatar */}
+                      <div className="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-teal-500 font-semibold text-sm">
+                          {review.authorName
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">
+                          {review.authorName}
+                        </p>
+                        {review.authorRole && (
+                          <p className="text-xs text-muted-foreground">
+                            {review.authorRole}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <Stars rating={review.rating} />
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(review.date)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Text */}
+                  <p className="text-sm leading-relaxed text-foreground/90">
+                    {review.text}
+                  </p>
+
+                  {/* Source */}
+                  {review.sourceUrl && (
+                    <a
+                      href={review.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-teal-500 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      {review.source === "Google"
+                        ? "Google recenze"
+                        : review.source}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-12">
+              Zatím žádné recenze. Buďte první!
+            </p>
+          )}
         </div>
+      </section>
 
-        {/* CTA Button */}
-        <a
-          href={GOOGLE_REVIEW_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold text-lg rounded-xl shadow-lg shadow-teal-500/25 transition-all hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
-        >
-          <Star className="w-5 h-5" />
-          Zanechat recenzi na Google
-          <ExternalLink className="w-4 h-4 opacity-70" />
-        </a>
-
-        <p className="text-sm text-muted-foreground">
-          Zabere to jen minutku — stačí zvolit počet hvězdiček a napsat pár
-          slov. Každá recenze se počítá! ⭐
-        </p>
-
-        {/* Alternative */}
-        <div className="pt-4 border-t border-border/50">
-          <p className="text-sm text-muted-foreground mb-3">
-            Máte nápad, jak se můžeme zlepšit?
+      {/* CTA: Leave a review */}
+      <section className="py-16 px-4 border-t border-border/40 bg-muted/20">
+        <div className="container mx-auto max-w-lg text-center space-y-6">
+          <h2 className="text-2xl md:text-3xl font-bold">
+            Spolupracovali jsme? Dejte nám vědět!
+          </h2>
+          <p className="text-muted-foreground">
+            Vaše zpětná vazba nám pomáhá zlepšovat služby. Každá recenze se
+            počítá.
           </p>
-          <Link
-            href="/kontakt"
-            className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-400 transition-colors font-medium"
+
+          <div className="flex items-center justify-center gap-1">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star
+                key={i}
+                className="w-7 h-7 text-yellow-400 fill-yellow-400"
+              />
+            ))}
+          </div>
+
+          <a
+            href={GOOGLE_REVIEW_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold text-lg rounded-xl shadow-lg shadow-teal-500/25 transition-all hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
           >
-            <MessageSquare className="w-4 h-4" />
-            Napište nám přímo
-          </Link>
+            <Star className="w-5 h-5" />
+            Zanechat recenzi na Google
+            <ExternalLink className="w-4 h-4 opacity-70" />
+          </a>
+
+          <p className="text-xs text-muted-foreground">
+            Zabere to jen minutku — stačí zvolit hvězdičky a napsat pár slov.
+          </p>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
