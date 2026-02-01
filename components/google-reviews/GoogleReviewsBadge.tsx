@@ -11,7 +11,7 @@ interface GoogleReviewsBadgeProps {
 
 export function GoogleReviewsBadge({
   rating = 5.0,
-  reviewCount = 7,
+  reviewCount = 8,
   placeUrl = "https://share.google/cZIQkYTq2bVmkRAAP"
 }: GoogleReviewsBadgeProps) {
   return (
