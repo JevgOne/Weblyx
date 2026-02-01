@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { QuoteForm } from "@/components/poptavka/QuoteForm";
 
 // ISR: revalidate every hour
@@ -35,6 +36,7 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://www.weblyx.cz/poptavka",
+    languages: getAlternateLanguages('/poptavka'),
   },
 };
 

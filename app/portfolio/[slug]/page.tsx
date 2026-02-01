@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Gauge, Zap } from "lucide-react";
@@ -60,6 +61,7 @@ export async function generateMetadata({
       },
       alternates: {
         canonical: `${baseUrl}/portfolio/${slug}`,
+        languages: getAlternateLanguages('/portfolio/' + slug),
       },
       robots: {
         index: true,

@@ -10,6 +10,7 @@ import { generateFAQSchema } from "@/lib/schema-org";
 import { generateSpeakableSchema } from "@/lib/schema-generators";
 import { getTranslations, getLocale } from 'next-intl/server';
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { FAQItem } from "@/types/cms";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,6 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
+    alternates: {
+      canonical: 'https://www.weblyx.cz/faq',
+      languages: getAlternateLanguages('/faq'),
+    },
   };
 }
 

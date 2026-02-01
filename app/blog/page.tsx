@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +38,8 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.weblyx.cz/blog"
+    canonical: "https://www.weblyx.cz/blog",
+    languages: getAlternateLanguages('/blog')
   }
 };
 

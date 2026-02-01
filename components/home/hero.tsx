@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { ArrowRight, Zap, Clock, TrendingUp } from "lucide-react";
@@ -167,11 +168,12 @@ export async function Hero() {
               {heroSection?.backgroundImage ? (
                 // Hero image from database
                 <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
-                  <img
+                  <Image
                     src={heroSection.backgroundImage}
                     alt={t('heroImageAlt')}
                     width={600}
                     height={400}
+                    priority
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   {/* Overlay gradient */}

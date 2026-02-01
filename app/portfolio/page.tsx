@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Portfolio } from "@/components/home/portfolio";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generatePortfolioSchema, BreadcrumbItem, generateWebPageSchema, PortfolioItem } from "@/lib/schema-org";
@@ -10,7 +11,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Naše projekty – weby a e-shopy, které přináší výsledky",
-  description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili. Každý projekt je rychlý, responzivní a přizpůsobený konkrétnímu byznysu – od malých webů pro živnostníky až po komplexnější firemní řešení.",
+  description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili. Rychlé, responzivní projekty na míru – od webů pro živnostníky po firemní řešení.",
   keywords: [
     "portfolio webů",
     "ukázky webů",
@@ -34,7 +35,8 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.weblyx.cz/portfolio"
+    canonical: "https://www.weblyx.cz/portfolio",
+    languages: getAlternateLanguages('/portfolio')
   }
 };
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -59,6 +60,7 @@ export async function generateMetadata({
       },
       alternates: {
         canonical: `https://www.weblyx.cz/blog/${slug}`,
+        languages: getAlternateLanguages('/blog/' + slug),
       },
       robots: {
         index: true,

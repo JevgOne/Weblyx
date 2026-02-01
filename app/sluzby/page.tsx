@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +64,8 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.weblyx.cz/sluzby"
+    canonical: "https://www.weblyx.cz/sluzby",
+    languages: getAlternateLanguages('/sluzby')
   }
 };
 
@@ -244,8 +246,8 @@ export default async function ServicesPage() {
               Transparentní ceník
             </Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              Transparentní ceny.{" "}
-              <span className="text-primary">Žádné skryté poplatky.</span>
+              Tvorba webových stránek —{" "}
+              <span className="text-primary">transparentní ceny bez skrytých poplatků</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Profesionální webové stránky a e-shopy za férové ceny.

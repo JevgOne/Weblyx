@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Contact } from "@/components/home/contact";
 
 // ISR: revalidate every hour
@@ -10,7 +11,7 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Kontakt – nezávazná konzultace zdarma",
-  description: "Máte zájem o nový web, redesign nebo zrychlení webu? Napište nám pár detailů o projektu a my se vám do 24 hodin ozveme s návrhem řešení a orientační cenou. Nezávazná konzultace zdarma.",
+  description: "Máte zájem o nový web nebo redesign? Napište nám a do 24 hodin se ozveme s návrhem řešení a orientační cenou. Konzultace zdarma.",
   keywords: [
     "kontakt webová agentura",
     "tvorba webu Praha",
@@ -33,7 +34,8 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.weblyx.cz/kontakt"
+    canonical: "https://www.weblyx.cz/kontakt",
+    languages: getAlternateLanguages('/kontakt')
   }
 };
 

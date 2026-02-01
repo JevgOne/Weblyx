@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -8,7 +9,7 @@ import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "
 
 export const metadata: Metadata = {
   title: "O nás – Weblyx | Česká webová agentura | Tvorba webů od 7 990 Kč",
-  description: "Weblyx je česká webová agentura. Od února 2024 jsme dokončili 15+ projektů pro živnostníky a firmy. Web za 5-7 dní, garantujeme načítání pod 2 sekundy. Férové ceny, žádné skryté poplatky.",
+  description: "Weblyx je česká webová agentura. Od 2024 jsme dokončili 15+ projektů. Web za 5–7 dní, načítání pod 2s. Férové ceny, žádné skryté poplatky.",
   keywords: [
     "o nás webová agentura",
     "webová agentura Praha",
@@ -31,7 +32,8 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.weblyx.cz/o-nas"
+    canonical: "https://www.weblyx.cz/o-nas",
+    languages: getAlternateLanguages('/o-nas')
   }
 };
 
