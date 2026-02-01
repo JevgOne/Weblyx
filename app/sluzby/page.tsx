@@ -87,6 +87,17 @@ interface PricingPackage {
   ideal: string;
 }
 
+// Map package titles to specific target audience descriptions
+function getIdealForText(title: string, fallback: string): string {
+  const lower = title.toLowerCase();
+  if (lower.includes("landing")) return "živnostníky, freelancery a startupy";
+  if (lower.includes("základní")) return "malé firmy a lokální podnikání";
+  if (lower.includes("standardní")) return "rostoucí firmy s více službami";
+  if (lower.includes("mini") && lower.includes("shop")) return "malé e-shopy do 100 produktů";
+  if (lower.includes("premium") && lower.includes("shop")) return "velké e-shopy s tisíci produkty";
+  return fallback;
+}
+
 // Helper function to transform database services to pricing packages
 function transformServicesToPricingPackages(services: Service[]): PricingPackage[] {
   // Filter services that have pricing (priceFrom is not null)
@@ -116,7 +127,7 @@ function transformServicesToPricingPackages(services: Service[]): PricingPackage
       included: service.features.includes(featureName),
     })),
     cta: `Objednat ${service.title}`,
-    ideal: service.description, // Use description as "ideal for" text
+    ideal: getIdealForText(service.title, service.description),
   }));
 }
 
