@@ -312,9 +312,21 @@ export function middleware(request: NextRequest) {
     response.headers.set('X-Bot-Status', 'whitelisted');
   }
 
-  // Anti-scraping headers (ALLOW indexing, just prevent archiving/snippets for copyright)
-  // NOTE: Removed 'nofollow' to allow Google Search Console indexing!
-  response.headers.set('X-Robots-Tag', 'noarchive');
+  // Cross-locale noindex: German pages on weblyx.cz and Czech pages on seitelyx.de
+  // Prevents Google from indexing wrong-language content under the wrong domain
+  const germanOnlyRoutes = ['/leistungen', '/uber-uns', '/anfrage', '/preise', '/impressum', '/datenschutz', '/schreiben-sie-eine-bewertung'];
+  const czechOnlyRoutes = ['/sluzby', '/o-nas', '/poptavka', '/napiste-recenzi', '/pagespeed-garance', '/ochrana-udaju', '/obchodni-podminky', '/cookies'];
+  const isGermanPage = germanOnlyRoutes.some(r => pathname === r || pathname.startsWith(r + '/'));
+  const isCzechPage = czechOnlyRoutes.some(r => pathname === r || pathname.startsWith(r + '/'));
+  const isSeitelyx = hostname.includes('seitelyx.de');
+  const wrongLocale = (isGermanPage && !isSeitelyx) || (isCzechPage && isSeitelyx);
+
+  if (wrongLocale) {
+    response.headers.set('X-Robots-Tag', 'noindex, noarchive');
+  } else {
+    // Anti-scraping headers (ALLOW indexing, just prevent archiving/snippets for copyright)
+    response.headers.set('X-Robots-Tag', 'noarchive');
+  }
 
   // PERFORMANCE FIX: Only apply aggressive no-cache for admin/API routes
   // Let Next.js ISR work normally for public pages
