@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Calendar, Clock, User, ChevronRight } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getBlogPostBySlug, getPublishedBlogPosts } from "@/lib/turso/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -93,14 +92,17 @@ export default async function BlogPostPage({
       notFound();
     }
 
+    // Related posts
     const allPosts = await getPublishedBlogPosts();
-    const relatedPosts = allPosts
-      .filter((p) => p.slug !== slug)
-      .slice(0, 3);
+    const relatedPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
     const publishedDate = post.publishedAt
-      ? new Date(post.publishedAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
-      : new Date(post.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+      ? new Date(post.publishedAt).toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" })
+      : new Date(post.createdAt).toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
+
+    const isoDate = post.publishedAt
+      ? new Date(post.publishedAt).toISOString().split("T")[0]
+      : new Date(post.createdAt).toISOString().split("T")[0];
 
     const htmlContent = await marked.parse(post.content, { gfm: true, breaks: true });
 
@@ -187,191 +189,182 @@ export default async function BlogPostPage({
         <JsonLd data={breadcrumbSchema} />
         {howToSchema && <JsonLd data={howToSchema} />}
 
-        <main className="min-h-screen bg-[#FAFAF9] dark:bg-background">
-          <article>
-            {/* Hero image — full width, cinematic */}
-            {post.featuredImage ? (
-              <div className="relative w-full aspect-[21/9] md:aspect-[3/1]">
-                <Image
-                  src={post.featuredImage}
-                  alt={post.title}
-                  fill
-                  priority
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAF9] dark:from-background via-transparent to-transparent" />
-              </div>
-            ) : (
-              <div className="w-full h-32 md:h-48 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
-            )}
+        <main className="min-h-screen bg-white dark:bg-background">
+          <article className="max-w-2xl mx-auto px-6 pt-12 md:pt-20 pb-16">
+            {/* Back link */}
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-900 dark:hover:text-foreground transition-colors mb-10"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Blog
+            </Link>
 
-            {/* Article content */}
-            <div className="container mx-auto max-w-3xl px-4 -mt-16 md:-mt-24 relative z-10">
-              {/* Back link */}
-              <Link
-                href="/blog"
-                className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-primary transition-colors mb-8"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Zpět na blog
-              </Link>
-
-              {/* Meta */}
-              <div className="flex flex-wrap items-center gap-3 mb-6">
-                <span className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-muted-foreground">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {publishedDate}
-                </span>
-                <span className="text-neutral-300 dark:text-border">·</span>
-                <span className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-muted-foreground">
-                  <Clock className="h-3.5 w-3.5" />
+            {/* Header */}
+            <header className="mb-10 md:mb-14">
+              {/* Monospace date + reading time */}
+              <div className="flex items-center gap-3 mb-6">
+                <time
+                  dateTime={isoDate}
+                  className="text-sm text-neutral-400 dark:text-muted-foreground font-mono"
+                >
+                  {isoDate}
+                </time>
+                <span className="text-neutral-200 dark:text-border">·</span>
+                <span className="text-sm text-neutral-400 dark:text-muted-foreground font-mono">
                   {readTime} min čtení
                 </span>
-                {post.authorName && (
-                  <>
-                    <span className="text-neutral-300 dark:text-border">·</span>
-                    <span className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-muted-foreground">
-                      <User className="h-3.5 w-3.5" />
-                      {post.authorName}
-                    </span>
-                  </>
+              </div>
+
+              {/* Title + thumbnail row */}
+              <div className="flex gap-5 items-start">
+                <div className="flex-1">
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-foreground tracking-tight leading-[1.2] mb-4">
+                    {post.title}
+                  </h1>
+
+                  {post.authorName && (
+                    <p className="text-sm text-neutral-400 dark:text-muted-foreground">
+                      od{" "}
+                      <span className="text-neutral-600 dark:text-foreground/70 font-medium">
+                        {post.authorName}
+                      </span>
+                    </p>
+                  )}
+                </div>
+
+                {/* Small thumbnail */}
+                {post.featuredImage && (
+                  <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={post.featuredImage}
+                      alt={post.title}
+                      fill
+                      priority
+                      className="object-cover"
+                    />
+                  </div>
                 )}
               </div>
 
-              {/* Title */}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-foreground tracking-tight leading-[1.15] mb-6">
-                {post.title}
-              </h1>
-
               {/* Excerpt */}
               {post.excerpt && (
-                <p className="text-lg md:text-xl text-neutral-500 dark:text-muted-foreground leading-relaxed mb-8">
+                <p className="text-base md:text-lg text-neutral-500 dark:text-muted-foreground leading-relaxed mt-5">
                   {post.excerpt}
                 </p>
               )}
 
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-10">
+                <div className="flex flex-wrap gap-1.5 mt-6">
                   {post.tags.map((tag: string, i: number) => (
                     <Badge
                       key={i}
                       variant="outline"
-                      className="border-primary/30 text-primary bg-primary/5 font-normal text-xs"
+                      className="border-neutral-200 dark:border-border text-neutral-500 dark:text-muted-foreground bg-transparent font-normal text-xs rounded-full px-3"
                     >
                       {tag}
                     </Badge>
                   ))}
                 </div>
               )}
+            </header>
 
-              <Separator className="mb-12 bg-neutral-200 dark:bg-border" />
+            <Separator className="bg-neutral-100 dark:bg-border mb-10 md:mb-14" />
 
-              {/* Article body — clean typography */}
-              <div
-                className="prose prose-lg max-w-none dark:prose-invert
-                  prose-headings:font-bold prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
-                  prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-14 prose-h2:mb-6
-                  prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-neutral-800 dark:prose-h3:text-foreground/90
-                  prose-p:text-neutral-600 dark:prose-p:text-foreground/80 prose-p:leading-[1.85] prose-p:mb-6 prose-p:text-[17px]
-                  prose-ul:my-6 prose-ul:text-neutral-600 dark:prose-ul:text-foreground/80 prose-ul:text-[17px]
-                  prose-ol:my-6 prose-ol:text-neutral-600 dark:prose-ol:text-foreground/80 prose-ol:text-[17px]
-                  prose-li:my-2 prose-li:leading-relaxed
-                  prose-li:marker:text-primary
-                  prose-strong:text-neutral-900 dark:prose-strong:text-foreground prose-strong:font-semibold
-                  prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:underline-offset-4
-                  prose-code:text-primary prose-code:bg-primary/5 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-[15px] prose-code:font-mono
-                  prose-pre:bg-neutral-900 prose-pre:rounded-xl prose-pre:shadow-lg prose-pre:p-5
-                  prose-img:rounded-xl prose-img:shadow-lg prose-img:my-10
-                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:my-8 prose-blockquote:text-neutral-700 dark:prose-blockquote:text-foreground/80 prose-blockquote:italic prose-blockquote:not-italic
-                  prose-hr:border-neutral-200 dark:prose-hr:border-border"
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-              />
+            {/* Article body */}
+            <div
+              className="prose prose-base md:prose-lg max-w-none dark:prose-invert
+                prose-headings:font-semibold prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
+                prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:pt-6 prose-h2:border-t prose-h2:border-neutral-100 dark:prose-h2:border-border
+                prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-10 prose-h3:mb-4
+                prose-p:text-neutral-600 dark:prose-p:text-foreground/80 prose-p:leading-[1.9] prose-p:mb-5 prose-p:text-[16px] prose-p:md:text-[17px]
+                prose-ul:my-5 prose-ul:text-neutral-600 dark:prose-ul:text-foreground/80
+                prose-ol:my-5 prose-ol:text-neutral-600 dark:prose-ol:text-foreground/80
+                prose-li:my-1.5 prose-li:leading-relaxed
+                prose-li:marker:text-neutral-300 dark:prose-li:marker:text-border
+                prose-strong:text-neutral-800 dark:prose-strong:text-foreground prose-strong:font-semibold
+                prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:underline-offset-4
+                prose-code:text-neutral-700 dark:prose-code:text-foreground/90 prose-code:bg-neutral-100 dark:prose-code:bg-border prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[14px]
+                prose-pre:bg-neutral-50 dark:prose-pre:bg-card prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-border prose-pre:rounded-lg prose-pre:p-5 prose-pre:shadow-none
+                prose-img:rounded-lg prose-img:border prose-img:border-neutral-200 dark:prose-img:border-border prose-img:my-8 prose-img:shadow-none
+                prose-blockquote:border-l-2 prose-blockquote:border-neutral-200 dark:prose-blockquote:border-border prose-blockquote:bg-transparent prose-blockquote:py-0 prose-blockquote:px-4 prose-blockquote:my-6 prose-blockquote:text-neutral-500 dark:prose-blockquote:text-foreground/60 prose-blockquote:italic
+                prose-hr:border-neutral-100 dark:prose-hr:border-border"
+              dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
 
-              {/* Share */}
-              <Separator className="mt-14 mb-8 bg-neutral-200 dark:bg-border" />
-              <ShareButtons
-                url={`/blog/${slug}`}
-                title={post.title}
-                description={post.excerpt || undefined}
-              />
-            </div>
-          </article>
+            <Separator className="bg-neutral-100 dark:bg-border mt-12 mb-8" />
 
-          {/* Related posts — minimal */}
-          {relatedPosts.length > 0 && (
-            <section className="border-t border-neutral-200 dark:border-border mt-20">
-              <div className="container mx-auto max-w-3xl px-4 py-16">
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-foreground mb-10">
-                  Další články
-                </h2>
-                <div className="space-y-0">
-                  {relatedPosts.map((rp, idx) => (
-                    <div key={rp.id}>
-                      <Link href={`/blog/${rp.slug}`} className="group block py-6">
-                        <div className="flex gap-6 items-start">
-                          {rp.featuredImage && (
-                            <div className="relative w-28 h-20 md:w-40 md:h-24 rounded-lg overflow-hidden flex-shrink-0">
-                              <Image
-                                src={rp.featuredImage}
-                                alt={rp.title}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                              />
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <span className="text-xs text-neutral-400 dark:text-muted-foreground">
-                              {rp.publishedAt
-                                ? new Date(rp.publishedAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
-                                : new Date(rp.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
-                              }
-                            </span>
-                            <h3 className="text-lg font-bold text-neutral-900 dark:text-foreground group-hover:text-primary transition-colors leading-snug mt-1 line-clamp-2">
-                              {rp.title}
-                            </h3>
-                            {rp.excerpt && (
-                              <p className="text-sm text-neutral-500 dark:text-muted-foreground line-clamp-2 mt-1.5">
-                                {rp.excerpt}
-                              </p>
-                            )}
-                          </div>
-                          <ChevronRight className="h-5 w-5 text-neutral-300 group-hover:text-primary transition-colors flex-shrink-0 mt-2" />
+            {/* Share */}
+            <ShareButtons
+              url={`/blog/${slug}`}
+              title={post.title}
+              description={post.excerpt || undefined}
+            />
+
+            {/* Related posts */}
+            {relatedPosts.length > 0 && (
+              <>
+                <Separator className="bg-neutral-100 dark:bg-border mt-8 mb-10" />
+                <div className="space-y-6">
+                  <p className="text-xs text-neutral-300 dark:text-border uppercase tracking-widest font-mono">
+                    Další články
+                  </p>
+                  {relatedPosts.map((rp) => (
+                    <Link
+                      key={rp.id}
+                      href={`/blog/${rp.slug}`}
+                      className="group flex gap-4 items-start"
+                    >
+                      {rp.featuredImage && (
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image
+                            src={rp.featuredImage}
+                            alt={rp.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
                         </div>
-                      </Link>
-                      {idx < relatedPosts.length - 1 && (
-                        <Separator className="bg-neutral-200 dark:bg-border" />
                       )}
-                    </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-neutral-900 dark:text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                          {rp.title}
+                        </h3>
+                        <span className="text-xs text-neutral-400 dark:text-muted-foreground font-mono mt-1 block">
+                          {rp.publishedAt
+                            ? new Date(rp.publishedAt).toISOString().split("T")[0]
+                            : new Date(rp.createdAt).toISOString().split("T")[0]
+                          }
+                        </span>
+                      </div>
+                    </Link>
                   ))}
                 </div>
-              </div>
-            </section>
-          )}
+              </>
+            )}
 
-          {/* CTA */}
-          <section className="border-t border-neutral-200 dark:border-border bg-white dark:bg-card">
-            <div className="container mx-auto max-w-3xl px-4 py-16 text-center space-y-6">
-              <h3 className="text-2xl font-bold text-neutral-900 dark:text-foreground">
-                Potřebujete pomoc s webem?
-              </h3>
-              <p className="text-neutral-500 dark:text-muted-foreground max-w-md mx-auto">
-                Vytvoříme pro vás moderní web přesně podle vašich představ. Rychle, kvalitně a za férovou cenu.
+            {/* Footer */}
+            <Separator className="bg-neutral-100 dark:bg-border mt-10 mb-8" />
+            <div className="text-center space-y-3">
+              <p className="text-xs text-neutral-300 dark:text-border uppercase tracking-widest font-mono">
+                — konec článku —
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-                <Link href="/poptavka">
-                  <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-3 text-base">
-                    Nezávazná poptávka
-                  </Button>
+              <div className="flex items-center justify-center gap-4 pt-2">
+                <Link
+                  href="/blog"
+                  className="text-sm text-neutral-400 hover:text-primary transition-colors"
+                >
+                  ← Zpět na blog
                 </Link>
-                <Link href="/portfolio">
-                  <Button variant="outline" className="rounded-full px-8 py-3 text-base">
-                    Naše projekty
-                  </Button>
+                <Link
+                  href="/poptavka"
+                  className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                >
+                  Poptávka →
                 </Link>
               </div>
             </div>
-          </section>
+          </article>
         </main>
       </>
     );
