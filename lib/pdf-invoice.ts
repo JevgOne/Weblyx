@@ -257,632 +257,360 @@ function getPaymentMethodLabel(method: string | null): string {
 export async function generateInvoicePDF(
   invoiceData: InvoicePDFData
 ): Promise<Uint8Array> {
-  // Create PDF document
   const pdfDoc = await PDFDocument.create();
-
-  // Embed fonts
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  // Add page
-  const page = pdfDoc.addPage([595, 842]); // A4 size
+  const page = pdfDoc.addPage([595, 842]); // A4
   const { width, height } = page.getSize();
+  const margin = 40;
+  const contentWidth = width - margin * 2;
 
-  // Helper function to draw text without diacritics
   const drawText = (text: string, options: any) => {
     page.drawText(removeDiacritics(text), options);
   };
 
-  let y = height - 40; // Start from top with margin
+  // Right-align helper: draws text so its right edge lands at `rightX`
+  const drawTextRight = (text: string, rightX: number, yPos: number, size: number, usedFont: any, color: any) => {
+    const textWidth = usedFont.widthOfTextAtSize(removeDiacritics(text), size);
+    drawText(text, { x: rightX - textWidth, y: yPos, size, font: usedFont, color });
+  };
+
+  // Thin separator line helper
+  const drawSeparator = (yPos: number) => {
+    page.drawRectangle({
+      x: margin,
+      y: yPos,
+      width: contentWidth,
+      height: 0.5,
+      color: rgb(0.82, 0.82, 0.82),
+    });
+  };
+
+  let y: number;
 
   // =====================================================
-  // HEADER - Colored Banner with Invoice Type
+  // 1. HEADER BANNER (slim 70px)
   // =====================================================
 
-  // Top banner - teal gradient effect (simulated with two rectangles)
+  const bannerHeight = 70;
   page.drawRectangle({
     x: 0,
-    y: height - 100,
-    width: width,
-    height: 100,
+    y: height - bannerHeight,
+    width,
+    height: bannerHeight,
     color: COLORS.teal,
   });
 
-  // Add subtle "shadow" effect
+  // Subtle bottom shadow
   page.drawRectangle({
     x: 0,
-    y: height - 102,
-    width: width,
-    height: 2,
+    y: height - bannerHeight - 1.5,
+    width,
+    height: 1.5,
     color: COLORS.tealDark,
   });
 
-  // WEBLYX logo styling (matching /Users/zen/Desktop/logo.svg)
-  // "Web" in white, "lyx" in white/accent
+  // Logo: "Web" white + "lyx" gold
   drawText('Web', {
-    x: 50,
-    y: height - 40,
-    size: 24,
+    x: margin + 10,
+    y: height - 35,
+    size: 22,
+    font: fontBold,
+    color: COLORS.white,
+  });
+  drawText('lyx', {
+    x: margin + 52,
+    y: height - 35,
+    size: 22,
+    font: fontBold,
+    color: COLORS.accent,
+  });
+  drawText('Web Development & Design', {
+    x: margin + 10,
+    y: height - 50,
+    size: 8,
+    font,
+    color: COLORS.white,
+  });
+
+  // Invoice type + number on right side of banner
+  const invoiceTypeLabel = getInvoiceTypeLabel(invoiceData.invoice_type);
+  const typeLabelWidth = fontBold.widthOfTextAtSize(removeDiacritics(invoiceTypeLabel), 22);
+  drawText(invoiceTypeLabel, {
+    x: width - typeLabelWidth - margin - 10,
+    y: height - 33,
+    size: 22,
     font: fontBold,
     color: COLORS.white,
   });
 
-  drawText('lyx', {
-    x: 95,
-    y: height - 40,
-    size: 24,
-    font: fontBold,
-    color: COLORS.accent, // Gold accent like gradient in logo
-  });
-
-  drawText('Web Development & Design', {
-    x: 50,
-    y: height - 60,
+  const numText = `c. ${invoiceData.invoice_number}`;
+  const numWidth = font.widthOfTextAtSize(removeDiacritics(numText), 9);
+  drawText(numText, {
+    x: width - numWidth - margin - 10,
+    y: height - 48,
     size: 9,
     font,
     color: COLORS.white,
   });
 
-  // Invoice type label - large, on the right
-  const invoiceTypeLabel = getInvoiceTypeLabel(invoiceData.invoice_type);
-  const labelWidth = fontBold.widthOfTextAtSize(removeDiacritics(invoiceTypeLabel), 28);
-
-  drawText(invoiceTypeLabel, {
-    x: width - labelWidth - 50,
-    y: height - 50,
-    size: 28,
-    font: fontBold,
-    color: COLORS.white,
-  });
-
-  y = height - 130; // Continue below banner
+  y = height - bannerHeight - 12;
 
   // =====================================================
-  // INVOICE METADATA - In a light box
+  // 2. METADATA BOX (light gray background)
   // =====================================================
 
-  const metadataHeight = invoiceData.delivery_date ? 110 : 95;
+  const metaRows = 3;
+  const metaRowHeight = 16;
+  const metaBoxHeight = metaRows * metaRowHeight + 16;
 
-  // Background box for metadata
   page.drawRectangle({
-    x: 40,
-    y: y - metadataHeight + 10,
-    width: width - 80,
-    height: metadataHeight,
+    x: margin,
+    y: y - metaBoxHeight,
+    width: contentWidth,
+    height: metaBoxHeight,
     color: COLORS.veryLightGray,
   });
 
-  y -= 15;
+  const metaLeftX = margin + 15;
+  const metaLeftValX = margin + 130;
+  const metaRightX = width / 2 + 15;
+  const metaRightValX = width / 2 + 140;
+  let metaY = y - 14;
 
-  // Two-column layout for metadata
-  const col1X = 60;
-  const col2X = 320;
+  // Row 1: Invoice number | Issue date
+  drawText('Cislo faktury:', { x: metaLeftX, y: metaY, size: 8, font: fontBold, color: COLORS.mediumGray });
+  drawText(invoiceData.invoice_number, { x: metaLeftValX, y: metaY, size: 8, font: fontBold, color: COLORS.black });
+  drawText('Datum vystaveni:', { x: metaRightX, y: metaY, size: 8, font: fontBold, color: COLORS.mediumGray });
+  drawText(formatDate(invoiceData.issue_date), { x: metaRightValX, y: metaY, size: 8, font, color: COLORS.black });
+  metaY -= metaRowHeight;
 
-  // Left column
-  let yLeft = y;
+  // Row 2: Variable symbol | Due date
+  drawText('Var. symbol:', { x: metaLeftX, y: metaY, size: 8, font: fontBold, color: COLORS.mediumGray });
+  drawText(invoiceData.variable_symbol, { x: metaLeftValX, y: metaY, size: 8, font, color: COLORS.black });
+  drawText('Datum splatnosti:', { x: metaRightX, y: metaY, size: 8, font: fontBold, color: COLORS.mediumGray });
+  drawText(formatDate(invoiceData.due_date), { x: metaRightValX, y: metaY, size: 8, font, color: COLORS.black });
+  metaY -= metaRowHeight;
 
-  // Invoice number
-  drawText('Cislo faktury:', {
-    x: col1X,
-    y: yLeft,
-    size: 9,
-    font: fontBold,
-    color: COLORS.mediumGray,
-  });
-
-  drawText(invoiceData.invoice_number, {
-    x: col1X + 110,
-    y: yLeft,
-    size: 9,
-    font: fontBold,
-    color: COLORS.black,
-  });
-
-  yLeft -= 18;
-
-  // Variable symbol
-  drawText('Variabilni symbol:', {
-    x: col1X,
-    y: yLeft,
-    size: 9,
-    font: fontBold,
-    color: COLORS.mediumGray,
-  });
-
-  drawText(invoiceData.variable_symbol, {
-    x: col1X + 110,
-    y: yLeft,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
-
-  yLeft -= 18;
-
-  // Payment method
-  drawText('Zpusob platby:', {
-    x: col1X,
-    y: yLeft,
-    size: 9,
-    font: fontBold,
-    color: COLORS.mediumGray,
-  });
-
-  drawText(getPaymentMethodLabel(invoiceData.payment_method), {
-    x: col1X + 110,
-    y: yLeft,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
-
-  // Right column
-  let yRight = y;
-
-  // Issue date
-  drawText('Datum vystaveni:', {
-    x: col2X,
-    y: yRight,
-    size: 9,
-    font: fontBold,
-    color: COLORS.mediumGray,
-  });
-
-  drawText(formatDate(invoiceData.issue_date), {
-    x: col2X + 110,
-    y: yRight,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
-
-  yRight -= 18;
-
-  // Due date
-  drawText('Datum splatnosti:', {
-    x: col2X,
-    y: yRight,
-    size: 9,
-    font: fontBold,
-    color: COLORS.mediumGray,
-  });
-
-  drawText(formatDate(invoiceData.due_date), {
-    x: col2X + 110,
-    y: yRight,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
-
-  yRight -= 18;
-
-  // Delivery date (DUZP)
+  // Row 3: Payment method | Delivery date
+  drawText('Zpusob platby:', { x: metaLeftX, y: metaY, size: 8, font: fontBold, color: COLORS.mediumGray });
+  drawText(getPaymentMethodLabel(invoiceData.payment_method), { x: metaLeftValX, y: metaY, size: 8, font, color: COLORS.black });
   if (invoiceData.delivery_date) {
-    drawText('Datum zdan. plneni:', {
-      x: col2X,
-      y: yRight,
-      size: 9,
-      font: fontBold,
-      color: COLORS.mediumGray,
-    });
-
-    drawText(formatDate(invoiceData.delivery_date), {
-      x: col2X + 110,
-      y: yRight,
-      size: 9,
-      font,
-      color: COLORS.black,
-    });
+    drawText('Datum zdan. plneni:', { x: metaRightX, y: metaY, size: 8, font: fontBold, color: COLORS.mediumGray });
+    drawText(formatDate(invoiceData.delivery_date), { x: metaRightValX, y: metaY, size: 8, font, color: COLORS.black });
   }
 
-  y -= metadataHeight + 20;  // More spacing before company info
+  y -= metaBoxHeight + 10;
+  drawSeparator(y);
+  y -= 18;
 
   // =====================================================
-  // COMPANY INFO (DODAVATEL)
+  // 3. SUPPLIER + CLIENT — TWO COLUMNS SIDE BY SIDE
   // =====================================================
 
-  drawText('Dodavatel:', {
-    x: 50,
-    y,
-    size: 12,
-    font: fontBold,
-    color: COLORS.teal,
-  });
+  const colLeft = margin + 10;
+  const colRight = width / 2 + 15;
+  const sectionStartY = y;
 
-  y -= 20;
+  // --- Left column: DODAVATEL ---
+  let leftY = sectionStartY;
 
-  // Company name
-  drawText(invoiceData.company.name, {
-    x: 50,
-    y,
-    size: 10,
-    font: fontBold,
-    color: COLORS.black,
-  });
+  drawText('DODAVATEL', { x: colLeft, y: leftY, size: 9, font: fontBold, color: COLORS.teal });
+  leftY -= 16;
 
-  y -= 15;
+  drawText(invoiceData.company.name, { x: colLeft, y: leftY, size: 10, font: fontBold, color: COLORS.darkGray });
+  leftY -= 14;
 
-  // Address
-  drawText(`${invoiceData.company.street}`, {
-    x: 50,
-    y,
-    size: 9,
-    font,
-    color: COLORS.darkGray,
-  });
+  drawText(invoiceData.company.street, { x: colLeft, y: leftY, size: 9, font, color: COLORS.darkGray });
+  leftY -= 12;
 
-  y -= 12;
+  drawText(`${invoiceData.company.zip} ${invoiceData.company.city}`, { x: colLeft, y: leftY, size: 9, font, color: COLORS.darkGray });
+  leftY -= 12;
 
-  drawText(`${invoiceData.company.zip} ${invoiceData.company.city}`, {
-    x: 50,
-    y,
-    size: 9,
-    font,
-    color: COLORS.darkGray,
-  });
+  drawText(invoiceData.company.country, { x: colLeft, y: leftY, size: 9, font, color: COLORS.darkGray });
+  leftY -= 14;
 
-  y -= 12;
-
-  drawText(invoiceData.company.country, {
-    x: 50,
-    y,
-    size: 9,
-    font,
-    color: COLORS.darkGray,
-  });
-
-  y -= 15;
-
-  // IČO, DIČ
-  drawText(`IČO: ${invoiceData.company.ico}`, {
-    x: 50,
-    y,
-    size: 9,
-    font,
-    color: COLORS.darkGray,
-  });
+  drawText(`ICO: ${invoiceData.company.ico}`, { x: colLeft, y: leftY, size: 9, font, color: COLORS.darkGray });
+  leftY -= 12;
 
   if (invoiceData.company.dic) {
-    y -= 12;
-    drawText(`DIČ: ${invoiceData.company.dic}`, {
-      x: 50,
-      y,
-      size: 9,
-      font,
-      color: COLORS.darkGray,
-    });
+    drawText(`DIC: ${invoiceData.company.dic}`, { x: colLeft, y: leftY, size: 9, font, color: COLORS.darkGray });
+    leftY -= 12;
   }
 
-  y -= 50;  // More spacing before client info
+  // --- Right column: ODBERATEL ---
+  let rightY = sectionStartY;
 
-  // =====================================================
-  // CLIENT INFO (ODBĚRATEL)
-  // =====================================================
+  drawText('ODBERATEL', { x: colRight, y: rightY, size: 9, font: fontBold, color: COLORS.teal });
+  rightY -= 16;
 
-  drawText('Odběratel:', {
-    x: 50,
-    y,
-    size: 12,
-    font: fontBold,
-    color: COLORS.teal,
-  });
+  drawText(invoiceData.client_name, { x: colRight, y: rightY, size: 10, font: fontBold, color: COLORS.darkGray });
+  rightY -= 14;
 
-  y -= 20;
-
-  // Client name
-  drawText(invoiceData.client_name, {
-    x: 50,
-    y,
-    size: 10,
-    font: fontBold,
-    color: COLORS.black,
-  });
-
-  y -= 15;
-
-  // Address
   if (invoiceData.client_street) {
-    drawText(invoiceData.client_street, {
-      x: 50,
-      y,
-      size: 9,
-      font,
-      color: COLORS.darkGray,
-    });
-    y -= 12;
+    drawText(invoiceData.client_street, { x: colRight, y: rightY, size: 9, font, color: COLORS.darkGray });
+    rightY -= 12;
   }
 
   if (invoiceData.client_zip && invoiceData.client_city) {
-    drawText(`${invoiceData.client_zip} ${invoiceData.client_city}`, {
-      x: 50,
-      y,
-      size: 9,
-      font,
-      color: COLORS.darkGray,
-    });
-    y -= 12;
+    drawText(`${invoiceData.client_zip} ${invoiceData.client_city}`, { x: colRight, y: rightY, size: 9, font, color: COLORS.darkGray });
+    rightY -= 12;
   }
 
-  drawText(invoiceData.client_country, {
-    x: 50,
-    y,
-    size: 9,
-    font,
-    color: COLORS.darkGray,
-  });
+  drawText(invoiceData.client_country, { x: colRight, y: rightY, size: 9, font, color: COLORS.darkGray });
+  rightY -= 14;
 
-  y -= 15;
-
-  // IČO, DIČ
   if (invoiceData.client_ico) {
-    drawText(`IČO: ${invoiceData.client_ico}`, {
-      x: 50,
-      y,
-      size: 9,
-      font,
-      color: COLORS.darkGray,
-    });
-    y -= 12;
+    drawText(`ICO: ${invoiceData.client_ico}`, { x: colRight, y: rightY, size: 9, font, color: COLORS.darkGray });
+    rightY -= 12;
   }
 
   if (invoiceData.client_dic) {
-    drawText(`DIČ: ${invoiceData.client_dic}`, {
-      x: 50,
-      y,
-      size: 9,
-      font,
-      color: COLORS.darkGray,
-    });
-    y -= 12;
+    drawText(`DIC: ${invoiceData.client_dic}`, { x: colRight, y: rightY, size: 9, font, color: COLORS.darkGray });
+    rightY -= 12;
   }
 
-  y -= 50;  // More spacing before items table
+  // Use the lower of the two columns
+  y = Math.min(leftY, rightY) - 10;
+  drawSeparator(y);
+  y -= 18;
 
   // =====================================================
-  // ITEMS TABLE
+  // 4. ITEMS TABLE — alternating rows, right-aligned numbers
   // =====================================================
+
+  const tableX = margin;
+  const tableW = contentWidth;
+  const colDescX = tableX + 10;
+  const colQtyRight = tableX + 330;
+  const colUnitRight = tableX + 420;
+  const colTotalRight = tableX + tableW - 10;
+  const headerH = 22;
+  const rowH = 20;
 
   // Table header
   page.drawRectangle({
-    x: 50,
-    y: y - 15,
-    width: width - 100,
-    height: 20,
+    x: tableX,
+    y: y - headerH + 5,
+    width: tableW,
+    height: headerH,
     color: COLORS.teal,
   });
 
-  drawText('Popis', {
-    x: 60,
-    y: y - 10,
-    size: 9,
-    font: fontBold,
-    color: COLORS.white,
-  });
+  const headerY = y - headerH + 11;
+  drawText('Popis', { x: colDescX, y: headerY, size: 8.5, font: fontBold, color: COLORS.white });
+  drawTextRight('Mnozstvi', colQtyRight, headerY, 8.5, fontBold, COLORS.white);
+  drawTextRight('Jedn. cena', colUnitRight, headerY, 8.5, fontBold, COLORS.white);
+  drawTextRight('Celkem', colTotalRight, headerY, 8.5, fontBold, COLORS.white);
 
-  drawText('Množství', {
-    x: 320,
-    y: y - 10,
-    size: 9,
-    font: fontBold,
-    color: COLORS.white,
-  });
+  y -= headerH + 2;
 
-  drawText('Jedn. cena', {
-    x: 390,
-    y: y - 10,
-    size: 9,
-    font: fontBold,
-    color: COLORS.white,
-  });
-
-  drawText('Celkem', {
-    x: 470,
-    y: y - 10,
-    size: 9,
-    font: fontBold,
-    color: COLORS.white,
-  });
-
-  y -= 25;
-
-  // Table rows
-  for (const item of invoiceData.items) {
+  // Table rows with alternating backgrounds
+  invoiceData.items.forEach((item, idx) => {
     const totalPrice = item.quantity * item.unit_price;
 
-    drawText(item.description, {
-      x: 60,
-      y,
-      size: 9,
-      font,
-      color: COLORS.black,
-      maxWidth: 250,
-    });
+    // Alternating row background
+    if (idx % 2 === 0) {
+      page.drawRectangle({
+        x: tableX,
+        y: y - rowH + 7,
+        width: tableW,
+        height: rowH,
+        color: COLORS.veryLightGray,
+      });
+    }
 
-    drawText(`${item.quantity}`, {
-      x: 330,
-      y,
-      size: 9,
-      font,
-      color: COLORS.black,
-    });
+    const rowTextY = y - rowH + 12;
+    drawText(item.description, { x: colDescX, y: rowTextY, size: 9, font, color: COLORS.darkGray, maxWidth: 260 });
+    drawTextRight(`${item.quantity}`, colQtyRight, rowTextY, 9, font, COLORS.darkGray);
+    drawTextRight(formatCurrency(item.unit_price, ''), colUnitRight, rowTextY, 9, font, COLORS.darkGray);
+    drawTextRight(formatCurrency(totalPrice, ''), colTotalRight, rowTextY, 9, fontBold, COLORS.darkGray);
 
-    drawText(formatCurrency(item.unit_price, ''), {
-      x: 390,
-      y,
-      size: 9,
-      font,
-      color: COLORS.black,
-    });
+    y -= rowH;
+  });
 
-    drawText(formatCurrency(totalPrice, ''), {
-      x: 470,
-      y,
-      size: 9,
-      font,
-      color: COLORS.black,
-    });
+  // Bottom line under table
+  page.drawRectangle({
+    x: tableX,
+    y: y + 6,
+    width: tableW,
+    height: 0.5,
+    color: COLORS.teal,
+  });
 
-    y -= 20;
-  }
-
-  y -= 20;
+  y -= 12;
 
   // =====================================================
-  // TOTALS
+  // 5. TOTALS
   // =====================================================
 
-  // If VAT payer, show breakdown
   if (invoiceData.vat_rate > 0) {
-    // Amount without VAT
-    drawText('Základ daně:', {
-      x: 350,
-      y,
-      size: 10,
-      font: fontBold,
-      color: COLORS.darkGray,
-    });
-
-    drawText(formatCurrency(invoiceData.amount_without_vat, invoiceData.currency), {
-      x: 470,
-      y,
-      size: 10,
-      font,
-      color: COLORS.black,
-    });
-
+    // VAT breakdown
+    drawText('Zaklad dane:', { x: 370, y, size: 9, font, color: COLORS.mediumGray });
+    drawTextRight(formatCurrency(invoiceData.amount_without_vat, invoiceData.currency), colTotalRight, y, 9, font, COLORS.darkGray);
     y -= 15;
 
-    // VAT
-    drawText(`DPH (${invoiceData.vat_rate}%):`, {
-      x: 350,
-      y,
-      size: 10,
-      font: fontBold,
-      color: COLORS.darkGray,
-    });
-
-    drawText(formatCurrency(invoiceData.vat_amount, invoiceData.currency), {
-      x: 470,
-      y,
-      size: 10,
-      font,
-      color: COLORS.black,
-    });
-
-    y -= 20;
+    drawText(`DPH (${invoiceData.vat_rate}%):`, { x: 370, y, size: 9, font, color: COLORS.mediumGray });
+    drawTextRight(formatCurrency(invoiceData.vat_amount, invoiceData.currency), colTotalRight, y, 9, font, COLORS.darkGray);
+    y -= 18;
   } else {
-    // Not VAT payer - show note
-    drawText('Nejsme plátci DPH', {
-      x: 350,
-      y,
-      size: 9,
-      font,
-      color: COLORS.lightGray,
-    });
-
-    y -= 25;
+    drawTextRight('Nejsme platci DPH', colTotalRight, y, 8, font, COLORS.lightGray);
+    y -= 18;
   }
 
-  // Total amount
+  // Total box (teal)
+  const totalBoxW = 210;
+  const totalBoxH = 28;
+  const totalBoxX = tableX + tableW - totalBoxW;
+
   page.drawRectangle({
-    x: 340,
-    y: y - 5,
-    width: 205,
-    height: 25,
+    x: totalBoxX,
+    y: y - totalBoxH + 10,
+    width: totalBoxW,
+    height: totalBoxH,
     color: COLORS.teal,
   });
 
-  drawText('Celkem k úhradě:', {
-    x: 350,
-    y,
-    size: 12,
-    font: fontBold,
-    color: COLORS.white,
-  });
+  const totalTextY = y - totalBoxH + 18;
+  drawText('Celkem k uhrade:', { x: totalBoxX + 12, y: totalTextY, size: 11, font: fontBold, color: COLORS.white });
+  drawTextRight(
+    formatCurrency(invoiceData.amount_with_vat, invoiceData.currency),
+    totalBoxX + totalBoxW - 12,
+    totalTextY,
+    11,
+    fontBold,
+    COLORS.white,
+  );
 
-  drawText(formatCurrency(invoiceData.amount_with_vat, invoiceData.currency), {
-    x: 470,
-    y,
-    size: 12,
-    font: fontBold,
-    color: COLORS.white,
-  });
-
-  y -= 40;
+  y -= totalBoxH + 14;
+  drawSeparator(y);
+  y -= 18;
 
   // =====================================================
-  // BANK DETAILS
+  // 6. PAYMENT DETAILS + QR CODE — side by side
   // =====================================================
 
-  drawText('Platební údaje:', {
-    x: 50,
-    y,
-    size: 11,
-    font: fontBold,
-    color: COLORS.teal,
-  });
+  const payLeftX = margin + 10;
+  const payLabelW = 90;
 
-  y -= 20;
+  drawText('PLATEBNI UDAJE', { x: payLeftX, y, size: 9, font: fontBold, color: COLORS.teal });
+  y -= 16;
 
-  drawText('Číslo účtu:', {
-    x: 50,
-    y,
-    size: 9,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
+  const bankDetails: [string, string][] = [
+    ['Cislo uctu:', invoiceData.company.bank_account],
+    ['IBAN:', invoiceData.company.iban],
+    ['SWIFT:', invoiceData.company.swift],
+  ];
 
-  drawText(invoiceData.company.bank_account, {
-    x: 150,
-    y,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
+  const bankStartY = y;
+  for (const [label, value] of bankDetails) {
+    drawText(label, { x: payLeftX, y, size: 8.5, font: fontBold, color: COLORS.mediumGray });
+    drawText(value, { x: payLeftX + payLabelW, y, size: 8.5, font, color: COLORS.darkGray });
+    y -= 14;
+  }
 
-  y -= 12;
-
-  drawText('IBAN:', {
-    x: 50,
-    y,
-    size: 9,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
-
-  drawText(invoiceData.company.iban, {
-    x: 150,
-    y,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
-
-  y -= 12;
-
-  drawText('SWIFT:', {
-    x: 50,
-    y,
-    size: 9,
-    font: fontBold,
-    color: COLORS.darkGray,
-  });
-
-  drawText(invoiceData.company.swift, {
-    x: 150,
-    y,
-    size: 9,
-    font,
-    color: COLORS.black,
-  });
-
-  y -= 30;
-
-  // =====================================================
-  // QR CODE - Payment QR Code
-  // =====================================================
-
+  // QR Code on the right side, aligned with bank details
   try {
     const qrCode = await generatePaymentQRCode(
       invoiceData.company.iban,
@@ -893,77 +621,67 @@ export async function generateInvoicePDF(
       `Faktura ${invoiceData.invoice_number}`
     );
 
-    // Embed QR code image
     const qrImage = await pdfDoc.embedPng(qrCode);
-    const qrDims = qrImage.scale(0.6); // Scale to 120x120
+    const qrSize = 90;
+    const qrX = width - margin - qrSize - 10;
+    const qrY = bankStartY - qrSize + 14;
 
-    // Draw QR code on the right side
     page.drawImage(qrImage, {
-      x: width - qrDims.width - 60,
-      y: y - 180,
-      width: qrDims.width,
-      height: qrDims.height,
+      x: qrX,
+      y: qrY,
+      width: qrSize,
+      height: qrSize,
     });
 
-    // QR code label
-    drawText('Platba QR kodem', {
-      x: width - qrDims.width - 60,
-      y: y - 195,
-      size: 8,
+    // QR label centered under the code
+    const qrLabel = 'Platba QR kodem';
+    const qrLabelWidth = font.widthOfTextAtSize(removeDiacritics(qrLabel), 7);
+    drawText(qrLabel, {
+      x: qrX + (qrSize - qrLabelWidth) / 2,
+      y: qrY - 10,
+      size: 7,
       font: fontBold,
       color: COLORS.teal,
     });
-
   } catch (error) {
     console.error('Failed to generate QR code:', error);
-    // Continue without QR code if it fails
   }
 
-  y -= 20;
+  y -= 10;
+  drawSeparator(y);
+  y -= 16;
 
   // =====================================================
-  // NOTES
+  // 7. NOTES
   // =====================================================
 
   if (invoiceData.notes) {
-    drawText('Poznámka:', {
-      x: 50,
-      y,
-      size: 9,
-      font: fontBold,
-      color: COLORS.darkGray,
-    });
-
-    y -= 15;
-
-    drawText(invoiceData.notes, {
-      x: 50,
-      y,
-      size: 8,
-      font,
-      color: COLORS.lightGray,
-      maxWidth: width - 100,
-    });
-
-    y -= 20;
+    drawText('Poznamka:', { x: margin + 10, y, size: 8, font: fontBold, color: COLORS.mediumGray });
+    y -= 12;
+    drawText(invoiceData.notes, { x: margin + 10, y, size: 8, font, color: COLORS.lightGray, maxWidth: contentWidth - 20 });
   }
 
   // =====================================================
-  // FOOTER
+  // 8. FOOTER
   // =====================================================
 
-  drawText(`${invoiceData.company.name} | ${invoiceData.company.email} | ${invoiceData.company.phone}`, {
-    x: 50,
-    y: 30,
-    size: 8,
-    font,
-    color: COLORS.lightGray,
+  const footerY = 28;
+  page.drawRectangle({
+    x: 0,
+    y: footerY - 8,
+    width,
+    height: 0.5,
+    color: rgb(0.85, 0.85, 0.85),
   });
 
+  const footerText = `${invoiceData.company.name} | ${invoiceData.company.email} | ${invoiceData.company.phone}`;
+  drawText(footerText, { x: margin, y: footerY - 18, size: 7, font, color: COLORS.lightGray });
+
+  const websiteWidth = font.widthOfTextAtSize(removeDiacritics(invoiceData.company.website), 7);
   drawText(invoiceData.company.website, {
-    x: width - 150,
-    y: 30,
-    size: 8,
+    x: width - margin - websiteWidth,
+    y: footerY - 18,
+    size: 7,
     font,
     color: COLORS.teal,
   });

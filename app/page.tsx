@@ -30,6 +30,7 @@ import { generateServiceSchema, generateSpecialAnnouncementSchema } from "@/lib/
 import { getAllFAQItems } from "@/lib/turso/cms";
 import { getAllPricingTiers } from "@/lib/turso/cms";
 import { PricingTier, FAQItem } from "@/types/cms";
+import { getPublishedReviews } from "@/lib/turso/reviews";
 
 async function getPricingTiers(): Promise<PricingTier[]> {
   try {
@@ -53,9 +54,10 @@ async function getFAQItems(): Promise<FAQItem[]> {
 
 export default async function HomePage() {
   // Fetch data for schemas
-  const [faqItems, pricingTiers] = await Promise.all([
+  const [faqItems, pricingTiers, reviews] = await Promise.all([
     getFAQItems(),
     getPricingTiers(),
+    getPublishedReviews('cs').catch(() => []),
   ]);
 
   // Already filtered enabled items in fetch functions
@@ -64,15 +66,23 @@ export default async function HomePage() {
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
+  // Calculate real aggregate rating from published reviews
+  const reviewCount = reviews.length;
+  const avgRating = reviewCount > 0
+    ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10) / 10
+    : null;
+
   const localBusinessSchema = generateLocalBusinessSchema({
     priceRange: "10000 Kč - 85000 Kč",
     openingHours: ["Mo-Fr 09:00-18:00"],
-    aggregateRating: {
-      ratingValue: 5.0,
-      reviewCount: 7,
-      bestRating: 5,
-      worstRating: 1,
-    },
+    ...(avgRating && reviewCount >= 1 ? {
+      aggregateRating: {
+        ratingValue: avgRating,
+        reviewCount,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    } : {}),
   });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;

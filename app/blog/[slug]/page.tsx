@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { marked } from "marked";
 import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
+import { getLocaleFromDomain } from "@/lib/seo-metadata";
 
 // Use ISR: Render on-demand and cache for 60 seconds
 export const revalidate = 60;
@@ -32,8 +33,12 @@ export async function generateMetadata({
       };
     }
 
+    const locale = getLocaleFromDomain();
+    const baseUrl = locale === 'de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+    const siteName = locale === 'de' ? 'Seitelyx' : 'Weblyx';
+
     return {
-      title: post.metaTitle || `${post.title} | Weblyx Blog`,
+      title: post.metaTitle || `${post.title} | ${siteName} Blog`,
       description: post.metaDescription || post.excerpt || post.title,
       keywords: post.tags || [],
       authors: post.authorName ? [{ name: post.authorName }] : undefined,
@@ -50,19 +55,19 @@ export async function generateMetadata({
           height: 630,
           alt: post.title
         }] : [],
-        url: `https://www.weblyx.cz/blog/${slug}`,
-        siteName: "Weblyx",
-        locale: "cs_CZ",
+        url: `${baseUrl}/blog/${slug}`,
+        siteName,
+        locale: locale === 'de' ? 'de_DE' : 'cs_CZ',
       },
       twitter: {
         card: "summary_large_image",
         title: post.metaTitle || post.title,
         description: post.metaDescription || post.excerpt || '',
         images: post.featuredImage ? [post.featuredImage] : [],
-        creator: "@weblyx",
+        creator: `@${siteName.toLowerCase()}`,
       },
       alternates: {
-        canonical: `https://www.weblyx.cz/blog/${slug}`,
+        canonical: `${baseUrl}/blog/${slug}`,
       },
       robots: {
         index: true,
@@ -303,6 +308,8 @@ export default async function BlogPostPage({
                   <img
                     src={post.featuredImage}
                     alt={post.title}
+                    width={1200}
+                    height={675}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -448,10 +455,8 @@ export default async function BlogPostPage({
                     <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`} className="group">
                       <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/20">
                         {relatedPost.featuredImage ? (
-                          <div
-                            className="aspect-video bg-cover bg-center relative overflow-hidden"
-                            style={{ backgroundImage: `url(${relatedPost.featuredImage})` }}
-                          >
+                          <div className="aspect-video relative overflow-hidden">
+                            <img src={relatedPost.featuredImage} alt={relatedPost.title} className="w-full h-full object-cover" loading="lazy" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                           </div>
                         ) : (

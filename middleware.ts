@@ -207,19 +207,17 @@ export function middleware(request: NextRequest) {
   // ALLOW admin panel access (auth is handled separately by AdminAuthProvider)
   const isAdminRoute = pathname.startsWith('/admin');
 
-  // 1. MAXIMUM SECURITY: Block suspicious user agents (skip for admin - auth handled separately)
-  // TEMPORARILY DISABLED for Facebook Pixel verification and GA4 testing
-  // if (!isAdminRoute && isSuspiciousUserAgent(userAgent)) {
-  //   console.log(`🚫 [BOT BLOCKED] User-Agent: ${userAgent.substring(0, 100)} | IP: ${ip} | Path: ${pathname}`);
-  //   return new NextResponse('Forbidden', { status: 403 });
-  // }
+  // 1. Block suspicious user agents (skip for admin - auth handled separately)
+  if (!isAdminRoute && isSuspiciousUserAgent(userAgent)) {
+    console.log(`[BOT BLOCKED] User-Agent: ${userAgent.substring(0, 100)} | IP: ${ip} | Path: ${pathname}`);
+    return new NextResponse('Forbidden', { status: 403 });
+  }
 
-  // 2. MAXIMUM SECURITY: Validate browser headers (skip for whitelisted bots)
-  // TEMPORARILY DISABLED for debugging
-  // if (!pathname.startsWith('/api') && !isWhitelistedBot && !hasValidHeaders(request)) {
-  //   console.log(`🚫 [INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
-  //   return new NextResponse('Forbidden', { status: 403 });
-  // }
+  // 2. Validate browser headers (skip for whitelisted bots and API routes)
+  if (!pathname.startsWith('/api') && !isWhitelistedBot && !hasValidHeaders(request)) {
+    console.log(`[INVALID HEADERS] Missing browser headers | IP: ${ip} | Path: ${pathname}`);
+    return new NextResponse('Forbidden', { status: 403 });
+  }
 
   // 3. Block suspicious query patterns (skip for blog posts — they may contain tech keywords like "wordpress")
   const isBlogRoute = pathname.startsWith('/blog/');

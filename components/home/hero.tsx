@@ -170,6 +170,8 @@ export async function Hero() {
                   <img
                     src={heroSection.backgroundImage}
                     alt={t('heroImageAlt')}
+                    width={600}
+                    height={400}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   {/* Overlay gradient */}

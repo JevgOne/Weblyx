@@ -166,6 +166,8 @@ export default async function PortfolioDetailPage({
                   <img
                     src={project.imageUrl}
                     alt={project.title}
+                    width={1200}
+                    height={675}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -313,10 +315,8 @@ export default async function PortfolioDetailPage({
                     <Link key={related.id} href={`/portfolio/${related.id}`} className="group">
                       <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/20">
                         {related.imageUrl ? (
-                          <div
-                            className="aspect-video bg-cover bg-center relative overflow-hidden"
-                            style={{ backgroundImage: `url(${related.imageUrl})` }}
-                          >
+                          <div className="aspect-video relative overflow-hidden">
+                            <img src={related.imageUrl} alt={related.title} className="w-full h-full object-cover" loading="lazy" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                           </div>
                         ) : (

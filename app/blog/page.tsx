@@ -164,7 +164,8 @@ export default async function BlogPage() {
 
                     {/* Featured Image or Gradient Placeholder */}
                     {post.coverImage ? (
-                      <div className="aspect-video bg-cover bg-center relative overflow-hidden" style={{ backgroundImage: `url(${post.coverImage})` }}>
+                      <div className="aspect-video relative overflow-hidden">
+                        <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" loading="lazy" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                       </div>
                     ) : (
