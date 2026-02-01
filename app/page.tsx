@@ -19,7 +19,7 @@ export const revalidate = 60;
 
 // Dynamic import for heavy Contact component (code splitting)
 const ContactWow = dynamic(() => import("@/components/home/contact-wow").then(mod => ({ default: mod.ContactWow })), {
-  loading: () => <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center">Načítání...</div></div>,
+  loading: () => <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center"><div className="h-6 w-6 mx-auto border-2 border-primary/30 border-t-primary rounded-full animate-spin" /></div></div>,
 });
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
