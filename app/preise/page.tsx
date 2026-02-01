@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Webseite erstellen lassen - Transparente Preise ohne versteckte Kosten | Seitelyx",
-  description: "Website erstellen lassen ab 349€ Festpreis. Professionelle Webdesign Agentur mit transparenten Preisen. Alle Leistungen inklusive: Design, SEO, DSGVO. Keine monatlichen Kosten.",
+  description: "Website erstellen lassen ab 320 € Festpreis. Professionelle Webdesign Agentur mit transparenten Preisen. Alle Leistungen inklusive: Design, SEO, DSGVO. Keine monatlichen Kosten.",
   keywords: [
     "website erstellen lassen preise",
     "webseite erstellen lassen kosten",
@@ -17,14 +17,14 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Webseite erstellen lassen - Transparente Preise | Seitelyx",
-    description: "Website erstellen lassen ab 349€ Festpreis. Design, SEO, DSGVO inklusive. Keine monatlichen Kosten.",
+    description: "Website erstellen lassen ab 320 € Festpreis. Design, SEO, DSGVO inklusive. Keine monatlichen Kosten.",
   },
 };
 
 const pricingTiers = [
   {
     name: "Starter",
-    price: "349€",
+    price: "ab 320 €",
     description: "Perfekt für Freelancer, Selbstständige und kleine Unternehmen",
     popular: false,
     features: [

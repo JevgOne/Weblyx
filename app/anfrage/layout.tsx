@@ -2,10 +2,10 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Unverbindliche Anfrage | Seitelyx',
-  description: 'Füllen Sie das Formular aus und wir melden uns innerhalb von 24 Stunden. Transparente Preise ab 349 €. Schnelle Website in 7 Tagen.',
+  description: 'Füllen Sie das Formular aus und wir melden uns innerhalb von 24 Stunden. Transparente Preise ab 320 €. Schnelle Website in 7 Tagen.',
   openGraph: {
     title: 'Unverbindliche Anfrage | Seitelyx',
-    description: 'Füllen Sie das Formular aus und wir melden uns innerhalb von 24 Stunden. Transparente Preise ab 349 €.',
+    description: 'Füllen Sie das Formular aus und wir melden uns innerhalb von 24 Stunden. Transparente Preise ab 320 €.',
     type: 'website',
     locale: 'de_DE',
     siteName: 'Seitelyx',
