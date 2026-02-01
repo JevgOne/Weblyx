@@ -3,6 +3,28 @@
 import { Facebook, Twitter, Linkedin, Link as LinkIcon, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useLocale } from 'next-intl';
+
+const shareLabels = {
+  cs: {
+    share: "Sdílet:",
+    facebook: "Sdílet na Facebooku",
+    twitter: "Sdílet na X (Twitter)",
+    linkedin: "Sdílet na LinkedIn",
+    copy: "Kopírovat odkaz",
+    copied: "Zkopírováno!",
+    copyLabel: "Zkopírovat odkaz",
+  },
+  de: {
+    share: "Teilen:",
+    facebook: "Auf Facebook teilen",
+    twitter: "Auf X (Twitter) teilen",
+    linkedin: "Auf LinkedIn teilen",
+    copy: "Link kopieren",
+    copied: "Kopiert!",
+    copyLabel: "Link kopieren",
+  },
+} as const;
 
 interface ShareButtonsProps {
   url: string;
@@ -12,8 +34,11 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ url, title, description }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
+  const locale = useLocale() as 'cs' | 'de';
+  const labels = shareLabels[locale] || shareLabels.cs;
 
-  const fullUrl = `https://weblyx.cz${url}`;
+  const baseUrl = locale === 'de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
+  const fullUrl = `${baseUrl}${url}`;
   const encodedUrl = encodeURIComponent(fullUrl);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = description ? encodeURIComponent(description) : '';
@@ -37,7 +62,7 @@ export function ShareButtons({ url, title, description }: ShareButtonsProps) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
       <span className="text-sm font-medium text-muted-foreground mr-2">
-        Sdílet:
+        {labels.share}
       </span>
 
       <Button
@@ -50,7 +75,7 @@ export function ShareButtons({ url, title, description }: ShareButtonsProps) {
           href={shareLinks.facebook}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Sdílet na Facebooku"
+          aria-label={labels.facebook}
         >
           <Facebook className="h-4 w-4" />
           <span className="hidden sm:inline">Facebook</span>
@@ -67,7 +92,7 @@ export function ShareButtons({ url, title, description }: ShareButtonsProps) {
           href={shareLinks.twitter}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Sdílet na X (Twitter)"
+          aria-label={labels.twitter}
         >
           <Twitter className="h-4 w-4" />
           <span className="hidden sm:inline">X</span>
@@ -84,7 +109,7 @@ export function ShareButtons({ url, title, description }: ShareButtonsProps) {
           href={shareLinks.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Sdílet na LinkedIn"
+          aria-label={labels.linkedin}
         >
           <Linkedin className="h-4 w-4" />
           <span className="hidden sm:inline">LinkedIn</span>
@@ -96,17 +121,17 @@ export function ShareButtons({ url, title, description }: ShareButtonsProps) {
         size="sm"
         className="gap-2"
         onClick={copyToClipboard}
-        aria-label="Zkopírovat odkaz"
+        aria-label={labels.copyLabel}
       >
         {copied ? (
           <>
             <Check className="h-4 w-4 text-primary" />
-            <span className="hidden sm:inline text-primary">Zkopírováno!</span>
+            <span className="hidden sm:inline text-primary">{labels.copied}</span>
           </>
         ) : (
           <>
             <LinkIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Kopírovat odkaz</span>
+            <span className="hidden sm:inline">{labels.copy}</span>
           </>
         )}
       </Button>
