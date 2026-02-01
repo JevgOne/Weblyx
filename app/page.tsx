@@ -11,6 +11,7 @@ import { ClientLogos } from "@/components/home/client-logos";
 import { TrustBadges } from "@/components/home/trust-badges";
 import { Pricing } from "@/components/home/pricing";
 import { FAQ } from "@/components/home/faq";
+import { FreeAudit } from "@/components/home/free-audit";
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
@@ -140,6 +141,7 @@ export default async function HomePage() {
         <TrustBadges />
         <Pricing />
         <FAQ />
+        <FreeAudit />
         <ContactWow />
       </main>
     </>
