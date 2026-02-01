@@ -1,6 +1,7 @@
 import { getPublishedPortfolio } from "@/lib/turso/portfolio";
 import { ArrowDown, Clock, Gauge, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
+import { getLocale } from "next-intl/server";
 
 interface CaseMetric {
   label: string;
@@ -11,8 +12,11 @@ interface CaseMetric {
 }
 
 export async function CaseStudy() {
+  const locale = await getLocale();
+  const isDE = locale === 'de';
+
   // Find portfolio item with best data (has loadTimeBefore + loadTimeAfter + pagespeed)
-  const portfolio = await getPublishedPortfolio();
+  const portfolio = await getPublishedPortfolio(locale);
   const caseProject = portfolio.find(
     (p) => p.pagespeedMobile && p.pagespeedMobile >= 90 && p.loadTimeBefore && p.loadTimeAfter
   );
@@ -27,10 +31,10 @@ export async function CaseStudy() {
 
   if (caseProject.loadTimeBefore && caseProject.loadTimeAfter) {
     metrics.push({
-      label: "Rychlost načítání",
+      label: isDE ? "Ladezeit" : "Rychlost načítání",
       before: `${caseProject.loadTimeBefore}s`,
       after: `${caseProject.loadTimeAfter}s`,
-      improvement: speedImprovement ? `${speedImprovement}% rychlejší` : undefined,
+      improvement: speedImprovement ? `${speedImprovement}% ${isDE ? 'schneller' : 'rychlejší'}` : undefined,
       icon: <Clock className="w-5 h-5" />,
     });
   }
@@ -64,10 +68,13 @@ export async function CaseStudy() {
             Case Study
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            Reálné výsledky, ne sliby
+            {isDE ? 'Echte Ergebnisse, keine Versprechen' : 'Reálné výsledky, ne sliby'}
           </h2>
           <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-            Čísla z projektu <strong>{projectName}</strong>, ne stock fotky a vymyšlené statistiky.
+            {isDE
+              ? <>Zahlen aus dem Projekt <strong>{projectName}</strong>, keine Stockfotos und erfundene Statistiken.</>
+              : <>Čísla z projektu <strong>{projectName}</strong>, ne stock fotky a vymyšlené statistiky.</>
+            }
           </p>
         </div>
 
@@ -116,7 +123,7 @@ export async function CaseStudy() {
             href="/portfolio"
             className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-400 font-medium transition-colors"
           >
-            Zobrazit všechny projekty →
+            {isDE ? 'Alle Projekte anzeigen →' : 'Zobrazit všechny projekty →'}
           </Link>
         </div>
       </div>
