@@ -1,40 +1,51 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Briefcase, Rocket } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import type { TargetAudienceData, LocalizedSectionData } from "@/types/cms";
 
 export function TargetAudience() {
   const t = useTranslations("targetAudience");
+  const locale = useLocale() as "cs" | "de";
+  const [cmsData, setCmsData] = useState<TargetAudienceData | null>(null);
 
-  const audiences = [
-    {
-      icon: Users,
-      title: t("audience1Title"),
-      description: t("audience1Desc"),
-    },
-    {
-      icon: Briefcase,
-      title: t("audience2Title"),
-      description: t("audience2Desc"),
-    },
-    {
-      icon: Rocket,
-      title: t("audience3Title"),
-      description: t("audience3Desc"),
-    },
-  ];
+  useEffect(() => {
+    fetch("/api/cms/target-audience")
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data) {
+          const localized = (result.data as LocalizedSectionData<TargetAudienceData>)[locale];
+          if (localized && localized.title) setCmsData(localized);
+        }
+      })
+      .catch(() => {});
+  }, [locale]);
+
+  const icons = [Users, Briefcase, Rocket];
+
+  const title = cmsData?.title || t("title");
+  const subtitle = cmsData?.subtitle || t("subtitle");
+
+  const audiences = cmsData?.audiences && cmsData.audiences.length > 0
+    ? cmsData.audiences.map((a, i) => ({
+        icon: icons[i % icons.length],
+        title: a.title,
+        description: a.description,
+      }))
+    : [
+        { icon: Users, title: t("audience1Title"), description: t("audience1Desc") },
+        { icon: Briefcase, title: t("audience2Title"), description: t("audience2Desc") },
+        { icon: Rocket, title: t("audience3Title"), description: t("audience3Desc") },
+      ];
 
   return (
     <section className="py-16 md:py-24 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold">
-            {t("title")}
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t("subtitle")}
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold">{title}</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">

@@ -1,37 +1,68 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowRight, X, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { LeadButton } from "@/components/tracking/LeadButton";
+import type { BeforeAfterData, LocalizedSectionData } from "@/types/cms";
 
 export function BeforeAfter() {
   const t = useTranslations("beforeAfter");
+  const locale = useLocale() as "cs" | "de";
+  const [cmsData, setCmsData] = useState<BeforeAfterData | null>(null);
 
-  const comparison = {
-    before: {
-      title: t("beforeTitle"),
-      subtitle: t("beforeSubtitle"),
-      metrics: [
+  useEffect(() => {
+    fetch("/api/cms/before-after")
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data) {
+          const localized = (result.data as LocalizedSectionData<BeforeAfterData>)[locale];
+          if (localized && localized.title) setCmsData(localized);
+        }
+      })
+      .catch(() => {});
+  }, [locale]);
+
+  // Use CMS data or fall back to translations
+  const sTitle = cmsData?.title || t("title");
+  const sTitleVs = cmsData?.titleVs || t("titleVs");
+  const sTitleHighlight = cmsData?.titleHighlight || t("titleHighlight");
+  const sSubtitle = cmsData?.subtitle || t("subtitle");
+  const sBadgeBefore = cmsData?.badgeBefore || t("badgeeBefore");
+  const sBadgeAfter = cmsData?.badgeAfter || t("badgeAfter");
+  const sBeforeTitle = cmsData?.beforeTitle || t("beforeTitle");
+  const sBeforeSubtitle = cmsData?.beforeSubtitle || t("beforeSubtitle");
+  const sAfterTitle = cmsData?.afterTitle || t("afterTitle");
+  const sAfterSubtitle = cmsData?.afterSubtitle || t("afterSubtitle");
+  const sCtaTitle = cmsData?.ctaTitle || t("ctaTitle");
+  const sCtaHighlight = cmsData?.ctaHighlight || t("ctaHighlight");
+  const sCtaStat = cmsData?.ctaStat || t("ctaStat");
+  const sCtaSubtitle = cmsData?.ctaSubtitle || t("ctaSubtitle");
+  const sCtaText = cmsData?.ctaText || t("ctaText");
+  const sCtaLink = cmsData?.ctaLink || t("ctaLink");
+
+  const hasMetrics = cmsData?.metrics && cmsData.metrics.length > 0;
+
+  const beforeMetrics = hasMetrics
+    ? cmsData!.metrics.map(m => ({ label: m.label, value: m.beforeValue, icon: X, color: "text-red-600" }))
+    : [
         { label: t("metricLoading"), value: t("beforeLoading"), icon: X, color: "text-red-600" },
         { label: t("metricPageSpeed"), value: t("beforePageSpeed"), icon: X, color: "text-red-600" },
         { label: t("metricMaintenance"), value: t("beforeMaintenance"), icon: X, color: "text-red-600" },
         { label: t("metricSecurity"), value: t("beforeSecurity"), icon: X, color: "text-red-600" },
         { label: t("metricPrice"), value: t("beforePrice"), icon: X, color: "text-red-600" },
-      ],
-    },
-    after: {
-      title: t("afterTitle"),
-      subtitle: t("afterSubtitle"),
-      metrics: [
+      ];
+
+  const afterMetrics = hasMetrics
+    ? cmsData!.metrics.map(m => ({ label: m.label, value: m.afterValue, icon: Check, color: "text-green-600" }))
+    : [
         { label: t("metricLoading"), value: t("afterLoading"), icon: Check, color: "text-green-600" },
         { label: t("metricPageSpeed"), value: t("afterPageSpeed"), icon: Check, color: "text-green-600" },
         { label: t("metricMaintenance"), value: t("afterMaintenance"), icon: Check, color: "text-green-600" },
         { label: t("metricSecurity"), value: t("afterSecurity"), icon: Check, color: "text-green-600" },
         { label: t("metricPrice"), value: t("afterPrice"), icon: Check, color: "text-green-600" },
-      ],
-    }
-  };
+      ];
 
   return (
     <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-muted/30 to-background">
@@ -39,33 +70,26 @@ export function BeforeAfter() {
         {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-muted-foreground">{t("title")}</span> {t("titleVs")}{" "}
-            <span className="text-primary">{t("titleHighlight")}</span>
+            <span className="text-muted-foreground">{sTitle}</span> {sTitleVs}{" "}
+            <span className="text-primary">{sTitleHighlight}</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t("subtitle")}
-          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{sSubtitle}</p>
         </div>
 
         {/* Comparison Cards */}
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* BEFORE - WordPress */}
+          {/* BEFORE */}
           <Card className="relative overflow-hidden border-2 border-red-200 dark:border-red-900/30">
-            {/* Badge */}
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-semibold">
-              {t("badgeeBefore")}
+              {sBadgeBefore}
             </div>
-
             <CardContent className="p-8 space-y-6">
-              {/* Title */}
               <div>
-                <h3 className="text-2xl font-bold mb-1">{comparison.before.title}</h3>
-                <p className="text-sm text-muted-foreground">{comparison.before.subtitle}</p>
+                <h3 className="text-2xl font-bold mb-1">{sBeforeTitle}</h3>
+                <p className="text-sm text-muted-foreground">{sBeforeSubtitle}</p>
               </div>
-
-              {/* Metrics */}
               <div className="space-y-3">
-                {comparison.before.metrics.map((metric, i) => {
+                {beforeMetrics.map((metric, i) => {
                   const IconComponent = metric.icon;
                   return (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-border/50">
@@ -81,23 +105,18 @@ export function BeforeAfter() {
             </CardContent>
           </Card>
 
-          {/* AFTER - Next.js */}
+          {/* AFTER */}
           <Card className="relative overflow-hidden border-2 border-primary shadow-lg shadow-primary/10">
-            {/* Badge */}
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-              {t("badgeAfter")}
+              {sBadgeAfter}
             </div>
-
             <CardContent className="p-8 space-y-6">
-              {/* Title */}
               <div>
-                <h3 className="text-2xl font-bold mb-1">{comparison.after.title}</h3>
-                <p className="text-sm text-muted-foreground">{comparison.after.subtitle}</p>
+                <h3 className="text-2xl font-bold mb-1">{sAfterTitle}</h3>
+                <p className="text-sm text-muted-foreground">{sAfterSubtitle}</p>
               </div>
-
-              {/* Metrics */}
               <div className="space-y-3">
-                {comparison.after.metrics.map((metric, i) => {
+                {afterMetrics.map((metric, i) => {
                   const IconComponent = metric.icon;
                   return (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-border/50">
@@ -111,8 +130,6 @@ export function BeforeAfter() {
                 })}
               </div>
             </CardContent>
-
-            {/* Decorative gradient */}
             <div className="absolute -z-10 inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
           </Card>
         </div>
@@ -120,17 +137,11 @@ export function BeforeAfter() {
         {/* Bottom CTA */}
         <div className="text-center mt-12 p-8 rounded-2xl bg-primary/5 border border-primary/20">
           <p className="text-lg font-semibold mb-1">
-            {t("ctaTitle")} <span className="text-primary">{t("ctaHighlight")}</span>
+            {sCtaTitle} <span className="text-primary">{sCtaHighlight}</span>
           </p>
-          <p className="text-base font-bold mb-2">
-            {t("ctaStat")}
-          </p>
-          <p className="text-sm text-muted-foreground mb-5">
-            {t("ctaSubtitle")}
-          </p>
-          <LeadButton href={t("ctaLink")} size="lg">
-            {t("ctaText")}
-          </LeadButton>
+          <p className="text-base font-bold mb-2">{sCtaStat}</p>
+          <p className="text-sm text-muted-foreground mb-5">{sCtaSubtitle}</p>
+          <LeadButton href={sCtaLink} size="lg">{sCtaText}</LeadButton>
         </div>
       </div>
     </section>

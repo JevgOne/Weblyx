@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Menu, Home, DollarSign, ArrowLeft, GitBranch, HelpCircle, Megaphone, Mail, BookOpen } from "lucide-react";
+import { FileText, Menu, Home, DollarSign, ArrowLeft, GitBranch, HelpCircle, Megaphone, Mail, BookOpen, BarChart3, Target, ArrowLeftRight, Trophy, Building2, Shield, Search } from "lucide-react";
 
 export default function ContentManagementPage() {
   const router = useRouter();
@@ -249,6 +249,167 @@ export default function ContentManagementPage() {
                 onClick={() => router.push("/admin/content/contact")}
               >
                 Upravit Kontakt
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Social Proof Stats */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Social Proof</CardTitle>
+                  <CardDescription>Statistiky a čísla</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte statistiky (projekty, hodnocení, rychlost)
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/social-proof")}>
+                Upravit Social Proof
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Target Audience */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Cílová skupina</CardTitle>
+                  <CardDescription>Pro koho tvoříme</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte karty cílových skupin (živnostníci, firmy, e-shopy)
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/target-audience")}>
+                Upravit Cílovou skupinu
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Before/After */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <ArrowLeftRight className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Before / After</CardTitle>
+                  <CardDescription>Porovnání webů</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte porovnávací tabulku a metriky
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/before-after")}>
+                Upravit Before/After
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Case Study */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Trophy className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Case Study</CardTitle>
+                  <CardDescription>Texty case study</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte nadpisy sekce (data z portfolia)
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/case-study")}>
+                Upravit Case Study
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Client Logos */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Building2 className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Klientská loga</CardTitle>
+                  <CardDescription>Seznam klientů</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Spravujte seznam klientů zobrazených na homepage
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/client-logos")}>
+                Upravit Klienty
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Trust Badges */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Trust Badges</CardTitle>
+                  <CardDescription>Odznaky důvěry</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte odznaky důvěry (SSL, garance, termín)
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/trust-badges")}>
+                Upravit Trust Badges
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Free Audit */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Search className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Free Audit</CardTitle>
+                  <CardDescription>Bezplatný audit</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upravte texty formuláře bezplatného auditu
+              </p>
+              <Button className="w-full" onClick={() => router.push("/admin/content/free-audit")}>
+                Upravit Free Audit
               </Button>
             </CardContent>
           </Card>
