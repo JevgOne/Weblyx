@@ -10,7 +10,15 @@ import {
   FAQItem,
   FAQSection,
   CTASection,
-  ContactInfo
+  ContactInfo,
+  LocalizedSectionData,
+  SocialProofData,
+  TargetAudienceData,
+  BeforeAfterData,
+  CaseStudyData,
+  ClientLogosData,
+  TrustBadgesData,
+  FreeAuditData,
 } from '@/types/cms';
 
 // Homepage Sections
@@ -31,6 +39,13 @@ export async function getHomepageSections(): Promise<HomepageSections | null> {
           backgroundImage: result.hero_image || '',
           enabled: true,
         },
+        socialProofData: result.social_proof_data || null,
+        targetAudienceData: result.target_audience_data || null,
+        beforeAfterData: result.before_after_data || null,
+        caseStudyData: result.case_study_data || null,
+        clientLogosData: result.client_logos_data || null,
+        trustBadgesData: result.trust_badges_data || null,
+        freeAuditData: result.free_audit_data || null,
         updatedAt: unixToDate(result.updated_at) || undefined,
       };
     }
@@ -39,6 +54,93 @@ export async function getHomepageSections(): Promise<HomepageSections | null> {
     console.error('Error fetching homepage sections:', error);
     throw error;
   }
+}
+
+// Generic section data getters/setters
+type SectionColumn = 'social_proof_data' | 'target_audience_data' | 'before_after_data' | 'case_study_data' | 'client_logos_data' | 'trust_badges_data' | 'free_audit_data';
+
+export async function getSectionData<T>(column: SectionColumn): Promise<LocalizedSectionData<T> | null> {
+  try {
+    const result = await executeOne<any>(
+      `SELECT ${column} FROM homepage_sections WHERE id = ?`,
+      ['current']
+    );
+    if (result && result[column]) {
+      return parseJSON<LocalizedSectionData<T>>(result[column]) || null;
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error fetching section data (${column}):`, error);
+    throw error;
+  }
+}
+
+export async function updateSectionData<T>(column: SectionColumn, data: LocalizedSectionData<T> | null): Promise<void> {
+  try {
+    const now = Math.floor(Date.now() / 1000);
+    const jsonData = data ? stringifyJSON(data) : null;
+    await executeQuery(
+      `INSERT INTO homepage_sections (id, ${column}, updated_at)
+       VALUES (?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         ${column} = excluded.${column},
+         updated_at = excluded.updated_at`,
+      ['current', jsonData, now]
+    );
+  } catch (error) {
+    console.error(`Error updating section data (${column}):`, error);
+    throw error;
+  }
+}
+
+// Convenience functions for each section
+export async function getSocialProofData(): Promise<LocalizedSectionData<SocialProofData> | null> {
+  return getSectionData<SocialProofData>('social_proof_data');
+}
+export async function updateSocialProofData(data: LocalizedSectionData<SocialProofData> | null): Promise<void> {
+  return updateSectionData('social_proof_data', data);
+}
+
+export async function getTargetAudienceData(): Promise<LocalizedSectionData<TargetAudienceData> | null> {
+  return getSectionData<TargetAudienceData>('target_audience_data');
+}
+export async function updateTargetAudienceData(data: LocalizedSectionData<TargetAudienceData> | null): Promise<void> {
+  return updateSectionData('target_audience_data', data);
+}
+
+export async function getBeforeAfterData(): Promise<LocalizedSectionData<BeforeAfterData> | null> {
+  return getSectionData<BeforeAfterData>('before_after_data');
+}
+export async function updateBeforeAfterData(data: LocalizedSectionData<BeforeAfterData> | null): Promise<void> {
+  return updateSectionData('before_after_data', data);
+}
+
+export async function getCaseStudyData(): Promise<LocalizedSectionData<CaseStudyData> | null> {
+  return getSectionData<CaseStudyData>('case_study_data');
+}
+export async function updateCaseStudyData(data: LocalizedSectionData<CaseStudyData> | null): Promise<void> {
+  return updateSectionData('case_study_data', data);
+}
+
+export async function getClientLogosData(): Promise<LocalizedSectionData<ClientLogosData> | null> {
+  return getSectionData<ClientLogosData>('client_logos_data');
+}
+export async function updateClientLogosData(data: LocalizedSectionData<ClientLogosData> | null): Promise<void> {
+  return updateSectionData('client_logos_data', data);
+}
+
+export async function getTrustBadgesData(): Promise<LocalizedSectionData<TrustBadgesData> | null> {
+  return getSectionData<TrustBadgesData>('trust_badges_data');
+}
+export async function updateTrustBadgesData(data: LocalizedSectionData<TrustBadgesData> | null): Promise<void> {
+  return updateSectionData('trust_badges_data', data);
+}
+
+export async function getFreeAuditData(): Promise<LocalizedSectionData<FreeAuditData> | null> {
+  return getSectionData<FreeAuditData>('free_audit_data');
+}
+export async function updateFreeAuditData(data: LocalizedSectionData<FreeAuditData> | null): Promise<void> {
+  return updateSectionData('free_audit_data', data);
 }
 
 export async function updateHeroSection(hero: HeroSection): Promise<void> {

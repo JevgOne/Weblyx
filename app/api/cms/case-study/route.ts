@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
+import { getCaseStudyData, updateCaseStudyData } from '@/lib/turso/cms';
+
+export const runtime = 'nodejs';
+
+export async function GET() {
+  try {
+    const data = await getCaseStudyData();
+    return NextResponse.json({ success: true, data });
+  } catch (error: any) {
+    console.error('Error fetching case study data:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to fetch data' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    await updateCaseStudyData(body);
+    revalidatePath('/');
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Error updating case study data:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to update data' },
+      { status: 500 }
+    );
+  }
+}

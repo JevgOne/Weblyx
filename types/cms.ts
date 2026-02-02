@@ -114,8 +114,109 @@ export interface ContactInfo {
   enabled: boolean;
 }
 
+// === Homepage Section Data Types (JSON blobs stored in homepage_sections) ===
+
+export interface SocialProofStat {
+  value: string;
+  label: string;
+  description: string;
+}
+
+export interface SocialProofData {
+  title: string;
+  titleHighlight: string;
+  subtitle: string;
+  stats: SocialProofStat[];
+}
+
+export interface TargetAudienceItem {
+  title: string;
+  description: string;
+}
+
+export interface TargetAudienceData {
+  title: string;
+  subtitle: string;
+  audiences: TargetAudienceItem[];
+}
+
+export interface BeforeAfterMetric {
+  label: string;
+  beforeValue: string;
+  afterValue: string;
+}
+
+export interface BeforeAfterData {
+  title: string;
+  titleVs: string;
+  titleHighlight: string;
+  subtitle: string;
+  badgeBefore: string;
+  badgeAfter: string;
+  beforeTitle: string;
+  beforeSubtitle: string;
+  afterTitle: string;
+  afterSubtitle: string;
+  metrics: BeforeAfterMetric[];
+  ctaTitle: string;
+  ctaHighlight: string;
+  ctaStat: string;
+  ctaSubtitle: string;
+  ctaText: string;
+  ctaLink: string;
+}
+
+export interface CaseStudyData {
+  badgeText: string;
+  title: string;
+  subtitleTemplate: string; // Use {projectName} as placeholder
+  ctaText: string;
+}
+
+export interface ClientLogoItem {
+  name: string;
+  slug: string;
+}
+
+export interface ClientLogosData {
+  heading: string;
+  clients: ClientLogoItem[];
+}
+
+export interface TrustBadgeItem {
+  title: string;
+  description: string;
+}
+
+export interface TrustBadgesData {
+  badges: TrustBadgeItem[];
+}
+
+export interface FreeAuditData {
+  badge: string;
+  title: string;
+  subtitle: string;
+  urlPlaceholder: string;
+  emailPlaceholder: string;
+  buttonSubmit: string;
+  buttonLoading: string;
+  noSpam: string;
+}
+
+export interface LocalizedSectionData<T> {
+  cs: T;
+  de: T;
+}
+
 export interface HomepageSections {
   hero: HeroSection;
+  socialProofData?: string | null;
+  targetAudienceData?: string | null;
+  beforeAfterData?: string | null;
+  caseStudyData?: string | null;
+  clientLogosData?: string | null;
+  trustBadgesData?: string | null;
+  freeAuditData?: string | null;
   updatedAt?: Date;
 }
 

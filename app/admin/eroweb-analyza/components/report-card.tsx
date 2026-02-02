@@ -236,7 +236,7 @@ https://weblyx.cz`,
 
   const emailContent = getEmailContent();
 
-  // Generate WhatsApp message
+  // Generate WhatsApp message with full analysis data
   const whatsAppMessage = getWhatsAppMessage({
     domain: analysis.domain,
     businessType: businessTypeLabel,
@@ -245,6 +245,18 @@ https://weblyx.cz`,
     score: analysis.scores.total,
     analysisId: analysis.id,
     language,
+    scores: analysis.scores,
+    findings: analysis.findings,
+    details: analysis.details ? {
+      lcp: analysis.details.lcp,
+      pageSpeedScore: analysis.details.pageSpeedScore,
+      hasHttps: analysis.details.hasHttps,
+      hasViewportMeta: analysis.details.hasViewportMeta,
+      hasMetaDescription: !!analysis.details.metaDescription,
+      hasH1: analysis.details.h1Count > 0,
+      imageCount: analysis.details.totalImages,
+      hasSchemaOrg: analysis.details.hasStructuredData,
+    } : undefined,
   });
 
   const copyToClipboard = async (text: string, type: 'email' | 'whatsapp') => {
