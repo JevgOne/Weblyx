@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,10 +8,20 @@ import { Separator } from "@/components/ui/separator";
 import { getBlogPostBySlug, getPublishedBlogPostsByLanguage, getPostTranslations } from "@/lib/turso/blog";
 import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { ShareButtons } from "@/components/blog/ShareButtons";
-import { BlogCTA } from "@/components/blog/BlogCTA";
 import { marked } from "marked";
 import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
+
+// Engagement components
+import { ReadingProgressBar } from "@/components/blog/ReadingProgressBar";
+import { DesktopTableOfContents, MobileTableOfContents } from "@/components/blog/TableOfContents";
+import { FloatingShareBar } from "@/components/blog/FloatingShareBar";
+import { ArticleFeedback } from "@/components/blog/ArticleFeedback";
+import { InlineNewsletterCTA } from "@/components/blog/InlineNewsletterCTA";
+import { AuthorBoxSimple } from "@/components/blog/AuthorBoxSimple";
+import { BlogCTA } from "@/components/blog/BlogCTA";
+
+// Utilities
+import { extractHeadings, addHeadingIds, splitContentForCTA, enhanceBlockquotes } from "@/lib/blog-utils";
 
 // Locale-specific UI strings for blog detail
 const blogDetailContent = {
@@ -34,7 +43,7 @@ const blogDetailContent = {
     authorPrefix: "von",
     relatedLabel: "Weitere Artikel",
     endLabel: "— Ende des Artikels —",
-    backToBot: "← Zurück zum Blog",
+    backToBlog: "← Zurück zum Blog",
     ctaLabel: "Anfrage →",
     ctaLink: "/anfrage",
     dateLocale: "de-DE",
@@ -57,19 +66,16 @@ async function getBlogAlternateLanguages(
   const csBase = "https://www.weblyx.cz";
   const deBase = "https://seitelyx.de";
 
-  // Default: current slug on both domains (fallback)
   const alternates: Record<string, string> = {
     "x-default": `${csBase}/blog/${currentSlug}`,
   };
 
-  // Set the current language
   if (post.language === "cs") {
     alternates["cs"] = `${csBase}/blog/${currentSlug}`;
   } else {
     alternates["de"] = `${deBase}/blog/${currentSlug}`;
   }
 
-  // Look up translations via parent_post_id
   try {
     const translations = await getPostTranslations(post.id);
     for (const translation of translations) {
@@ -81,7 +87,6 @@ async function getBlogAlternateLanguages(
       }
     }
   } catch (e) {
-    // Graceful fallback — keep current slug on both domains
     console.error("Failed to fetch blog translations for hreflang:", e);
   }
 
@@ -159,6 +164,25 @@ export async function generateMetadata({
   }
 }
 
+// Shared prose classes for article content
+const proseClasses = `prose prose-base md:prose-lg max-w-none dark:prose-invert
+  prose-headings:font-semibold prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
+  prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:pt-6 prose-h2:border-t prose-h2:border-neutral-100 dark:prose-h2:border-border prose-h2:scroll-mt-24
+  prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:scroll-mt-24
+  prose-p:text-neutral-600 dark:prose-p:text-foreground/80 prose-p:leading-[1.9] prose-p:mb-5 prose-p:text-[16px] prose-p:md:text-[17px]
+  prose-ul:my-5 prose-ul:text-neutral-600 dark:prose-ul:text-foreground/80
+  prose-ol:my-5 prose-ol:text-neutral-600 dark:prose-ol:text-foreground/80
+  prose-li:my-1.5 prose-li:leading-relaxed
+  prose-li:marker:text-neutral-300 dark:prose-li:marker:text-border
+  prose-strong:text-neutral-800 dark:prose-strong:text-foreground prose-strong:font-semibold
+  prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:underline-offset-4
+  prose-code:text-neutral-700 dark:prose-code:text-foreground/90 prose-code:bg-neutral-100 dark:prose-code:bg-border prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[14px]
+  prose-pre:bg-neutral-50 dark:prose-pre:bg-card prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-border prose-pre:rounded-lg prose-pre:p-5 prose-pre:shadow-none
+  prose-img:rounded-lg prose-img:border prose-img:border-neutral-200 dark:prose-img:border-border prose-img:my-8 prose-img:shadow-none
+  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/[0.03] dark:prose-blockquote:bg-primary/[0.06] prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:my-10 prose-blockquote:rounded-r-lg prose-blockquote:text-lg prose-blockquote:md:text-xl prose-blockquote:text-neutral-600 dark:prose-blockquote:text-foreground/70 prose-blockquote:italic prose-blockquote:leading-relaxed prose-blockquote:not-italic
+  [&_blockquote_p]:italic [&_blockquote_p]:text-lg [&_blockquote_p]:md:text-xl [&_blockquote_p]:leading-relaxed [&_blockquote_p]:text-neutral-600 dark:[&_blockquote_p]:text-foreground/70
+  prose-hr:border-neutral-100 dark:prose-hr:border-border`;
+
 export default async function BlogPostPage({
   params
 }: {
@@ -178,9 +202,19 @@ export default async function BlogPostPage({
       notFound();
     }
 
-    // Related posts — same language
+    // Related posts — same language, prefer tag overlap
     const allPosts = await getPublishedBlogPostsByLanguage(post.language);
-    const relatedPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
+    const otherPosts = allPosts.filter((p) => p.slug !== slug);
+
+    // Score by tag overlap, then by recency
+    const postTags = new Set(post.tags?.map(t => t.toLowerCase()) || []);
+    const scoredPosts = otherPosts.map((p) => {
+      const pTags = p.tags?.map(t => t.toLowerCase()) || [];
+      const tagOverlap = pTags.filter(t => postTags.has(t)).length;
+      return { post: p, score: tagOverlap };
+    });
+    scoredPosts.sort((a, b) => b.score - a.score || 0);
+    const relatedPosts = scoredPosts.slice(0, 3).map(s => s.post);
 
     const publishedDate = post.publishedAt
       ? new Date(post.publishedAt).toLocaleDateString(t.dateLocale, { day: "numeric", month: "long", year: "numeric" })
@@ -190,10 +224,19 @@ export default async function BlogPostPage({
       ? new Date(post.publishedAt).toISOString().split("T")[0]
       : new Date(post.createdAt).toISOString().split("T")[0];
 
-    const htmlContent = await marked.parse(post.content, { gfm: true, breaks: true });
+    // Process content
+    let htmlContent = await marked.parse(post.content, { gfm: true, breaks: true });
+    htmlContent = addHeadingIds(htmlContent);
+    htmlContent = enhanceBlockquotes(htmlContent);
 
     const wordCount = post.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
+
+    // Extract headings for TOC
+    const headings = extractHeadings(post.content);
+
+    // Split content for inline newsletter CTA
+    const [contentFirstHalf, contentSecondHalf] = splitContentForCTA(htmlContent);
 
     const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const plainTextContent = stripHtml(htmlContent);
@@ -275,8 +318,19 @@ export default async function BlogPostPage({
         <JsonLd data={breadcrumbSchema} />
         {howToSchema && <JsonLd data={howToSchema} />}
 
+        {/* Reading progress bar */}
+        <ReadingProgressBar />
+
+        {/* Floating share buttons */}
+        <FloatingShareBar url={`/blog/${slug}`} title={post.title} />
+
+        {/* Desktop Table of Contents */}
+        {headings.length >= 3 && (
+          <DesktopTableOfContents headings={headings} />
+        )}
+
         <main className="min-h-screen bg-white dark:bg-background">
-          <article className="max-w-2xl mx-auto px-6 pt-12 md:pt-20 pb-16">
+          <article id="article-content" className="max-w-2xl mx-auto px-6 pt-12 md:pt-20 pb-24 md:pb-16">
             {/* Back link */}
             <Link
               href="/blog"
@@ -298,7 +352,7 @@ export default async function BlogPostPage({
                 </time>
                 <span className="text-neutral-200 dark:text-border">·</span>
                 <span className="text-sm text-neutral-400 dark:text-muted-foreground font-mono">
-                  {readTime} {t.readTimeSuffix}
+                  🕐 {readTime} {t.readTimeSuffix}
                 </span>
               </div>
 
@@ -358,55 +412,56 @@ export default async function BlogPostPage({
 
             <Separator className="bg-neutral-100 dark:bg-border mb-10 md:mb-14" />
 
-            {/* Article body */}
+            {/* Mobile Table of Contents */}
+            {headings.length >= 3 && (
+              <MobileTableOfContents headings={headings} />
+            )}
+
+            {/* Article body — first half */}
             <div
-              className="prose prose-base md:prose-lg max-w-none dark:prose-invert
-                prose-headings:font-semibold prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
-                prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:pt-6 prose-h2:border-t prose-h2:border-neutral-100 dark:prose-h2:border-border
-                prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-10 prose-h3:mb-4
-                prose-p:text-neutral-600 dark:prose-p:text-foreground/80 prose-p:leading-[1.9] prose-p:mb-5 prose-p:text-[16px] prose-p:md:text-[17px]
-                prose-ul:my-5 prose-ul:text-neutral-600 dark:prose-ul:text-foreground/80
-                prose-ol:my-5 prose-ol:text-neutral-600 dark:prose-ol:text-foreground/80
-                prose-li:my-1.5 prose-li:leading-relaxed
-                prose-li:marker:text-neutral-300 dark:prose-li:marker:text-border
-                prose-strong:text-neutral-800 dark:prose-strong:text-foreground prose-strong:font-semibold
-                prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:underline-offset-4
-                prose-code:text-neutral-700 dark:prose-code:text-foreground/90 prose-code:bg-neutral-100 dark:prose-code:bg-border prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[14px]
-                prose-pre:bg-neutral-50 dark:prose-pre:bg-card prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-border prose-pre:rounded-lg prose-pre:p-5 prose-pre:shadow-none
-                prose-img:rounded-lg prose-img:border prose-img:border-neutral-200 dark:prose-img:border-border prose-img:my-8 prose-img:shadow-none
-                prose-blockquote:border-l-2 prose-blockquote:border-neutral-200 dark:prose-blockquote:border-border prose-blockquote:bg-transparent prose-blockquote:py-0 prose-blockquote:px-4 prose-blockquote:my-6 prose-blockquote:text-neutral-500 dark:prose-blockquote:text-foreground/60 prose-blockquote:italic
-                prose-hr:border-neutral-100 dark:prose-hr:border-border"
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
+              className={proseClasses}
+              dangerouslySetInnerHTML={{ __html: contentFirstHalf }}
             />
+
+            {/* Inline Newsletter CTA (appears at ~40% of article) */}
+            {contentSecondHalf && (
+              <InlineNewsletterCTA />
+            )}
+
+            {/* Article body — second half */}
+            {contentSecondHalf && (
+              <div
+                className={proseClasses}
+                dangerouslySetInnerHTML={{ __html: contentSecondHalf }}
+              />
+            )}
 
             {/* CTA after article */}
             <BlogCTA locale={locale} />
 
-            <Separator className="bg-neutral-100 dark:bg-border mt-12 mb-8" />
+            {/* Article feedback */}
+            <ArticleFeedback postId={post.id} />
 
-            {/* Share */}
-            <ShareButtons
-              url={`/blog/${slug}`}
-              title={post.title}
-              description={post.excerpt || undefined}
-            />
+            {/* Author box */}
+            <AuthorBoxSimple locale={locale} />
 
-            {/* Related posts */}
+            <Separator className="bg-neutral-100 dark:bg-border mt-10 mb-8" />
+
+            {/* Related posts — enhanced card layout */}
             {relatedPosts.length > 0 && (
-              <>
-                <Separator className="bg-neutral-100 dark:bg-border mt-8 mb-10" />
-                <div className="space-y-6">
-                  <p className="text-xs text-neutral-300 dark:text-border uppercase tracking-widest font-mono">
-                    {t.relatedLabel}
-                  </p>
+              <div className="space-y-6">
+                <p className="text-xs text-neutral-300 dark:text-border uppercase tracking-widest font-mono">
+                  {t.relatedLabel}
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {relatedPosts.map((rp) => (
                     <Link
                       key={rp.id}
                       href={`/blog/${rp.slug}`}
-                      className="group flex gap-4 items-start"
+                      className="group block rounded-xl border border-neutral-100 dark:border-border overflow-hidden hover:border-primary/20 hover:shadow-sm transition-all duration-300"
                     >
                       {rp.featuredImage && (
-                        <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="relative w-full h-32 overflow-hidden bg-neutral-100 dark:bg-card">
                           <Image
                             src={rp.featuredImage}
                             alt={rp.title}
@@ -415,11 +470,16 @@ export default async function BlogPostPage({
                           />
                         </div>
                       )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-semibold text-neutral-900 dark:text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                      <div className="p-4">
+                        <h3 className="text-sm font-semibold text-neutral-900 dark:text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 mb-2">
                           {rp.title}
                         </h3>
-                        <span className="text-xs text-neutral-400 dark:text-muted-foreground font-mono mt-1 block">
+                        {rp.excerpt && (
+                          <p className="text-xs text-neutral-400 dark:text-muted-foreground leading-relaxed line-clamp-2 mb-2">
+                            {rp.excerpt}
+                          </p>
+                        )}
+                        <span className="text-[11px] text-neutral-300 dark:text-neutral-600 font-mono">
                           {rp.publishedAt
                             ? new Date(rp.publishedAt).toISOString().split("T")[0]
                             : new Date(rp.createdAt).toISOString().split("T")[0]
@@ -429,7 +489,7 @@ export default async function BlogPostPage({
                     </Link>
                   ))}
                 </div>
-              </>
+              </div>
             )}
 
             {/* Footer */}
@@ -443,7 +503,7 @@ export default async function BlogPostPage({
                   href="/blog"
                   className="text-sm text-neutral-400 hover:text-primary transition-colors"
                 >
-                  {locale === 'de' ? '← Zurück zum Blog' : '← Zpět na blog'}
+                  {t.backToBlog}
                 </Link>
                 <Link
                   href={t.ctaLink}
