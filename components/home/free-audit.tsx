@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Mail, Loader2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import type { FreeAuditData, LocalizedSectionData } from "@/types/cms";
 
 interface AuditMetric {
   label: string;
@@ -60,11 +61,35 @@ function MetricRow({ metric }: { metric: AuditMetric }) {
 
 export function FreeAudit() {
   const t = useTranslations('freeAudit');
+  const locale = useLocale() as "cs" | "de";
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AuditResponse | null>(null);
   const [error, setError] = useState("");
+  const [cmsData, setCmsData] = useState<FreeAuditData | null>(null);
+
+  useEffect(() => {
+    fetch("/api/cms/free-audit")
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data) {
+          const localized = (result.data as LocalizedSectionData<FreeAuditData>)[locale];
+          if (localized && localized.title) setCmsData(localized);
+        }
+      })
+      .catch(() => {});
+  }, [locale]);
+
+  // Use CMS data or fall back to translations
+  const sBadge = cmsData?.badge || t('badge');
+  const sTitle = cmsData?.title || t('title');
+  const sSubtitle = cmsData?.subtitle || t('subtitle');
+  const sUrlPlaceholder = cmsData?.urlPlaceholder || t('urlPlaceholder');
+  const sEmailPlaceholder = cmsData?.emailPlaceholder || t('emailPlaceholder');
+  const sButtonSubmit = cmsData?.buttonSubmit || t('buttonSubmit');
+  const sButtonLoading = cmsData?.buttonLoading || t('buttonLoading');
+  const sNoSpam = cmsData?.noSpam || t('noSpam');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -110,13 +135,13 @@ export function FreeAudit() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 text-teal-500 text-xs font-medium mb-4">
             <Search className="w-3.5 h-3.5" />
-            {t('badge')}
+            {sBadge}
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            {t('title')}
+            {sTitle}
           </h2>
           <p className="text-muted-foreground text-lg max-w-md mx-auto">
-            {t('subtitle')}
+            {sSubtitle}
           </p>
         </div>
 
@@ -130,7 +155,7 @@ export function FreeAudit() {
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder={t('urlPlaceholder')}
+                  placeholder={sUrlPlaceholder}
                   className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all"
                   disabled={loading}
                 />
@@ -141,7 +166,7 @@ export function FreeAudit() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('emailPlaceholder')}
+                  placeholder={sEmailPlaceholder}
                   className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all"
                   disabled={loading}
                 />
@@ -163,18 +188,18 @@ export function FreeAudit() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  {t('buttonLoading')}
+                  {sButtonLoading}
                 </>
               ) : (
                 <>
-                  {t('buttonSubmit')}
+                  {sButtonSubmit}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
 
             <p className="text-xs text-center text-muted-foreground">
-              {t('noSpam')}
+              {sNoSpam}
             </p>
           </form>
         )}

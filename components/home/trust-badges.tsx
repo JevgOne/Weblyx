@@ -1,36 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Shield, Award, Clock, Ban } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
+import type { TrustBadgesData, LocalizedSectionData } from "@/types/cms";
 
 export function TrustBadges() {
   const t = useTranslations("trustBadges");
-  const locale = useLocale();
+  const locale = useLocale() as "cs" | "de";
+  const [cmsData, setCmsData] = useState<TrustBadgesData | null>(null);
 
-  const badges = [
-    {
-      icon: Shield,
-      title: t("badge1Title"),
-      description: t("badge1Desc")
-    },
-    {
-      icon: Award,
-      title: t("badge2Title"),
-      description: t("badge2Desc"),
-      href: "/pagespeed-garance"
-    },
-    {
-      icon: Clock,
-      title: t("badge3Title"),
-      description: t("badge3Desc")
-    },
-    {
-      icon: Ban,
-      title: t("badge4Title"),
-      description: t("badge4Desc")
-    }
-  ];
+  useEffect(() => {
+    fetch("/api/cms/trust-badges")
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data) {
+          const localized = (result.data as LocalizedSectionData<TrustBadgesData>)[locale];
+          if (localized && localized.badges && localized.badges.length > 0) setCmsData(localized);
+        }
+      })
+      .catch(() => {});
+  }, [locale]);
+
+  const icons = [Shield, Award, Clock, Ban];
+  const defaultHrefs = [undefined, "/pagespeed-garance", undefined, undefined];
+
+  const badges = cmsData?.badges && cmsData.badges.length > 0
+    ? cmsData.badges.map((b, i) => ({
+        icon: icons[i % icons.length],
+        title: b.title,
+        description: b.description,
+        href: defaultHrefs[i],
+      }))
+    : [
+        { icon: Shield, title: t("badge1Title"), description: t("badge1Desc"), href: undefined },
+        { icon: Award, title: t("badge2Title"), description: t("badge2Desc"), href: "/pagespeed-garance" as string | undefined },
+        { icon: Clock, title: t("badge3Title"), description: t("badge3Desc"), href: undefined },
+        { icon: Ban, title: t("badge4Title"), description: t("badge4Desc"), href: undefined },
+      ];
 
   return (
     <section className="py-12 px-4 bg-muted/20 border-y border-border/50">
@@ -40,27 +48,19 @@ export function TrustBadges() {
             const IconComponent = badge.icon;
             const content = (
               <>
-                {/* Icon with border */}
                 <div className="relative">
                   <div className="p-3 rounded-full bg-primary/10 border-2 border-primary/30">
                     <IconComponent className="h-6 w-6 text-primary" />
                   </div>
-                  {/* Checkmark badge */}
                   <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
                     <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                 </div>
-
-                {/* Text */}
                 <div className="space-y-1">
-                  <div className="text-sm font-semibold">
-                    {badge.title}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {badge.description}
-                  </div>
+                  <div className="text-sm font-semibold">{badge.title}</div>
+                  <div className="text-xs text-muted-foreground">{badge.description}</div>
                 </div>
               </>
             );
@@ -81,10 +81,7 @@ export function TrustBadges() {
             }
 
             return (
-              <div
-                key={index}
-                className="flex flex-col items-center text-center space-y-3 p-4"
-              >
+              <div key={index} className="flex flex-col items-center text-center space-y-3 p-4">
                 {content}
               </div>
             );
