@@ -44,7 +44,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState, useEffect } from 'react';
 import type { EroWebAnalysis, ContactStatus } from '@/types/eroweb';
 import { SCORE_COLORS, getScoreCategory, CONTACT_STATUS_COLORS } from '@/types/eroweb';
-import { getWhatsAppMessage } from './whatsapp-messages';
+import { getWhatsAppMessage, getAllWhatsAppMessages } from './whatsapp-messages';
 import { useAdminTranslation } from '@/lib/admin-i18n';
 
 interface ReportCardProps {
@@ -236,8 +236,8 @@ https://weblyx.cz`,
 
   const emailContent = getEmailContent();
 
-  // Generate WhatsApp message with full analysis data
-  const whatsAppMessage = getWhatsAppMessage({
+  // Generate ALL WhatsApp message variations
+  const whatsAppParams = {
     domain: analysis.domain,
     businessType: businessTypeLabel,
     businessTypeEn: analysis.businessType === 'massage' ? 'erotic massage' :
@@ -257,7 +257,9 @@ https://weblyx.cz`,
       imageCount: analysis.details.totalImages,
       hasSchemaOrg: analysis.details.hasStructuredData,
     } : undefined,
-  });
+  };
+  const allWhatsAppMessages = getAllWhatsAppMessages(whatsAppParams);
+  const whatsAppMessage = allWhatsAppMessages[0] || '';
 
   const copyToClipboard = async (text: string, type: 'email' | 'whatsapp') => {
     await navigator.clipboard.writeText(text);
@@ -775,42 +777,41 @@ Odpověz strukturovaně v češtině. U každého keyword uveď:
         </CardContent>
       </Card>
 
-      {/* WhatsApp Template Preview */}
+      {/* WhatsApp Template Preview — ALL VARIATIONS */}
       <Card className="border-green-200 shadow-lg bg-gradient-to-br from-green-50 to-background dark:from-green-950/20 w-full">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-foreground text-lg flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-green-600" />
-              {t.eroweb.whatsappTemplate}
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => copyToClipboard(whatsAppMessage, 'whatsapp')}
-              className="gap-2"
-            >
-              {copiedWhatsApp ? (
-                <>
-                  <Check className="w-4 h-4 text-green-600" />
-                  {t.common.copied}
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  {t.common.copy}
-                </>
-              )}
-            </Button>
-          </div>
+          <CardTitle className="text-foreground text-lg flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-green-600" />
+            {t.eroweb.whatsappTemplate} ({allWhatsAppMessages.length} variací)
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="bg-background px-4 py-3 rounded-lg border border-border shadow-sm">
-            <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
-              {whatsAppMessage}
-            </pre>
-          </div>
-          <p className="text-xs text-muted-foreground mt-3">
-            💡 {t.eroweb.copyTip}
+        <CardContent className="space-y-4">
+          {allWhatsAppMessages.map((msg, i) => (
+            <div key={i} className="relative bg-background px-4 py-3 rounded-lg border border-border shadow-sm group">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-muted-foreground">
+                  {msg.startsWith('🎙️') ? '🎙️ Hlasovka' : `💬 Variace ${i + 1}`}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyToClipboard(msg.replace(/^🎙️ (HLASOVKA|VOICE SCRIPT|SPRACHNOTIZ|ГОЛОСОВОЕ):\n/, ''), 'whatsapp')}
+                  className="gap-1 h-7 text-xs"
+                >
+                  {copiedWhatsApp ? (
+                    <><Check className="w-3 h-3 text-green-600" /> {t.common.copied}</>
+                  ) : (
+                    <><Copy className="w-3 h-3" /> {t.common.copy}</>
+                  )}
+                </Button>
+              </div>
+              <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
+                {msg}
+              </pre>
+            </div>
+          ))}
+          <p className="text-xs text-muted-foreground">
+            💡 Vyber variaci, klikni Kopírovat a vlož do WhatsApp. Screenshot variaci (👆) pošli s fotkou webu na mobilu.
           </p>
         </CardContent>
       </Card>
