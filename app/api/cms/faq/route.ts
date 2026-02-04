@@ -28,6 +28,10 @@ export async function GET(request: NextRequest) {
         section: section || null,
         items: items || []
       }
+    }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=300',
+      },
     });
   } catch (error: any) {
     console.error('Error fetching FAQ data:', error);

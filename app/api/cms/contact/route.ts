@@ -10,6 +10,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: data || null
+    }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=300',
+      },
     });
   } catch (error: any) {
     console.error('Error fetching contact info:', error);

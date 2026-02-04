@@ -59,6 +59,10 @@ export async function GET(request: NextRequest) {
       total,
       limit,
       offset,
+    }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+      },
     });
   } catch (error: any) {
     console.error('Error fetching activity logs:', error);

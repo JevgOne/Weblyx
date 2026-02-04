@@ -90,7 +90,11 @@ export async function GET(request: NextRequest) {
     // Combine: legacy users first, then DB users
     const allAdmins = [...uniqueLegacyAdmins, ...safeDbAdmins];
 
-    return NextResponse.json({ admins: allAdmins });
+    return NextResponse.json({ admins: allAdmins }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+      },
+    });
   } catch (error: any) {
     console.error('Error fetching admins:', error);
     return NextResponse.json(

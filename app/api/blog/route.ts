@@ -43,6 +43,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: formattedPosts,
+    }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+      },
     });
   } catch (error: any) {
     console.error('Error fetching blog posts:', error);

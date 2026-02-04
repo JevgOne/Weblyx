@@ -78,6 +78,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: projects,
+    }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+      },
     });
   } catch (error) {
     console.error("Error fetching projects:", error);

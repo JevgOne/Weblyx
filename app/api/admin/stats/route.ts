@@ -16,7 +16,11 @@ export async function GET() {
       portfolio: Number(portfolioResult.rows[0].count) || 0,
     };
 
-    return NextResponse.json({ success: true, data: stats });
+    return NextResponse.json({ success: true, data: stats }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+      },
+    });
   } catch (error) {
     console.error("Error fetching stats:", error);
     return NextResponse.json(

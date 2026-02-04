@@ -60,7 +60,11 @@ export async function GET(req: NextRequest) {
       tasks = await getTasksForUser(user.id);
     }
 
-    return NextResponse.json({ tasks, stats });
+    return NextResponse.json({ tasks, stats }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+      },
+    });
   } catch (error: any) {
     console.error('Tasks GET error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -7,7 +7,11 @@ export const runtime = 'nodejs';
 export async function GET() {
   try {
     const data = await getFreeAuditData();
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=300',
+      },
+    });
   } catch (error: any) {
     console.error('Error fetching free audit data:', error);
     return NextResponse.json(
