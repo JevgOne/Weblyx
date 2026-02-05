@@ -191,6 +191,15 @@ export function middleware(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
   const hostname = request.headers.get('host') || '';
 
+  // WWW REDIRECT: Redirect weblyx.cz → www.weblyx.cz (301 permanent)
+  // This ensures Google indexes only the www version and resolves
+  // "Alternate page with proper canonical tag" issues in Search Console
+  if (hostname === 'weblyx.cz') {
+    const url = new URL(request.url);
+    url.host = 'www.weblyx.cz';
+    return NextResponse.redirect(url, 301);
+  }
+
   // Check if this is a whitelisted bot (used in multiple places)
   const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
 

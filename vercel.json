@@ -4,6 +4,19 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "destination": "https://www.weblyx.cz/:path",
+      "has": [
+        {
+          "type": "host",
+          "value": "weblyx.cz"
+        }
+      ],
+      "permanent": true
+    }
+  ],
   "git": {
     "deploymentEnabled": {
       "main": true
