@@ -23,6 +23,8 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
   const labels = tocLabels[locale] || tocLabels.cs;
   const [activeId, setActiveId] = useState<string>('');
 
+  const [isArticleVisible, setIsArticleVisible] = useState(true);
+
   useEffect(() => {
     const headingElements = headings
       .map((h) => document.getElementById(h.id))
@@ -48,6 +50,20 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
     return () => observer.disconnect();
   }, [headings]);
 
+  // Hide when scrolled past the article into the footer
+  useEffect(() => {
+    const article = document.getElementById('article-content');
+    if (!article) return;
+
+    const handleScroll = () => {
+      const rect = article.getBoundingClientRect();
+      setIsArticleVisible(rect.bottom > 200);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -60,7 +76,7 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <nav
-      className="hidden xl:block fixed top-28 w-52 max-h-[65vh] overflow-y-auto scrollbar-thin"
+      className={`hidden xl:block fixed top-28 w-52 max-h-[65vh] overflow-y-auto scrollbar-thin transition-opacity duration-300 ${isArticleVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       style={{ left: 'calc(50% + 22rem + 2.5rem)' }}
       aria-label={labels.title}
     >

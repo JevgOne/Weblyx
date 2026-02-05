@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Facebook, Twitter, Linkedin, Link as LinkIcon, Check, MessageCircle } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
@@ -34,6 +34,21 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
   const locale = useLocale() as 'cs' | 'de';
   const t = labels[locale] || labels.cs;
   const [copied, setCopied] = useState(false);
+  const [visible, setVisible] = useState(true);
+
+  // Hide when scrolled past the article into the footer
+  useEffect(() => {
+    const article = document.getElementById('article-content');
+    if (!article) return;
+
+    const handleScroll = () => {
+      const rect = article.getBoundingClientRect();
+      setVisible(rect.bottom > 200);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const baseUrl = locale === 'de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
   const fullUrl = `${baseUrl}${url}`;
@@ -72,7 +87,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
     <>
       {/* Desktop: Fixed left side */}
       <div
-        className="hidden xl:flex fixed top-1/3 flex-col gap-2 z-40"
+        className={`hidden xl:flex fixed top-1/3 flex-col gap-2 z-40 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         style={{ right: 'calc(50% + 22rem + 2.5rem)' }}
         aria-label={t.share}
       >
@@ -131,7 +146,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
       </div>
 
       {/* Mobile: Fixed bottom bar */}
-      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-card/90 backdrop-blur-md border-t border-neutral-100 dark:border-border px-4 py-2 flex items-center justify-center gap-3">
+      <div className={`xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-card/90 backdrop-blur-md border-t border-neutral-100 dark:border-border px-4 py-2 flex items-center justify-center gap-3 transition-transform duration-300 ${visible ? 'translate-y-0' : 'translate-y-full'}`}>
         <button
           onClick={copyToClipboard}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-neutral-200 dark:border-border text-neutral-600 dark:text-neutral-300 hover:text-primary hover:border-primary/30 transition-all"
