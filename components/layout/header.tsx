@@ -64,8 +64,10 @@ export function Header() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="md:hidden"
+            className="md:hidden p-2 rounded-md hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />

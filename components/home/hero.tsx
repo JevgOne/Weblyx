@@ -165,51 +165,18 @@ export async function Hero() {
               <div className="absolute -top-4 -right-4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
               <div className="absolute -bottom-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
 
-              {heroSection?.backgroundImage ? (
-                // Hero image from database
-                <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
-                  <Image
-                    src={heroSection.backgroundImage}
-                    alt={t('heroImageAlt')}
-                    width={600}
-                    height={400}
-                    priority
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
-                </div>
-              ) : (
-                // Modern placeholder
-                <div className="relative h-full w-full rounded-3xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-card via-background to-muted/50 backdrop-blur flex items-center justify-center overflow-hidden group hover:border-primary/50 transition-all duration-300">
-                  {/* Animated gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 animate-pulse"></div>
-
-                  <div className="relative text-center space-y-6 p-8">
-                    {/* Large W logo */}
-                    <div className="relative inline-block">
-                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl"></div>
-                      <div className="relative text-8xl font-bold bg-gradient-to-br from-primary via-primary to-primary/70 bg-clip-text text-transparent">
-                        W
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-lg font-semibold text-foreground">{t('heroPlaceholder')}</p>
-                      <p
-                        className="text-sm text-muted-foreground max-w-xs mx-auto"
-                        dangerouslySetInnerHTML={{ __html: t('heroPlaceholderDesc') }}
-                      />
-                    </div>
-
-                    {/* Upload hint */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                      <span>{t('heroAdminHint')}</span>
-                      <ArrowRight className="h-3 w-3" />
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
+                <Image
+                  src={heroSection?.backgroundImage || "/images/hero/hero-mascot.jpg"}
+                  alt={t('heroImageAlt')}
+                  width={600}
+                  height={400}
+                  priority
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                {/* Overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
+              </div>
             </div>
           </div>
         </div>
