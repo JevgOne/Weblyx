@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "⚡ Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
     url: "https://www.weblyx.cz/redesign-webu",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Redesign webu" }],
+    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Redesign webu" }],
   },
   twitter: {
     card: "summary_large_image",

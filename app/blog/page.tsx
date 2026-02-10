@@ -79,7 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t.ogDescription,
       url: `${brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz'}/blog`,
       type: "website",
-      images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: t.ogImageAlt }],
+      images: [{ url: "/images/og/og-blog.png", width: 1200, height: 630, alt: t.ogImageAlt }],
     },
     twitter: {
       card: "summary_large_image",

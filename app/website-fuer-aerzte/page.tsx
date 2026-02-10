@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       "⚡ Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung.",
     url: "https://seitelyx.de/website-fuer-aerzte",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Seitelyx - Website für Ärzte" }],
+    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Seitelyx - Website für Ärzte" }],
   },
   twitter: {
     card: "summary_large_image",

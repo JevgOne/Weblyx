@@ -48,7 +48,7 @@ export const metadata: Metadata = {
       "⚡ WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady.",
     url: "https://www.weblyx.cz/wordpress-alternativa",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - WordPress alternativa" }],
+    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - WordPress alternativa" }],
   },
   twitter: {
     card: "summary_large_image",

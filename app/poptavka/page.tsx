@@ -25,7 +25,7 @@ export const metadata: Metadata = isSeitelyx ? {
     description: "Füllen Sie das Formular aus und wir senden Ihnen innerhalb von 24 Stunden ein Angebot. Unverbindlich.",
     url: "https://www.seitelyx.de/anfrage",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Seitelyx - Anfrage" }],
+    images: [{ url: "/images/og/og-poptavka.png", width: 1200, height: 630, alt: "Seitelyx - Anfrage" }],
   },
   alternates: {
     canonical: "https://www.seitelyx.de/anfrage",
@@ -49,7 +49,7 @@ export const metadata: Metadata = isSeitelyx ? {
     description: "Vyplňte formulář a do 24 hodin vám pošleme návrh řešení s orientační cenou. Bez závazků.",
     url: "https://www.weblyx.cz/poptavka",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Nezávazná poptávka" }],
+    images: [{ url: "/images/og/og-poptavka.png", width: 1200, height: 630, alt: "Weblyx - Nezávazná poptávka" }],
   },
   alternates: {
     canonical: "https://www.weblyx.cz/poptavka",

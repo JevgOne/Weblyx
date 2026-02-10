@@ -29,7 +29,7 @@ export const metadata: Metadata = isSeitelyx ? {
     description: "Sehen Sie sich Beispiele von Websites und Online-Shops an, die wir für unsere Kunden erstellt haben.",
     url: "https://www.seitelyx.de/portfolio",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Seitelyx - Portfolio" }],
+    images: [{ url: "/images/og/og-portfolio.png", width: 1200, height: 630, alt: "Seitelyx - Portfolio" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -56,7 +56,7 @@ export const metadata: Metadata = isSeitelyx ? {
     description: "Podívejte se na ukázky webů a e-shopů, které jsme vytvořili pro naše klienty.",
     url: "https://www.weblyx.cz/portfolio",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Portfolio" }],
+    images: [{ url: "/images/og/og-portfolio.png", width: 1200, height: 630, alt: "Weblyx - Portfolio" }],
   },
   twitter: {
     card: "summary_large_image",

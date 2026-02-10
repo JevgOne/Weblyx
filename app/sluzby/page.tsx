@@ -54,14 +54,7 @@ export const metadata: Metadata = {
     description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
     url: "https://www.weblyx.cz/sluzby",
     type: "website",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Weblyx - Služby"
-      }
-    ],
+    images: [{ url: "/images/og/og-sluzby.png", width: 1200, height: 630, alt: "Weblyx - Služby" }],
   },
   twitter: {
     card: "summary_large_image",

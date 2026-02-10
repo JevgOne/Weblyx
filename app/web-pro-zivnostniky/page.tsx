@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní, SEO v ceně.",
     url: "https://www.weblyx.cz/web-pro-zivnostniky",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Weblyx - Web pro živnostníky" }],
+    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Web pro živnostníky" }],
   },
   twitter: {
     card: "summary_large_image",

@@ -213,6 +213,7 @@ export function getSEOMetadata(locale?: Locale, pageTitle?: string): Metadata {
       title: pageTitle || content.ogTitle,
       description: content.ogDescription,
       siteName: content.siteName,
+      images: [{ url: '/images/og/og-homepage.png', width: 1200, height: 630, alt: content.siteName }],
     },
     twitter: {
       card: 'summary_large_image',
