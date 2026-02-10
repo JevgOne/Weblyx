@@ -28,6 +28,7 @@ const WHITELISTED_BOTS = [
   'baiduspider',    // Baidu Search
   'yandexbot',      // Yandex Search
   'facebot',        // Facebook crawler
+  'facebookexternalhit', // Facebook Sharing Debugger
   'twitterbot',     // Twitter crawler
   'linkedinbot',    // LinkedIn crawler
   'discordbot',     // Discord link previews
