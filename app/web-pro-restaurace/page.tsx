@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek a rezervace.",
     url: "https://www.weblyx.cz/web-pro-restaurace",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Web pro restaurace" }],
+    images: [{ url: "/images/og/og-web-pro-restaurace.png", width: 1200, height: 630, alt: "Weblyx - Web pro restaurace" }],
   },
   twitter: {
     card: "summary_large_image",

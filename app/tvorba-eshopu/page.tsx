@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "⚡ Profesionální tvorba e-shopu na míru od 14 990 Kč. Rychlý internetový obchod s garancí PageSpeed 90+.",
     url: "https://www.weblyx.cz/tvorba-eshopu",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Tvorba e-shopu" }],
+    images: [{ url: "/images/og/og-tvorba-eshopu.png", width: 1200, height: 630, alt: "Weblyx - Tvorba e-shopu" }],
   },
   twitter: {
     card: "summary_large_image",

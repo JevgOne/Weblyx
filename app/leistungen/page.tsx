@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/og/og-homepage.png",
+        url: "/images/og/og-sluzby.png",
         width: 1200,
         height: 630,
         alt: "Seitelyx - Leistungen",

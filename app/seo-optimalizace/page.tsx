@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       "⚡ Profesionální SEO optimalizace od 5 000 Kč/měsíc. Optimalizace pro vyhledávače s garancí měřitelných výsledků.",
     url: "https://www.weblyx.cz/seo-optimalizace",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - SEO optimalizace" }],
+    images: [{ url: "/images/og/og-seo-optimalizace.png", width: 1200, height: 630, alt: "Weblyx - SEO optimalizace" }],
   },
   twitter: {
     card: "summary_large_image",

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description: "Profesionální audit rychlosti, SEO a bezpečnosti vašeho webu. Zdarma, do 48 hodin.",
     url: "https://www.weblyx.cz/audit",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Audit webu zdarma" }],
+    images: [{ url: "/images/og/og-audit.png", width: 1200, height: 630, alt: "Weblyx - Audit webu zdarma" }],
   },
   twitter: {
     card: "summary_large_image",

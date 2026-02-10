@@ -50,7 +50,7 @@ export const metadata: Metadata = {
       "⚡ Datenbasierter Vergleich WordPress vs Next.js: Core Web Vitals, Sicherheit, Kosten. Ab 320 €.",
     url: "https://seitelyx.de/wordpress-alternative",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Seitelyx - WordPress Alternative" }],
+    images: [{ url: "/images/og/og-wordpress-alternativa.png", width: 1200, height: 630, alt: "Seitelyx - WordPress Alternative" }],
   },
   twitter: {
     card: "summary_large_image",

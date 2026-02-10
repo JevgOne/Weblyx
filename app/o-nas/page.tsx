@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/og/og-homepage.png",
+        url: "/images/og/og-o-nas.png",
         width: 1200,
         height: 630,
         alt: "Weblyx - O nás"

@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "⚡ Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší.",
     url: "https://www.weblyx.cz/webnode-alternativa",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Webnode alternativa" }],
+    images: [{ url: "/images/og/og-webnode-alternativa.png", width: 1200, height: 630, alt: "Weblyx - Webnode alternativa" }],
   },
   twitter: {
     card: "summary_large_image",

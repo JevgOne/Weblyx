@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "⚡ Profesionální web pro právníky a advokátní kanceláře od 9 990 Kč.",
     url: "https://www.weblyx.cz/web-pro-pravniky",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Weblyx - Web pro právníky" }],
+    images: [{ url: "/images/og/og-web-pro-pravniky.png", width: 1200, height: 630, alt: "Weblyx - Web pro právníky" }],
   },
   twitter: {
     card: "summary_large_image",

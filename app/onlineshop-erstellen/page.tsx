@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       "⚡ Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce.",
     url: "https://seitelyx.de/onlineshop-erstellen",
     type: "website",
-    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630, alt: "Seitelyx - Onlineshop erstellen" }],
+    images: [{ url: "/images/og/og-tvorba-eshopu.png", width: 1200, height: 630, alt: "Seitelyx - Onlineshop erstellen" }],
   },
   twitter: {
     card: "summary_large_image",
