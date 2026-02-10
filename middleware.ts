@@ -72,7 +72,7 @@ const REQUIRED_BROWSER_KEYWORDS = ['mozilla', 'chrome', 'safari', 'firefox', 'ed
 // Suspicious query patterns (WordPress & malicious paths)
 // NOTE: 'admin' removed because we use /admin for our admin panel
 const SUSPICIOUS_QUERIES = [
-  'wp-admin', 'wp-login', 'wp-content', 'wordpress',
+  'wp-admin', 'wp-login', 'wp-content', 'wp-includes', 'wp-json',
   '.env', '.git', 'config', 'backup', 'database', 'dump', 'sql',
   'phpmyadmin', 'mysql', 'api-docs', 'swagger',
 ];
