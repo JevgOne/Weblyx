@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font, Svg, Path, Defs, Stop, LinearGradient } from '@react-pdf/renderer';
 import { WebAnalysisResult, PromoCode } from '@/types/cms';
 
 // Register fonts with UTF-8 support for Czech characters
@@ -37,26 +37,29 @@ const BLUE = '#3b82f6';
 const s = StyleSheet.create({
   page: { padding: 30, backgroundColor: '#ffffff', fontFamily: 'Roboto', fontSize: 10 },
   // Header
-  headerBanner: { backgroundColor: BRAND, padding: 20, marginBottom: 20, marginHorizontal: -30, marginTop: -30 },
+  headerBanner: { backgroundColor: BRAND_DARK, paddingVertical: 16, paddingHorizontal: 24, marginBottom: 20, marginHorizontal: -30, marginTop: -30 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  logoContainer: { flexDirection: 'row', alignItems: 'center' },
+  logoTextContainer: { marginLeft: 10 },
   logoRow: { flexDirection: 'row', alignItems: 'baseline' },
-  logoWeb: { fontSize: 24, fontWeight: 'bold', color: '#ffffff' },
-  logoLyx: { fontSize: 24, fontWeight: 'bold', color: '#FDB912' },
-  headerSub: { fontSize: 9, color: '#ffffff', marginTop: 4, opacity: 0.9 },
-  headerDate: { fontSize: 9, color: '#ffffff', fontWeight: 500 },
-  headerRight: { fontSize: 11, color: '#ffffff', fontWeight: 'bold', letterSpacing: 1 },
+  logoWeb: { fontSize: 22, fontWeight: 'bold', color: '#ffffff' },
+  logoLyx: { fontSize: 22, fontWeight: 'bold', color: BRAND },
+  headerSub: { fontSize: 7, color: '#94a3b8', marginTop: 2, letterSpacing: 1, textTransform: 'uppercase' },
+  headerDate: { fontSize: 8, color: '#94a3b8', fontWeight: 400 },
+  headerRight: { fontSize: 10, color: BRAND, fontWeight: 'bold', letterSpacing: 2, textTransform: 'uppercase' },
+  headerDivider: { width: 1, height: 30, backgroundColor: '#334155', marginHorizontal: 12 },
   // Title
   title: { fontSize: 22, fontWeight: 'bold', color: BRAND_DARK, marginBottom: 6 },
   subtitle: { fontSize: 12, color: BRAND, fontWeight: 500, marginBottom: 4 },
   dateText: { fontSize: 9, color: GRAY, marginBottom: 20 },
   // Score
-  scoreBox: { backgroundColor: '#f0fdfa', borderRadius: 12, padding: 24, alignItems: 'center', marginBottom: 16, borderWidth: 2, borderColor: BRAND, borderStyle: 'solid' },
-  scoreNumber: { fontSize: 52, fontWeight: 'bold', marginBottom: 4 },
-  scoreLabel: { fontSize: 11, color: GRAY, fontWeight: 500 },
-  scoreBadge: { marginTop: 8, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 50, color: '#ffffff', fontSize: 11, fontWeight: 'bold' },
+  scoreBox: { backgroundColor: BRAND_DARK, borderRadius: 12, padding: 24, alignItems: 'center', marginBottom: 16 },
+  scoreNumber: { fontSize: 56, fontWeight: 'bold', marginBottom: 2 },
+  scoreLabel: { fontSize: 10, color: '#94a3b8', fontWeight: 400, letterSpacing: 1, textTransform: 'uppercase' },
+  scoreBadge: { marginTop: 10, paddingHorizontal: 20, paddingVertical: 6, borderRadius: 50, color: '#ffffff', fontSize: 11, fontWeight: 'bold' },
   // Stats row
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
-  statCard: { flex: 1, backgroundColor: '#f9fafb', padding: 14, marginHorizontal: 4, borderRadius: 8, alignItems: 'center' },
+  statCard: { flex: 1, padding: 14, marginHorizontal: 4, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderStyle: 'solid' },
   statNum: { fontSize: 28, fontWeight: 'bold', marginBottom: 4 },
   statLabel: { fontSize: 8, color: GRAY, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 },
   // Section
@@ -96,19 +99,19 @@ const s = StyleSheet.create({
   perfBarFill: { height: '100%', borderRadius: 4 },
   perfValue: { width: 40, fontSize: 9, fontWeight: 'bold', textAlign: 'right' },
   // Security checklist
-  secRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
-  secIcon: { width: 14, fontSize: 9, marginRight: 4 },
-  secLabel: { fontSize: 9, color: BRAND_DARK },
+  secRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5, paddingVertical: 3, paddingHorizontal: 6, backgroundColor: '#f9fafb', borderRadius: 4 },
+  secIcon: { width: 16, fontSize: 10, marginRight: 6, fontWeight: 'bold' },
+  secLabel: { fontSize: 9, color: BRAND_DARK, flex: 1 },
   // Promo
   promoBox: { backgroundColor: '#fef3c7', padding: 16, borderRadius: 8, borderWidth: 2, borderColor: YELLOW, borderStyle: 'dashed', alignItems: 'center', marginBottom: 16 },
   promoTitle: { fontSize: 12, fontWeight: 'bold', color: '#92400e', marginBottom: 6 },
   promoCode: { fontSize: 22, fontWeight: 'bold', color: YELLOW, letterSpacing: 3, marginVertical: 8 },
   promoDetails: { fontSize: 9, color: '#78350f' },
   // CTA
-  ctaBox: { backgroundColor: BRAND, padding: 20, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
-  ctaTitle: { fontSize: 14, fontWeight: 'bold', color: '#ffffff', marginBottom: 6 },
-  ctaSub: { fontSize: 10, color: '#f0fdfa', marginBottom: 10 },
-  ctaContact: { fontSize: 8, color: '#ffffff', marginBottom: 2 },
+  ctaBox: { backgroundColor: BRAND_DARK, padding: 24, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
+  ctaTitle: { fontSize: 16, fontWeight: 'bold', color: BRAND, marginBottom: 6 },
+  ctaSub: { fontSize: 10, color: '#94a3b8', marginBottom: 12 },
+  ctaContact: { fontSize: 9, color: '#cbd5e1', marginBottom: 3 },
   // Footer
   footer: { position: 'absolute', bottom: 20, left: 30, right: 30, borderTopWidth: 1, borderTopColor: '#e5e7eb', paddingTop: 8 },
   footerText: { fontSize: 7, color: '#9ca3af', textAlign: 'center' },
@@ -162,19 +165,47 @@ const IssueCard = ({ issue }: { issue: { category: string; title: string; descri
   );
 };
 
-const Header = ({ date }: { date: string }) => (
+const LogoMark = () => (
+  <Svg width={36} height={36} viewBox="0 0 48 48">
+    <Defs>
+      <LinearGradient id="wGrad" x1="0" y1="0" x2="48" y2="48">
+        <Stop offset="0%" stopColor="#06B6D4" />
+        <Stop offset="100%" stopColor="#14B8A6" />
+      </LinearGradient>
+    </Defs>
+    {/* Background circle */}
+    <Path d="M24 0 A24 24 0 1 1 24 48 A24 24 0 1 1 24 0" fill="#1e293b" />
+    {/* Stylized W */}
+    <Path
+      d="M12 14 L18 34 L24 20 L30 34 L36 14"
+      stroke="#14B8A6"
+      strokeWidth={3.5}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const Header = ({ date, label }: { date: string; label?: string }) => (
   <View style={s.headerBanner}>
     <View style={s.headerRow}>
-      <View>
-        <View style={s.logoRow}>
-          <Text style={s.logoWeb}>Web</Text>
-          <Text style={s.logoLyx}>lyx</Text>
+      <View style={s.logoContainer}>
+        <LogoMark />
+        <View style={s.logoTextContainer}>
+          <View style={s.logoRow}>
+            <Text style={s.logoWeb}>Web</Text>
+            <Text style={s.logoLyx}>lyx</Text>
+          </View>
+          <Text style={s.headerSub}>Moderni weby s durazem na SEO</Text>
         </View>
-        <Text style={s.headerSub}>Moderni weby s durazem na SEO</Text>
       </View>
-      <View style={{ alignItems: 'flex-end' }}>
-        <Text style={s.headerRight}>ANALYZA WEBU</Text>
-        <Text style={s.headerDate}>{date}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={s.headerDivider} />
+        <View style={{ alignItems: 'flex-end' }}>
+          <Text style={s.headerRight}>{label || 'ANALYZA WEBU'}</Text>
+          <Text style={s.headerDate}>{date}</Text>
+        </View>
       </View>
     </View>
   </View>
@@ -182,7 +213,16 @@ const Header = ({ date }: { date: string }) => (
 
 const Footer = () => (
   <View style={s.footer} fixed>
-    <Text style={s.footerText}>Weblyx | info@weblyx.cz | +420 702 110 166 | www.weblyx.cz</Text>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Svg width={10} height={10} viewBox="0 0 48 48">
+          <Path d="M24 0 A24 24 0 1 1 24 48 A24 24 0 1 1 24 0" fill="#e2e8f0" />
+          <Path d="M12 14 L18 34 L24 20 L30 34 L36 14" stroke="#94a3b8" strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+        <Text style={[s.footerText, { marginLeft: 4 }]}>Weblyx</Text>
+      </View>
+      <Text style={s.footerText}>info@weblyx.cz | +420 702 110 166 | www.weblyx.cz</Text>
+    </View>
   </View>
 );
 
@@ -215,15 +255,15 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
         </View>
 
         <View style={s.statsRow}>
-          <View style={s.statCard}>
+          <View style={[s.statCard, { backgroundColor: '#fef2f2', borderColor: RED }]}>
             <Text style={[s.statNum, { color: RED }]}>{analysis.issueCount.critical}</Text>
             <Text style={s.statLabel}>Kriticke problemy</Text>
           </View>
-          <View style={s.statCard}>
+          <View style={[s.statCard, { backgroundColor: '#fffbeb', borderColor: YELLOW }]}>
             <Text style={[s.statNum, { color: YELLOW }]}>{analysis.issueCount.warning}</Text>
             <Text style={s.statLabel}>Varovani</Text>
           </View>
-          <View style={s.statCard}>
+          <View style={[s.statCard, { backgroundColor: '#eff6ff', borderColor: BLUE }]}>
             <Text style={[s.statNum, { color: BLUE }]}>{analysis.issueCount.info}</Text>
             <Text style={s.statLabel}>Informace</Text>
           </View>
@@ -252,7 +292,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
       {/* PAGE 2 - SEO Audit */}
       <Page size="A4" style={s.page}>
-        <Header date={date} />
+        <Header date={date} label="SEO AUDIT" />
 
         <Text style={s.sectionTitle}>SEO Audit</Text>
 
@@ -340,7 +380,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
       {/* PAGE 3 - Technical Details & Performance */}
       <Page size="A4" style={s.page}>
-        <Header date={date} />
+        <Header date={date} label="TECHNICKE DETAILY" />
 
         {/* Performance */}
         {perf && (
@@ -397,11 +437,11 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
         {sec && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Bezpecnost (Skore: {sec.securityScore}/100)</Text>
-            <View style={s.secRow}><Text style={s.secIcon}>{sec.headers.strictTransportSecurity ? '+' : '-'}</Text><Text style={s.secLabel}>HSTS (Strict-Transport-Security)</Text></View>
-            <View style={s.secRow}><Text style={s.secIcon}>{sec.headers.contentSecurityPolicy ? '+' : '-'}</Text><Text style={s.secLabel}>Content-Security-Policy</Text></View>
-            <View style={s.secRow}><Text style={s.secIcon}>{sec.headers.xFrameOptions ? '+' : '-'}</Text><Text style={s.secLabel}>X-Frame-Options</Text></View>
-            <View style={s.secRow}><Text style={s.secIcon}>{sec.headers.xContentTypeOptions ? '+' : '-'}</Text><Text style={s.secLabel}>X-Content-Type-Options</Text></View>
-            <View style={s.secRow}><Text style={s.secIcon}>{sec.headers.referrerPolicy ? '+' : '-'}</Text><Text style={s.secLabel}>Referrer-Policy</Text></View>
+            <View style={s.secRow}><Text style={[s.secIcon, { color: sec.headers.strictTransportSecurity ? GREEN : RED }]}>{sec.headers.strictTransportSecurity ? 'OK' : 'X'}</Text><Text style={s.secLabel}>HSTS (Strict-Transport-Security)</Text></View>
+            <View style={s.secRow}><Text style={[s.secIcon, { color: sec.headers.contentSecurityPolicy ? GREEN : RED }]}>{sec.headers.contentSecurityPolicy ? 'OK' : 'X'}</Text><Text style={s.secLabel}>Content-Security-Policy</Text></View>
+            <View style={s.secRow}><Text style={[s.secIcon, { color: sec.headers.xFrameOptions ? GREEN : RED }]}>{sec.headers.xFrameOptions ? 'OK' : 'X'}</Text><Text style={s.secLabel}>X-Frame-Options</Text></View>
+            <View style={s.secRow}><Text style={[s.secIcon, { color: sec.headers.xContentTypeOptions ? GREEN : RED }]}>{sec.headers.xContentTypeOptions ? 'OK' : 'X'}</Text><Text style={s.secLabel}>X-Content-Type-Options</Text></View>
+            <View style={s.secRow}><Text style={[s.secIcon, { color: sec.headers.referrerPolicy ? GREEN : RED }]}>{sec.headers.referrerPolicy ? 'OK' : 'X'}</Text><Text style={s.secLabel}>Referrer-Policy</Text></View>
             {sec.mixedContent && (
               <Text style={{ fontSize: 9, color: RED, marginTop: 6 }}>Mixed content detekovan!</Text>
             )}
@@ -450,7 +490,7 @@ export const WebAnalysisReport: React.FC<PDFReportProps> = ({ analysis, promoCod
 
       {/* PAGE 4 - Recommendations & CTA */}
       <Page size="A4" style={s.page}>
-        <Header date={date} />
+        <Header date={date} label="DOPORUCENI" />
 
         <Text style={s.sectionTitle}>Vsechna doporuceni</Text>
 
