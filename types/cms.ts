@@ -338,6 +338,33 @@ export interface WebAnalysisTechnical {
     h6: number;
   };
 
+  // Canonical & OG
+  canonicalUrl?: string | null;
+  hasCanonical: boolean;
+  ogTags: { title?: string; description?: string; image?: string; url?: string };
+  hasOgTags: boolean;
+  twitterCard: { card?: string; title?: string; description?: string; image?: string };
+  hasTwitterCard: boolean;
+  hreflangTags: string[];
+
+  // Favicon & Lang
+  hasFavicon: boolean;
+  htmlLang?: string | null;
+  hasLangAttribute: boolean;
+
+  // DOM metrics
+  domElementCount: number;
+  inlineStyleCount: number;
+  pageSize: number;
+
+  // Image optimization
+  imagesWithLazyLoading: number;
+  imagesWithModernFormat: number;
+
+  // Heading order & broken links
+  headingOrder: string[];
+  brokenInternalLinks: string[];
+
   // Images & Links
   imagesWithoutAlt: number;
   totalImages: number;
@@ -361,6 +388,7 @@ export interface WebAnalysisContent {
   readabilityLevel: 'very-easy' | 'easy' | 'moderate' | 'difficult' | 'very-difficult';
   averageWordsPerSentence: number;
   language?: string;
+  topKeywords: Array<{ word: string; count: number }>;
 }
 
 export interface WebAnalysisTechnology {
@@ -403,6 +431,11 @@ export interface WebAnalysisPerformance {
   hasCompression: boolean;
   hasCaching: boolean;
   largeImages: number; // count of images > 100KB
+  scriptCount: number;
+  stylesheetCount: number;
+  imageCount: number;
+  thirdPartyRequests: number;
+  hasLazyLoading: boolean;
 }
 
 export interface WebAnalysisIssue {

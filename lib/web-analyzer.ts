@@ -15,6 +15,38 @@ interface AnalyzeOptions {
   timeout?: number;
 }
 
+// Stop words for keyword extraction (CZ + EN)
+const STOP_WORDS = new Set([
+  // Czech
+  'a', 'aby', 'aj', 'ale', 'ani', 'asi', 'az', 'bez', 'bude', 'budem', 'budes',
+  'by', 'byl', 'byla', 'byli', 'bylo', 'byt', 'ci', 'clanek', 'co', 'com',
+  'cz', 'da', 'do', 'ho', 'i', 'ja', 'jak', 'jako', 'je', 'jeho', 'jej',
+  'jeji', 'jen', 'jeste', 'ji', 'jine', 'jiz', 'jsem', 'jsi', 'jsme', 'jsou',
+  'jste', 'k', 'kam', 'kde', 'kdo', 'kdyz', 'ke', 'ktera', 'ktere', 'kteri',
+  'kterou', 'ktery', 'ma', 'mate', 'me', 'mezi', 'mi', 'mit', 'mne', 'mnou',
+  'muj', 'muze', 'my', 'na', 'nad', 'nam', 'nas', 'nase', 'ne', 'nebo',
+  'necht', 'nei', 'nejaka', 'nejaky', 'nejakych', 'neni', 'nez', 'nic',
+  'nich', 'nim', 'o', 'od', 'on', 'ona', 'oni', 'ono', 'pak', 'po', 'pod',
+  'podle', 'pokud', 'pouze', 'prave', 'pred', 'pres', 'pri', 'pro', 'proc',
+  'proto', 'protoze', 'prvni', 'pta', 're', 's', 'se', 'si', 'sice', 'sve',
+  'svuj', 'ta', 'tak', 'take', 'takze', 'tato', 'te', 'ten', 'tedy', 'teto',
+  'tim', 'to', 'tohle', 'toho', 'tom', 'tomto', 'toto', 'tu', 'tuto', 'ty',
+  'tyto', 'u', 'uz', 'v', 'vam', 'vas', 'vase', 've', 'vice', 'vsak', 'vsechno',
+  'vy', 'z', 'za', 'zda', 'zde', 'ze',
+  // English
+  'the', 'be', 'to', 'of', 'and', 'in', 'that', 'have', 'it', 'for', 'not',
+  'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by',
+  'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one',
+  'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about',
+  'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time',
+  'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your',
+  'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now',
+  'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after',
+  'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new',
+  'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'are', 'is',
+  'was', 'were', 'been', 'has', 'had', 'did', 'www', 'http', 'https',
+]);
+
 export class WebAnalyzer {
   private url: string;
   private html: string = '';
@@ -62,6 +94,7 @@ export class WebAnalyzer {
     if (!this.$) throw new Error('No HTML loaded');
 
     const $ = this.$;
+    const hostname = new URL(this.url).hostname;
 
     // Meta tags
     const title = $('title').text() || null;
@@ -82,10 +115,72 @@ export class WebAnalyzer {
       h6: $('h6').length,
     };
 
+    // Heading order for hierarchy check
+    const headingOrder: string[] = [];
+    $('h1, h2, h3, h4, h5, h6').each((_, el) => {
+      headingOrder.push(el.tagName.toLowerCase());
+    });
+
+    // Canonical URL
+    const canonicalUrl = $('link[rel="canonical"]').attr('href') || null;
+    const hasCanonical = !!canonicalUrl;
+
+    // Open Graph tags
+    const ogTags = {
+      title: $('meta[property="og:title"]').attr('content'),
+      description: $('meta[property="og:description"]').attr('content'),
+      image: $('meta[property="og:image"]').attr('content'),
+      url: $('meta[property="og:url"]').attr('content'),
+    };
+    const hasOgTags = !!(ogTags.title || ogTags.description || ogTags.image);
+
+    // Twitter Card tags
+    const twitterCard = {
+      card: $('meta[name="twitter:card"]').attr('content'),
+      title: $('meta[name="twitter:title"]').attr('content'),
+      description: $('meta[name="twitter:description"]').attr('content'),
+      image: $('meta[name="twitter:image"]').attr('content'),
+    };
+    const hasTwitterCard = !!(twitterCard.card || twitterCard.title);
+
+    // Hreflang tags
+    const hreflangTags: string[] = [];
+    $('link[rel="alternate"][hreflang]').each((_, el) => {
+      const lang = $(el).attr('hreflang');
+      if (lang) hreflangTags.push(lang);
+    });
+
+    // Favicon
+    const hasFavicon = $('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').length > 0;
+
+    // HTML lang attribute
+    const htmlLang = $('html').attr('lang') || null;
+    const hasLangAttribute = !!htmlLang;
+
+    // DOM metrics
+    const domElementCount = $('*').length;
+    const inlineStyleCount = $('[style]').length;
+    const pageSize = Math.round(this.html.length / 1024); // KB
+
     // Images
     const images = $('img');
     const totalImages = images.length;
     const imagesWithoutAlt = images.filter((_, el) => !$(el).attr('alt')).length;
+
+    // Image optimization
+    let imagesWithLazyLoading = 0;
+    let imagesWithModernFormat = 0;
+    images.each((_, el) => {
+      const loading = $(el).attr('loading');
+      if (loading === 'lazy') imagesWithLazyLoading++;
+      const src = $(el).attr('src') || '';
+      if (src.match(/\.(webp|avif)/i)) imagesWithModernFormat++;
+    });
+    // Also check <source> elements in <picture> for modern formats
+    $('picture source').each((_, el) => {
+      const type = $(el).attr('type') || '';
+      if (type.includes('webp') || type.includes('avif')) imagesWithModernFormat++;
+    });
 
     // Links
     const links = $('a[href]');
@@ -94,9 +189,9 @@ export class WebAnalyzer {
 
     links.each((_, el) => {
       const href = $(el).attr('href') || '';
-      if (href.startsWith('http') && !href.includes(new URL(this.url).hostname)) {
+      if (href.startsWith('http') && !href.includes(hostname)) {
         externalLinks++;
-      } else if (!href.startsWith('http') || href.includes(new URL(this.url).hostname)) {
+      } else if (!href.startsWith('http') || href.includes(hostname)) {
         internalLinks++;
       }
     });
@@ -117,6 +212,23 @@ export class WebAnalyzer {
       hasH1: headingsStructure.h1 > 0,
       h1Count: headingsStructure.h1,
       headingsStructure,
+      canonicalUrl,
+      hasCanonical,
+      ogTags,
+      hasOgTags,
+      twitterCard,
+      hasTwitterCard,
+      hreflangTags,
+      hasFavicon,
+      htmlLang,
+      hasLangAttribute,
+      domElementCount,
+      inlineStyleCount,
+      pageSize,
+      imagesWithLazyLoading,
+      imagesWithModernFormat,
+      headingOrder,
+      brokenInternalLinks: [], // Filled by checkBrokenLinks()
       imagesWithoutAlt,
       totalImages,
       internalLinks,
@@ -148,6 +260,64 @@ export class WebAnalyzer {
     } catch {
       return false;
     }
+  }
+
+  async checkBrokenLinks(): Promise<string[]> {
+    if (!this.$) return [];
+
+    const $ = this.$;
+    const hostname = new URL(this.url).hostname;
+    const brokenLinks: string[] = [];
+
+    // Collect internal links (max 10 sampled)
+    const internalUrls: string[] = [];
+    $('a[href]').each((_, el) => {
+      const href = $(el).attr('href') || '';
+      if (href.startsWith('/') || href.includes(hostname)) {
+        try {
+          const fullUrl = href.startsWith('/') ? new URL(href, this.url).toString() : href;
+          if (!internalUrls.includes(fullUrl)) {
+            internalUrls.push(fullUrl);
+          }
+        } catch {
+          // Skip invalid URLs
+        }
+      }
+    });
+
+    // Sample max 10 links
+    const sampled = internalUrls.slice(0, 10);
+
+    const results = await Promise.allSettled(
+      sampled.map(async (linkUrl) => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          const response = await fetch(linkUrl, {
+            method: 'HEAD',
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+          });
+          clearTimeout(timeoutId);
+          if (!response.ok) {
+            return linkUrl;
+          }
+          return null;
+        } catch {
+          return linkUrl;
+        }
+      })
+    );
+
+    for (const result of results) {
+      if (result.status === 'fulfilled' && result.value) {
+        brokenLinks.push(result.value);
+      }
+    }
+
+    return brokenLinks;
   }
 
   identifyIssues(
@@ -270,7 +440,146 @@ export class WebAnalyzer {
       });
     }
 
-    // NEW: Content issues
+    // NEW: Canonical URL
+    if (!technical.hasCanonical) {
+      issues.push({
+        category: 'warning',
+        title: 'Chybí canonical URL',
+        description: 'Stránka nemá definovaný kanonický odkaz',
+        impact: 'Riziko duplicitního obsahu v indexu vyhledávačů',
+        recommendation: 'Přidat <link rel="canonical"> s preferovanou URL'
+      });
+    }
+
+    // NEW: OG Tags
+    if (!technical.hasOgTags) {
+      issues.push({
+        category: 'warning',
+        title: 'Chybí Open Graph tagy',
+        description: 'Stránka nemá definované OG meta tagy pro sociální sítě',
+        impact: 'Špatný náhled při sdílení na Facebooku, LinkedInu atd.',
+        recommendation: 'Přidat og:title, og:description a og:image meta tagy'
+      });
+    }
+
+    // NEW: Twitter Card
+    if (!technical.hasTwitterCard) {
+      issues.push({
+        category: 'info',
+        title: 'Chybí Twitter Card tagy',
+        description: 'Stránka nemá definované Twitter Card meta tagy',
+        impact: 'Špatný náhled při sdílení na Twitteru/X',
+        recommendation: 'Přidat twitter:card, twitter:title a twitter:image meta tagy'
+      });
+    }
+
+    // NEW: Favicon
+    if (!technical.hasFavicon) {
+      issues.push({
+        category: 'warning',
+        title: 'Chybí favicon',
+        description: 'Web nemá definovanou ikonu (favicon)',
+        impact: 'Neprofesionální vzhled v záložce prohlížeče a ve výsledcích vyhledávání',
+        recommendation: 'Přidat favicon ve formátu SVG nebo ICO'
+      });
+    }
+
+    // NEW: Lang attribute
+    if (!technical.hasLangAttribute) {
+      issues.push({
+        category: 'info',
+        title: 'Chybí lang atribut',
+        description: 'HTML element nemá definovaný jazyk (lang atribut)',
+        impact: 'Přístupnost a správné zpracování textu prohlížečem/čtečkou',
+        recommendation: 'Přidat lang="cs" (nebo odpovídající jazyk) na <html> element'
+      });
+    }
+
+    // NEW: Large DOM
+    if (technical.domElementCount > 3000) {
+      issues.push({
+        category: 'critical',
+        title: 'Příliš velký DOM',
+        description: `Stránka má ${technical.domElementCount} DOM elementů (doporučeno < 1500)`,
+        impact: 'Výrazně zpomaluje vykreslování a interakci, zejména na mobilech',
+        recommendation: 'Zjednodušit HTML strukturu, odstranit zbytečné vnořené elementy'
+      });
+    } else if (technical.domElementCount > 1500) {
+      issues.push({
+        category: 'warning',
+        title: 'Velký DOM',
+        description: `Stránka má ${technical.domElementCount} DOM elementů (doporučeno < 1500)`,
+        impact: 'Může zpomalovat vykreslování a zvyšovat spotřebu paměti',
+        recommendation: 'Optimalizovat HTML strukturu, zvážit lazy rendering'
+      });
+    }
+
+    // NEW: Inline styles
+    if (technical.inlineStyleCount > 20) {
+      issues.push({
+        category: 'info',
+        title: 'Příliš mnoho inline stylů',
+        description: `Nalezeno ${technical.inlineStyleCount} elementů s inline stylem`,
+        impact: 'Těžší údržba, větší HTML, nemožnost cachovat styly',
+        recommendation: 'Přesunout inline styly do externího CSS souboru'
+      });
+    }
+
+    // NEW: Images without lazy loading
+    if (technical.totalImages > 3 && technical.imagesWithLazyLoading === 0) {
+      issues.push({
+        category: 'warning',
+        title: 'Obrázky bez lazy loading',
+        description: `Žádný z ${technical.totalImages} obrázků nepoužívá lazy loading`,
+        impact: 'Všechny obrázky se načítají najednou, zpomaluje initial load',
+        recommendation: 'Přidat loading="lazy" na obrázky pod ohybem stránky'
+      });
+    }
+
+    // NEW: No modern image formats
+    if (technical.totalImages > 0 && technical.imagesWithModernFormat === 0) {
+      issues.push({
+        category: 'info',
+        title: 'Chybí moderní formáty obrázků',
+        description: 'Web nepoužívá WebP nebo AVIF formáty pro obrázky',
+        impact: 'Větší velikost obrázků, pomalejší načítání',
+        recommendation: 'Konvertovat obrázky do WebP/AVIF formátu (30-50% úspora)'
+      });
+    }
+
+    // NEW: Heading hierarchy
+    if (technical.headingOrder.length > 0) {
+      const levels = technical.headingOrder.map(h => parseInt(h.replace('h', '')));
+      let hasSkip = false;
+      for (let i = 1; i < levels.length; i++) {
+        if (levels[i] - levels[i - 1] > 1) {
+          hasSkip = true;
+          break;
+        }
+      }
+      if (hasSkip) {
+        issues.push({
+          category: 'warning',
+          title: 'Nesprávná hierarchie nadpisů',
+          description: `Nadpisy přeskakují úrovně (${technical.headingOrder.slice(0, 8).join(' → ')})`,
+          impact: 'Špatná struktura pro vyhledávače a přístupnost',
+          recommendation: 'Dodržet postupnou hierarchii: H1 → H2 → H3 bez přeskakování'
+        });
+      }
+    }
+
+    // NEW: Broken internal links
+    if (technical.brokenInternalLinks.length > 0) {
+      issues.push({
+        category: 'critical',
+        title: 'Nefunkční interní odkazy',
+        description: `Nalezeno ${technical.brokenInternalLinks.length} nefunkčních interních odkazů`,
+        impact: 'Špatná uživatelská zkušenost, plýtvání crawl budgetem',
+        recommendation: 'Opravit nebo odstranit nefunkční odkazy: ' + technical.brokenInternalLinks.slice(0, 3).join(', ')
+      });
+    }
+
+    // Content issues
     if (content) {
       if (content.wordCount < 300) {
         issues.push({
@@ -293,7 +602,7 @@ export class WebAnalyzer {
       }
     }
 
-    // NEW: Security issues
+    // Security issues
     if (security) {
       if (security.securityScore < 50) {
         issues.push({
@@ -324,7 +633,7 @@ export class WebAnalyzer {
       }
     }
 
-    // NEW: Performance issues
+    // Performance issues
     if (performance) {
       if (performance.estimatedScore < 50) {
         issues.push({
@@ -400,13 +709,6 @@ export class WebAnalyzer {
     const hasSecurityIssues = issues.some(i => i.title.includes('bezpečnost') || i.title.includes('Security'));
     const hasSEOIssues = issues.some(i => i.title.includes('SEO') || i.category === 'critical');
 
-    // Score ranges:
-    // 90-100: Excellent (minor improvements)
-    // 75-89: Good (needs optimization)
-    // 50-74: Poor (needs major work)
-    // 0-49: Critical (needs complete rebuild)
-
-    // KRITICKÝ STAV (0-49 bodů) - Potřebuje kompletní rebuild
     if (score < 50 || criticalCount >= 4) {
       return {
         packageId: 'premium',
@@ -423,7 +725,6 @@ export class WebAnalyzer {
       };
     }
 
-    // VÁŽNÉ PROBLÉMY (50-64 bodů) - Potřebuje velké úpravy
     if (score < 65 || (criticalCount >= 2 && warningCount >= 2)) {
       if (hasSecurityIssues && hasPerformanceIssues) {
         return {
@@ -455,7 +756,6 @@ export class WebAnalyzer {
       };
     }
 
-    // STŘEDNÍ PROBLÉMY (65-74 bodů) - Potřebuje optimalizaci
     if (score < 75 || (criticalCount >= 1 && warningCount >= 2)) {
       if (hasSEOIssues && !technical.mobileResponsive) {
         return {
@@ -487,7 +787,6 @@ export class WebAnalyzer {
       };
     }
 
-    // DROBNÉ PROBLÉMY (75-89 bodů) - Potřebuje vylepšení
     if (score < 90) {
       if (warningCount >= 2 || infoCount >= 3) {
         return {
@@ -519,7 +818,6 @@ export class WebAnalyzer {
       };
     }
 
-    // VÝBORNÝ STAV (90-100 bodů) - Minimální problémy
     return {
       packageId: 'start',
       packageName: 'Landing Page',
@@ -535,7 +833,7 @@ export class WebAnalyzer {
     };
   }
 
-  // Content Analysis - Readability & Word Count
+  // Content Analysis - Readability & Word Count + Top Keywords
   analyzeContent(): WebAnalysisContent {
     if (!this.$) throw new Error('No HTML loaded');
 
@@ -553,11 +851,11 @@ export class WebAnalyzer {
 
       // Word count
       const words = bodyText.split(/\s+/).filter(w => w.length > 0);
-      const wordCount = Math.max(1, words.length); // Minimum 1 to avoid division by zero
+      const wordCount = Math.max(1, words.length);
 
       // Sentence count (approximate)
       const sentences = bodyText.split(/[.!?]+/).filter(s => s.trim().length > 0);
-      const sentenceCount = Math.max(1, sentences.length); // Minimum 1
+      const sentenceCount = Math.max(1, sentences.length);
 
       // Paragraph count
       const paragraphCount = $('p').length;
@@ -565,27 +863,26 @@ export class WebAnalyzer {
       // Average words per sentence
       const averageWordsPerSentence = Math.round(wordCount / sentenceCount);
 
-    // Syllable count (approximate for English)
-    const countSyllables = (word: string): number => {
-      try {
-        word = word.toLowerCase().replace(/[^a-z]/g, '');
-        if (word.length === 0) return 1; // Empty word
-        if (word.length <= 3) return 1;
-        const vowels = word.match(/[aeiouy]+/g);
-        let syllables = vowels ? vowels.length : 1;
-        if (word.endsWith('e')) syllables--;
-        if (word.endsWith('le') && word.length > 2) syllables++;
-        return Math.max(1, syllables);
-      } catch (e) {
-        return 1; // Fallback on error
-      }
-    };
+      // Syllable count (approximate for English)
+      const countSyllables = (word: string): number => {
+        try {
+          word = word.toLowerCase().replace(/[^a-z]/g, '');
+          if (word.length === 0) return 1;
+          if (word.length <= 3) return 1;
+          const vowels = word.match(/[aeiouy]+/g);
+          let syllables = vowels ? vowels.length : 1;
+          if (word.endsWith('e')) syllables--;
+          if (word.endsWith('le') && word.length > 2) syllables++;
+          return Math.max(1, syllables);
+        } catch (e) {
+          return 1;
+        }
+      };
 
-    const totalSyllables = words.reduce((sum, word) => sum + countSyllables(word), 0);
-    const syllablesPerWord = wordCount > 0 ? totalSyllables / wordCount : 1;
+      const totalSyllables = words.reduce((sum, word) => sum + countSyllables(word), 0);
+      const syllablesPerWord = wordCount > 0 ? totalSyllables / wordCount : 1;
 
       // Flesch Reading Ease Score
-      // Formula: 206.835 - 1.015 × (words/sentences) - 84.6 × (syllables/words)
       const readabilityScore = Math.round(
         206.835 - 1.015 * (wordCount / sentenceCount) - 84.6 * syllablesPerWord
       );
@@ -598,6 +895,19 @@ export class WebAnalyzer {
       else if (readabilityScore >= 20) readabilityLevel = 'difficult';
       else readabilityLevel = 'very-difficult';
 
+      // Top keywords extraction
+      const wordFreq: Record<string, number> = {};
+      words.forEach(w => {
+        const clean = w.toLowerCase().replace(/[^a-záčďéěíňóřšťúůýž]/gi, '');
+        if (clean.length >= 3 && !STOP_WORDS.has(clean)) {
+          wordFreq[clean] = (wordFreq[clean] || 0) + 1;
+        }
+      });
+      const topKeywords = Object.entries(wordFreq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([word, count]) => ({ word, count }));
+
       return {
         wordCount,
         paragraphCount,
@@ -605,9 +915,9 @@ export class WebAnalyzer {
         readabilityScore: Math.max(0, Math.min(100, readabilityScore)),
         readabilityLevel,
         averageWordsPerSentence,
+        topKeywords,
       };
     } catch (error: any) {
-      // Fallback on error
       console.error('Content analysis error:', error);
       return {
         wordCount: 0,
@@ -616,6 +926,7 @@ export class WebAnalyzer {
         readabilityScore: 50,
         readabilityLevel: 'moderate',
         averageWordsPerSentence: 0,
+        topKeywords: [],
       };
     }
   }
@@ -735,7 +1046,6 @@ export class WebAnalyzer {
       securityHeaders.xContentTypeOptions = headers.has('x-content-type-options');
       securityHeaders.referrerPolicy = headers.has('referrer-policy');
 
-      // Deduct points for missing headers
       if (!securityHeaders.strictTransportSecurity) score -= 20;
       if (!securityHeaders.contentSecurityPolicy) score -= 20;
       if (!securityHeaders.xFrameOptions) score -= 15;
@@ -745,12 +1055,10 @@ export class WebAnalyzer {
       score = 0;
     }
 
-    // Check for mixed content (http resources on https page)
     const mixedContent = this.url.startsWith('https://') &&
       this.html.includes('http://') &&
       !this.html.match(/http:\/\/localhost/);
 
-    // Check HTTPS redirect
     const httpsRedirect = this.url.startsWith('https://');
 
     return {
@@ -766,29 +1074,38 @@ export class WebAnalyzer {
     if (!this.$) throw new Error('No HTML loaded');
 
     const $ = this.$;
+    const hostname = new URL(this.url).hostname;
 
     // Count resources
-    const scripts = $('script[src]').length;
-    const stylesheets = $('link[rel="stylesheet"]').length;
-    const images = $('img[src]').length;
-    const totalResources = scripts + stylesheets + images;
+    const scriptCount = $('script[src]').length;
+    const stylesheetCount = $('link[rel="stylesheet"]').length;
+    const imageCount = $('img[src]').length;
+    const totalResources = scriptCount + stylesheetCount + imageCount;
+
+    // Count third-party requests
+    let thirdPartyRequests = 0;
+    $('script[src], link[href], img[src]').each((_, el) => {
+      const src = $(el).attr('src') || $(el).attr('href') || '';
+      if (src.startsWith('http') && !src.includes(hostname)) {
+        thirdPartyRequests++;
+      }
+    });
+
+    // Check for lazy loading
+    const hasLazyLoading = $('img[loading="lazy"]').length > 0;
 
     // Estimate size (very rough approximation)
     const htmlSize = this.html.length / 1024; // KB
     const estimatedResourcesSize = Math.round(
       htmlSize +
-      scripts * 50 + // avg 50KB per script
-      stylesheets * 30 + // avg 30KB per stylesheet
-      images * 100 // avg 100KB per image
+      scriptCount * 50 +
+      stylesheetCount * 30 +
+      imageCount * 100
     );
 
-    // Check for compression
     const hasCompression = this.responseHeaders?.has('content-encoding') || false;
-
-    // Check for caching
     const hasCaching = this.responseHeaders?.has('cache-control') || false;
 
-    // Count large images (those with "width" or "height" attributes suggesting large size)
     let largeImages = 0;
     $('img').each((_, el) => {
       const width = $(el).attr('width');
@@ -819,6 +1136,11 @@ export class WebAnalyzer {
       hasCompression,
       hasCaching,
       largeImages,
+      scriptCount,
+      stylesheetCount,
+      imageCount,
+      thirdPartyRequests,
+      hasLazyLoading,
     };
   }
 
@@ -831,20 +1153,22 @@ export class WebAnalyzer {
     // Analyze technical aspects
     const technical = this.analyzeTechnical();
 
-    // NEW: Run extended analysis
+    // Run extended analysis
     const content = this.analyzeContent();
     const technology = this.analyzeTechnology();
     const security = this.analyzeSecurity();
     const performance = this.analyzePerformance();
 
-    // Check sitemap and robots.txt
-    const [hasSitemap, hasRobotsTxt] = await Promise.all([
+    // Check sitemap, robots.txt, and broken links in parallel
+    const [hasSitemap, hasRobotsTxt, brokenLinks] = await Promise.all([
       this.checkSitemap(),
-      this.checkRobotsTxt()
+      this.checkRobotsTxt(),
+      this.checkBrokenLinks(),
     ]);
 
     technical.hasSitemap = hasSitemap;
     technical.hasRobotsTxt = hasRobotsTxt;
+    technical.brokenInternalLinks = brokenLinks;
     technical.loadTime = Date.now() - startTime;
 
     // Identify issues (now with extended data)

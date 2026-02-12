@@ -1,3 +1,8 @@
+/**
+ * @deprecated This file contains the old Puppeteer-based HTML template for PDF generation.
+ * It has been replaced by lib/pdf-generator.tsx which uses @react-pdf/renderer.
+ * Kept as reference only. Do not use in new code.
+ */
 import { WebAnalysisResult, PromoCode } from '@/types/cms';
 
 // Weblyx Brand Colors

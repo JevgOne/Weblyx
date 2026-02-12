@@ -356,7 +356,120 @@ export default function WebAnalyzerPage() {
             </CardContent>
           </Card>
 
-          {/* NEW: Content Analysis */}
+          {/* SEO Audit */}
+          <Card>
+            <CardHeader>
+              <CardTitle>SEO Audit</CardTitle>
+              <CardDescription>Checklist klíčových SEO prvků</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {[
+                  { label: "Title tag", ok: !!analysis.technical.title },
+                  { label: "Meta description", ok: !!analysis.technical.description },
+                  { label: "H1 nadpis", ok: analysis.technical.hasH1 },
+                  { label: "Canonical URL", ok: analysis.technical.hasCanonical },
+                  { label: "Open Graph tagy", ok: analysis.technical.hasOgTags },
+                  { label: "Twitter Card", ok: analysis.technical.hasTwitterCard },
+                  { label: "Sitemap.xml", ok: analysis.technical.hasSitemap },
+                  { label: "Robots.txt", ok: analysis.technical.hasRobotsTxt },
+                  { label: "Schema markup", ok: analysis.technical.schemaMarkup },
+                  { label: "Favicon", ok: analysis.technical.hasFavicon },
+                  { label: "Lang atribut", ok: analysis.technical.hasLangAttribute },
+                  { label: "SSL/HTTPS", ok: analysis.technical.hasSSL },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-sm">
+                    {item.ok ? (
+                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                    )}
+                    <span className={item.ok ? "" : "text-muted-foreground"}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+              {analysis.technical.hreflangTags.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm font-medium mb-1">Hreflang jazyky:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {analysis.technical.hreflangTags.map((lang, idx) => (
+                      <Badge key={idx} variant="outline" className="text-xs">{lang}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {analysis.technical.brokenInternalLinks.length > 0 && (
+                <div className="mt-4 p-3 bg-red-50 rounded-lg">
+                  <p className="text-sm font-medium text-red-700 mb-1">
+                    Nefunkční interní odkazy ({analysis.technical.brokenInternalLinks.length}):
+                  </p>
+                  {analysis.technical.brokenInternalLinks.slice(0, 5).map((link, idx) => (
+                    <p key={idx} className="text-xs text-red-600 truncate">{link}</p>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Top Keywords & DOM Metrics */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Top Keywords */}
+            {analysis.content?.topKeywords && analysis.content.topKeywords.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Top klíčová slova</CardTitle>
+                  <CardDescription>Nejčastější slova na stránce</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {analysis.content.topKeywords.map((kw, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{kw.word}</span>
+                        <Badge variant="secondary">{kw.count}x</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* DOM Metrics */}
+            <Card>
+              <CardHeader>
+                <CardTitle>DOM & Obrázky</CardTitle>
+                <CardDescription>Technické metriky stránky</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">DOM elementy:</span>
+                    <span className={`font-medium ${analysis.technical.domElementCount > 3000 ? 'text-red-600' : analysis.technical.domElementCount > 1500 ? 'text-yellow-600' : ''}`}>
+                      {analysis.technical.domElementCount}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Inline styly:</span>
+                    <span className="font-medium">{analysis.technical.inlineStyleCount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Velikost HTML:</span>
+                    <span className="font-medium">{analysis.technical.pageSize} KB</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Lazy loading:</span>
+                    <span className="font-medium">{analysis.technical.imagesWithLazyLoading} / {analysis.technical.totalImages}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">WebP/AVIF:</span>
+                    <span className="font-medium">{analysis.technical.imagesWithModernFormat}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Content Analysis */}
           {(analysis as any).content && (
             <Card>
               <CardHeader>
@@ -731,14 +844,14 @@ export default function WebAnalyzerPage() {
                 <Button
                   variant="outline"
                   onClick={async () => {
-                    if (!analysis.id) return;
                     try {
+                      // Send full analysis data (without screenshots to save size)
+                      const { screenshots, ...analysisWithoutScreenshots } = analysis as any;
                       const response = await fetch("/api/admin/generate-pdf", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                          analysisId: analysis.id,
-                          includePromo: true,
+                          analysis: analysisWithoutScreenshots,
                           businessName,
                         }),
                       });
@@ -746,13 +859,13 @@ export default function WebAnalyzerPage() {
                       if (!response.ok) throw new Error("Failed to generate PDF");
 
                       const blob = await response.blob();
-                      const url = window.URL.createObjectURL(blob);
+                      const downloadUrl = window.URL.createObjectURL(blob);
                       const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `web-analysis-${analysis.id}.pdf`;
+                      a.href = downloadUrl;
+                      a.download = `web-analysis-${new URL(analysis.url).hostname}.pdf`;
                       document.body.appendChild(a);
                       a.click();
-                      window.URL.revokeObjectURL(url);
+                      window.URL.revokeObjectURL(downloadUrl);
                       document.body.removeChild(a);
                     } catch (err) {
                       console.error("PDF generation error:", err);
