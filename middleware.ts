@@ -18,7 +18,7 @@ const BURST_MAX_REQUESTS = 50; // Max 50 requests in 10 seconds (page load with 
 // Track burst requests separately
 const burstLimit = new Map<string, { count: number; resetTime: number }>();
 
-// WHITELIST: Legitimate search engine bots (NEVER block these!)
+// WHITELIST: Legitimate search engine bots + AI crawlers (NEVER block these!)
 const WHITELISTED_BOTS = [
   'googlebot',      // Google Search
   'google-inspectiontool', // Google Search Console URL Inspection
@@ -35,6 +35,15 @@ const WHITELISTED_BOTS = [
   'slackbot',       // Slack link previews
   'telegrambot',    // Telegram link previews
   'whatsapp',       // WhatsApp link previews
+  // AI crawlers — allowed per robots.txt for AI search visibility
+  'gptbot',         // OpenAI GPTBot
+  'chatgpt-user',   // ChatGPT browsing
+  'ccbot',          // Common Crawl (used by AI training)
+  'perplexitybot',  // Perplexity AI
+  'anthropic-ai',   // Anthropic
+  'claude-web',     // Claude browsing
+  'cohere-ai',      // Cohere
+  'google-extended', // Google Gemini training
 ];
 
 // MAXIMUM SECURITY: Block ALL bots and automated tools EXCEPT whitelisted
@@ -53,8 +62,7 @@ const BLOCKED_USER_AGENTS = [
   'selenium', 'webdriver', 'headless', 'phantom', 'puppeteer', 'playwright',
   'mechanize', 'beautifulsoup', 'scrapy', 'jsdom', 'cheerio',
 
-  // AI/LLM bots (already in robots.txt but add extra layer)
-  'gpt', 'chatgpt', 'claude', 'anthropic', 'openai', 'bard', 'gemini',
+  // AI/LLM bots — MOVED TO WHITELIST (need access for AI search visibility)
 
   // Archive/snapshot tools
   'archive', 'wayback', 'snapshot', 'mirror', 'httrack', 'teleport',
@@ -210,6 +218,11 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/static/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|webp|css|js)$/)
   ) {
+    return NextResponse.next();
+  }
+
+  // SKIP security checks for AI/bot-facing discovery files
+  if (pathname === '/llms.txt' || pathname.startsWith('/.well-known/')) {
     return NextResponse.next();
   }
 
