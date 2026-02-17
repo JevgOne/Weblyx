@@ -7,45 +7,16 @@ import {
   WebAnalysisContent,
   WebAnalysisTechnology,
   WebAnalysisSecurity,
-  WebAnalysisPerformance
+  WebAnalysisPerformance,
+  WebAnalysisOpenGraph,
+  WebAnalysisAccessibility,
+  WebAnalysisGeo,
 } from '@/types/cms';
 
 interface AnalyzeOptions {
   url: string;
   timeout?: number;
 }
-
-// Stop words for keyword extraction (CZ + EN)
-const STOP_WORDS = new Set([
-  // Czech
-  'a', 'aby', 'aj', 'ale', 'ani', 'asi', 'az', 'bez', 'bude', 'budem', 'budes',
-  'by', 'byl', 'byla', 'byli', 'bylo', 'byt', 'ci', 'clanek', 'co', 'com',
-  'cz', 'da', 'do', 'ho', 'i', 'ja', 'jak', 'jako', 'je', 'jeho', 'jej',
-  'jeji', 'jen', 'jeste', 'ji', 'jine', 'jiz', 'jsem', 'jsi', 'jsme', 'jsou',
-  'jste', 'k', 'kam', 'kde', 'kdo', 'kdyz', 'ke', 'ktera', 'ktere', 'kteri',
-  'kterou', 'ktery', 'ma', 'mate', 'me', 'mezi', 'mi', 'mit', 'mne', 'mnou',
-  'muj', 'muze', 'my', 'na', 'nad', 'nam', 'nas', 'nase', 'ne', 'nebo',
-  'necht', 'nei', 'nejaka', 'nejaky', 'nejakych', 'neni', 'nez', 'nic',
-  'nich', 'nim', 'o', 'od', 'on', 'ona', 'oni', 'ono', 'pak', 'po', 'pod',
-  'podle', 'pokud', 'pouze', 'prave', 'pred', 'pres', 'pri', 'pro', 'proc',
-  'proto', 'protoze', 'prvni', 'pta', 're', 's', 'se', 'si', 'sice', 'sve',
-  'svuj', 'ta', 'tak', 'take', 'takze', 'tato', 'te', 'ten', 'tedy', 'teto',
-  'tim', 'to', 'tohle', 'toho', 'tom', 'tomto', 'toto', 'tu', 'tuto', 'ty',
-  'tyto', 'u', 'uz', 'v', 'vam', 'vas', 'vase', 've', 'vice', 'vsak', 'vsechno',
-  'vy', 'z', 'za', 'zda', 'zde', 'ze',
-  // English
-  'the', 'be', 'to', 'of', 'and', 'in', 'that', 'have', 'it', 'for', 'not',
-  'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by',
-  'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one',
-  'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about',
-  'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time',
-  'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your',
-  'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now',
-  'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after',
-  'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new',
-  'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'are', 'is',
-  'was', 'were', 'been', 'has', 'had', 'did', 'www', 'http', 'https',
-]);
 
 export class WebAnalyzer {
   private url: string;
@@ -94,7 +65,6 @@ export class WebAnalyzer {
     if (!this.$) throw new Error('No HTML loaded');
 
     const $ = this.$;
-    const hostname = new URL(this.url).hostname;
 
     // Meta tags
     const title = $('title').text() || null;
@@ -115,72 +85,10 @@ export class WebAnalyzer {
       h6: $('h6').length,
     };
 
-    // Heading order for hierarchy check
-    const headingOrder: string[] = [];
-    $('h1, h2, h3, h4, h5, h6').each((_, el) => {
-      headingOrder.push(el.tagName.toLowerCase());
-    });
-
-    // Canonical URL
-    const canonicalUrl = $('link[rel="canonical"]').attr('href') || null;
-    const hasCanonical = !!canonicalUrl;
-
-    // Open Graph tags
-    const ogTags = {
-      title: $('meta[property="og:title"]').attr('content'),
-      description: $('meta[property="og:description"]').attr('content'),
-      image: $('meta[property="og:image"]').attr('content'),
-      url: $('meta[property="og:url"]').attr('content'),
-    };
-    const hasOgTags = !!(ogTags.title || ogTags.description || ogTags.image);
-
-    // Twitter Card tags
-    const twitterCard = {
-      card: $('meta[name="twitter:card"]').attr('content'),
-      title: $('meta[name="twitter:title"]').attr('content'),
-      description: $('meta[name="twitter:description"]').attr('content'),
-      image: $('meta[name="twitter:image"]').attr('content'),
-    };
-    const hasTwitterCard = !!(twitterCard.card || twitterCard.title);
-
-    // Hreflang tags
-    const hreflangTags: string[] = [];
-    $('link[rel="alternate"][hreflang]').each((_, el) => {
-      const lang = $(el).attr('hreflang');
-      if (lang) hreflangTags.push(lang);
-    });
-
-    // Favicon
-    const hasFavicon = $('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').length > 0;
-
-    // HTML lang attribute
-    const htmlLang = $('html').attr('lang') || null;
-    const hasLangAttribute = !!htmlLang;
-
-    // DOM metrics
-    const domElementCount = $('*').length;
-    const inlineStyleCount = $('[style]').length;
-    const pageSize = Math.round(this.html.length / 1024); // KB
-
     // Images
     const images = $('img');
     const totalImages = images.length;
     const imagesWithoutAlt = images.filter((_, el) => !$(el).attr('alt')).length;
-
-    // Image optimization
-    let imagesWithLazyLoading = 0;
-    let imagesWithModernFormat = 0;
-    images.each((_, el) => {
-      const loading = $(el).attr('loading');
-      if (loading === 'lazy') imagesWithLazyLoading++;
-      const src = $(el).attr('src') || '';
-      if (src.match(/\.(webp|avif)/i)) imagesWithModernFormat++;
-    });
-    // Also check <source> elements in <picture> for modern formats
-    $('picture source').each((_, el) => {
-      const type = $(el).attr('type') || '';
-      if (type.includes('webp') || type.includes('avif')) imagesWithModernFormat++;
-    });
 
     // Links
     const links = $('a[href]');
@@ -189,9 +97,9 @@ export class WebAnalyzer {
 
     links.each((_, el) => {
       const href = $(el).attr('href') || '';
-      if (href.startsWith('http') && !href.includes(hostname)) {
+      if (href.startsWith('http') && !href.includes(new URL(this.url).hostname)) {
         externalLinks++;
-      } else if (!href.startsWith('http') || href.includes(hostname)) {
+      } else if (!href.startsWith('http') || href.includes(new URL(this.url).hostname)) {
         internalLinks++;
       }
     });
@@ -205,6 +113,86 @@ export class WebAnalyzer {
     // Basic mobile check (viewport meta tag)
     const mobileResponsive = $('meta[name="viewport"]').length > 0;
 
+    // Canonical URL
+    const canonicalUrl = $('link[rel="canonical"]').attr('href') || null;
+    const hasCanonical = !!canonicalUrl;
+
+    // Hreflang tags
+    const hreflangTags: string[] = [];
+    $('link[rel="alternate"][hreflang]').each((_, el) => {
+      const lang = $(el).attr('hreflang');
+      if (lang) hreflangTags.push(lang);
+    });
+
+    // Robots meta
+    const robotsMeta = $('meta[name="robots"]').attr('content') || null;
+
+    // Title and description lengths
+    const titleLength = title ? title.length : 0;
+    const descriptionLength = description ? description.length : 0;
+
+    // Text/HTML ratio
+    const bodyText = $('body').clone().find('script, style').remove().end().text().trim();
+    const textHtmlRatio = this.html.length > 0
+      ? Math.round((bodyText.length / this.html.length) * 10000) / 100
+      : 0;
+
+    // Keyword density (top 10 words, min 4 chars, ignore stop words)
+    const stopWords = new Set([
+      'that', 'this', 'with', 'from', 'have', 'been', 'will', 'your', 'they',
+      'their', 'what', 'when', 'where', 'which', 'there', 'about', 'more',
+      'some', 'than', 'them', 'into', 'other', 'could', 'would', 'make',
+      'like', 'just', 'over', 'such', 'also', 'jsou', 'nebo', 'jako',
+      'jeho', 'bylo', 'které', 'není', 'může', 'bude', 'jsme', 'máme',
+      'vaše', 'naše', 'toho', 'tato', 'tyto', 'přes', 'pouze', 'každý',
+    ]);
+    const words = bodyText.toLowerCase().split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w));
+    const wordFreq: Record<string, number> = {};
+    words.forEach(w => { wordFreq[w] = (wordFreq[w] || 0) + 1; });
+    const totalWords = words.length || 1;
+    const keywordDensity = Object.entries(wordFreq)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([word, count]) => ({
+        word,
+        count,
+        percentage: Math.round((count / totalWords) * 10000) / 100,
+      }));
+
+    // Structured data types from JSON-LD
+    const structuredDataTypes: string[] = [];
+    $('script[type="application/ld+json"]').each((_, el) => {
+      try {
+        const json = JSON.parse($(el).html() || '{}');
+        const extractTypes = (obj: any) => {
+          if (obj['@type']) {
+            const types = Array.isArray(obj['@type']) ? obj['@type'] : [obj['@type']];
+            types.forEach((t: string) => { if (!structuredDataTypes.includes(t)) structuredDataTypes.push(t); });
+          }
+          if (obj['@graph'] && Array.isArray(obj['@graph'])) {
+            obj['@graph'].forEach(extractTypes);
+          }
+        };
+        extractTypes(json);
+      } catch { /* ignore parse errors */ }
+    });
+
+    // Heading hierarchy validation
+    const headingLevels: number[] = [];
+    $('h1, h2, h3, h4, h5, h6').each((_, el) => {
+      headingLevels.push(parseInt(el.tagName[1]));
+    });
+    let headingHierarchyValid = true;
+    if (headingLevels.length > 0 && headingLevels[0] !== 1) {
+      headingHierarchyValid = false;
+    }
+    for (let i = 1; i < headingLevels.length; i++) {
+      if (headingLevels[i] > headingLevels[i - 1] + 1) {
+        headingHierarchyValid = false;
+        break;
+      }
+    }
+
     return {
       title,
       description,
@@ -212,23 +200,6 @@ export class WebAnalyzer {
       hasH1: headingsStructure.h1 > 0,
       h1Count: headingsStructure.h1,
       headingsStructure,
-      canonicalUrl,
-      hasCanonical,
-      ogTags,
-      hasOgTags,
-      twitterCard,
-      hasTwitterCard,
-      hreflangTags,
-      hasFavicon,
-      htmlLang,
-      hasLangAttribute,
-      domElementCount,
-      inlineStyleCount,
-      pageSize,
-      imagesWithLazyLoading,
-      imagesWithModernFormat,
-      headingOrder,
-      brokenInternalLinks: [], // Filled by checkBrokenLinks()
       imagesWithoutAlt,
       totalImages,
       internalLinks,
@@ -239,6 +210,16 @@ export class WebAnalyzer {
       mobileResponsive,
       hasSSL,
       schemaMarkup,
+      canonicalUrl,
+      hasCanonical,
+      hreflangTags,
+      robotsMeta,
+      titleLength,
+      descriptionLength,
+      textHtmlRatio,
+      keywordDensity,
+      structuredDataTypes,
+      headingHierarchyValid,
     };
   }
 
@@ -262,69 +243,288 @@ export class WebAnalyzer {
     }
   }
 
-  async checkBrokenLinks(): Promise<string[]> {
-    if (!this.$) return [];
-
+  analyzeOpenGraph(): WebAnalysisOpenGraph {
+    if (!this.$) throw new Error('No HTML loaded');
     const $ = this.$;
-    const hostname = new URL(this.url).hostname;
-    const brokenLinks: string[] = [];
 
-    // Collect internal links (max 10 sampled)
-    const internalUrls: string[] = [];
+    // OG tags
+    const ogTitle = $('meta[property="og:title"]').attr('content') || null;
+    const ogDescription = $('meta[property="og:description"]').attr('content') || null;
+    const ogImage = $('meta[property="og:image"]').attr('content') || null;
+    const ogType = $('meta[property="og:type"]').attr('content') || null;
+    const ogUrl = $('meta[property="og:url"]').attr('content') || null;
+    const ogSiteName = $('meta[property="og:site_name"]').attr('content') || null;
+
+    // Twitter Card tags
+    const twitterCard = $('meta[name="twitter:card"]').attr('content') || null;
+    const twitterTitle = $('meta[name="twitter:title"]').attr('content') || null;
+    const twitterDescription = $('meta[name="twitter:description"]').attr('content') || null;
+    const twitterImage = $('meta[name="twitter:image"]').attr('content') || null;
+
+    // Social links - scan all <a> tags
+    const socialLinks: WebAnalysisOpenGraph['socialLinks'] = {
+      facebook: null, instagram: null, linkedin: null,
+      twitter: null, youtube: null, tiktok: null,
+    };
+
     $('a[href]').each((_, el) => {
       const href = $(el).attr('href') || '';
-      if (href.startsWith('/') || href.includes(hostname)) {
-        try {
-          const fullUrl = href.startsWith('/') ? new URL(href, this.url).toString() : href;
-          if (!internalUrls.includes(fullUrl)) {
-            internalUrls.push(fullUrl);
-          }
-        } catch {
-          // Skip invalid URLs
-        }
-      }
+      if (href.includes('facebook.com')) socialLinks.facebook = href;
+      else if (href.includes('instagram.com')) socialLinks.instagram = href;
+      else if (href.includes('linkedin.com')) socialLinks.linkedin = href;
+      else if (href.includes('twitter.com') || href.includes('x.com')) socialLinks.twitter = href;
+      else if (href.includes('youtube.com')) socialLinks.youtube = href;
+      else if (href.includes('tiktok.com')) socialLinks.tiktok = href;
     });
 
-    // Sample max 10 links
-    const sampled = internalUrls.slice(0, 10);
+    // Scoring
+    let socialScore = 0;
+    if (ogTitle) socialScore += 15;
+    if (ogDescription) socialScore += 15;
+    if (ogImage) socialScore += 15;
+    if (twitterCard) socialScore += 10;
+    if (ogType) socialScore += 5;
+    if (ogUrl) socialScore += 5;
+    if (twitterImage) socialScore += 5;
+    // Social links: up to 20 points (max ~3.3 per link)
+    const socialLinkCount = Object.values(socialLinks).filter(Boolean).length;
+    socialScore += Math.min(20, Math.round(socialLinkCount * 3.3));
+    // OG image valid (has image URL starting with http)
+    if (ogImage && ogImage.startsWith('http')) socialScore += 10;
 
-    const results = await Promise.allSettled(
-      sampled.map(async (linkUrl) => {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
-          const response = await fetch(linkUrl, {
-            method: 'HEAD',
-            signal: controller.signal,
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
-          });
-          clearTimeout(timeoutId);
-          if (!response.ok) {
-            return linkUrl;
-          }
-          return null;
-        } catch {
-          return linkUrl;
-        }
-      })
-    );
+    return {
+      ogTitle, ogDescription, ogImage, ogType, ogUrl, ogSiteName,
+      twitterCard, twitterTitle, twitterDescription, twitterImage,
+      socialLinks,
+      socialScore: Math.min(100, socialScore),
+    };
+  }
 
-    for (const result of results) {
-      if (result.status === 'fulfilled' && result.value) {
-        brokenLinks.push(result.value);
-      }
+  analyzeAccessibility(): WebAnalysisAccessibility {
+    if (!this.$) throw new Error('No HTML loaded');
+    const $ = this.$;
+    const issues: string[] = [];
+
+    // HTML lang attribute
+    const htmlLangAttribute = $('html').attr('lang') || null;
+    if (!htmlLangAttribute) issues.push('Chybí lang atribut na <html>');
+
+    // Skip navigation
+    const hasSkipNavigation = $('a[href="#main"], a[href="#content"], a.skip-link, a.skip-nav, [class*="skip"]').length > 0;
+
+    // ARIA labels and landmarks
+    const ariaLabelsCount = $('[aria-label], [aria-labelledby]').length;
+    const ariaLandmarksCount = $('[role="main"], [role="navigation"], [role="banner"], [role="contentinfo"], main, nav, header, footer, aside').length;
+
+    // Form labels
+    const formInputsTotal = $('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select').length;
+    const formLabelsAssociated = $('label[for]').length;
+    if (formInputsTotal > 0 && formLabelsAssociated < formInputsTotal) {
+      issues.push(`${formInputsTotal - formLabelsAssociated} formulářových polí bez přiřazeného labelu`);
     }
 
-    return brokenLinks;
+    // Empty links (no text, no aria-label, no image with alt)
+    let emptyLinksCount = 0;
+    $('a').each((_, el) => {
+      const text = $(el).text().trim();
+      const ariaLabel = $(el).attr('aria-label');
+      const hasImg = $(el).find('img[alt]').length > 0;
+      if (!text && !ariaLabel && !hasImg) emptyLinksCount++;
+    });
+    if (emptyLinksCount > 0) issues.push(`${emptyLinksCount} prázdných odkazů bez textu`);
+
+    // Empty buttons
+    let emptyButtonsCount = 0;
+    $('button').each((_, el) => {
+      const text = $(el).text().trim();
+      const ariaLabel = $(el).attr('aria-label');
+      if (!text && !ariaLabel) emptyButtonsCount++;
+    });
+    if (emptyButtonsCount > 0) issues.push(`${emptyButtonsCount} prázdných tlačítek bez textu`);
+
+    // Tabindex usage
+    const tabindexUsage = $('[tabindex]').length;
+
+    // Heading hierarchy
+    const headingLevels: number[] = [];
+    $('h1, h2, h3, h4, h5, h6').each((_, el) => {
+      headingLevels.push(parseInt(el.tagName[1]));
+    });
+    let headingHierarchyValid = true;
+    if (headingLevels.length > 0 && headingLevels[0] !== 1) headingHierarchyValid = false;
+    for (let i = 1; i < headingLevels.length; i++) {
+      if (headingLevels[i] > headingLevels[i - 1] + 1) { headingHierarchyValid = false; break; }
+    }
+    if (!headingHierarchyValid) issues.push('Nesprávná hierarchie nadpisů (přeskočené úrovně)');
+
+    // Scoring
+    let score = 0;
+    if (htmlLangAttribute) score += 15;
+    if (hasSkipNavigation) score += 10;
+    if (ariaLabelsCount > 0) score += 10;
+    if (ariaLandmarksCount >= 2) score += 10;
+    if (formInputsTotal === 0 || formLabelsAssociated >= formInputsTotal) score += 15;
+    else if (formLabelsAssociated > 0) score += 7;
+    if (emptyLinksCount === 0) score += 10;
+    if (emptyButtonsCount === 0) score += 10;
+    if (headingHierarchyValid) score += 10;
+    // Alt texts (check from total images)
+    const totalImages = $('img').length;
+    const imagesWithAlt = $('img[alt]').filter((_, el) => ($(el).attr('alt') || '').trim().length > 0).length;
+    if (totalImages === 0 || imagesWithAlt >= totalImages) score += 10;
+    else if (imagesWithAlt > totalImages * 0.5) score += 5;
+
+    return {
+      accessibilityScore: Math.min(100, score),
+      htmlLangAttribute,
+      hasSkipNavigation,
+      ariaLabelsCount,
+      ariaLandmarksCount,
+      formLabelsAssociated,
+      formInputsTotal,
+      emptyLinksCount,
+      emptyButtonsCount,
+      tabindexUsage,
+      headingHierarchyValid,
+      issues,
+    };
+  }
+
+  analyzeGeo(): WebAnalysisGeo {
+    if (!this.$) throw new Error('No HTML loaded');
+    const $ = this.$;
+    const bodyText = $('body').text();
+    const lowerHtml = this.html.toLowerCase();
+
+    // FAQ detection
+    const hasFaqSection = $('.faq, #faq, [class*="faq"], details > summary, [class*="accordion"], [class*="FAQ"]').length > 0;
+    const hasQaFormat = $('details > summary').length > 0 || $('[itemtype*="FAQPage"]').length > 0;
+
+    // Schema types from JSON-LD
+    const schemaTypes: string[] = [];
+    $('script[type="application/ld+json"]').each((_, el) => {
+      try {
+        const json = JSON.parse($(el).html() || '{}');
+        const extractTypes = (obj: any) => {
+          if (obj['@type']) {
+            const types = Array.isArray(obj['@type']) ? obj['@type'] : [obj['@type']];
+            types.forEach((t: string) => { if (!schemaTypes.includes(t)) schemaTypes.push(t); });
+          }
+          if (obj['@graph'] && Array.isArray(obj['@graph'])) obj['@graph'].forEach(extractTypes);
+        };
+        extractTypes(json);
+      } catch { /* ignore */ }
+    });
+
+    const hasLocalBusinessSchema = schemaTypes.some(t => t.includes('LocalBusiness') || t.includes('Restaurant') || t.includes('Store'));
+    const hasOrganizationSchema = schemaTypes.includes('Organization');
+    const hasProductSchema = schemaTypes.includes('Product');
+    const hasBreadcrumbSchema = schemaTypes.includes('BreadcrumbList');
+
+    // Content freshness
+    const copyrightMatch = bodyText.match(/©\s*(\d{4})/);
+    const copyrightYear = copyrightMatch ? parseInt(copyrightMatch[1]) : null;
+    const hasDatePublished = $('[itemprop="datePublished"], time[datetime], meta[property="article:published_time"]').length > 0;
+    let latestDateFound: string | null = null;
+    $('time[datetime]').each((_, el) => {
+      const dt = $(el).attr('datetime');
+      if (dt && (!latestDateFound || dt > latestDateFound)) latestDateFound = dt;
+    });
+
+    // Business info detection
+    const hasAddress = /\b\d{3}\s?\d{2}\b/.test(bodyText) || lowerHtml.includes('address') || $('[itemprop="address"], [itemtype*="PostalAddress"]').length > 0;
+    const hasPhone = /(\+?\d{3}[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{3}|\+?\d{3}[\s-]?\d{2}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2})/.test(bodyText) || $('a[href^="tel:"]').length > 0;
+    const hasEmail = $('a[href^="mailto:"]').length > 0 || /[\w.-]+@[\w.-]+\.\w{2,}/.test(bodyText);
+    const hasOpeningHours = lowerHtml.includes('otevírací') || lowerHtml.includes('opening') || lowerHtml.includes('öffnungszeiten') || $('[itemprop="openingHours"]').length > 0;
+    const hasPricing = lowerHtml.includes('ceník') || lowerHtml.includes('cena') || lowerHtml.includes('price') || lowerHtml.includes('preis') || /\d+[\s,.]?\d*\s*(kč|czk|€|eur)/i.test(bodyText);
+
+    // About/Contact pages
+    const hasAboutPage = $('a[href*="about"], a[href*="o-nas"], a[href*="uber-uns"]').length > 0;
+    const hasContactPage = $('a[href*="contact"], a[href*="kontakt"]').length > 0;
+
+    // Natural language score (basic - presence of long-form content)
+    const paragraphs = $('p').filter((_, el) => $(el).text().trim().length > 50).length;
+    const naturalLanguageScore = Math.min(100, paragraphs * 10);
+
+    // Scoring
+    let geoScore = 0;
+    if (hasFaqSection) geoScore += 15;
+    if (hasLocalBusinessSchema) geoScore += 15;
+    else if (schemaTypes.length > 0) geoScore += 10;
+    if (hasAddress) geoScore += 8;
+    if (hasPhone) geoScore += 5;
+    if (hasEmail) geoScore += 5;
+    if (hasOpeningHours) geoScore += 5;
+    if (hasPricing) geoScore += 5;
+    // Freshness: copyright year within last 2 years
+    const currentYear = new Date().getFullYear();
+    if (copyrightYear && copyrightYear >= currentYear - 1) geoScore += 10;
+    else if (hasDatePublished) geoScore += 5;
+    if (hasAboutPage) geoScore += 5;
+    if (hasContactPage) geoScore += 5;
+    // Bonus for multiple schema types
+    if (hasOrganizationSchema) geoScore += 5;
+    if (hasBreadcrumbSchema) geoScore += 5;
+    if (hasProductSchema) geoScore += 5;
+
+    return {
+      geoScore: Math.min(100, geoScore),
+      hasFaqSection,
+      hasQaFormat,
+      schemaTypes,
+      hasLocalBusinessSchema,
+      hasOrganizationSchema,
+      hasProductSchema,
+      hasBreadcrumbSchema,
+      contentFreshness: { copyrightYear, hasDatePublished, latestDateFound },
+      businessInfo: { hasAddress, hasPhone, hasEmail, hasOpeningHours, hasPricing },
+      hasAboutPage,
+      hasContactPage,
+      naturalLanguageScore,
+    };
+  }
+
+  calculateCategoryScores(
+    technical: WebAnalysisTechnical,
+    performance?: WebAnalysisPerformance,
+    security?: WebAnalysisSecurity,
+    accessibility?: WebAnalysisAccessibility,
+    openGraph?: WebAnalysisOpenGraph,
+    geo?: WebAnalysisGeo,
+  ): { seo: number; performance: number; security: number; accessibility: number; social: number; geo: number } {
+    // SEO score based on technical fields
+    let seo = 0;
+    if (technical.title) seo += 15;
+    if (technical.description) seo += 15;
+    if (technical.hasCanonical) seo += 10;
+    if (technical.hasH1 && technical.h1Count === 1) seo += 10;
+    if (technical.headingHierarchyValid) seo += 5;
+    if (technical.schemaMarkup) seo += 10;
+    if (technical.hasSitemap) seo += 10;
+    if (technical.hasRobotsTxt) seo += 5;
+    if (technical.mobileResponsive) seo += 10;
+    if (technical.imagesWithoutAlt === 0 && technical.totalImages > 0) seo += 5;
+    else if (technical.totalImages === 0) seo += 5;
+    if ((technical.titleLength || 0) >= 30 && (technical.titleLength || 0) <= 60) seo += 5;
+
+    return {
+      seo: Math.min(100, seo),
+      performance: performance?.estimatedScore || 0,
+      security: security?.securityScore || 0,
+      accessibility: accessibility?.accessibilityScore || 0,
+      social: openGraph?.socialScore || 0,
+      geo: geo?.geoScore || 0,
+    };
   }
 
   identifyIssues(
     technical: WebAnalysisTechnical,
     content?: WebAnalysisContent,
     security?: WebAnalysisSecurity,
-    performance?: WebAnalysisPerformance
+    performance?: WebAnalysisPerformance,
+    openGraph?: WebAnalysisOpenGraph,
+    accessibility?: WebAnalysisAccessibility,
+    geo?: WebAnalysisGeo,
   ): WebAnalysisIssue[] {
     const issues: WebAnalysisIssue[] = [];
 
@@ -440,146 +640,7 @@ export class WebAnalyzer {
       });
     }
 
-    // NEW: Canonical URL
-    if (!technical.hasCanonical) {
-      issues.push({
-        category: 'warning',
-        title: 'Chybí canonical URL',
-        description: 'Stránka nemá definovaný kanonický odkaz',
-        impact: 'Riziko duplicitního obsahu v indexu vyhledávačů',
-        recommendation: 'Přidat <link rel="canonical"> s preferovanou URL'
-      });
-    }
-
-    // NEW: OG Tags
-    if (!technical.hasOgTags) {
-      issues.push({
-        category: 'warning',
-        title: 'Chybí Open Graph tagy',
-        description: 'Stránka nemá definované OG meta tagy pro sociální sítě',
-        impact: 'Špatný náhled při sdílení na Facebooku, LinkedInu atd.',
-        recommendation: 'Přidat og:title, og:description a og:image meta tagy'
-      });
-    }
-
-    // NEW: Twitter Card
-    if (!technical.hasTwitterCard) {
-      issues.push({
-        category: 'info',
-        title: 'Chybí Twitter Card tagy',
-        description: 'Stránka nemá definované Twitter Card meta tagy',
-        impact: 'Špatný náhled při sdílení na Twitteru/X',
-        recommendation: 'Přidat twitter:card, twitter:title a twitter:image meta tagy'
-      });
-    }
-
-    // NEW: Favicon
-    if (!technical.hasFavicon) {
-      issues.push({
-        category: 'warning',
-        title: 'Chybí favicon',
-        description: 'Web nemá definovanou ikonu (favicon)',
-        impact: 'Neprofesionální vzhled v záložce prohlížeče a ve výsledcích vyhledávání',
-        recommendation: 'Přidat favicon ve formátu SVG nebo ICO'
-      });
-    }
-
-    // NEW: Lang attribute
-    if (!technical.hasLangAttribute) {
-      issues.push({
-        category: 'info',
-        title: 'Chybí lang atribut',
-        description: 'HTML element nemá definovaný jazyk (lang atribut)',
-        impact: 'Přístupnost a správné zpracování textu prohlížečem/čtečkou',
-        recommendation: 'Přidat lang="cs" (nebo odpovídající jazyk) na <html> element'
-      });
-    }
-
-    // NEW: Large DOM
-    if (technical.domElementCount > 3000) {
-      issues.push({
-        category: 'critical',
-        title: 'Příliš velký DOM',
-        description: `Stránka má ${technical.domElementCount} DOM elementů (doporučeno < 1500)`,
-        impact: 'Výrazně zpomaluje vykreslování a interakci, zejména na mobilech',
-        recommendation: 'Zjednodušit HTML strukturu, odstranit zbytečné vnořené elementy'
-      });
-    } else if (technical.domElementCount > 1500) {
-      issues.push({
-        category: 'warning',
-        title: 'Velký DOM',
-        description: `Stránka má ${technical.domElementCount} DOM elementů (doporučeno < 1500)`,
-        impact: 'Může zpomalovat vykreslování a zvyšovat spotřebu paměti',
-        recommendation: 'Optimalizovat HTML strukturu, zvážit lazy rendering'
-      });
-    }
-
-    // NEW: Inline styles
-    if (technical.inlineStyleCount > 20) {
-      issues.push({
-        category: 'info',
-        title: 'Příliš mnoho inline stylů',
-        description: `Nalezeno ${technical.inlineStyleCount} elementů s inline stylem`,
-        impact: 'Těžší údržba, větší HTML, nemožnost cachovat styly',
-        recommendation: 'Přesunout inline styly do externího CSS souboru'
-      });
-    }
-
-    // NEW: Images without lazy loading
-    if (technical.totalImages > 3 && technical.imagesWithLazyLoading === 0) {
-      issues.push({
-        category: 'warning',
-        title: 'Obrázky bez lazy loading',
-        description: `Žádný z ${technical.totalImages} obrázků nepoužívá lazy loading`,
-        impact: 'Všechny obrázky se načítají najednou, zpomaluje initial load',
-        recommendation: 'Přidat loading="lazy" na obrázky pod ohybem stránky'
-      });
-    }
-
-    // NEW: No modern image formats
-    if (technical.totalImages > 0 && technical.imagesWithModernFormat === 0) {
-      issues.push({
-        category: 'info',
-        title: 'Chybí moderní formáty obrázků',
-        description: 'Web nepoužívá WebP nebo AVIF formáty pro obrázky',
-        impact: 'Větší velikost obrázků, pomalejší načítání',
-        recommendation: 'Konvertovat obrázky do WebP/AVIF formátu (30-50% úspora)'
-      });
-    }
-
-    // NEW: Heading hierarchy
-    if (technical.headingOrder.length > 0) {
-      const levels = technical.headingOrder.map(h => parseInt(h.replace('h', '')));
-      let hasSkip = false;
-      for (let i = 1; i < levels.length; i++) {
-        if (levels[i] - levels[i - 1] > 1) {
-          hasSkip = true;
-          break;
-        }
-      }
-      if (hasSkip) {
-        issues.push({
-          category: 'warning',
-          title: 'Nesprávná hierarchie nadpisů',
-          description: `Nadpisy přeskakují úrovně (${technical.headingOrder.slice(0, 8).join(' → ')})`,
-          impact: 'Špatná struktura pro vyhledávače a přístupnost',
-          recommendation: 'Dodržet postupnou hierarchii: H1 → H2 → H3 bez přeskakování'
-        });
-      }
-    }
-
-    // NEW: Broken internal links
-    if (technical.brokenInternalLinks.length > 0) {
-      issues.push({
-        category: 'critical',
-        title: 'Nefunkční interní odkazy',
-        description: `Nalezeno ${technical.brokenInternalLinks.length} nefunkčních interních odkazů`,
-        impact: 'Špatná uživatelská zkušenost, plýtvání crawl budgetem',
-        recommendation: 'Opravit nebo odstranit nefunkční odkazy: ' + technical.brokenInternalLinks.slice(0, 3).join(', ')
-      });
-    }
-
-    // Content issues
+    // NEW: Content issues
     if (content) {
       if (content.wordCount < 300) {
         issues.push({
@@ -602,7 +663,7 @@ export class WebAnalyzer {
       }
     }
 
-    // Security issues
+    // NEW: Security issues
     if (security) {
       if (security.securityScore < 50) {
         issues.push({
@@ -633,7 +694,7 @@ export class WebAnalyzer {
       }
     }
 
-    // Performance issues
+    // NEW: Performance issues
     if (performance) {
       if (performance.estimatedScore < 50) {
         issues.push({
@@ -674,22 +735,205 @@ export class WebAnalyzer {
       }
     }
 
+    // Extended SEO issues
+    if (technical.titleLength && technical.titleLength > 60) {
+      issues.push({
+        category: 'warning',
+        title: 'Title tag je příliš dlouhý',
+        description: `Title má ${technical.titleLength} znaků (doporučeno 50-60)`,
+        impact: 'Google ořízne title ve výsledcích vyhledávání',
+        recommendation: 'Zkrátit title tag na 50-60 znaků'
+      });
+    } else if (technical.title && technical.titleLength && technical.titleLength < 30) {
+      issues.push({
+        category: 'info',
+        title: 'Title tag je příliš krátký',
+        description: `Title má pouze ${technical.titleLength} znaků (doporučeno 50-60)`,
+        impact: 'Nevyužitý prostor ve výsledcích vyhledávání',
+        recommendation: 'Rozšířit title tag na 50-60 znaků s klíčovými slovy'
+      });
+    }
+
+    if (technical.description && technical.descriptionLength && technical.descriptionLength > 160) {
+      issues.push({
+        category: 'info',
+        title: 'Meta description je příliš dlouhý',
+        description: `Description má ${technical.descriptionLength} znaků (doporučeno 150-160)`,
+        impact: 'Google ořízne popis ve výsledcích',
+        recommendation: 'Zkrátit meta description na 150-160 znaků'
+      });
+    }
+
+    if (!technical.hasCanonical) {
+      issues.push({
+        category: 'warning',
+        title: 'Chybí canonical tag',
+        description: 'Stránka nemá definovanou kanonickou URL',
+        impact: 'Riziko duplicitního obsahu v indexu Google',
+        recommendation: 'Přidat <link rel="canonical"> tag'
+      });
+    }
+
+    if (technical.textHtmlRatio !== undefined && technical.textHtmlRatio < 10) {
+      issues.push({
+        category: 'info',
+        title: 'Nízký poměr textu k HTML',
+        description: `Poměr textu k HTML kódu je pouze ${technical.textHtmlRatio}%`,
+        impact: 'Může indikovat přebytek kódu nebo nedostatek obsahu',
+        recommendation: 'Zvýšit poměr textového obsahu k HTML kódu'
+      });
+    }
+
+    if (technical.headingHierarchyValid === false) {
+      issues.push({
+        category: 'warning',
+        title: 'Nesprávná hierarchie nadpisů',
+        description: 'Nadpisy přeskakují úrovně (např. H1 → H3)',
+        impact: 'Horší srozumitelnost pro vyhledávače a screen readery',
+        recommendation: 'Dodržovat hierarchii H1 → H2 → H3 bez přeskakování'
+      });
+    }
+
+    // OpenGraph issues
+    if (openGraph) {
+      if (!openGraph.ogTitle || !openGraph.ogDescription || !openGraph.ogImage) {
+        issues.push({
+          category: 'warning',
+          title: 'Neúplné Open Graph tagy',
+          description: `Chybí: ${[
+            !openGraph.ogTitle && 'og:title',
+            !openGraph.ogDescription && 'og:description',
+            !openGraph.ogImage && 'og:image',
+          ].filter(Boolean).join(', ')}`,
+          impact: 'Špatný náhled při sdílení na sociálních sítích',
+          recommendation: 'Přidat kompletní Open Graph meta tagy (title, description, image)'
+        });
+      }
+
+      if (!openGraph.twitterCard) {
+        issues.push({
+          category: 'info',
+          title: 'Chybí Twitter Card meta tagy',
+          description: 'Stránka nemá definované Twitter Card tagy',
+          impact: 'Horší náhled při sdílení na Twitter/X',
+          recommendation: 'Přidat Twitter Card meta tagy (twitter:card, twitter:title, twitter:image)'
+        });
+      }
+
+      const socialLinkCount = Object.values(openGraph.socialLinks).filter(Boolean).length;
+      if (socialLinkCount === 0) {
+        issues.push({
+          category: 'info',
+          title: 'Žádné odkazy na sociální sítě',
+          description: 'Na webu nejsou odkazy na profily sociálních sítí',
+          impact: 'Snížená důvěryhodnost a propojení se zákazníky',
+          recommendation: 'Přidat odkazy na firemní profily na sociálních sítích'
+        });
+      }
+    }
+
+    // Accessibility issues
+    if (accessibility) {
+      if (!accessibility.htmlLangAttribute) {
+        issues.push({
+          category: 'warning',
+          title: 'Chybí lang atribut',
+          description: 'HTML element nemá definovaný jazyk stránky',
+          impact: 'Screen readery nemohou správně číst obsah',
+          recommendation: 'Přidat atribut lang="cs" na <html> element'
+        });
+      }
+
+      if (accessibility.emptyLinksCount > 0) {
+        issues.push({
+          category: 'warning',
+          title: 'Prázdné odkazy bez textu',
+          description: `${accessibility.emptyLinksCount} odkazů nemá žádný text ani aria-label`,
+          impact: 'Nepřístupné pro screen readery a uživatele klávesnice',
+          recommendation: 'Přidat text nebo aria-label ke všem odkazům'
+        });
+      }
+
+      if (accessibility.emptyButtonsCount > 0) {
+        issues.push({
+          category: 'warning',
+          title: 'Prázdná tlačítka bez textu',
+          description: `${accessibility.emptyButtonsCount} tlačítek nemá žádný text ani aria-label`,
+          impact: 'Nepřístupné pro uživatele s asistenčními technologiemi',
+          recommendation: 'Přidat text nebo aria-label ke všem tlačítkům'
+        });
+      }
+    }
+
+    // GEO/AIEO issues
+    if (geo) {
+      if (!geo.hasFaqSection) {
+        issues.push({
+          category: 'info',
+          title: 'Chybí FAQ sekce',
+          description: 'Web nemá sekci s často kladenými otázkami',
+          impact: 'Ztracená příležitost pro featured snippets a AI odpovědi',
+          recommendation: 'Přidat FAQ sekci s relevantními otázkami a odpověďmi'
+        });
+      }
+
+      if (geo.schemaTypes.length === 0) {
+        issues.push({
+          category: 'warning',
+          title: 'Žádná strukturovaná data (JSON-LD)',
+          description: 'Web nepoužívá žádné schema.org strukturované data',
+          impact: 'Ztracená příležitost pro rich snippets a lepší viditelnost',
+          recommendation: 'Implementovat JSON-LD schema (Organization, LocalBusiness, FAQPage)'
+        });
+      }
+
+      if (geo.contentFreshness.copyrightYear && geo.contentFreshness.copyrightYear < new Date().getFullYear() - 2) {
+        issues.push({
+          category: 'warning',
+          title: 'Zastaralý obsah',
+          description: `Copyright rok: ${geo.contentFreshness.copyrightYear}`,
+          impact: 'Signalizuje zastaralost webu pro vyhledávače',
+          recommendation: 'Aktualizovat copyright rok a datum obsahu'
+        });
+      }
+
+      if (!geo.businessInfo.hasAddress && !geo.businessInfo.hasPhone) {
+        issues.push({
+          category: 'info',
+          title: 'Chybí kontaktní údaje firmy',
+          description: 'Na webu chybí adresa a telefonní číslo',
+          impact: 'Snížená důvěryhodnost a lokální SEO',
+          recommendation: 'Přidat viditelné kontaktní údaje (adresa, telefon, email)'
+        });
+      }
+    }
+
     return issues;
   }
 
-  calculateScore(issues: WebAnalysisIssue[]): number {
+  calculateScore(
+    issues: WebAnalysisIssue[],
+    categoryScores?: { seo: number; performance: number; security: number; accessibility: number; social: number; geo: number }
+  ): number {
+    if (categoryScores) {
+      // Weighted average: SEO 25% + Performance 20% + Security 10% + Accessibility 15% + Social 15% + GEO 15%
+      return Math.round(
+        categoryScores.seo * 0.25 +
+        categoryScores.performance * 0.20 +
+        categoryScores.security * 0.10 +
+        categoryScores.accessibility * 0.15 +
+        categoryScores.social * 0.15 +
+        categoryScores.geo * 0.15
+      );
+    }
+
+    // Fallback: issue-based scoring
     let score = 100;
-
     issues.forEach(issue => {
-      if (issue.category === 'critical') {
-        score -= 15;
-      } else if (issue.category === 'warning') {
-        score -= 8;
-      } else {
-        score -= 3;
-      }
+      if (issue.category === 'critical') score -= 15;
+      else if (issue.category === 'warning') score -= 8;
+      else score -= 3;
     });
-
     return Math.max(0, Math.min(100, score));
   }
 
@@ -709,6 +953,13 @@ export class WebAnalyzer {
     const hasSecurityIssues = issues.some(i => i.title.includes('bezpečnost') || i.title.includes('Security'));
     const hasSEOIssues = issues.some(i => i.title.includes('SEO') || i.category === 'critical');
 
+    // Score ranges:
+    // 90-100: Excellent (minor improvements)
+    // 75-89: Good (needs optimization)
+    // 50-74: Poor (needs major work)
+    // 0-49: Critical (needs complete rebuild)
+
+    // KRITICKÝ STAV (0-49 bodů) - Potřebuje kompletní rebuild
     if (score < 50 || criticalCount >= 4) {
       return {
         packageId: 'premium',
@@ -725,6 +976,7 @@ export class WebAnalyzer {
       };
     }
 
+    // VÁŽNÉ PROBLÉMY (50-64 bodů) - Potřebuje velké úpravy
     if (score < 65 || (criticalCount >= 2 && warningCount >= 2)) {
       if (hasSecurityIssues && hasPerformanceIssues) {
         return {
@@ -756,6 +1008,7 @@ export class WebAnalyzer {
       };
     }
 
+    // STŘEDNÍ PROBLÉMY (65-74 bodů) - Potřebuje optimalizaci
     if (score < 75 || (criticalCount >= 1 && warningCount >= 2)) {
       if (hasSEOIssues && !technical.mobileResponsive) {
         return {
@@ -787,6 +1040,7 @@ export class WebAnalyzer {
       };
     }
 
+    // DROBNÉ PROBLÉMY (75-89 bodů) - Potřebuje vylepšení
     if (score < 90) {
       if (warningCount >= 2 || infoCount >= 3) {
         return {
@@ -818,6 +1072,7 @@ export class WebAnalyzer {
       };
     }
 
+    // VÝBORNÝ STAV (90-100 bodů) - Minimální problémy
     return {
       packageId: 'start',
       packageName: 'Landing Page',
@@ -833,7 +1088,7 @@ export class WebAnalyzer {
     };
   }
 
-  // Content Analysis - Readability & Word Count + Top Keywords
+  // Content Analysis - Readability & Word Count
   analyzeContent(): WebAnalysisContent {
     if (!this.$) throw new Error('No HTML loaded');
 
@@ -851,11 +1106,11 @@ export class WebAnalyzer {
 
       // Word count
       const words = bodyText.split(/\s+/).filter(w => w.length > 0);
-      const wordCount = Math.max(1, words.length);
+      const wordCount = Math.max(1, words.length); // Minimum 1 to avoid division by zero
 
       // Sentence count (approximate)
       const sentences = bodyText.split(/[.!?]+/).filter(s => s.trim().length > 0);
-      const sentenceCount = Math.max(1, sentences.length);
+      const sentenceCount = Math.max(1, sentences.length); // Minimum 1
 
       // Paragraph count
       const paragraphCount = $('p').length;
@@ -863,26 +1118,27 @@ export class WebAnalyzer {
       // Average words per sentence
       const averageWordsPerSentence = Math.round(wordCount / sentenceCount);
 
-      // Syllable count (approximate for English)
-      const countSyllables = (word: string): number => {
-        try {
-          word = word.toLowerCase().replace(/[^a-z]/g, '');
-          if (word.length === 0) return 1;
-          if (word.length <= 3) return 1;
-          const vowels = word.match(/[aeiouy]+/g);
-          let syllables = vowels ? vowels.length : 1;
-          if (word.endsWith('e')) syllables--;
-          if (word.endsWith('le') && word.length > 2) syllables++;
-          return Math.max(1, syllables);
-        } catch (e) {
-          return 1;
-        }
-      };
+    // Syllable count (approximate for English)
+    const countSyllables = (word: string): number => {
+      try {
+        word = word.toLowerCase().replace(/[^a-z]/g, '');
+        if (word.length === 0) return 1; // Empty word
+        if (word.length <= 3) return 1;
+        const vowels = word.match(/[aeiouy]+/g);
+        let syllables = vowels ? vowels.length : 1;
+        if (word.endsWith('e')) syllables--;
+        if (word.endsWith('le') && word.length > 2) syllables++;
+        return Math.max(1, syllables);
+      } catch (e) {
+        return 1; // Fallback on error
+      }
+    };
 
-      const totalSyllables = words.reduce((sum, word) => sum + countSyllables(word), 0);
-      const syllablesPerWord = wordCount > 0 ? totalSyllables / wordCount : 1;
+    const totalSyllables = words.reduce((sum, word) => sum + countSyllables(word), 0);
+    const syllablesPerWord = wordCount > 0 ? totalSyllables / wordCount : 1;
 
       // Flesch Reading Ease Score
+      // Formula: 206.835 - 1.015 × (words/sentences) - 84.6 × (syllables/words)
       const readabilityScore = Math.round(
         206.835 - 1.015 * (wordCount / sentenceCount) - 84.6 * syllablesPerWord
       );
@@ -895,19 +1151,6 @@ export class WebAnalyzer {
       else if (readabilityScore >= 20) readabilityLevel = 'difficult';
       else readabilityLevel = 'very-difficult';
 
-      // Top keywords extraction
-      const wordFreq: Record<string, number> = {};
-      words.forEach(w => {
-        const clean = w.toLowerCase().replace(/[^a-záčďéěíňóřšťúůýž]/gi, '');
-        if (clean.length >= 3 && !STOP_WORDS.has(clean)) {
-          wordFreq[clean] = (wordFreq[clean] || 0) + 1;
-        }
-      });
-      const topKeywords = Object.entries(wordFreq)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([word, count]) => ({ word, count }));
-
       return {
         wordCount,
         paragraphCount,
@@ -915,9 +1158,9 @@ export class WebAnalyzer {
         readabilityScore: Math.max(0, Math.min(100, readabilityScore)),
         readabilityLevel,
         averageWordsPerSentence,
-        topKeywords,
       };
     } catch (error: any) {
+      // Fallback on error
       console.error('Content analysis error:', error);
       return {
         wordCount: 0,
@@ -926,7 +1169,6 @@ export class WebAnalyzer {
         readabilityScore: 50,
         readabilityLevel: 'moderate',
         averageWordsPerSentence: 0,
-        topKeywords: [],
       };
     }
   }
@@ -1046,6 +1288,7 @@ export class WebAnalyzer {
       securityHeaders.xContentTypeOptions = headers.has('x-content-type-options');
       securityHeaders.referrerPolicy = headers.has('referrer-policy');
 
+      // Deduct points for missing headers
       if (!securityHeaders.strictTransportSecurity) score -= 20;
       if (!securityHeaders.contentSecurityPolicy) score -= 20;
       if (!securityHeaders.xFrameOptions) score -= 15;
@@ -1055,10 +1298,12 @@ export class WebAnalyzer {
       score = 0;
     }
 
+    // Check for mixed content (http resources on https page)
     const mixedContent = this.url.startsWith('https://') &&
       this.html.includes('http://') &&
       !this.html.match(/http:\/\/localhost/);
 
+    // Check HTTPS redirect
     const httpsRedirect = this.url.startsWith('https://');
 
     return {
@@ -1074,38 +1319,29 @@ export class WebAnalyzer {
     if (!this.$) throw new Error('No HTML loaded');
 
     const $ = this.$;
-    const hostname = new URL(this.url).hostname;
 
     // Count resources
-    const scriptCount = $('script[src]').length;
-    const stylesheetCount = $('link[rel="stylesheet"]').length;
-    const imageCount = $('img[src]').length;
-    const totalResources = scriptCount + stylesheetCount + imageCount;
-
-    // Count third-party requests
-    let thirdPartyRequests = 0;
-    $('script[src], link[href], img[src]').each((_, el) => {
-      const src = $(el).attr('src') || $(el).attr('href') || '';
-      if (src.startsWith('http') && !src.includes(hostname)) {
-        thirdPartyRequests++;
-      }
-    });
-
-    // Check for lazy loading
-    const hasLazyLoading = $('img[loading="lazy"]').length > 0;
+    const scripts = $('script[src]').length;
+    const stylesheets = $('link[rel="stylesheet"]').length;
+    const images = $('img[src]').length;
+    const totalResources = scripts + stylesheets + images;
 
     // Estimate size (very rough approximation)
     const htmlSize = this.html.length / 1024; // KB
     const estimatedResourcesSize = Math.round(
       htmlSize +
-      scriptCount * 50 +
-      stylesheetCount * 30 +
-      imageCount * 100
+      scripts * 50 + // avg 50KB per script
+      stylesheets * 30 + // avg 30KB per stylesheet
+      images * 100 // avg 100KB per image
     );
 
+    // Check for compression
     const hasCompression = this.responseHeaders?.has('content-encoding') || false;
+
+    // Check for caching
     const hasCaching = this.responseHeaders?.has('cache-control') || false;
 
+    // Count large images (those with "width" or "height" attributes suggesting large size)
     let largeImages = 0;
     $('img').each((_, el) => {
       const width = $(el).attr('width');
@@ -1136,11 +1372,6 @@ export class WebAnalyzer {
       hasCompression,
       hasCaching,
       largeImages,
-      scriptCount,
-      stylesheetCount,
-      imageCount,
-      thirdPartyRequests,
-      hasLazyLoading,
     };
   }
 
@@ -1150,32 +1381,36 @@ export class WebAnalyzer {
     // Fetch website
     await this.fetchWebsite();
 
-    // Analyze technical aspects
+    // Analyze all aspects
     const technical = this.analyzeTechnical();
-
-    // Run extended analysis
     const content = this.analyzeContent();
     const technology = this.analyzeTechnology();
     const security = this.analyzeSecurity();
     const performance = this.analyzePerformance();
+    const openGraph = this.analyzeOpenGraph();
+    const accessibility = this.analyzeAccessibility();
+    const geo = this.analyzeGeo();
 
-    // Check sitemap, robots.txt, and broken links in parallel
-    const [hasSitemap, hasRobotsTxt, brokenLinks] = await Promise.all([
+    // Check sitemap and robots.txt
+    const [hasSitemap, hasRobotsTxt] = await Promise.all([
       this.checkSitemap(),
-      this.checkRobotsTxt(),
-      this.checkBrokenLinks(),
+      this.checkRobotsTxt()
     ]);
 
     technical.hasSitemap = hasSitemap;
     technical.hasRobotsTxt = hasRobotsTxt;
-    technical.brokenInternalLinks = brokenLinks;
     technical.loadTime = Date.now() - startTime;
 
-    // Identify issues (now with extended data)
-    const issues = this.identifyIssues(technical, content, security, performance);
+    // Calculate category scores
+    const categoryScores = this.calculateCategoryScores(
+      technical, performance, security, accessibility, openGraph, geo
+    );
 
-    // Calculate score
-    const overallScore = this.calculateScore(issues);
+    // Identify issues (with all data)
+    const issues = this.identifyIssues(technical, content, security, performance, openGraph, accessibility, geo);
+
+    // Calculate weighted overall score
+    const overallScore = this.calculateScore(issues, categoryScores);
 
     // Get package recommendation
     const recommendation = this.recommendPackage(technical, issues, overallScore);
@@ -1195,6 +1430,10 @@ export class WebAnalyzer {
       technology,
       security,
       performance,
+      openGraph,
+      accessibility,
+      geo,
+      categoryScores,
       issues,
       issueCount,
       overallScore,

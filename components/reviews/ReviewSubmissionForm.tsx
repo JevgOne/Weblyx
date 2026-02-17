@@ -110,7 +110,7 @@ export function ReviewSubmissionForm({ onSuccess, compact = false }: ReviewSubmi
                     className={`h-8 w-8 ${
                       star <= (hoverRating || formData.rating)
                         ? "fill-yellow-400 text-yellow-400"
-                        : "text-gray-300"
+                        : "text-gray-300 dark:text-gray-600"
                     }`}
                   />
                 </button>

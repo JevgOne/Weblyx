@@ -74,10 +74,10 @@ export function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 animate-slide-up">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-background rounded-lg shadow-xl border border-border p-4 z-50 animate-slide-up">
       <button
         onClick={handleDismiss}
-        className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+        className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground transition-colors"
         aria-label="Zavřít"
       >
         <X className="h-5 w-5" />
@@ -89,10 +89,10 @@ export function PWAInstallPrompt() {
         </div>
 
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 mb-1">
+          <h3 className="font-semibold text-foreground mb-1">
             Instalovat Weblyx Admin
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Přidejte si admin panel na hlavní obrazovku pro rychlý přístup a push notifikace.
           </p>
 
@@ -105,7 +105,7 @@ export function PWAInstallPrompt() {
             </button>
             <button
               onClick={handleDismiss}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm"
+              className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors font-medium text-sm"
             >
               Možná později
             </button>

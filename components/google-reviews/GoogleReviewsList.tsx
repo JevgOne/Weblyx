@@ -25,7 +25,7 @@ function StarRating({ rating }: { rating: number }) {
           className={`h-5 w-5 ${
             star <= rating
               ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300"
+              : "text-gray-300 dark:text-gray-600"
           }`}
         />
       ))}
@@ -67,13 +67,13 @@ export function GoogleReviewsList() {
         {[1, 2, 3].map((i) => (
           <Card key={i} className="animate-pulse">
             <CardContent className="p-6 space-y-4">
-              <div className="h-5 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-20 bg-gray-200 rounded"></div>
+              <div className="h-5 bg-muted rounded w-1/3"></div>
+              <div className="h-20 bg-muted rounded"></div>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                <div className="w-12 h-12 rounded-full bg-muted"></div>
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                  <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-1/3"></div>
                 </div>
               </div>
             </CardContent>

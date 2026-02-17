@@ -121,7 +121,7 @@ export function InlineNewsletterCTA() {
       </form>
 
       {(status === 'error' || status === 'already' || status === 'invalid') && (
-        <p className={`text-xs mt-2 ${status === 'already' ? 'text-amber-600' : 'text-red-500'}`}>
+        <p className={`text-xs mt-2 ${status === 'already' ? 'text-amber-600 dark:text-amber-500' : 'text-red-500 dark:text-red-400'}`}>
           {status === 'already' ? t.already : status === 'invalid' ? t.invalid : t.error}
         </p>
       )}

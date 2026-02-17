@@ -1,40 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
-import React from 'react';
-import { pdf } from '@react-pdf/renderer';
-import { WebAnalysisReport } from '@/lib/pdf-generator';
-import { WebAnalysisResult, PromoCode } from '@/types/cms';
+import { WebAnalysisResult } from '@/types/cms';
+import { generatePDFHTML } from '@/lib/pdf-template';
+import puppeteer from 'puppeteer';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { analysis, promoCode, businessName } = body as {
-      analysis: WebAnalysisResult;
-      promoCode?: PromoCode;
-      businessName?: string;
-    };
+    const { analysis, businessName } = await request.json();
 
-    if (!analysis || !analysis.url) {
+    if (!analysis) {
       return NextResponse.json(
-        { success: false, error: 'Missing analysis data' },
+        { success: false, error: 'Analysis data is required' },
         { status: 400 }
       );
     }
 
-    // Generate PDF using @react-pdf/renderer (same pattern as EroWeb)
-    const pdfDoc = React.createElement(WebAnalysisReport, {
-      analysis,
-      promoCode,
-      businessName,
+    // Generate HTML from analysis data (inline, no database needed)
+    const html = generatePDFHTML(analysis as WebAnalysisResult, undefined, businessName);
+
+    // Launch puppeteer and generate PDF
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
-    const pdfBlob = await pdf(pdfDoc as any).toBlob();
-    const pdfBuffer = await pdfBlob.arrayBuffer();
 
-    const filename = `web-analysis-${new URL(analysis.url).hostname}.pdf`;
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    return new Response(pdfBuffer, {
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '0', right: '0', bottom: '0', left: '0' },
+    });
+
+    await browser.close();
+
+    return new NextResponse(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `attachment; filename="web-analysis-${businessName || 'report'}.pdf"`,
       },
     });
   } catch (error: any) {

@@ -378,6 +378,18 @@ export interface WebAnalysisTechnical {
   mobileResponsive: boolean;
   hasSSL: boolean;
   schemaMarkup: boolean;
+
+  // Extended SEO fields
+  canonicalUrl?: string | null;
+  hasCanonical?: boolean;
+  hreflangTags?: string[];
+  robotsMeta?: string | null;
+  titleLength?: number;
+  descriptionLength?: number;
+  textHtmlRatio?: number;
+  keywordDensity?: { word: string; count: number; percentage: number }[];
+  structuredDataTypes?: string[];
+  headingHierarchyValid?: boolean;
 }
 
 export interface WebAnalysisContent {
@@ -438,6 +450,69 @@ export interface WebAnalysisPerformance {
   hasLazyLoading: boolean;
 }
 
+export interface WebAnalysisOpenGraph {
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImage: string | null;
+  ogType: string | null;
+  ogUrl: string | null;
+  ogSiteName: string | null;
+  twitterCard: string | null;
+  twitterTitle: string | null;
+  twitterDescription: string | null;
+  twitterImage: string | null;
+  socialLinks: {
+    facebook: string | null;
+    instagram: string | null;
+    linkedin: string | null;
+    twitter: string | null;
+    youtube: string | null;
+    tiktok: string | null;
+  };
+  socialScore: number;
+}
+
+export interface WebAnalysisAccessibility {
+  accessibilityScore: number;
+  htmlLangAttribute: string | null;
+  hasSkipNavigation: boolean;
+  ariaLabelsCount: number;
+  ariaLandmarksCount: number;
+  formLabelsAssociated: number;
+  formInputsTotal: number;
+  emptyLinksCount: number;
+  emptyButtonsCount: number;
+  tabindexUsage: number;
+  headingHierarchyValid: boolean;
+  issues: string[];
+}
+
+export interface WebAnalysisGeo {
+  geoScore: number;
+  hasFaqSection: boolean;
+  hasQaFormat: boolean;
+  schemaTypes: string[];
+  hasLocalBusinessSchema: boolean;
+  hasOrganizationSchema: boolean;
+  hasProductSchema: boolean;
+  hasBreadcrumbSchema: boolean;
+  contentFreshness: {
+    copyrightYear: number | null;
+    hasDatePublished: boolean;
+    latestDateFound: string | null;
+  };
+  businessInfo: {
+    hasAddress: boolean;
+    hasPhone: boolean;
+    hasEmail: boolean;
+    hasOpeningHours: boolean;
+    hasPricing: boolean;
+  };
+  hasAboutPage: boolean;
+  hasContactPage: boolean;
+  naturalLanguageScore: number;
+}
+
 export interface WebAnalysisIssue {
   category: 'critical' | 'warning' | 'info';
   title: string;
@@ -462,11 +537,24 @@ export interface WebAnalysisResult {
   // Technical analysis
   technical: WebAnalysisTechnical;
 
-  // NEW: Extended analysis
+  // Extended analysis
   content?: WebAnalysisContent;
   technology?: WebAnalysisTechnology;
   security?: WebAnalysisSecurity;
   performance?: WebAnalysisPerformance;
+  openGraph?: WebAnalysisOpenGraph;
+  accessibility?: WebAnalysisAccessibility;
+  geo?: WebAnalysisGeo;
+
+  // Category scores (0-100 each)
+  categoryScores?: {
+    seo: number;
+    performance: number;
+    security: number;
+    accessibility: number;
+    social: number;
+    geo: number;
+  };
 
   // Identified issues
   issues: WebAnalysisIssue[];

@@ -111,6 +111,10 @@
   background: linear-gradient(180deg, hsl(172 78% 97%) 0%, hsl(0 0% 100%) 100%);
 }
 
+.dark .gradient-hero {
+  background: linear-gradient(180deg, hsl(172 78% 10%) 0%, hsl(220 20% 8%) 100%);
+}
+
 /* Grid Pattern Background */
 .grid-pattern {
   background-image:

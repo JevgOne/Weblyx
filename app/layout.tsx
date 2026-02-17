@@ -8,6 +8,7 @@ import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { getSEOMetadata } from '@/lib/seo-metadata';
@@ -85,13 +86,15 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <PWAProvider>
-            <Header />
-            {children}
-            <Footer />
-            <CookieConsent />
-            <WhatsAppChat />
-          </PWAProvider>
+          <ThemeProvider>
+            <PWAProvider>
+              <Header />
+              {children}
+              <Footer />
+              <CookieConsent />
+              <WhatsAppChat />
+            </PWAProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

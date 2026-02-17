@@ -479,7 +479,7 @@ export default async function BlogPostPage({
                             {rp.excerpt}
                           </p>
                         )}
-                        <span className="text-[11px] text-neutral-300 dark:text-neutral-600 font-mono">
+                        <span className="text-[11px] text-neutral-300 dark:text-neutral-400 font-mono">
                           {rp.publishedAt
                             ? new Date(rp.publishedAt).toISOString().split("T")[0]
                             : new Date(rp.createdAt).toISOString().split("T")[0]

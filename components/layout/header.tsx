@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useTranslations } from 'next-intl';
 import { getBrandConfig } from '@/lib/brand';
 
@@ -35,7 +36,7 @@ export function Header() {
             <img
               src={logo.src}
               alt={logo.alt}
-              className="h-10"
+              className="h-10 dark:brightness-0 dark:invert"
               width={logo.width}
               height={logo.height}
             />
@@ -56,6 +57,7 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             <LeadButton href={tRoutes('quote')} className="shadow-elegant">
               {t('cta')}
             </LeadButton>
@@ -95,6 +97,10 @@ export function Header() {
             <LeadButton href={tRoutes('quote')} className="w-full">
               {t('cta')}
             </LeadButton>
+            <div className="flex items-center gap-2 pt-2 border-t border-border">
+              <ThemeToggle />
+              <span className="text-sm text-muted-foreground">Tmavý režim</span>
+            </div>
           </div>
         </div>
       )}

@@ -34,7 +34,7 @@ function StarRating({ rating }: { rating: number }) {
           className={`h-5 w-5 ${
             star <= rating
               ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300"
+              : "text-gray-300 dark:text-gray-600"
           }`}
         />
       ))}

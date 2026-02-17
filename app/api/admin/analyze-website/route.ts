@@ -44,26 +44,24 @@ function generateEmailSubject(analysis: any, template: EmailTemplate): string {
 }
 
 function detectPrimaryIssue(analysis: any): EmailTemplate {
-  const { performance, seo, accessibility } = analysis;
-  const perfScore = performance?.score || 0;
-  const seoScore = seo?.score || 0;
-  const accessScore = accessibility?.score || 0;
+  const scores = analysis.categoryScores || {};
+  const perfScore = scores.performance ?? analysis.performance?.estimatedScore ?? 0;
+  const seoScore = scores.seo ?? 0;
+  const accessScore = scores.accessibility ?? 0;
+  const socialScore = scores.social ?? 0;
 
   // Find the worst metric
-  if (perfScore < 50 && perfScore < seoScore && perfScore < accessScore) {
-    return 'slow-web';
-  }
-  if (seoScore < 50 && seoScore < perfScore && seoScore < accessScore) {
-    return 'bad-seo';
-  }
-  if (accessScore < 50 && accessScore < perfScore && accessScore < seoScore) {
-    return 'mobile-issues';
-  }
+  const allScores = [
+    { key: 'slow-web' as EmailTemplate, score: perfScore },
+    { key: 'bad-seo' as EmailTemplate, score: seoScore },
+    { key: 'mobile-issues' as EmailTemplate, score: accessScore },
+  ];
 
-  const avgScore = Math.round((perfScore + seoScore + accessScore) / 3);
-  if (avgScore < 50) {
-    return 'outdated-design';
-  }
+  const worst = allScores.sort((a, b) => a.score - b.score)[0];
+  if (worst.score < 50) return worst.key;
+
+  const avgScore = Math.round((perfScore + seoScore + accessScore + socialScore) / 4);
+  if (avgScore < 50) return 'outdated-design';
 
   return 'general';
 }

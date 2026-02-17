@@ -20,7 +20,7 @@ export function WhatsAppChat() {
       {/* Floating WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-50">
         {isOpen && (
-          <div className="mb-4 w-80 rounded-2xl bg-white shadow-2xl border border-primary/10 overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+          <div className="mb-4 w-80 rounded-2xl bg-background shadow-2xl border border-primary/10 overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#25D366] to-[#128C7E] p-4 text-white">
               <div className="flex items-center justify-between">
@@ -46,20 +46,20 @@ export function WhatsAppChat() {
             </div>
 
             {/* Message Bubble */}
-            <div className="p-4 bg-[#ECE5DD]">
-              <div className="bg-white rounded-lg rounded-tl-none p-3 shadow-sm">
-                <p className="text-sm text-gray-700 mb-1">
+            <div className="p-4 bg-[#ECE5DD] dark:bg-[#1a2332]">
+              <div className="bg-background rounded-lg rounded-tl-none p-3 shadow-sm">
+                <p className="text-sm text-foreground/80 mb-1">
                   👋 Ahoj! Jak vám můžeme pomoci?
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Napište nám na WhatsApp a rádi vám poradíme s tvorbou webu.
                 </p>
               </div>
-              <p className="text-xs text-gray-500 mt-2">Právě teď</p>
+              <p className="text-xs text-muted-foreground mt-2">Právě teď</p>
             </div>
 
             {/* CTA Button */}
-            <div className="p-4 bg-white border-t">
+            <div className="p-4 bg-background border-t border-border">
               <button
                 onClick={handleWhatsAppClick}
                 className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
@@ -84,7 +84,7 @@ export function WhatsAppChat() {
           <MessageCircle className="relative h-6 w-6 transition-transform group-hover:scale-110" />
 
           {/* Notification badge */}
-          <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold border-2 border-white">
+          <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold border-2 border-background">
             1
           </span>
         </button>
