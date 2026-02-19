@@ -90,26 +90,35 @@ export default function AdminInvoicesPage() {
   // Get payment_id from URL params if present
   const paymentIdFilter = searchParams.get('payment_id');
 
-  // Mark invoice as paid
-  const handleMarkAsPaid = async (invoiceId: string, invoiceNumber: string) => {
-    if (!confirm(`Opravdu chcete označit fakturu ${invoiceNumber} jako zaplacenou?`)) {
+  // Toggle invoice paid/unpaid status
+  const handleToggleStatus = async (invoiceId: string, invoiceNumber: string, currentStatus: InvoiceStatus) => {
+    const isPaid = currentStatus === 'paid';
+    const newStatus = isPaid ? 'awaiting_payment' : 'paid';
+    const label = isPaid ? 'nezaplacenou' : 'zaplacenou';
+
+    if (!confirm(`Označit fakturu ${invoiceNumber} jako ${label}?`)) {
       return;
     }
 
     setMarkingAsPaid(invoiceId);
 
     try {
-      const response = await fetch('/api/invoices/confirm-payment', {
+      // For marking as paid, use confirm-payment endpoint (generates confirmation PDF)
+      // For marking as unpaid, use update-status endpoint
+      const url = isPaid ? '/api/invoices/update-status' : '/api/invoices/confirm-payment';
+      const body = isPaid
+        ? { invoice_id: invoiceId, status: newStatus }
+        : { invoice_id: invoiceId };
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ invoice_id: invoiceId }),
+        body: JSON.stringify(body),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        alert(`Faktura ${invoiceNumber} byla označena jako zaplacená.\n\nPotvrzení: ${result.confirmation_pdf_url}`);
-        // Reload invoices
         loadInvoices();
       } else {
         alert(`Chyba: ${result.error}`);
@@ -442,17 +451,25 @@ export default function AdminInvoicesPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          {/* Mark as paid button - only for unpaid invoices */}
-                          {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
+                          {/* Toggle paid/unpaid - for all non-cancelled invoices */}
+                          {invoice.status !== 'cancelled' && (
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleMarkAsPaid(invoice.id, invoice.invoice_number)}
+                              onClick={() => handleToggleStatus(invoice.id, invoice.invoice_number, invoice.status)}
                               disabled={markingAsPaid === invoice.id}
-                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              className={invoice.status === 'paid'
+                                ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                                : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                              }
                             >
                               {markingAsPaid === invoice.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : invoice.status === 'paid' ? (
+                                <>
+                                  <AlertCircle className="h-4 w-4 mr-1" />
+                                  Nezaplaceno
+                                </>
                               ) : (
                                 <>
                                   <CreditCard className="h-4 w-4 mr-1" />

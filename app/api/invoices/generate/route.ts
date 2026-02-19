@@ -56,7 +56,9 @@ export async function POST(request: NextRequest) {
 
     // Get next invoice number
     const nextInvoiceNumber = generateInvoiceNumber(company.next_invoice_number as number);
-    const variableSymbol = nextInvoiceNumber.replace('-', '');
+    // Variable symbol: max 10 digits per SPAYD spec / Czech banking rules
+    // Invoice number YYYYMMDD-NNN → drop century prefix → YYMMDDNNN (9 digits)
+    const variableSymbol = nextInvoiceNumber.replace('-', '').slice(2);
 
     // Calculate amounts
     let amountWithoutVat = 0;
