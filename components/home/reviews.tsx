@@ -84,7 +84,7 @@ export async function Reviews() {
 
                 {/* Review text */}
                 <p className="text-muted-foreground leading-relaxed">
-                  "{review.text}"
+                  {"\u201C"}{review.text}{"\u201D"}
                 </p>
 
                 {/* Author info */}

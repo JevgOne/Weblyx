@@ -165,33 +165,17 @@ export async function Hero() {
               <div className="absolute -top-4 -right-4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
               <div className="absolute -bottom-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
 
-              {heroSection?.backgroundImage ? (
-                // Hero image from database
-                <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
-                  <Image
-                    src={heroSection.backgroundImage}
-                    alt={t('heroImageAlt')}
-                    width={600}
-                    height={400}
-                    priority
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
-                </div>
-              ) : (
-                // Abstract brand visual
-                <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-primary/10 via-background to-muted/50">
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.06)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.06)_1px,transparent_1px)] bg-[size:3rem_3rem]"></div>
-                  <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/15 rounded-full blur-3xl animate-pulse"></div>
-                  <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-9xl font-black bg-gradient-to-br from-primary/20 via-primary/10 to-transparent bg-clip-text text-transparent select-none">
-                      W
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
+                <Image
+                  src={heroSection?.backgroundImage || "/images/hero/hero-mascot.jpg"}
+                  alt={t('heroImageAlt')}
+                  width={600}
+                  height={800}
+                  priority
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
+              </div>
             </div>
           </div>
         </div>

@@ -32,14 +32,32 @@ export function Header() {
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="h-10 dark:brightness-0 dark:invert"
-              width={logo.width}
-              height={logo.height}
-            />
+          <Link href="/" className="flex items-center text-foreground" aria-label={logo.alt}>
+            {brand.name === 'Seitelyx' ? (
+              <svg width="150" height="40" viewBox="0 0 240 50" className="h-10" role="img" aria-label={logo.alt}>
+                <defs>
+                  <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#06B6D4"/>
+                    <stop offset="100%" stopColor="#14B8A6"/>
+                  </linearGradient>
+                </defs>
+                <g transform="translate(5, 5)">
+                  <path d="M28 5 C28 5 25 0 17 0 C9 0 3 6 3 12 C3 18 9 21 17 24 C25 27 30 30 30 37 C30 44 23 50 14 50 C5 50 0 44 0 44"
+                    stroke="url(#sGrad)" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" transform="scale(0.8)"/>
+                </g>
+                <text x="52" y="35" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="800" fill="currentColor">
+                  Seite<tspan fill="url(#sGrad)">lyx</tspan>
+                </text>
+              </svg>
+            ) : (
+              <svg width="150" height="40" viewBox="0 0 200 50" className="h-10" role="img" aria-label={logo.alt}>
+                <path d="M8 12 L16 38 L24 20 L32 38 L40 12"
+                  stroke="hsl(172, 78%, 40%)" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="52" y="35" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="800" fill="currentColor">
+                  Web<tspan fill="hsl(172, 78%, 40%)">lyx</tspan>
+                </text>
+              </svg>
+            )}
           </Link>
 
           {/* Desktop Navigation */}

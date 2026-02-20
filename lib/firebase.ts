@@ -24,4 +24,5 @@ export const uploadBytes: any = async () => ({});
 export const getDownloadURL: any = async () => '';
 export const deleteObject: any = async () => {};
 
-export default { auth, db, storage };
+const firebaseStub = { auth, db, storage };
+export default firebaseStub;
