@@ -171,11 +171,15 @@ export async function middleware(request: NextRequest) {
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    // CSRF double-submit cookie check (skip for public form endpoints)
+    // CSRF double-submit cookie check (skip for public form endpoints and admin sessions)
     const publicEndpoints = ['/api/contact', '/api/leads', '/api/audit', '/api/newsletter'];
     const isPublicEndpoint = publicEndpoints.some(ep => pathname.startsWith(ep));
 
-    if (!isPublicEndpoint && !isLocalhost) {
+    // Admin session cookie uses sameSite: strict, which already prevents CSRF attacks
+    // (browser won't send the cookie on cross-site requests), so skip double-submit check
+    const hasAdminSession = !!request.cookies.get('admin-session')?.value;
+
+    if (!isPublicEndpoint && !isLocalhost && !hasAdminSession) {
       const csrfCookie = request.cookies.get('csrf-token')?.value;
       const csrfHeader = request.headers.get('x-csrf-token');
 

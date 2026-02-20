@@ -80,6 +80,7 @@ import {
 } from "lucide-react";
 import RecommendationsPanel from "./_components/RecommendationsPanel";
 import CampaignWizard from "./_components/CampaignWizard";
+import { adminFetch, adminHeaders } from "@/lib/admin-fetch";
 
 // Format helpers - defined outside component to avoid re-creation on every render
 const currencyFormatter = new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 });
@@ -525,12 +526,10 @@ export default function GoogleAdsPage() {
   const handleToggleCampaign = async (campaignId: string, currentStatus: string) => {
     const newStatus = currentStatus === "ENABLED" ? "PAUSED" : "ENABLED";
     try {
-      const res = await fetch(`/api/google-ads/campaign/${campaignId}`, {
+      const { data } = await adminFetch(`/api/google-ads/campaign/${campaignId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
-      const data = await res.json();
       if (data.success) {
         setCampaigns((prev) => prev.map((c) => (c.id === campaignId ? { ...c, status: newStatus } : c)));
       } else {
@@ -572,12 +571,10 @@ export default function GoogleAdsPage() {
     if (!campaignDetail?.budgetId || editBudget <= 0) return;
     setUpdatingBudget(true);
     try {
-      const res = await fetch(`/api/google-ads/budget/${campaignDetail.budgetId}`, {
+      const { data } = await adminFetch(`/api/google-ads/budget/${campaignDetail.budgetId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amountCzk: editBudget }),
       });
-      const data = await res.json();
       if (data.success) {
         setCampaignDetail((prev: any) => prev ? { ...prev, budgetAmount: editBudget } : prev);
         fetchData();
@@ -595,12 +592,10 @@ export default function GoogleAdsPage() {
     if (!confirm("Opravdu chcete smazat tuto kampaň? Tato akce je nevratná.")) return;
     setRemovingCampaign(true);
     try {
-      const res = await fetch(`/api/google-ads/campaign/${campaignId}`, {
+      const { data } = await adminFetch(`/api/google-ads/campaign/${campaignId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "REMOVED" }),
       });
-      const data = await res.json();
       if (data.success) {
         setExpandedCampaignId(null);
         setCampaignDetail(null);
@@ -641,26 +636,27 @@ export default function GoogleAdsPage() {
     }, 4000);
 
     try {
-      const res = await fetch("/api/google-ads/analyze", {
+      const { data, status } = await adminFetch("/api/google-ads/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...analyzeForm,
           competitors: analyzeForm.competitors.split(",").map((c) => c.trim()).filter(Boolean),
         }),
       });
-      const data = await res.json();
 
       if (data.success) {
         setAnalysisProgress(100);
-        setAnalysisStep("✅ Hotovo!");
+        setAnalysisStep("Hotovo!");
         setAnalysisResult(data.data);
-        setAgentOutputs(data.agents);
+        setAgentOutputs(data.agentOutputs);
       } else {
-        alert(`Error: ${data.error}`);
+        setAnalysisStep(`Chyba (${status}): ${data.error}`);
+        alert(`Chyba analýzy: ${data.error}`);
       }
     } catch (err: any) {
-      alert(`Analysis failed: ${err?.message || "Network timeout - zkuste to znovu"}`);
+      const msg = err?.message || "Síťová chyba";
+      setAnalysisStep(`Selhalo: ${msg}`);
+      alert(`Analýza selhala: ${msg}\n\nTip: Pokud se to opakuje, zkontrolujte Vercel logs.`);
     } finally {
       clearInterval(progressInterval);
       setAnalyzing(false);

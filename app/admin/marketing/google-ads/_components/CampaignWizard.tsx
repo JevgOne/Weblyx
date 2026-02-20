@@ -29,6 +29,7 @@ import {
   Sparkles,
   AlertTriangle,
 } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface KeywordEntry {
   text: string;
@@ -154,9 +155,8 @@ export default function CampaignWizard({ open, onClose, onSuccess, analysisResul
     try {
       // Step 1: Create campaign
       setCreationLog(["Vytvářím kampaň..."]);
-      const campaignRes = await fetch("/api/google-ads/campaign", {
+      const { data: campaignData } = await adminFetch("/api/google-ads/campaign", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: campaignName,
           dailyBudgetCzk: dailyBudget,
@@ -164,7 +164,6 @@ export default function CampaignWizard({ open, onClose, onSuccess, analysisResul
           endDate: endDate || undefined,
         }),
       });
-      const campaignData = await campaignRes.json();
       if (!campaignData.success) {
         throw new Error(`Kampaň: ${campaignData.error}`);
       }
@@ -180,16 +179,14 @@ export default function CampaignWizard({ open, onClose, onSuccess, analysisResul
       // Step 2: Create ad group (if name provided)
       if (adGroupName) {
         setCreationLog((prev) => [...prev, "Vytvářím ad group..."]);
-        const adGroupRes = await fetch("/api/google-ads/ad-group", {
+        const { data: adGroupData } = await adminFetch("/api/google-ads/ad-group", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             campaignId,
             name: adGroupName,
             cpcBidCzk: cpcBid,
           }),
         });
-        const adGroupData = await adGroupRes.json();
         if (!adGroupData.success) {
           throw new Error(`Ad Group: ${adGroupData.error}`);
         }
@@ -201,15 +198,13 @@ export default function CampaignWizard({ open, onClose, onSuccess, analysisResul
         // Step 3: Add keywords (if any)
         if (keywords.length > 0 && adGroupId) {
           setCreationLog((prev) => [...prev, `Přidávám ${keywords.length} klíčových slov...`]);
-          const kwRes = await fetch("/api/google-ads/keywords", {
+          const { data: kwData } = await adminFetch("/api/google-ads/keywords", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               adGroupId,
               keywords: keywords.map((k) => ({ text: k.text, matchType: k.matchType })),
             }),
           });
-          const kwData = await kwRes.json();
           if (!kwData.success) {
             throw new Error(`Keywords: ${kwData.error}`);
           }
