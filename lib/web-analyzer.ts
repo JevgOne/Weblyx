@@ -220,7 +220,7 @@ export class WebAnalyzer {
       keywordDensity,
       structuredDataTypes,
       headingHierarchyValid,
-    };
+    } as WebAnalysisTechnical;
   }
 
   async checkSitemap(): Promise<boolean> {
