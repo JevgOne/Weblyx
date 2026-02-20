@@ -1,0 +1,118 @@
+AUDIT WEBU WEBLYX - ZADÁNÍ K OPRAVĚ
+=====================================
+Datum: 2026-02-19
+
+Původní komentář:
+"Nikdy ti odtud nepříjde lead, když se budeš prezentovat falešnýma recenzema.
+Vlastním nedodělaným webem, které vygenerovali nějaké CLI.
+A pokud nedejbože někdo ten web chtěl, tak to může být celkem slušný průser."
+
+=====================================
+HOTOVÉ ÚKOLY [✓]
+=====================================
+
+1. [✓] VYČISTIT ROOT - smazat screenshoty, staré MD soubory, test soubory
+   - Smazáno 27 screenshotů (error-*.png, admin-*.png, form-*.png, screenshot*.png)
+   - Smazáno 47 nepotřebných MD souborů (ponechán pouze README.md)
+   - Smazáno 10 test souborů (test-*.js, inspect-*.js, test-*.html)
+   - Smazány backup soubory (page.tsx.backup)
+   - Smazány temp soubory (temp-blog-1.json, commands.txt)
+   - Smazány shell skripty (add-vercel-env.sh, GET_TURSO_TOKEN.sh)
+   - Smazány test skripty ze scripts/ (test-email.ts, test-telegram.ts, atd.)
+
+2. [✓] OPRAVIT UKLÁDÁNÍ HESEL - hashovat přes bcrypt
+   - change-password/route.ts: hesla se nyní hashují přes bcrypt před uložením
+   - change-password/route.ts: ověřování hesla přes comparePassword (bcrypt)
+   - simple-auth.ts: odstraněn hardcoded fallback 'admin123'
+   - simple-auth.ts: odstraněn hardcoded token secret 'weblyx-admin-secret-2024'
+   - simple-auth.ts: verifyAdminCredentials nyní porovnává custom hesla přes bcrypt
+   - Minimální délka hesla zvýšena z 6 na 8 znaků
+
+3. [✓] DODĚLAT NEBO ODSTRANIT "COMING SOON" SEKCE
+   - Hero placeholder: nahrazen nedodělaný placeholder (s textem "Nahrajte obrázek v admin panelu")
+     čistým gradientovým vizuálem s logem W
+   - contact-wow.tsx: byl kompletní, žádná změna potřeba
+   - free-audit.tsx: byl kompletní, žádná změna potřeba
+   - pricing.tsx: mock data jako fallback je v pořádku (reálná data)
+
+4. [✓] ZAPNOUT TYPESCRIPT/ESLINT KONTROLY PŘI BUILDU
+   - next.config.ts: eslint.ignoreDuringBuilds = false
+   - next.config.ts: typescript.ignoreBuildErrors = false
+
+
+=====================================
+ZBÝVAJÍCÍ ÚKOLY K ŘEŠENÍ
+=====================================
+
+KRITICKÉ (řešit IHNED):
+-----------------------
+5. [ ] ROTOVAT VŠECHNY API KLÍČE A TOKENY
+   - TURSO_AUTH_TOKEN
+   - RESEND_API_KEY
+   - GEMINI_API_KEY
+   - TELEGRAM_BOT_TOKEN
+   - BLOB_READ_WRITE_TOKEN
+   - GOOGLE_ADS_DEVELOPER_TOKEN + CLIENT_SECRET + REFRESH_TOKEN
+   - META_ACCESS_TOKEN
+   - FAKTUROID_API_KEY
+   - Firebase service account key (service-account-key.json)
+
+6. [ ] PŘIDAT .env.production* DO .gitignore
+   - .env.production
+   - .env.production.new
+   - .env.production.pull
+   - Smazat z git historie: git rm --cached .env.production*
+
+7. [ ] ZMĚNIT ADMIN HESLA
+   - admin123 a Muzaisthebest jsou kompromitované
+   - Nastavit silná hesla v env proměnných
+
+8. [ ] NASTAVIT ADMIN_TOKEN_SECRET V PROSTŘEDÍ
+   - Vygenerovat silný random string (min. 64 znaků)
+   - Nastavit v Vercel env variables
+
+VYSOKÁ PRIORITA (tento týden):
+-------------------------------
+9. [ ] IMPLEMENTOVAT DISTRIBUOVANÝ RATE LIMITING
+   - Aktuálně in-memory Map (nefunguje přes serverless instance)
+   - Použít Vercel KV nebo Redis
+
+10. [ ] OPRAVIT CSP - ODSTRANIT unsafe-eval a unsafe-inline
+    - Soubor: next.config.ts, řádky 150-163
+    - Použít nonce-based security
+
+11. [ ] IMPLEMENTOVAT CSRF TOKENY
+    - Aktuálně se spoléhá pouze na Origin/Referer headers
+    - Přidat double-submit cookies nebo state tokens
+
+12. [ ] OPRAVIT NEWSLETTER SUBSCRIBER AUTORIZACI
+    - firestore.rules: Any authenticated user může unsubscribe kohokoli
+    - Opravit na: request.auth.uid == subscriberId
+
+STŘEDNÍ PRIORITA:
+-----------------
+13. [ ] AUDIT dangerouslySetInnerHTML POUŽITÍ (6 komponent)
+    - hero.tsx, usp-section.tsx, pricing-calculator.tsx
+    - JsonLd.tsx, FacebookPixel.tsx
+    - Ověřit že všechny zdroje dat jsou důvěryhodné
+
+14. [ ] ZKRÁTIT ADMIN SESSION TIMEOUT
+    - Aktuálně 7 dní, doporučeno max 1 den pro admin
+
+15. [ ] VYČISTIT console.log STATEMENTS
+    - 162 console.log/debug statements v kódu
+
+16. [ ] ODSTRANIT FALEŠNÉ RECENZE Z WEBU
+    - Nahradit reálnými referencemi od skutečných klientů
+
+17. [ ] NAHRÁT HERO OBRÁZEK V ADMIN PANELU
+    - Aktuálně se zobrazuje gradient placeholder
+    - Nahrát profesionální obrázek
+
+=====================================
+SOUBORY KTERÉ BYLY ZMĚNĚNY
+=====================================
+- /app/api/auth/change-password/route.ts (bcrypt hashování)
+- /lib/auth/simple-auth.ts (odstranění hardcoded hesel a secretů)
+- /components/home/hero.tsx (nahrazení placeholder vizuálu)
+- /next.config.ts (zapnutí build kontrol)
