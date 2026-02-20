@@ -24,8 +24,11 @@ export interface DbAdminUser {
   created_at: number;
 }
 
-// Secret for signing tokens - use env var in production!
-const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'weblyx-admin-secret-2024';
+// Secret for signing tokens - MUST be set in environment variables
+const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET;
+if (!TOKEN_SECRET) {
+  console.error('CRITICAL: ADMIN_TOKEN_SECRET is not set in environment variables!');
+}
 
 /**
  * Legacy admin users configuration (fallback)
@@ -34,8 +37,8 @@ const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'weblyx-admin-secret-2024
 const LEGACY_ADMIN_USERS = [
   {
     id: 'admin-1',
-    email: process.env.ADMIN_EMAIL || 'zenuly3@gmail.com',
-    password: process.env.ADMIN_PASSWORD || 'admin123',
+    email: process.env.ADMIN_EMAIL || '',
+    password: process.env.ADMIN_PASSWORD || '',
     name: 'Owner',
     role: 'owner' as const,
   },
@@ -287,15 +290,26 @@ export async function verifyAdminCredentials(
 
   // 2. Fall back to legacy hardcoded users
   const legacyAdmin = LEGACY_ADMIN_USERS.find((user) => user.email === email);
-  if (!legacyAdmin) {
+  if (!legacyAdmin || !legacyAdmin.password) {
     return null;
   }
 
-  // Check for custom password in DB first (legacy system)
-  const customPassword = await getCustomPassword(legacyAdmin.id);
-  const expectedPassword = customPassword || legacyAdmin.password;
+  // Check for hashed custom password in DB first
+  const customPasswordHash = await getCustomPassword(legacyAdmin.id);
+  if (customPasswordHash) {
+    const isValid = await comparePassword(password, customPasswordHash);
+    if (isValid) {
+      return {
+        id: legacyAdmin.id,
+        email: legacyAdmin.email,
+        name: legacyAdmin.name,
+        role: legacyAdmin.role,
+      };
+    }
+  }
 
-  if (password === expectedPassword) {
+  // Fallback: check against env password
+  if (password === legacyAdmin.password) {
     return {
       id: legacyAdmin.id,
       email: legacyAdmin.email,
@@ -316,7 +330,7 @@ export function generateSessionToken(user: AdminUser): string {
     email: user.email,
     name: user.name,
     role: user.role || 'admin',
-    exp: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+    exp: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
   };
 
   const data = JSON.stringify(payload);

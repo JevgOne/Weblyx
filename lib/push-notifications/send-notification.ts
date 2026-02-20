@@ -13,8 +13,6 @@ interface PushNotificationPayload {
  */
 export async function sendPushNotificationToAdmins(payload: PushNotificationPayload) {
   try {
-    console.log(`📤 Sending push notification to admins`);
-
     const response = await fetch('/api/push/send', {
       method: 'POST',
       headers: {
@@ -42,15 +40,13 @@ export async function sendPushNotificationToAdmins(payload: PushNotificationPayl
 
     const result = await response.json();
 
-    console.log(`✅ Push notifications sent: ${result.sent} successful, ${result.failed} failed`);
-
     return {
       success: true,
       sent: result.sent || 0,
       failed: result.failed || 0,
     };
   } catch (error: any) {
-    console.error('❌ Error sending push notifications:', error);
+    console.error('Error sending push notifications:', error);
     return {
       success: false,
       error: error.message || 'Failed to send notifications',

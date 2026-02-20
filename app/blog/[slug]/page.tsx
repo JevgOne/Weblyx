@@ -9,6 +9,7 @@ import { getBlogPostBySlug, getPublishedBlogPostsByLanguage, getPostTranslations
 import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { marked } from "marked";
+import sanitizeHtml from "sanitize-html";
 import { generateHowToSchema, HowToStep } from "@/lib/schema-generators";
 
 // Engagement components
@@ -224,8 +225,18 @@ export default async function BlogPostPage({
       ? new Date(post.publishedAt).toISOString().split("T")[0]
       : new Date(post.createdAt).toISOString().split("T")[0];
 
-    // Process content
+    // Process content (sanitize to prevent XSS from stored HTML)
     let htmlContent = await marked.parse(post.content, { gfm: true, breaks: true });
+    htmlContent = sanitizeHtml(htmlContent, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figure', 'figcaption', 'picture', 'source', 'video', 'details', 'summary']),
+      allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+        a: ['href', 'title', 'target', 'rel'],
+        '*': ['id', 'class'],
+      },
+      allowedSchemes: ['http', 'https', 'mailto'],
+    });
     htmlContent = addHeadingIds(htmlContent);
     htmlContent = enhanceBlockquotes(htmlContent);
 

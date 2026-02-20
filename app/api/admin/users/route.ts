@@ -143,8 +143,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`✅ [ADMIN CREATED] Email: ${email} by ${currentUser.email}`);
-
     // Log activity
     await logActivity({
       userId: currentUser.id,

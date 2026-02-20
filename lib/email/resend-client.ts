@@ -44,7 +44,6 @@ export async function sendEmail(params: {
       ...otherParams,
     });
 
-    console.log('✅ Email sent successfully:', result);
     return { success: true, data: result };
   } catch (error: any) {
     console.error('❌ Email sending failed:', error);

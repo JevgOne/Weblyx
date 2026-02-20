@@ -15,8 +15,6 @@ export async function POST(
     const params = await context.params;
     const leadId = params.id;
 
-    console.log(`📧 Sending proposal email for lead: ${leadId}`);
-
     // 1. Fetch lead from Firestore
     const { doc, getDoc, updateDoc } = await import('firebase/firestore');
     const leadDocRef = doc(db, "leads", leadId);
@@ -33,7 +31,6 @@ export async function POST(
 
     // 2. Check if email was already sent
     if (leadData.proposalEmailSent) {
-      console.log(`ℹ️ Proposal email already sent for lead ${leadId}`);
       return NextResponse.json({
         success: true,
         message: "Proposal email was already sent",
@@ -74,8 +71,6 @@ export async function POST(
       proposalEmailSentAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
-
-    console.log(`✅ Proposal email sent to ${leadData.email}`);
 
     return NextResponse.json({
       success: true,

@@ -182,7 +182,6 @@ export async function initGoogleMarketingTables() {
     )
   `);
 
-  console.log('✅ Google Marketing tables initialized');
 }
 
 // ============================================

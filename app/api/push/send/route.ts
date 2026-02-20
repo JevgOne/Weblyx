@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (subscriptions.length === 0) {
-      console.warn('⚠️ No active push subscriptions found');
+      console.warn('No active push subscriptions found');
       return NextResponse.json({
         success: true,
         sent: 0,
@@ -50,8 +50,6 @@ export async function POST(request: NextRequest) {
         message: 'No active subscriptions',
       });
     }
-
-    console.log(`📤 Sending push to ${subscriptions.length} subscription(s)`);
 
     // Send notification to all subscriptions
     const results = await Promise.allSettled(
@@ -63,15 +61,13 @@ export async function POST(request: NextRequest) {
     const successful = results.filter((r) => r.status === 'fulfilled').length;
     const failed = results.filter((r) => r.status === 'rejected').length;
 
-    console.log(`✅ Push sent: ${successful} successful, ${failed} failed`);
-
     return NextResponse.json({
       success: true,
       sent: successful,
       failed,
     });
   } catch (error: any) {
-    console.error('❌ Error sending push notification:', error);
+    console.error('Error sending push notification:', error);
 
     return NextResponse.json(
       {

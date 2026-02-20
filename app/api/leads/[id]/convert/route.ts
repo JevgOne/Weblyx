@@ -175,8 +175,6 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     });
 
-    console.log(`✅ Lead ${leadId} converted to project ${projectRef.id} (${projectNumber})`);
-
     return NextResponse.json(
       {
         success: true,

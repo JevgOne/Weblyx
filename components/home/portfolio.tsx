@@ -13,7 +13,7 @@ async function getPortfolioProjects(locale?: string): Promise<PortfolioProject[]
 
     const projects = allProjects
       .filter(p => p.published)
-      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 6)
       .map(data => ({
         id: data.id,

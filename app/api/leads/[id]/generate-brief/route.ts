@@ -342,9 +342,7 @@ export async function POST(
       method: "POST",
     })
       .then((res) => {
-        if (res.ok) {
-          console.log("✅ Client proposal email triggered");
-        } else {
+        if (!res.ok) {
           console.warn("⚠️ Client proposal email failed:", res.statusText);
         }
       })

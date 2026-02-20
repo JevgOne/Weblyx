@@ -150,8 +150,6 @@ export async function PATCH(
       );
     }
 
-    console.log(`✅ [ADMIN UPDATED] ID: ${id} by ${currentUser.email}`);
-
     // Log activity
     const changes = Object.keys(updateData).filter(k => k !== 'password').join(', ');
     await logActivity({
@@ -241,8 +239,6 @@ export async function DELETE(
         { status: 500 }
       );
     }
-
-    console.log(`🗑️ [ADMIN DELETED] ID: ${id} by ${currentUser.email}`);
 
     // Log activity
     await logActivity({

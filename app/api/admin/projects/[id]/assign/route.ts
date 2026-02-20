@@ -6,9 +6,7 @@ import { cookies } from 'next/headers';
 // Helper to get admin user by ID
 function getAdminById(adminId: string): { id: string; email: string; name: string } | null {
   const ADMIN_USERS = [
-    { id: 'admin-1', email: 'admin@weblyx.cz', name: 'Admin' },
-    { id: 'admin-2', email: 'zvin.a@seznam.cz', name: 'Zen' },
-    { id: 'admin-3', email: 'filip@weblyx.com', name: 'Filip' },
+    { id: 'admin-1', email: process.env.ADMIN_EMAIL || 'admin@weblyx.cz', name: 'Admin' },
   ];
 
   return ADMIN_USERS.find(u => u.id === adminId) || null;
@@ -81,8 +79,6 @@ export async function POST(
       args: [targetAdminId, projectId],
     });
 
-    console.log(`✅ Project ${projectId} assigned to ${targetAdmin.email} by ${user.email}`);
-
     return NextResponse.json({
       success: true,
       assignedTo: targetAdmin,
@@ -137,8 +133,6 @@ export async function DELETE(
             WHERE id = ?`,
       args: [projectId],
     });
-
-    console.log(`✅ Project ${projectId} unassigned by ${user.email}`);
 
     return NextResponse.json({
       success: true,

@@ -29,7 +29,6 @@ function isLoginRateLimited(ip: string): boolean {
   }
 
   if (record.count >= MAX_LOGIN_ATTEMPTS) {
-    console.log(`🚫 [LOGIN RATE LIMIT] IP: ${ip} exceeded ${MAX_LOGIN_ATTEMPTS} attempts`);
     return true;
   }
 
@@ -96,9 +95,6 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
     });
-
-    // SECURITY: Log successful login
-    console.log(`✅ [SUCCESSFUL LOGIN] Email: ${user.email} | IP: ${ip} | Time: ${new Date().toISOString()}`);
 
     return NextResponse.json({
       success: true,

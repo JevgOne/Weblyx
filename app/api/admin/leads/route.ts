@@ -47,8 +47,6 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    console.log(`✅ Retrieved ${leads.length} leads from Turso`);
-
     return NextResponse.json({
       success: true,
       data: leads,
@@ -106,8 +104,6 @@ export async function PATCH(request: NextRequest) {
 
     await turso.execute({ sql, args });
 
-    console.log(`✅ Updated lead ${leadId} in Turso`);
-
     return NextResponse.json({
       success: true,
       message: 'Lead updated successfully',
@@ -141,8 +137,6 @@ export async function DELETE(request: NextRequest) {
       sql: 'DELETE FROM leads WHERE id = ?',
       args: [leadId],
     });
-
-    console.log(`✅ Deleted lead ${leadId} from Turso`);
 
     return NextResponse.json({
       success: true,

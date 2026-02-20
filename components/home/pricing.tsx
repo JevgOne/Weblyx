@@ -163,7 +163,7 @@ export function Pricing() {
         ctaText,
         ctaLink,
         order: 4,
-        enabled: true,
+        enabled: false,
         features: isGerman ? [
           'Bis zu 50 Produkte',
           'Zahlungsgateway',
@@ -199,7 +199,7 @@ export function Pricing() {
         ctaText,
         ctaLink,
         order: 5,
-        enabled: true,
+        enabled: false,
         features: isGerman ? [
           'Unbegrenzte Produktanzahl',
           'Mehrere Zahlungsgateways',

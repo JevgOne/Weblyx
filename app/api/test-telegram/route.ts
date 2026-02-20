@@ -6,8 +6,6 @@ import { sendTelegramNotification } from '@/lib/telegram';
  * GET /api/test-telegram
  */
 export async function GET() {
-  console.log('🧪 [Test] Testing Telegram notification...');
-
   try {
     const result = await sendTelegramNotification({
       name: 'TEST from API endpoint',
@@ -19,8 +17,6 @@ export async function GET() {
       description: 'Test zpráva z API endpointu pro ověření že Telegram funguje',
       leadId: 'test-123',
     });
-
-    console.log('🧪 [Test] Result:', result);
 
     return NextResponse.json({
       success: result,

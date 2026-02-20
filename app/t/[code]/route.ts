@@ -32,8 +32,6 @@ export async function GET(
       return NextResponse.redirect(new URL('/poptavka', request.url));
     }
 
-    console.log(`🔗 Click tracked: ${trackingCode} (Lead: ${email.leadId})`);
-
     // Get request metadata
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
@@ -68,7 +66,6 @@ export async function GET(
         });
       }
 
-      console.log(`✅ Stats updated for email ${email.id} and lead ${email.leadId}`);
     }
 
     // Redirect to poptavka page

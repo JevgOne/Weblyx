@@ -13,7 +13,6 @@ export async function requestNotificationPermission(): Promise<PushSubscription 
     const permission = await Notification.requestPermission();
 
     if (permission !== 'granted') {
-      console.log('Notification permission denied');
       return null;
     }
 
@@ -28,10 +27,9 @@ export async function requestNotificationPermission(): Promise<PushSubscription 
       ),
     });
 
-    console.log('✅ Push subscription obtained');
     return subscription;
   } catch (error) {
-    console.error('❌ Error getting push subscription:', error);
+    console.error('Error getting push subscription:', error);
     return null;
   }
 }
@@ -48,8 +46,6 @@ export function subscribeToPushNotifications(callback: (payload: any) => void) {
 
     // Listen for messages from service worker
     navigator.serviceWorker.addEventListener('message', (event) => {
-      console.log('📨 Message from SW:', event.data);
-
       if (event.data.type === 'NOTIFICATION_RECEIVED') {
         callback(event.data.payload);
       }
@@ -59,7 +55,7 @@ export function subscribeToPushNotifications(callback: (payload: any) => void) {
       // Cleanup if needed
     };
   } catch (error) {
-    console.error('❌ Error subscribing to notifications:', error);
+    console.error('Error subscribing to notifications:', error);
     return () => {};
   }
 }
@@ -104,10 +100,8 @@ export async function savePushSubscription(
     if (!response.ok) {
       throw new Error('Failed to save subscription');
     }
-
-    console.log('✅ Push subscription saved');
   } catch (error) {
-    console.error('❌ Error saving push subscription:', error);
+    console.error('Error saving push subscription:', error);
   }
 }
 
@@ -125,7 +119,7 @@ export async function getAdminPushSubscriptions(): Promise<any[]> {
 
     return [];
   } catch (error) {
-    console.error('❌ Error getting push subscriptions:', error);
+    console.error('Error getting push subscriptions:', error);
     return [];
   }
 }

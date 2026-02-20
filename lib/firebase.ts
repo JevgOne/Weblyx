@@ -1,4 +1,4 @@
-// 🔥 Firebase REMOVED - Stub file for backward compatibility
+// Firebase REMOVED - Stub file for backward compatibility
 // All auth moved to cookie-based auth (/api/auth)
 // All data moved to Turso database
 
@@ -23,9 +23,5 @@ export const ref: any = () => ({});
 export const uploadBytes: any = async () => ({});
 export const getDownloadURL: any = async () => '';
 export const deleteObject: any = async () => {};
-
-console.log('⚠️ Firebase REMOVED - Using stubs for backward compatibility');
-console.log('✅ Auth: Cookie-based (/api/auth)');
-console.log('✅ Database: Turso');
 
 export default { auth, db, storage };

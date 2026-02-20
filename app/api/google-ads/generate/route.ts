@@ -106,8 +106,6 @@ ${targetAudience ? `**Target Audience:** ${targetAudience}` : ""}
 
 Create compelling ad copy that will maximize click-through rate and conversions. Include a variety of headlines with different angles (benefits, urgency, trust, features).`;
 
-    console.log("🤖 Generating Google Ads content with Claude...");
-
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 2048,
@@ -157,8 +155,6 @@ Create compelling ad copy that will maximize click-through rate and conversions.
       sitelinks: generatedAds.sitelinks?.slice(0, 4) || [],
     };
 
-    console.log("✅ Google Ads content generated successfully");
-
     return NextResponse.json({
       success: true,
       data: validatedAds,
@@ -168,7 +164,7 @@ Create compelling ad copy that will maximize click-through rate and conversions.
       },
     });
   } catch (error: any) {
-    console.error("❌ Error generating ads:", error);
+    console.error("Error generating ads:", error);
     return NextResponse.json(
       {
         success: false,

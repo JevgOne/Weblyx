@@ -105,12 +105,6 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    console.log('✅ Payment created:', {
-      gopay_id: goPayResponse.id,
-      variable_symbol: variableSymbol,
-      amount: `${input.amount} Kč`,
-    });
-
     return NextResponse.json({
       success: true,
       payment: {

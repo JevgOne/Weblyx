@@ -55,11 +55,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Newsletter subscribers - kdokoliv subscribe, admins read
+    // Newsletter subscribers - kdokoliv subscribe, admins read, jen vlastník může update
     match /newsletter_subscribers/{subscriberId} {
       allow create: if true;
       allow read: if isAdmin();
-      allow update: if request.auth != null; // Unsubscribe
+      allow update: if request.auth != null && request.auth.uid == subscriberId;
     }
 
     // Settings - pouze admins

@@ -1,5 +1,5 @@
 /**
- * 🎭 Mock Firebase Service pro lokální vývoj
+ * Mock Firebase Service pro lokální vývoj
  * Funguje bez Java, bez emulátorů, bez skutečného Firebase projektu
  */
 
@@ -32,8 +32,6 @@ export const mockAuth = {
   currentUser: null as any,
 
   signInWithEmailAndPassword: async (email: string, password: string) => {
-    console.log('🎭 Mock Auth: signInWithEmailAndPassword', email);
-
     const user = mockUsers.find(u => u.email === email && u.password === password);
 
     if (!user) {
@@ -53,12 +51,10 @@ export const mockAuth = {
   },
 
   signOut: async () => {
-    console.log('🎭 Mock Auth: signOut');
     mockAuth.currentUser = null;
   },
 
   onAuthStateChanged: (callback: (user: any) => void) => {
-    console.log('🎭 Mock Auth: onAuthStateChanged');
     // Simulate auth state
     setTimeout(() => callback(mockAuth.currentUser), 100);
 
@@ -73,12 +69,12 @@ const DEBUG_LOGS = false;
 // Mock Firestore Service
 export const mockFirestore = {
   collection: (collectionName: string) => {
-    if (DEBUG_LOGS) console.log('🎭 Mock Firestore: collection', collectionName);
+    if (DEBUG_LOGS) console.log('Mock Firestore: collection', collectionName);
 
     return {
       doc: (docId: string) => ({
         get: async () => {
-          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: get doc', collectionName, docId);
+          if (DEBUG_LOGS) console.log('Mock Firestore: get doc', collectionName, docId);
 
           let data = null;
 
@@ -94,7 +90,7 @@ export const mockFirestore = {
         },
 
         set: async (data: any) => {
-          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: set doc', collectionName, docId, data);
+          if (DEBUG_LOGS) console.log('Mock Firestore: set doc', collectionName, docId, data);
 
           if (collectionName === 'admins') {
             const existingIndex = mockAdmins.findIndex(a => a.uid === docId);
@@ -142,12 +138,12 @@ export const mockFirestore = {
         },
 
         update: async (data: any) => {
-          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: update doc', collectionName, docId, data);
+          if (DEBUG_LOGS) console.log('Mock Firestore: update doc', collectionName, docId, data);
           // Similar to set but merges data
         },
 
         delete: async () => {
-          if (DEBUG_LOGS) console.log('🎭 Mock Firestore: delete doc', collectionName, docId);
+          if (DEBUG_LOGS) console.log('Mock Firestore: delete doc', collectionName, docId);
 
           if (collectionName === 'leads') {
             mockLeads = mockLeads.filter(l => l.id !== docId);
@@ -164,7 +160,7 @@ export const mockFirestore = {
       }),
 
       add: async (data: any) => {
-        if (DEBUG_LOGS) console.log('🎭 Mock Firestore: add doc', collectionName, data);
+        if (DEBUG_LOGS) console.log('Mock Firestore: add doc', collectionName, data);
 
         const id = `${collectionName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -184,7 +180,7 @@ export const mockFirestore = {
       },
 
       get: async () => {
-        if (DEBUG_LOGS) console.log('🎭 Mock Firestore: get collection', collectionName);
+        if (DEBUG_LOGS) console.log('Mock Firestore: get collection', collectionName);
 
         let docs: any[] = [];
 
@@ -214,8 +210,6 @@ export const mockFirestore = {
       },
 
       where: (field: string, operator: string, value: any) => {
-        console.log('🎭 Mock Firestore: where', field, operator, value);
-
         // Helper to filter documents
         const filterDocs = () => {
           let docs: any[] = [];
@@ -313,7 +307,7 @@ export const mockStorage = {
 
 // Mock Storage functions to match Firebase Storage API
 export const mockStorageRef = (storage: any, path: string) => {
-  if (DEBUG_LOGS) console.log('🎭 Mock Storage: ref', path);
+  if (DEBUG_LOGS) console.log('Mock Storage: ref', path);
 
   return {
     bucket: 'mock-storage.com',
@@ -328,7 +322,7 @@ export const mockStorageRef = (storage: any, path: string) => {
 const mockStorageFiles = new Map<string, string>();
 
 export const mockUploadBytes = async (ref: any, data: Blob | Uint8Array | ArrayBuffer) => {
-  if (DEBUG_LOGS) console.log('🎭 Mock Storage: uploadBytes', ref.fullPath);
+  if (DEBUG_LOGS) console.log('Mock Storage: uploadBytes', ref.fullPath);
 
   // Convert data to base64 data URL for preview
   let dataUrl: string;
@@ -364,7 +358,7 @@ export const mockUploadBytes = async (ref: any, data: Blob | Uint8Array | ArrayB
 };
 
 export const mockGetDownloadURL = async (ref: any) => {
-  if (DEBUG_LOGS) console.log('🎭 Mock Storage: getDownloadURL', ref.fullPath);
+  if (DEBUG_LOGS) console.log('Mock Storage: getDownloadURL', ref.fullPath);
 
   // Return the stored data URL if it exists, otherwise return a placeholder
   const dataUrl = mockStorageFiles.get(ref.fullPath);
@@ -377,18 +371,18 @@ export const mockGetDownloadURL = async (ref: any) => {
 };
 
 export const mockDeleteObject = async (ref: any) => {
-  if (DEBUG_LOGS) console.log('🎭 Mock Storage: deleteObject', ref.fullPath);
+  if (DEBUG_LOGS) console.log('Mock Storage: deleteObject', ref.fullPath);
 };
 
 // Export helper functions
 export function addMockLead(lead: any) {
   mockLeads.push(lead);
-  if (DEBUG_LOGS) console.log('🎭 Mock: Added lead', lead);
+  if (DEBUG_LOGS) console.log('Mock: Added lead', lead);
 }
 
 export function addMockProject(project: any) {
   mockProjects.push(project);
-  if (DEBUG_LOGS) console.log('🎭 Mock: Added project', project);
+  if (DEBUG_LOGS) console.log('Mock: Added project', project);
 }
 
 export function getMockLeads() {
@@ -402,7 +396,6 @@ export function getMockProjects() {
 export function clearMockData() {
   mockLeads = [];
   mockProjects = [];
-  console.log('🎭 Mock: Cleared all data');
 }
 
 // Singleton pattern - seed data only once
@@ -469,11 +462,6 @@ function initializeMockData() {
     deadline: '2025-04-15',
     createdAt: new Date(Date.now() - 2592000000).toISOString(),
   });
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🎭 Mock Firebase Service loaded (initialized once)');
-    console.log('📧 Demo admin: admin@weblyx.cz / Admin123!');
-  }
 }
 
 // Initialize on first import

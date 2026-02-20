@@ -116,9 +116,7 @@ export async function POST(request: NextRequest) {
         html: emailHtml,
       });
 
-      if (emailResult.success) {
-        console.log("✅ Admin notification email sent for review:", review.id);
-      } else {
+      if (!emailResult.success) {
         console.error("⚠️ Failed to send review notification:", emailResult.error);
       }
     } catch (emailError) {

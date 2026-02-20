@@ -119,8 +119,6 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    console.log("✅ Lead saved to Turso:", leadId);
-
     // 📧 Send thank you email to client immediately
     const clientEmailTemplate = generateClientThankYouEmail({
       clientName: name,
@@ -134,9 +132,7 @@ export async function POST(request: NextRequest) {
       html: clientEmailTemplate.html,
       text: clientEmailTemplate.text,
     }).then((result) => {
-      if (result.success) {
-        console.log("✅ Client thank you email sent to:", email);
-      } else {
+      if (!result.success) {
         console.warn("⚠️ Client thank you email failed:", result.error);
       }
     }).catch((err) => {
@@ -166,9 +162,7 @@ export async function POST(request: NextRequest) {
       text: adminEmailTemplate.text,
       replyTo: email,
     }).then((result) => {
-      if (result.success) {
-        console.log("✅ Admin notification email sent");
-      } else {
+      if (!result.success) {
         console.warn("⚠️ Admin notification email failed:", result.error);
       }
     }).catch((err) => {
@@ -186,9 +180,7 @@ export async function POST(request: NextRequest) {
         type: 'new_lead',
       },
     }).then((result) => {
-      if (result.success) {
-        console.log(`✅ Push notification sent to ${result.sent} admin(s)`);
-      } else {
+      if (!result.success) {
         console.warn("⚠️ Push notification failed:", result.error);
       }
     }).catch((err) => {
@@ -197,7 +189,6 @@ export async function POST(request: NextRequest) {
 
     // 📱 Send Telegram notification (MUST await to ensure it completes)
     try {
-      console.log('📱 [LEAD API] Attempting to send Telegram notification...');
       const telegramSent = await sendTelegramNotification({
         name,
         email,
@@ -209,9 +200,7 @@ export async function POST(request: NextRequest) {
         leadId,
       });
 
-      if (telegramSent) {
-        console.log("✅ [LEAD API] Telegram notification sent successfully");
-      } else {
+      if (!telegramSent) {
         console.error("❌ [LEAD API] Telegram notification failed - check logs above");
       }
     } catch (err: any) {
@@ -227,9 +216,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
     })
       .then((res) => {
-        if (res.ok) {
-          console.log("✅ AI design generation triggered");
-        } else {
+        if (!res.ok) {
           console.warn("⚠️ AI design generation failed:", res.statusText);
         }
       })
@@ -242,9 +229,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
     })
       .then((res) => {
-        if (res.ok) {
-          console.log("✅ AI brief generation triggered");
-        } else {
+        if (!res.ok) {
           console.warn("⚠️ AI brief generation failed:", res.statusText);
         }
       })

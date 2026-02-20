@@ -7,15 +7,9 @@ import { sendEmail, EMAIL_CONFIG } from '@/lib/email/resend-client';
  */
 export async function GET(request: NextRequest) {
   try {
-    console.log('🧪 Testing email delivery...');
-    console.log('Environment check:');
-    console.log('- RESEND_API_KEY:', process.env.RESEND_API_KEY ? '✅ Set' : '❌ Missing');
-    console.log('- RESEND_FROM_EMAIL:', process.env.RESEND_FROM_EMAIL || EMAIL_CONFIG.from);
-    console.log('- ADMIN_EMAIL:', process.env.ADMIN_EMAIL || EMAIL_CONFIG.adminEmail);
-
     const result = await sendEmail({
       to: EMAIL_CONFIG.adminEmail,
-      subject: '🧪 Test Email z Weblyx - Production Check',
+      subject: 'Test Email z Weblyx - Production Check',
       html: `
 <!DOCTYPE html>
 <html>
@@ -24,7 +18,7 @@ export async function GET(request: NextRequest) {
 </head>
 <body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f3f4f6;">
   <div style="max-width: 600px; margin: 0 auto; background: white; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-    <h1 style="color: #14B8A6; margin: 0 0 16px 0;">✅ Email funguje!</h1>
+    <h1 style="color: #14B8A6; margin: 0 0 16px 0;">Email funguje!</h1>
     <p style="margin: 0 0 12px 0; color: #374151; font-size: 16px;">
       Tento testovací email byl úspěšně odeslán z production prostředí Weblyx.
     </p>
@@ -36,7 +30,7 @@ export async function GET(request: NextRequest) {
       </p>
     </div>
     <p style="margin: 20px 0 0 0; color: #6B7280; font-size: 14px;">
-      Pokud vidíte tento email, znamená to, že Resend je správně nakonfigurovaný! 🎉
+      Pokud vidíte tento email, znamená to, že Resend je správně nakonfigurovaný!
     </p>
   </div>
 </body>
@@ -48,7 +42,7 @@ export async function GET(request: NextRequest) {
     if (result.success) {
       return NextResponse.json({
         success: true,
-        message: '✅ Email byl úspěšně odeslán!',
+        message: 'Email byl úspěšně odeslán!',
         data: result.data,
         config: {
           from: EMAIL_CONFIG.from,
@@ -60,7 +54,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: false,
         error: result.error,
-        message: '❌ Email se nepodařilo odeslat',
+        message: 'Email se nepodařilo odeslat',
         config: {
           from: EMAIL_CONFIG.from,
           to: EMAIL_CONFIG.adminEmail,
@@ -69,7 +63,7 @@ export async function GET(request: NextRequest) {
       }, { status: 500 });
     }
   } catch (error: any) {
-    console.error('❌ Test email error:', error);
+    console.error('Test email error:', error);
     return NextResponse.json({
       success: false,
       error: error.message,

@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
 
     // 🤖 BOT DETECTION: Honeypot validation
     if (!validateHoneypot(body)) {
-      console.log('🚫 Bot detected in contact form (honeypot)');
       // Return success to bot to avoid detection
       return NextResponse.json(
         { success: true, message: "Děkujeme za vaši zprávu!" },
@@ -23,7 +22,6 @@ export async function POST(request: NextRequest) {
 
     // 🤖 BOT DETECTION: Time-based validation
     if (__form_timestamp && !validateSubmissionTime(__form_timestamp, 3)) {
-      console.log('🚫 Bot detected in contact form (too fast)');
       // Return success to bot to avoid detection
       return NextResponse.json(
         { success: true, message: "Děkujeme za vaši zprávu!" },
@@ -71,8 +69,6 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    console.log("✅ New lead created in Turso:", { leadId, name, email, companyName, projectType });
-
     // Send email notification to admin
     try {
       const emailHtml = generateContactFormEmail({
@@ -92,9 +88,7 @@ export async function POST(request: NextRequest) {
         replyTo: email,
       });
 
-      if (emailResult.success) {
-        console.log("✅ Admin notification email sent successfully");
-      } else {
+      if (!emailResult.success) {
         console.error("⚠️ Failed to send admin notification:", emailResult.error);
         // Don't fail the request if email fails - lead is already saved
       }

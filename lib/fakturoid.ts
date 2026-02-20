@@ -131,18 +131,9 @@ async function fakturoidRequest<T>(
 export async function createFakturoidInvoice(
   invoiceData: FakturoidInvoiceInput
 ): Promise<FakturoidInvoice> {
-  console.log('📄 Creating Fakturoid invoice for:', invoiceData.subject.name);
-
   const invoice = await fakturoidRequest<FakturoidInvoice>('/invoices.json', {
     method: 'POST',
     body: JSON.stringify(invoiceData),
-  });
-
-  console.log('✅ Fakturoid invoice created:', {
-    id: invoice.id,
-    number: invoice.number,
-    total: invoice.total,
-    pdf_url: invoice.pdf_url,
   });
 
   return invoice;
@@ -157,8 +148,6 @@ export async function createFakturoidInvoice(
 export async function getFakturoidInvoice(
   invoiceId: number
 ): Promise<FakturoidInvoice> {
-  console.log('🔍 Fetching Fakturoid invoice:', invoiceId);
-
   const invoice = await fakturoidRequest<FakturoidInvoice>(
     `/invoices/${invoiceId}.json`
   );
@@ -177,8 +166,6 @@ export async function markFakturoidInvoiceAsPaid(
   invoiceId: number,
   paidOn?: string
 ): Promise<FakturoidInvoice> {
-  console.log('💰 Marking Fakturoid invoice as paid:', invoiceId);
-
   const paidDate = paidOn || new Date().toISOString().split('T')[0];
 
   const invoice = await fakturoidRequest<FakturoidInvoice>(
@@ -190,12 +177,6 @@ export async function markFakturoidInvoiceAsPaid(
       }),
     }
   );
-
-  console.log('✅ Invoice marked as paid:', {
-    id: invoice.id,
-    number: invoice.number,
-    paid_on: invoice.paid_on,
-  });
 
   return invoice;
 }
@@ -211,8 +192,6 @@ export async function sendFakturoidInvoiceEmail(
   invoiceId: number,
   email?: string
 ): Promise<{ success: boolean }> {
-  console.log('📧 Sending Fakturoid invoice via email:', invoiceId);
-
   const body: any = {};
   if (email) {
     body.email = email;
@@ -226,8 +205,6 @@ export async function sendFakturoidInvoiceEmail(
     }
   );
 
-  console.log('✅ Invoice sent via email');
-
   return { success: true };
 }
 
@@ -240,13 +217,9 @@ export async function sendFakturoidInvoiceEmail(
 export async function deleteFakturoidInvoice(
   invoiceId: number
 ): Promise<{ success: boolean }> {
-  console.log('🗑️ Deleting Fakturoid invoice:', invoiceId);
-
   await fakturoidRequest(`/invoices/${invoiceId}.json`, {
     method: 'DELETE',
   });
-
-  console.log('✅ Invoice deleted');
 
   return { success: true };
 }

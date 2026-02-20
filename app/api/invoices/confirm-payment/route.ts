@@ -72,8 +72,6 @@ export async function POST(request: NextRequest) {
     const paidAt = payment_date || Math.floor(Date.now() / 1000);
 
     // Generate payment confirmation PDF
-    console.log('📄 Generating payment confirmation for:', invoice.invoice_number);
-
     const pdfBytes = await generatePaymentConfirmationPDF({
       invoice_number: invoice.invoice_number as string,
       variable_symbol: invoice.variable_symbol as string,
@@ -122,12 +120,6 @@ export async function POST(request: NextRequest) {
         updated_at = unixepoch()
       WHERE id = ?`,
       args: [paidAt, JSON.stringify(notesData), invoice.id],
-    });
-
-    console.log('✅ Invoice marked as paid:', {
-      invoice_number: invoice.invoice_number,
-      paid_at: new Date(paidAt * 1000).toISOString(),
-      confirmation_url: confirmationUrl,
     });
 
     return NextResponse.json({

@@ -149,11 +149,6 @@ async function goPayRequest<T>(
 export async function createGoPayPayment(
   paymentData: GoPayPaymentRequest
 ): Promise<GoPayPaymentResponse> {
-  console.log('🔵 Creating GoPay payment:', {
-    amount: paymentData.amount,
-    order_number: paymentData.order_number,
-  });
-
   const response = await goPayRequest<GoPayPaymentResponse>(
     `/payments/payment`,
     {
@@ -169,12 +164,6 @@ export async function createGoPayPayment(
     }
   );
 
-  console.log('✅ GoPay payment created:', {
-    id: response.id,
-    state: response.state,
-    gw_url: response.gw_url,
-  });
-
   return response;
 }
 
@@ -187,17 +176,9 @@ export async function createGoPayPayment(
 export async function getGoPayPaymentStatus(
   paymentId: number
 ): Promise<GoPayPaymentStatus> {
-  console.log('🔍 Checking GoPay payment status:', paymentId);
-
   const response = await goPayRequest<GoPayPaymentStatus>(
     `/payments/payment/${paymentId}`
   );
-
-  console.log('📊 GoPay payment status:', {
-    id: response.id,
-    state: response.state,
-    amount: response.amount,
-  });
 
   return response;
 }
@@ -213,19 +194,12 @@ export async function refundGoPayPayment(
   paymentId: number,
   amount?: number
 ): Promise<{ result: string; }> {
-  console.log('💸 Refunding GoPay payment:', {
-    paymentId,
-    amount: amount || 'full',
-  });
-
   const response = await goPayRequest<{ result: string }>(`/payments/payment/${paymentId}/refund`, {
     method: 'POST',
     body: JSON.stringify({
       amount: amount || undefined,
     }),
   });
-
-  console.log('✅ GoPay refund completed:', response);
 
   return response;
 }
@@ -245,8 +219,6 @@ export async function createRecurringPayment(
     };
   }
 ): Promise<GoPayPaymentResponse> {
-  console.log('🔁 Creating recurring GoPay payment:', paymentData);
-
   return createGoPayPayment(paymentData);
 }
 
@@ -265,12 +237,6 @@ export async function chargeRecurringPayment(
   orderNumber: string,
   description: string
 ): Promise<GoPayPaymentResponse> {
-  console.log('🔁 Charging recurring payment:', {
-    parentPaymentId,
-    amount,
-    orderNumber,
-  });
-
   const response = await goPayRequest<GoPayPaymentResponse>(
     `/payments/payment/${parentPaymentId}/create-recurrence`,
     {
@@ -283,8 +249,6 @@ export async function chargeRecurringPayment(
       }),
     }
   );
-
-  console.log('✅ Recurring payment charged:', response);
 
   return response;
 }

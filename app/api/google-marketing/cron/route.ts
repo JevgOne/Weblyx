@@ -48,21 +48,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    console.log('🔄 Starting scheduled campaign analysis...');
-
     // Get all campaigns due for analysis
     const campaignsDue = await getCampaignsDueForAnalysis();
 
     if (campaignsDue.length === 0) {
-      console.log('✅ No campaigns due for analysis');
       return NextResponse.json({
         success: true,
         message: 'No campaigns due for analysis',
         analyzed: 0,
       });
     }
-
-    console.log(`📊 Found ${campaignsDue.length} campaigns to analyze`);
 
     const results: AnalysisResult[] = [];
 
@@ -71,11 +66,9 @@ export async function GET(request: NextRequest) {
         const result = await analyzeCampaign(campaign);
         results.push(result);
       } catch (error) {
-        console.error(`❌ Error analyzing campaign ${campaign.campaignName}:`, error);
+        console.error(`Error analyzing campaign ${campaign.campaignName}:`, error);
       }
     }
-
-    console.log(`✅ Completed analysis of ${results.length} campaigns`);
 
     return NextResponse.json({
       success: true,
@@ -83,7 +76,7 @@ export async function GET(request: NextRequest) {
       results,
     });
   } catch (error: any) {
-    console.error('❌ Cron job error:', error);
+    console.error('Cron job error:', error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
@@ -92,8 +85,6 @@ export async function GET(request: NextRequest) {
 }
 
 async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResult> {
-  console.log(`🔍 Analyzing: ${tracking.campaignName}`);
-
   // Gather all data sources
   const dataSources = {
     googleAds: false,
@@ -117,7 +108,7 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
 
     dataSources.googleAds = true;
   } catch (error) {
-    console.log('⚠️ Google Ads data not available');
+    console.warn('Google Ads data not available');
   }
 
   // 2. Get GA4 data
@@ -134,7 +125,7 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
     };
     dataSources.ga4 = true;
   } catch (error) {
-    console.log('⚠️ GA4 data not available');
+    console.warn('GA4 data not available');
   }
 
   // 3. Get Search Console data
@@ -147,7 +138,7 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
     gscData = { topQueries };
     dataSources.searchConsole = true;
   } catch (error) {
-    console.log('⚠️ Search Console data not available');
+    console.warn('Search Console data not available');
   }
 
   // Build metrics object
@@ -200,9 +191,8 @@ async function analyzeCampaign(tracking: CampaignTracking): Promise<AnalysisResu
         await applyRecommendation(tracking.campaignId, rec);
         rec.status = 'auto_applied';
         autoApplied++;
-        console.log(`✅ Auto-applied: ${rec.title}`);
       } catch (error) {
-        console.error(`⚠️ Failed to auto-apply: ${rec.title}`, error);
+        console.error(`Failed to auto-apply: ${rec.title}`, error);
         rec.status = 'pending';
         pendingForApproval.push(rec);
       }
@@ -293,13 +283,11 @@ async function applyRecommendation(campaignId: string, recommendation: any): Pro
     case 'keyword_negative':
       // TODO: Call Google Ads API to add negative keyword
       // await addNegativeKeyword(campaignId, recommendation.data.keyword);
-      console.log(`[DRY RUN] Would add negative keyword: ${recommendation.data.keyword}`);
       break;
 
     case 'keyword_remove':
       // TODO: Call Google Ads API to pause/remove keyword
       // await pauseKeyword(campaignId, recommendation.data.keyword);
-      console.log(`[DRY RUN] Would pause keyword: ${recommendation.data.keyword}`);
       break;
 
     default:
@@ -325,19 +313,19 @@ function generateInsightsSummary(recommendations: any[], phase: string, healthSc
   summary += `- **Health Score:** ${healthScore}/100\n\n`;
 
   if (critical > 0) {
-    summary += `🚨 **${critical} kritických problémů** vyžaduje okamžitou pozornost!\n\n`;
+    summary += `**${critical} kritických problémů** vyžaduje okamžitou pozornost!\n\n`;
   }
 
   if (high > 0) {
-    summary += `⚠️ **${high} důležitých doporučení** pro zlepšení výkonu.\n\n`;
+    summary += `**${high} důležitých doporučení** pro zlepšení výkonu.\n\n`;
   }
 
   if (autoApplied > 0) {
-    summary += `✅ **${autoApplied} změn bylo automaticky aplikováno** (bezpečné optimalizace).\n\n`;
+    summary += `**${autoApplied} změn bylo automaticky aplikováno** (bezpečné optimalizace).\n\n`;
   }
 
   if (recommendations.length === 0) {
-    summary += `✨ Kampaň vypadá dobře! Žádné akutní problémy nenalezeny.\n`;
+    summary += `Kampaň vypadá dobře! Žádné akutní problémy nenalezeny.\n`;
   }
 
   return summary;

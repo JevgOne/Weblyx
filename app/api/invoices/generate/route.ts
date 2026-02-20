@@ -107,8 +107,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate PDF
-    console.log('📄 Generating invoice PDF:', nextInvoiceNumber);
-
     const pdfBytes = await generateInvoicePDF({
       invoice_number: nextInvoiceNumber,
       variable_symbol: variableSymbol,
@@ -241,12 +239,6 @@ export async function POST(request: NextRequest) {
       console.warn('⚠️ Client upsert failed (non-blocking):', clientError);
     }
 
-    console.log('✅ Invoice generated:', {
-      invoice_number: nextInvoiceNumber,
-      amount: GoPay.halereToCzk(amountWithVat),
-      pdf_url: pdfUrl,
-    });
-
     // Get invoice from database
     const invoiceResult = await turso.execute({
       sql: 'SELECT * FROM invoices WHERE invoice_number = ?',
@@ -258,7 +250,6 @@ export async function POST(request: NextRequest) {
     // Send invoice email automatically if client_email is provided
     let emailSent = false;
     if (input.client_email) {
-      console.log('📧 Sending invoice email to:', input.client_email);
       const emailResult = await sendInvoiceEmail({
         to: input.client_email,
         invoiceNumber: nextInvoiceNumber,
@@ -271,7 +262,6 @@ export async function POST(request: NextRequest) {
 
       if (emailResult.success) {
         emailSent = true;
-        console.log('✅ Invoice email sent successfully');
 
         // Update invoice status to 'sent' if email was sent successfully
         await turso.execute({

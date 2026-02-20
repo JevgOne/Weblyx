@@ -47,8 +47,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Analyze website using Web Analyzer
-    console.log(`= Analyzing website for lead ${leadId}: ${lead.website}`);
-
     const analysisResult = await analyzeWebsite(lead.website);
 
     // Update lead with analysis results
@@ -60,8 +58,6 @@ export async function POST(request: NextRequest) {
       // Lower analysis score = more potential for improvement = higher lead score
       leadScore: Math.max(0, 100 - analysisResult.overallScore),
     });
-
-    console.log(` Website analyzed for lead ${leadId}. Score: ${analysisResult.overallScore}`);
 
     // Get updated lead
     const updatedLead = await getLead(leadId);

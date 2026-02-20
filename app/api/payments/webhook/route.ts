@@ -50,12 +50,6 @@ export async function POST(request: NextRequest) {
     // Parse payload
     const payload = JSON.parse(rawBody);
 
-    console.log('🔔 Webhook received:', {
-      gopay_id: payload.id,
-      state: payload.state,
-      sub_state: payload.sub_state,
-    });
-
     // Extract payment data
     const goPayId = payload.id?.toString();
     const goPayStatus = payload.state as PaymentStatus;
@@ -104,26 +98,10 @@ export async function POST(request: NextRequest) {
       args: [goPayStatus, goPayId],
     });
 
-    console.log('✅ Payment updated:', {
-      gopay_id: goPayId,
-      old_status: oldStatus,
-      new_status: goPayStatus,
-      variable_symbol: payment.variable_symbol,
-      amount: amountPaid,
-    });
-
     // Handle PAID status
     if (goPayStatus === 'PAID') {
-      console.log('💰 Payment PAID - triggering post-payment actions:', {
-        payment_id: payment.id,
-        lead_id: payment.lead_id,
-        amount: GoPay.halereToCzk(amountPaid),
-      });
-
       // Generate invoice automatically via Fakturoid
       try {
-        console.log('📄 Auto-generating Fakturoid invoice for payment:', payment.id);
-
         const { Fakturoid } = await import('@/lib/fakturoid');
 
         if (!Fakturoid.isConfigured()) {
@@ -154,19 +132,12 @@ export async function POST(request: NextRequest) {
           // Create invoice in Fakturoid
           const fakturoidInvoice = await Fakturoid.createInvoice(invoiceData);
 
-          console.log('✅ Fakturoid invoice created:', {
-            id: fakturoidInvoice.id,
-            number: fakturoidInvoice.number,
-            pdf_url: fakturoidInvoice.pdf_url,
-          });
-
           // Mark invoice as paid (since payment is already completed)
           await Fakturoid.markAsPaid(fakturoidInvoice.id);
 
           // Send invoice via email
           if (payment.payer_email) {
             await Fakturoid.sendEmail(fakturoidInvoice.id, payment.payer_email as string);
-            console.log('📧 Invoice sent to:', payment.payer_email);
           }
 
           // Store Fakturoid invoice ID in our database
@@ -217,7 +188,6 @@ export async function POST(request: NextRequest) {
             });
           }
 
-          console.log('✅ Invoice saved to database and linked to payment');
         }
 
       } catch (error: any) {
@@ -235,7 +205,6 @@ export async function POST(request: NextRequest) {
             args: [payment.lead_id],
           });
 
-          console.log('✅ Updated lead after payment:', payment.lead_id);
         } catch (error: any) {
           console.error('⚠️ Failed to update lead:', error.message);
           // Don't fail the webhook if lead update fails
@@ -245,8 +214,6 @@ export async function POST(request: NextRequest) {
       // Send payment confirmation email to customer
       if (payment.payer_email) {
         try {
-          console.log('📧 Sending payment confirmation email to:', payment.payer_email);
-
           const emailHtml = generatePaymentConfirmationEmail({
             customerName: (payment.payer_name as string) || 'Vážený zákazníku',
             invoiceNumber: payment.variable_symbol?.toString() || 'N/A',
@@ -263,9 +230,7 @@ export async function POST(request: NextRequest) {
             from: EMAIL_CONFIG.from,
           });
 
-          if (emailResult.success) {
-            console.log('✅ Payment confirmation email sent to:', payment.payer_email);
-          } else {
+          if (!emailResult.success) {
             console.error('⚠️ Failed to send payment confirmation email:', emailResult.error);
           }
         } catch (emailError: any) {
@@ -277,11 +242,6 @@ export async function POST(request: NextRequest) {
 
     // Handle CANCELED/TIMEOUTED status
     if (goPayStatus === 'CANCELED' || goPayStatus === 'TIMEOUTED') {
-      console.log('⚠️ Payment cancelled/timeouted:', {
-        payment_id: payment.id,
-        status: goPayStatus,
-      });
-
       // Send cancellation email notification
       try {
         const emailHtml = generatePaymentCancellationEmail({
@@ -298,9 +258,7 @@ export async function POST(request: NextRequest) {
           html: emailHtml,
         });
 
-        if (emailResult.success) {
-          console.log("✅ Cancellation email sent for payment:", payment.id);
-        } else {
+        if (!emailResult.success) {
           console.error("⚠️ Failed to send cancellation email:", emailResult.error);
         }
       } catch (emailError) {
@@ -310,11 +268,6 @@ export async function POST(request: NextRequest) {
 
     // Handle REFUNDED status
     if (goPayStatus === 'REFUNDED' || goPayStatus === 'PARTIALLY_REFUNDED') {
-      console.log('💸 Payment refunded:', {
-        payment_id: payment.id,
-        status: goPayStatus,
-      });
-
       // TODO: Update invoice status (implement when invoice system is complete)
 
       // Send refund confirmation email
@@ -333,9 +286,7 @@ export async function POST(request: NextRequest) {
           html: emailHtml,
         });
 
-        if (emailResult.success) {
-          console.log("✅ Refund email sent for payment:", payment.id);
-        } else {
+        if (!emailResult.success) {
           console.error("⚠️ Failed to send refund email:", emailResult.error);
         }
       } catch (emailError) {

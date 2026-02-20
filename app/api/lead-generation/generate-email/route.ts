@@ -48,8 +48,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`📧 Generating email for lead ${leadId}: ${lead.companyName}`);
-
     // Generate email using GPT
     const emailResult = await generateEmail({
       companyName: lead.companyName,
@@ -65,8 +63,6 @@ export async function POST(request: NextRequest) {
       subject: emailResult.subject,
       body: emailResult.body,
     });
-
-    console.log(` Email generated for lead ${leadId}. Tracking code: ${generatedEmail.trackingCode}`);
 
     return NextResponse.json({
       success: true,

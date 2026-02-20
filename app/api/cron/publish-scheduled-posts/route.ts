@@ -30,11 +30,9 @@ function verifyCronRequest(request: NextRequest): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  console.log('🕐 Cron job started: publish-scheduled-posts');
-
   // Verify cron request
   if (!verifyCronRequest(request)) {
-    console.error('❌ Unauthorized cron request');
+    console.error('Unauthorized cron request');
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
@@ -45,8 +43,6 @@ export async function GET(request: NextRequest) {
     // Get all posts scheduled for publication
     const scheduledPosts = await getScheduledPostsReadyToPublish();
 
-    console.log(`📝 Found ${scheduledPosts.length} posts ready to publish`);
-
     const results = {
       published: [] as string[],
       translations: [] as string[],
@@ -55,8 +51,6 @@ export async function GET(request: NextRequest) {
 
     for (const post of scheduledPosts) {
       try {
-        console.log(`\n📤 Publishing post: ${post.title} (${post.id})`);
-
         // Publish the post
         await updateBlogPost(post.id, {
           published: true,
@@ -65,24 +59,21 @@ export async function GET(request: NextRequest) {
         });
 
         results.published.push(post.id);
-        console.log(`✅ Published: ${post.title}`);
 
         // Create translation if auto-translate is enabled
         if (post.autoTranslate) {
           try {
             const targetLanguage: BlogLanguage = post.language === 'cs' ? 'de' : 'cs';
-            console.log(`🌐 Creating ${targetLanguage.toUpperCase()} translation...`);
 
             const translatedDraft = await createTranslatedDraft(post, targetLanguage);
             const newTranslation = await createBlogPost(translatedDraft);
 
             results.translations.push(newTranslation.id);
-            console.log(`✅ Created translation: ${newTranslation.title} (${newTranslation.id})`);
           } catch (translationError) {
             const errorMsg = translationError instanceof Error
               ? translationError.message
               : 'Unknown translation error';
-            console.error(`⚠️  Translation failed for ${post.id}:`, errorMsg);
+            console.error(`Translation failed for ${post.id}:`, errorMsg);
             results.errors.push({
               postId: post.id,
               error: `Translation failed: ${errorMsg}`,
@@ -91,18 +82,13 @@ export async function GET(request: NextRequest) {
         }
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        console.error(`❌ Failed to publish ${post.id}:`, errorMsg);
+        console.error(`Failed to publish ${post.id}:`, errorMsg);
         results.errors.push({
           postId: post.id,
           error: errorMsg,
         });
       }
     }
-
-    console.log('\n✅ Cron job completed');
-    console.log(`   Published: ${results.published.length}`);
-    console.log(`   Translations: ${results.translations.length}`);
-    console.log(`   Errors: ${results.errors.length}`);
 
     return NextResponse.json({
       success: true,
@@ -111,7 +97,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-    console.error('❌ Cron job failed:', errorMsg);
+    console.error('Cron job failed:', errorMsg);
 
     return NextResponse.json(
       {

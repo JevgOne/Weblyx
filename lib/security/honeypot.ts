@@ -27,7 +27,7 @@ export function validateHoneypot(formData: FormData | Record<string, any>): bool
 
   // If honeypot is filled = bot
   if (honeypotValue && typeof honeypotValue === 'string' && honeypotValue.trim() !== '') {
-    console.log('🚫 Bot detected: Honeypot field filled');
+    console.warn('Bot detected: Honeypot field filled');
     return false;
   }
 
@@ -48,13 +48,13 @@ export function validateSubmissionTime(
     const diff = (now - submittedTime) / 1000; // Convert to seconds
 
     if (diff < minSeconds) {
-      console.log(`🚫 Bot detected: Form submitted too quickly (${diff.toFixed(1)}s < ${minSeconds}s)`);
+      console.warn(`Bot detected: Form submitted too quickly (${diff.toFixed(1)}s < ${minSeconds}s)`);
       return false;
     }
 
     // Also check if timestamp is too old (prevent replay attacks)
     if (diff > 3600) { // 1 hour
-      console.log('🚫 Bot detected: Form timestamp too old');
+      console.warn('Bot detected: Form timestamp too old');
       return false;
     }
 

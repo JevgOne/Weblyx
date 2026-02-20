@@ -247,12 +247,6 @@ Web: weblyx.cz
       ],
     });
 
-    console.log('✅ Invoice email sent successfully:', {
-      to,
-      invoiceNumber,
-      messageId: result.data?.id,
-    });
-
     return { success: true, data: result };
   } catch (error: any) {
     console.error('❌ Invoice email sending failed:', error);

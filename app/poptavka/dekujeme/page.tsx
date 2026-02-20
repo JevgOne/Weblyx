@@ -14,7 +14,6 @@ export default function ThankYouPage() {
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'Lead');
       (window as any).fbq('track', 'SubmitApplication');
-      console.log('✅ Facebook Pixel: Conversion tracked');
     }
 
     // Google Analytics GA4 - Track conversion
@@ -30,8 +29,6 @@ export default function ThankYouPage() {
       });
       // Google Ads conversion tracking
       (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
-      console.log('✅ GA4: Conversion tracked');
-      console.log('✅ Google Ads: Contact conversion tracked');
     }
 
     // Konfety při načtení stránky

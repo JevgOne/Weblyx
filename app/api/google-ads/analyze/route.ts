@@ -145,12 +145,10 @@ export async function POST(request: NextRequest) {
 
     const langNames = { cs: "Czech", de: "German", en: "English" };
     const langFull = langNames[language];
-    console.log("🚀 Starting collaborative multi-agent analysis...");
 
     // ========================================
     // PHASE 1: DATA GATHERING
     // ========================================
-    console.log("📥 Phase 1: Gathering all data...");
 
     const [websiteContent, ...competitorContents] = await Promise.all([
       fetchWebsiteContent(websiteUrl),
@@ -189,7 +187,6 @@ Target Language: ${langFull}
     // ========================================
     // PHASE 2: PROJECT MANAGER - INITIAL BRIEF
     // ========================================
-    console.log("👔 Phase 2: Project Manager creating strategic brief...");
 
     const pmBrief = await runAgent(
       `You are an experienced Digital Marketing Project Manager. Your job is to:
@@ -232,7 +229,6 @@ Be decisive and specific. The team relies on your direction.`
     // ========================================
     // PHASE 3: PARALLEL SPECIALIST WORK
     // ========================================
-    console.log("🔄 Phase 3: Specialists working in parallel...");
 
     const [marketingDraft, seoDraft, ppcDraft] = await Promise.all([
       // Marketing Strategist
@@ -332,7 +328,6 @@ Also provide:
     // ========================================
     // PHASE 4: CROSS-REVIEW & COLLABORATION
     // ========================================
-    console.log("🤝 Phase 4: Cross-review and collaboration...");
 
     // Marketing reviews SEO keywords
     const marketingReviewOfSEO = await runAgent(
@@ -371,7 +366,6 @@ REVIEW THE AD COPY:
     // ========================================
     // PHASE 5: PPC SPECIALIST FINAL CREATION
     // ========================================
-    console.log("✍️ Phase 5: PPC Specialist creating final ads with team input...");
 
     const ppcFinal = await runAgent(
       `You are the PPC Specialist. Now create the FINAL ad content incorporating all team feedback.
@@ -449,7 +443,6 @@ NOW CREATE THE FINAL ADS in ${langFull}:
     // ========================================
     // PHASE 6: PROJECT MANAGER FINAL REVIEW
     // ========================================
-    console.log("📋 Phase 6: Project Manager final review and recommendations...");
 
     const pmFinalReview = await runAgent(
       `You are the Project Manager. Review all team outputs and create the final strategic recommendations. Output in ${langFull}.`,
@@ -484,7 +477,6 @@ Create the final campaign recommendations:
     // ========================================
     // PHASE 7: FINAL JSON OUTPUT
     // ========================================
-    console.log("🎯 Phase 7: Generating final structured output...");
 
     // Truncate inputs to avoid exceeding API limits / socket errors
     const marketingTrunc = marketingDraft.slice(0, 3000);
@@ -659,8 +651,6 @@ Output ONLY valid JSON:
       result.meta_ads.descriptions = result.meta_ads.descriptions?.filter((d: any) => d.text && d.text.length <= 30) || [];
     }
 
-    console.log("✅ Collaborative multi-agent analysis complete!");
-
     // ========================================
     // PERSIST ANALYSIS TO DATABASE
     // ========================================
@@ -703,10 +693,8 @@ Output ONLY valid JSON:
         lastAnalysisDate: new Date(),
         analysisCount: (tracking.analysisCount || 0) + 1,
       });
-
-      console.log("💾 Analysis saved to database");
     } catch (saveError) {
-      console.error("⚠️ Failed to save analysis to DB (non-blocking):", saveError);
+      console.error("Failed to save analysis to DB (non-blocking):", saveError);
     }
 
     return NextResponse.json({
@@ -745,7 +733,7 @@ Output ONLY valid JSON:
       },
     });
   } catch (error: any) {
-    console.error("❌ Multi-agent analysis error:", error);
+    console.error("Multi-agent analysis error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

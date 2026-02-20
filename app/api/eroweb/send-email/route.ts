@@ -28,8 +28,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Send email with analysis results using Resend
-    console.log('📧 Sending EroWeb analysis email to:', to);
-
     const emailResult = await sendEmail({
       to: to,
       subject: subject,
@@ -82,8 +80,6 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-
-    console.log('✅ EroWeb analysis email sent successfully to:', to);
 
     // Mark email as sent in database
     await markEmailSent(analysisId);

@@ -129,8 +129,6 @@ export async function POST(
     const params = await context.params;
     const leadId = params.id;
 
-    console.log(`🎨 Generating AI design for lead: ${leadId}`);
-
     // 1. Fetch lead from Turso
     const result = await turso.execute({
       sql: 'SELECT * FROM leads WHERE id = ?',
@@ -171,7 +169,6 @@ export async function POST(
 
     // 2. Check if AI design already exists
     if (leadData.aiDesignSuggestion) {
-      console.log(`ℹ️ AI design already exists for lead ${leadId}`);
       return NextResponse.json({
         success: true,
         designSuggestion: leadData.aiDesignSuggestion,
@@ -221,8 +218,6 @@ export async function POST(
             WHERE id = ?`,
       args: [JSON.stringify(designSuggestion), leadId]
     });
-
-    console.log(`✅ AI design generated and saved for lead ${leadId}`);
 
     return NextResponse.json({
       success: true,

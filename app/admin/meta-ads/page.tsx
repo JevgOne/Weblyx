@@ -500,7 +500,6 @@ export default function MetaAdsPage() {
         setAnalysisStep("✅ Hotovo!");
         // Use agentOutputs if structured data failed
         setAnalysisResult(data.data?.strategy?.note ? data.agentOutputs : data.data);
-        console.log("Full analysis response:", data);
       } else {
         alert(`Error: ${data.error || "Unknown error"}`);
       }

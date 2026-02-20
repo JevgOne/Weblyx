@@ -67,8 +67,6 @@ export async function DELETE(
       args: [id],
     });
 
-    console.log(`✅ Lead ${id} úspěšně smazán`);
-
     return NextResponse.json({
       success: true,
       message: "Lead úspěšně smazán",
@@ -137,8 +135,6 @@ export async function PATCH(
       sql: `UPDATE leads SET ${updates.join(", ")} WHERE id = ?`,
       args,
     });
-
-    console.log(`✅ Lead ${id} updated:`, { status, assignedTo });
 
     // Return updated lead
     const result = await turso.execute({

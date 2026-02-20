@@ -57,19 +57,12 @@ export async function GET(request: NextRequest) {
     // If sync requested, fetch fresh status from GoPay
     if (shouldSync && GoPay.isConfigured()) {
       try {
-        console.log('🔄 Syncing payment status with GoPay:', payment.gopay_id);
-
         const goPayStatus = await GoPay.getPaymentStatus(
           parseInt(payment.gopay_id as string)
         );
 
         // Update database if status changed
         if (goPayStatus.state !== payment.gopay_status) {
-          console.log('📝 Updating payment status:', {
-            old: payment.gopay_status,
-            new: goPayStatus.state,
-          });
-
           const updateSql = goPayStatus.state === 'PAID'
             ? `UPDATE payments
                SET gopay_status = ?,
@@ -94,8 +87,6 @@ export async function GET(request: NextRequest) {
             payment.paid_at = Math.floor(Date.now() / 1000);
           }
         }
-
-        console.log('✅ Payment status synced:', payment.gopay_status);
 
       } catch (error: any) {
         console.error('⚠️ Failed to sync with GoPay:', error.message);

@@ -31,14 +31,12 @@ export async function POST(request: NextRequest) {
       args: [userId, JSON.stringify(subscription), platform || 'unknown'],
     });
 
-    console.log(`✅ Push subscription saved for user: ${userId}`);
-
     return NextResponse.json({
       success: true,
       message: 'Subscription saved successfully',
     });
   } catch (error: any) {
-    console.error('❌ Error saving push subscription:', error);
+    console.error('Error saving push subscription:', error);
 
     return NextResponse.json(
       {

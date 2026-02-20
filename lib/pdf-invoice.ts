@@ -103,8 +103,6 @@ async function generatePaymentQRCode(
 
   const spayd = spaydParts.join('*');
 
-  console.log('📱 Generated SPAYD:', spayd);
-
   // Generate QR code as Data URL
   const qrDataUrl = await QRCode.toDataURL(spayd, {
     errorCorrectionLevel: 'M',
@@ -707,8 +705,6 @@ export async function uploadInvoicePDF(
 ): Promise<string> {
   const filename = `invoices/${invoiceNumber}.pdf`;
 
-  console.log('📤 Uploading invoice PDF to Vercel Blob:', filename);
-
   // Convert Uint8Array to Buffer for Vercel Blob
   const buffer = Buffer.from(pdfBytes);
 
@@ -716,8 +712,6 @@ export async function uploadInvoicePDF(
     access: 'public',
     contentType: 'application/pdf',
   });
-
-  console.log('✅ Invoice PDF uploaded:', blob.url);
 
   return blob.url;
 }
@@ -1031,16 +1025,12 @@ export async function uploadPaymentConfirmationPDF(
 ): Promise<string> {
   const filename = `payment-confirmations/${invoiceNumber}-potvrzeni.pdf`;
 
-  console.log('📤 Uploading payment confirmation to Vercel Blob:', filename);
-
   const buffer = Buffer.from(pdfBytes);
 
   const blob = await put(filename, buffer, {
     access: 'public',
     contentType: 'application/pdf',
   });
-
-  console.log('✅ Payment confirmation uploaded:', blob.url);
 
   return blob.url;
 }

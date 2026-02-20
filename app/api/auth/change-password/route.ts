@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifySessionToken } from '@/lib/auth/simple-auth';
+import { verifySessionToken, hashPassword, comparePassword } from '@/lib/auth/simple-auth';
 import { turso } from '@/lib/turso';
 
 /**
@@ -38,24 +38,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
       return NextResponse.json(
-        { error: 'Nové heslo musí mít alespoň 6 znaků' },
+        { error: 'Nové heslo musí mít alespoň 8 znaků' },
         { status: 400 }
       );
     }
 
     // Get env password for this user
     const envPassword = user.id === 'admin-1'
-      ? (process.env.ADMIN_PASSWORD || 'admin123')
-      : (process.env.ADMIN_PASSWORD_2 || 'Muzaisthebest');
+      ? process.env.ADMIN_PASSWORD
+      : process.env.ADMIN_PASSWORD_2;
 
-    // Check if there's a custom password in DB
-    const customPassword = await getCustomPassword(user.id);
-    const actualPassword = customPassword || envPassword;
+    if (!envPassword) {
+      return NextResponse.json(
+        { error: 'Admin heslo není nakonfigurováno v prostředí' },
+        { status: 500 }
+      );
+    }
 
-    // Verify current password
-    if (currentPassword !== actualPassword) {
+    // Check if there's a hashed custom password in DB
+    const customPasswordHash = await getCustomPassword(user.id);
+
+    // Verify current password - check DB hash first, then env fallback
+    let isCurrentPasswordValid = false;
+    if (customPasswordHash) {
+      isCurrentPasswordValid = await comparePassword(currentPassword, customPasswordHash);
+    }
+    if (!isCurrentPasswordValid) {
+      // Fallback: check against env password (plaintext comparison for legacy)
+      isCurrentPasswordValid = currentPassword === envPassword;
+    }
+
+    if (!isCurrentPasswordValid) {
       return NextResponse.json(
         { error: 'Nesprávné současné heslo' },
         { status: 400 }
@@ -65,7 +80,10 @@ export async function POST(request: NextRequest) {
     // Ensure table exists
     await ensureAdminSettingsTable();
 
-    // Save new password to DB
+    // Hash the new password before saving
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Save hashed password to DB
     await turso.execute({
       sql: `
         INSERT INTO admin_settings (key, value, updated_at)
@@ -74,10 +92,8 @@ export async function POST(request: NextRequest) {
           value = excluded.value,
           updated_at = datetime('now')
       `,
-      args: [`password_${user.id}`, newPassword],
+      args: [`password_${user.id}`, hashedPassword],
     });
-
-    console.log('✅ Password changed for:', user.email);
 
     return NextResponse.json({
       success: true,

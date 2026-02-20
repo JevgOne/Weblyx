@@ -4,9 +4,7 @@ import { turso } from "@/lib/turso";
 // Helper to get admin user by ID
 async function getAdminById(adminId: string): Promise<{ id: string; email: string; name: string } | null> {
   const ADMIN_USERS = [
-    { id: 'admin-1', email: 'admin@weblyx.cz', name: 'Admin' },
-    { id: 'admin-2', email: 'zvin.a@seznam.cz', name: 'Admin 2' },
-    { id: 'admin-3', email: 'filip@weblyx.com', name: 'Filip' },
+    { id: 'admin-1', email: process.env.ADMIN_EMAIL || 'admin@weblyx.cz', name: 'Admin' },
   ];
 
   return ADMIN_USERS.find(u => u.id === adminId) || null;
@@ -72,8 +70,6 @@ export async function GET(request: NextRequest) {
         projectType: row.category || 'Web',
       };
     }));
-
-    console.log(`✅ Fetched ${projects.length} projects from Turso`);
 
     return NextResponse.json({
       success: true,

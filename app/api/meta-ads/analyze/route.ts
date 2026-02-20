@@ -260,10 +260,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("🚀 AI Marketing Agency - Starting analysis...");
-    console.log(`   Project: ${config.name}`);
-    console.log(`   Type: ${analysisType}`);
-
     // Calculate derived metrics
     const breakEvenRoas = config.grossMargin > 0 ? 1 / config.grossMargin : 2;
     const targetCpa = config.targetCpa || config.averageOrderValue / config.targetRoas;
@@ -271,7 +267,6 @@ export async function POST(request: NextRequest) {
     const dailyBudget = Math.round(config.monthlyBudget / 30);
 
     // Fetch all data in parallel
-    console.log("📥 Fetching data...");
     const [metaData, websiteContent] = await Promise.all([
       fetchMetaAdsData(),
       fetchWebsiteContent(config.url),
@@ -318,8 +313,6 @@ ${websiteContent.slice(0, 4000) || "Nepodařilo se načíst obsah webu"}
 `;
 
     // Run main analysis
-    console.log("🤖 Running AI analysis...");
-
     const analysisResponse = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 8000,
@@ -514,8 +507,6 @@ Vrať POUZE validní JSON v tomto formátu:
         },
       });
     }
-
-    console.log(`✅ Analysis complete in ${Date.now() - startTime}ms`);
 
     return NextResponse.json({
       success: true,

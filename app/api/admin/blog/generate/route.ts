@@ -76,9 +76,6 @@ ${targetAudience ? `Cílová skupina: ${targetAudience}` : ''}
 
 Vytvoř kvalitní, SEO-optimalizovaný článek s praktickými informacemi.`;
 
-    console.log('🤖 Generating blog article with Claude...');
-    console.log(`Topic: ${topic} | Type: ${articleType} | Length: ${length} | Language: ${language}`);
-
     // Call Claude API
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -113,8 +110,6 @@ Vytvoř kvalitní, SEO-optimalizovaný článek s praktickými informacemi.`;
       }, { status: 500 });
     }
 
-    console.log('✅ Blog article generated successfully');
-
     return NextResponse.json({
       success: true,
       article: {
@@ -132,7 +127,7 @@ Vytvoř kvalitní, SEO-optimalizovaný článek s praktickými informacemi.`;
     });
 
   } catch (error: any) {
-    console.error('❌ Error generating blog article:', error);
+    console.error('Error generating blog article:', error);
     return NextResponse.json(
       {
         error: 'Chyba při generování článku',
