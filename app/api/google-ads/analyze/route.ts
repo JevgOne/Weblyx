@@ -114,11 +114,11 @@ TOP ORGANIC PAGES: ${topPages.map((p: any) => `${p.page.replace(/https?:\/\/[^/]
 }
 
 async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 3000): Promise<string> {
-  const maxRetries = 2;
+  const maxRetries = 4;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: maxTokens,
         temperature,
         system: systemPrompt,
@@ -126,9 +126,12 @@ async function runAgent(systemPrompt: string, userPrompt: string, temperature = 
       });
       return response.content[0].type === "text" ? response.content[0].text : "";
     } catch (error: any) {
-      console.error(`Agent call attempt ${attempt + 1} failed:`, error?.message || error);
+      const isOverloaded = error?.status === 529 || error?.status === 503;
+      console.error(`Agent call attempt ${attempt + 1}/${maxRetries + 1} failed (${error?.status || 'unknown'}):`, error?.message?.slice(0, 200) || error);
       if (attempt === maxRetries) throw error;
-      await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+      // Exponential backoff: 3s, 6s, 12s, 24s (longer for overload)
+      const delay = isOverloaded ? 5000 * (attempt + 1) : 3000 * (attempt + 1);
+      await new Promise((r) => setTimeout(r, delay));
     }
   }
   return "";
@@ -478,7 +481,7 @@ Create the final campaign recommendations:
 
     const phase7Call = async () => {
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: 6000,
         temperature: 0.2,
         messages: [
