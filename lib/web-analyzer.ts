@@ -1272,8 +1272,17 @@ export class WebAnalyzer {
       }
     }
 
+    // Platform version detection
+    let platformVersion: string | null = null;
+    const generator = $('meta[name="generator"]').attr('content');
+    if (generator) {
+      const versionMatch = generator.match(/[\d]+\.[\d]+[\.\d]*/);
+      if (versionMatch) platformVersion = versionMatch[0];
+    }
+
     return {
       platform,
+      platformVersion,
       framework,
       libraries,
       analytics,
@@ -1381,6 +1390,19 @@ export class WebAnalyzer {
     if (largeImages > 5) score -= 15;
     else if (largeImages > 0) score -= 5;
 
+    // Third-party requests
+    const thirdPartyRequests = $('script[src], link[href], img[src]').filter((_, el) => {
+      const src = $(el).attr('src') || $(el).attr('href') || '';
+      try {
+        const srcHost = new URL(src, this.url).hostname;
+        const pageHost = new URL(this.url).hostname;
+        return srcHost !== pageHost;
+      } catch { return false; }
+    }).length;
+
+    // Lazy loading
+    const hasLazyLoading = $('img[loading="lazy"]').length > 0 || this.html.includes('lazysizes') || this.html.includes('lazyload');
+
     return {
       estimatedScore: Math.max(0, Math.min(100, score)),
       totalResourcesSize: estimatedResourcesSize,
@@ -1388,6 +1410,11 @@ export class WebAnalyzer {
       hasCompression,
       hasCaching,
       largeImages,
+      scriptCount: scripts,
+      stylesheetCount: stylesheets,
+      imageCount: images,
+      thirdPartyRequests,
+      hasLazyLoading: hasLazyLoading,
     };
   }
 
