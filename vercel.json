@@ -4,6 +4,17 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
+  "functions": {
+    "app/api/google-ads/analyze/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/google-marketing/cron/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/meta-ads/analyze/route.ts": {
+      "maxDuration": 120
+    }
+  },
   "redirects": [
     {
       "source": "/:path(.*)",
