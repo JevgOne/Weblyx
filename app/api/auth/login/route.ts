@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict', // SECURITY: Changed from 'lax' to 'strict' for maximum CSRF protection
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24, // 24 hours - matches token expiration
       path: '/',
     });
 
