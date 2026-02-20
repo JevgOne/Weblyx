@@ -380,9 +380,6 @@ export interface WebAnalysisTechnical {
   schemaMarkup: boolean;
 
   // Extended SEO fields
-  canonicalUrl?: string | null;
-  hasCanonical?: boolean;
-  hreflangTags?: string[];
   robotsMeta?: string | null;
   titleLength?: number;
   descriptionLength?: number;
