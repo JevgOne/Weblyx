@@ -1151,6 +1151,20 @@ export class WebAnalyzer {
       else if (readabilityScore >= 20) readabilityLevel = 'difficult';
       else readabilityLevel = 'very-difficult';
 
+      // Top keywords extraction (word frequency analysis)
+      const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','shall','can','this','that','these','those','it','its','i','you','he','she','we','they','me','him','her','us','them','my','your','his','our','their','what','which','who','whom','where','when','how','not','no','nor','if','then','than','too','very','just','about','up','out','so','as','all','each','every','both','few','more','most','other','some','such','only','own','same','also','back','even','still','new','old','je','na','se','v','a','s','z','do','o','pro','za','k','po','od','ale','jak','co','si','to','ten','ta','ty','jsem','jsou','byl','být','má','že','aby','tak','nebo','ani','už','jen','při','ke','ze','ve','kde','ve','jako','než','podle','i','nad','pod','mezi']);
+      const wordFreq = new Map<string, number>();
+      for (const w of words) {
+        const lower = w.toLowerCase().replace(/[^a-záčďéěíňóřšťúůýž\w]/gi, '');
+        if (lower.length >= 3 && !stopWords.has(lower) && !/^\d+$/.test(lower)) {
+          wordFreq.set(lower, (wordFreq.get(lower) || 0) + 1);
+        }
+      }
+      const topKeywords = [...wordFreq.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20)
+        .map(([word, count]) => ({ word, count }));
+
       return {
         wordCount,
         paragraphCount,
@@ -1158,6 +1172,7 @@ export class WebAnalyzer {
         readabilityScore: Math.max(0, Math.min(100, readabilityScore)),
         readabilityLevel,
         averageWordsPerSentence,
+        topKeywords,
       };
     } catch (error: any) {
       // Fallback on error
@@ -1169,6 +1184,7 @@ export class WebAnalyzer {
         readabilityScore: 50,
         readabilityLevel: 'moderate',
         averageWordsPerSentence: 0,
+        topKeywords: [],
       };
     }
   }

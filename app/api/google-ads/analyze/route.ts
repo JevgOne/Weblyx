@@ -374,9 +374,7 @@ CRITICAL REQUIREMENTS:
 - ALL text content MUST be in ${langFull}
 - Headlines MUST be UNDER 30 characters (count carefully!)
 - Descriptions MUST be UNDER 90 characters
-- Meta Ads primary texts MUST be UNDER 500 characters (125 visible)
-- Meta Ads headlines MUST be UNDER 40 characters
-- Meta Ads descriptions MUST be UNDER 30 characters
+- This is ONLY for Google Ads Search campaigns - do NOT include any Meta/Facebook ads content
 - Double-check every character count!`,
       `YOUR INITIAL CONCEPTS:
 ${ppcDraft}
@@ -419,20 +417,14 @@ NOW CREATE THE FINAL ADS in ${langFull}:
    - 3x SOCIAL PROOF descriptions
    Format: "Description text" (XX chars) [type]
 
-5. META ADS SECTION:
-   - 3x Primary Text (max 500 chars, first 125 visible) - one per UVP angle
-   - 3x Headline (max 40 chars)
-   - 3x Description (max 30 chars)
-   - Creative recommendations (image/video suggestions)
-
-6. KEYWORDS with match types:
+5. KEYWORDS with match types:
    - HIGH INTENT (EXACT match): list with [EXACT]
    - MEDIUM INTENT (PHRASE match): list with [PHRASE]
    - DISCOVERY (BROAD match): list with [BROAD]
 
-7. NEGATIVE KEYWORDS: list
+6. NEGATIVE KEYWORDS: list
 
-8. AD EXTENSIONS:
+7. AD EXTENSIONS:
    - Callouts (4):
    - Sitelinks (4) with descriptions:
    - Structured snippet header and values:`,
@@ -509,8 +501,7 @@ ${pmTrunc}
 CRITICAL: Extract the actual headlines and descriptions from the PPC output. They MUST be in ${langFull}.
 - Headlines max 30 chars
 - Descriptions max 90 chars
-- Meta Ads primary texts max 500 chars
-- Meta Ads headlines max 40 chars
+- This is ONLY for Google Ads - do NOT include any Meta/Facebook ads fields
 
 Output ONLY valid JSON:
 \`\`\`json
@@ -542,12 +533,6 @@ Output ONLY valid JSON:
     "benefit": [{"text": "string", "chars": 80}],
     "problem_solution": [{"text": "string", "chars": 80}],
     "social_proof": [{"text": "string", "chars": 80}]
-  },
-  "meta_ads": {
-    "primary_texts": [{"text": "max 500 chars", "angle": "UVP angle name"}],
-    "headlines": [{"text": "max 40 chars"}],
-    "descriptions": [{"text": "max 30 chars"}],
-    "creative_recommendations": "string"
   },
   "keywords": {
     "high_intent": [{"text": "keyword", "matchType": "EXACT", "intent": "transactional"}],
@@ -644,12 +629,8 @@ Output ONLY valid JSON:
       }
     }
 
-    // Validate meta_ads
-    if (result.meta_ads) {
-      result.meta_ads.primary_texts = result.meta_ads.primary_texts?.filter((t: any) => t.text && t.text.length <= 500) || [];
-      result.meta_ads.headlines = result.meta_ads.headlines?.filter((h: any) => h.text && h.text.length <= 40) || [];
-      result.meta_ads.descriptions = result.meta_ads.descriptions?.filter((d: any) => d.text && d.text.length <= 30) || [];
-    }
+    // Remove any meta_ads content if AI accidentally included it
+    delete result.meta_ads;
 
     // ========================================
     // PERSIST ANALYSIS TO DATABASE

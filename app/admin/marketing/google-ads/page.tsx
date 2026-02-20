@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,6 +79,20 @@ import {
   UserCircle,
 } from "lucide-react";
 import RecommendationsPanel from "./_components/RecommendationsPanel";
+import CampaignWizard from "./_components/CampaignWizard";
+
+// Format helpers - defined outside component to avoid re-creation on every render
+const currencyFormatter = new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 });
+const numberFormatter = new Intl.NumberFormat("cs-CZ");
+const formatCurrency = (value: number) => currencyFormatter.format(value);
+const formatNumber = (value: number) => numberFormatter.format(value);
+const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
+const formatPercentDirect = (value: number) => `${value.toFixed(2)}%`;
+const formatDuration = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.round(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
 
 interface Campaign {
   id: string;
@@ -277,10 +291,17 @@ export default function GoogleAdsPage() {
   const [gscError, setGscError] = useState<string | null>(null);
   const [gscConnected, setGscConnected] = useState(false);
 
-  // Create campaign state
+  // Campaign wizard state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [newCampaign, setNewCampaign] = useState({ name: "", dailyBudgetCzk: 100 });
+  const [wizardAnalysisData, setWizardAnalysisData] = useState<AnalysisResult | null>(null);
+
+  // Campaign detail panel state
+  const [expandedCampaignId, setExpandedCampaignId] = useState<string | null>(null);
+  const [campaignDetail, setCampaignDetail] = useState<any>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [updatingBudget, setUpdatingBudget] = useState(false);
+  const [editBudget, setEditBudget] = useState<number>(0);
+  const [removingCampaign, setRemovingCampaign] = useState(false);
 
   // Multi-Agent Analysis state
   const [showAnalyzeDialog, setShowAnalyzeDialog] = useState(false);
@@ -300,7 +321,7 @@ export default function GoogleAdsPage() {
   // Copy state
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setRefreshing(true);
       setError(null);
@@ -470,11 +491,11 @@ export default function GoogleAdsPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user, dateRange]);
+  }, [user, fetchData]);
 
   // Load persisted analysis result on mount
   useEffect(() => {
@@ -491,19 +512,6 @@ export default function GoogleAdsPage() {
         // Silently ignore — no saved analysis yet
       });
   }, [user]);
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }).format(value);
-
-  const formatNumber = (value: number) => new Intl.NumberFormat("cs-CZ").format(value);
-
-  const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
-  const formatPercentDirect = (value: number) => `${value.toFixed(2)}%`;
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.round(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
 
   const getDeviceIcon = (device: string) => {
     switch (device.toLowerCase()) {
@@ -533,30 +541,77 @@ export default function GoogleAdsPage() {
     }
   };
 
-  const handleCreateCampaign = async () => {
-    if (!newCampaign.name || newCampaign.dailyBudgetCzk <= 0) {
-      alert("Please fill in all fields");
+  const handleOpenWizard = (fromAnalysis?: boolean) => {
+    setWizardAnalysisData(fromAnalysis && analysisResult ? analysisResult : null);
+    setShowCreateDialog(true);
+  };
+
+  const handleExpandCampaign = async (campaignId: string) => {
+    if (expandedCampaignId === campaignId) {
+      setExpandedCampaignId(null);
+      setCampaignDetail(null);
       return;
     }
-    setCreating(true);
+    setExpandedCampaignId(campaignId);
+    setLoadingDetail(true);
     try {
-      const res = await fetch("/api/google-ads/campaign", {
-        method: "POST",
+      const res = await fetch(`/api/google-ads/campaign/${campaignId}`);
+      const data = await res.json();
+      if (data.success) {
+        setCampaignDetail(data.data);
+        setEditBudget(data.data.budgetAmount || 0);
+      }
+    } catch (err) {
+      console.error("Failed to load campaign details:", err);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const handleUpdateBudget = async () => {
+    if (!campaignDetail?.budgetId || editBudget <= 0) return;
+    setUpdatingBudget(true);
+    try {
+      const res = await fetch(`/api/google-ads/budget/${campaignDetail.budgetId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCampaign),
+        body: JSON.stringify({ amountCzk: editBudget }),
       });
       const data = await res.json();
       if (data.success) {
-        setShowCreateDialog(false);
-        setNewCampaign({ name: "", dailyBudgetCzk: 100 });
+        setCampaignDetail((prev: any) => prev ? { ...prev, budgetAmount: editBudget } : prev);
         fetchData();
       } else {
         alert(`Error: ${data.error}`);
       }
     } catch (err) {
-      alert("Failed to create campaign");
+      alert("Failed to update budget");
     } finally {
-      setCreating(false);
+      setUpdatingBudget(false);
+    }
+  };
+
+  const handleRemoveCampaign = async (campaignId: string) => {
+    if (!confirm("Opravdu chcete smazat tuto kampaň? Tato akce je nevratná.")) return;
+    setRemovingCampaign(true);
+    try {
+      const res = await fetch(`/api/google-ads/campaign/${campaignId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "REMOVED" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setExpandedCampaignId(null);
+        setCampaignDetail(null);
+        fetchData();
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (err) {
+      alert("Failed to remove campaign");
+    } finally {
+      setRemovingCampaign(false);
     }
   };
 
@@ -596,8 +651,6 @@ export default function GoogleAdsPage() {
       });
       const data = await res.json();
 
-      clearInterval(progressInterval);
-
       if (data.success) {
         setAnalysisProgress(100);
         setAnalysisStep("✅ Hotovo!");
@@ -607,9 +660,9 @@ export default function GoogleAdsPage() {
         alert(`Error: ${data.error}`);
       }
     } catch (err: any) {
-      clearInterval(progressInterval);
       alert(`Analysis failed: ${err?.message || "Network timeout - zkuste to znovu"}`);
     } finally {
+      clearInterval(progressInterval);
       setAnalyzing(false);
     }
   };
@@ -620,7 +673,7 @@ export default function GoogleAdsPage() {
     setTimeout(() => setCopiedItem(null), 2000);
   };
 
-  const totals = campaigns.reduce(
+  const totals = useMemo(() => campaigns.reduce(
     (acc, c) => ({
       impressions: acc.impressions + c.impressions,
       clicks: acc.clicks + c.clicks,
@@ -628,7 +681,7 @@ export default function GoogleAdsPage() {
       conversions: acc.conversions + c.conversions,
     }),
     { impressions: 0, clicks: 0, cost: 0, conversions: 0 }
-  );
+  ), [campaigns]);
 
   if (!user || loading) {
     return (
@@ -1453,49 +1506,31 @@ export default function GoogleAdsPage() {
                         </AccordionItem>
                       </Accordion>
 
-                      <Button onClick={() => setAnalysisResult(null)} variant="outline" className="w-full">
-                        Nová analýza
-                      </Button>
+                      <div className="flex gap-3">
+                        <Button onClick={() => { setShowAnalyzeDialog(false); handleOpenWizard(true); }} className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600">
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Vytvořit kampaň z analýzy
+                        </Button>
+                        <Button onClick={() => setAnalysisResult(null)} variant="outline" className="flex-1">
+                          Nová analýza
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </DialogContent>
               </Dialog>
 
-              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                <DialogTrigger asChild>
-                  <Button disabled={!connected}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nová kampaň
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Vytvořit novou kampaň</DialogTitle>
-                    <DialogDescription>Kampaň bude vytvořena jako pozastavená.</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Název kampaně</Label>
-                      <Input
-                        placeholder="Search - Webdesign CZ"
-                        value={newCampaign.name}
-                        onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Denní rozpočet (CZK)</Label>
-                      <Input
-                        type="number"
-                        value={newCampaign.dailyBudgetCzk}
-                        onChange={(e) => setNewCampaign({ ...newCampaign, dailyBudgetCzk: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                    <Button onClick={handleCreateCampaign} disabled={creating} className="w-full">
-                      {creating ? "Vytvářím..." : "Vytvořit kampaň"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button disabled={!connected} onClick={() => handleOpenWizard(false)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nová kampaň
+              </Button>
+
+              <CampaignWizard
+                open={showCreateDialog}
+                onClose={() => { setShowCreateDialog(false); setWizardAnalysisData(null); }}
+                onSuccess={fetchData}
+                analysisResult={wizardAnalysisData}
+              />
 
               <Button onClick={fetchData} disabled={refreshing} variant="outline">
                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
@@ -1583,7 +1618,7 @@ export default function GoogleAdsPage() {
                           <Brain className="h-4 w-4 mr-2" />
                           Spustit AI Analýzu
                         </Button>
-                        <Button variant="outline" onClick={() => setShowCreateDialog(true)}>
+                        <Button variant="outline" onClick={() => handleOpenWizard(false)}>
                           <Plus className="h-4 w-4 mr-2" />
                           Vytvořit kampaň manuálně
                         </Button>
@@ -1712,53 +1747,139 @@ export default function GoogleAdsPage() {
                                 const roas = campaign.cost > 0 && campaign.conversionValue
                                   ? campaign.conversionValue / campaign.cost
                                   : null;
-                                // Estimate daily budget from spend (mock if not available)
                                 const estimatedBudget = campaign.budgetAmount || Math.round(campaign.cost / 30 * 1.2);
+                                const isExpanded = expandedCampaignId === campaign.id;
 
                                 return (
-                                  <TableRow key={campaign.id}>
-                                    <TableCell>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleToggleCampaign(campaign.id, campaign.status)}
-                                      >
-                                        {campaign.status === "ENABLED" ? (
-                                          <Pause className="h-4 w-4 text-yellow-500" />
+                                  <React.Fragment key={campaign.id}>
+                                    <TableRow
+                                      className="cursor-pointer hover:bg-muted/50"
+                                      onClick={() => handleExpandCampaign(campaign.id)}
+                                    >
+                                      <TableCell>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={(e) => { e.stopPropagation(); handleToggleCampaign(campaign.id, campaign.status); }}
+                                        >
+                                          {campaign.status === "ENABLED" ? (
+                                            <Pause className="h-4 w-4 text-yellow-500" />
+                                          ) : (
+                                            <Play className="h-4 w-4 text-green-500" />
+                                          )}
+                                        </Button>
+                                      </TableCell>
+                                      <TableCell className="font-medium">{campaign.name}</TableCell>
+                                      <TableCell>
+                                        <Badge variant={campaign.status === "ENABLED" ? "default" : "secondary"}>
+                                          {campaign.status === "ENABLED" ? "Aktivní" : "Pozastavená"}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell className="text-right">{formatCurrency(estimatedBudget)}</TableCell>
+                                      <TableCell className="text-right">{formatCurrency(campaign.cost)}</TableCell>
+                                      <TableCell className="text-right">{formatNumber(campaign.clicks)}</TableCell>
+                                      <TableCell className="text-right">{formatNumber(campaign.conversions)}</TableCell>
+                                      <TableCell className="text-right">
+                                        {cpa !== null ? (
+                                          <span className={cpa > 500 ? "text-red-500" : cpa < 200 ? "text-green-500" : ""}>
+                                            {formatCurrency(cpa)}
+                                          </span>
                                         ) : (
-                                          <Play className="h-4 w-4 text-green-500" />
+                                          <span className="text-muted-foreground">-</span>
                                         )}
-                                      </Button>
-                                    </TableCell>
-                                    <TableCell className="font-medium">{campaign.name}</TableCell>
-                                    <TableCell>
-                                      <Badge variant={campaign.status === "ENABLED" ? "default" : "secondary"}>
-                                        {campaign.status === "ENABLED" ? "Aktivní" : "Pozastavená"}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">{formatCurrency(estimatedBudget)}</TableCell>
-                                    <TableCell className="text-right">{formatCurrency(campaign.cost)}</TableCell>
-                                    <TableCell className="text-right">{formatNumber(campaign.clicks)}</TableCell>
-                                    <TableCell className="text-right">{formatNumber(campaign.conversions)}</TableCell>
-                                    <TableCell className="text-right">
-                                      {cpa !== null ? (
-                                        <span className={cpa > 500 ? "text-red-500" : cpa < 200 ? "text-green-500" : ""}>
-                                          {formatCurrency(cpa)}
-                                        </span>
-                                      ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                      )}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                      {roas !== null ? (
-                                        <span className={roas < 1 ? "text-red-500" : roas > 3 ? "text-green-500" : ""}>
-                                          {roas.toFixed(2)}x
-                                        </span>
-                                      ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                      )}
-                                    </TableCell>
-                                  </TableRow>
+                                      </TableCell>
+                                      <TableCell className="text-right">
+                                        {roas !== null ? (
+                                          <span className={roas < 1 ? "text-red-500" : roas > 3 ? "text-green-500" : ""}>
+                                            {roas.toFixed(2)}x
+                                          </span>
+                                        ) : (
+                                          <span className="text-muted-foreground">-</span>
+                                        )}
+                                      </TableCell>
+                                    </TableRow>
+                                    {isExpanded && (
+                                      <TableRow>
+                                        <TableCell colSpan={9} className="bg-muted/30 p-4">
+                                          {loadingDetail ? (
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                              <RefreshCw className="h-4 w-4 animate-spin" />
+                                              Načítám detaily kampaně...
+                                            </div>
+                                          ) : campaignDetail ? (
+                                            <div className="space-y-4">
+                                              <div className="flex items-center gap-3">
+                                                <h4 className="font-semibold">Správa kampaně</h4>
+                                                <Badge variant="outline">{campaignDetail.channelType}</Badge>
+                                              </div>
+                                              <div className="flex flex-wrap gap-3">
+                                                <Button
+                                                  size="sm"
+                                                  variant={campaign.status === "ENABLED" ? "outline" : "default"}
+                                                  onClick={() => handleToggleCampaign(campaign.id, campaign.status)}
+                                                >
+                                                  {campaign.status === "ENABLED" ? (
+                                                    <>
+                                                      <Pause className="h-3 w-3 mr-1" />
+                                                      Pozastavit
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Play className="h-3 w-3 mr-1" />
+                                                      Aktivovat
+                                                    </>
+                                                  )}
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="destructive"
+                                                  disabled={removingCampaign}
+                                                  onClick={() => handleRemoveCampaign(campaign.id)}
+                                                >
+                                                  <XCircle className="h-3 w-3 mr-1" />
+                                                  {removingCampaign ? "Mazání..." : "Smazat"}
+                                                </Button>
+                                              </div>
+                                              <div className="flex items-end gap-3">
+                                                <div className="space-y-1">
+                                                  <Label className="text-xs">Denní rozpočet (CZK)</Label>
+                                                  <Input
+                                                    type="number"
+                                                    min={1}
+                                                    className="w-40 h-8"
+                                                    value={editBudget}
+                                                    onChange={(e) => setEditBudget(parseInt(e.target.value) || 0)}
+                                                  />
+                                                </div>
+                                                <Button
+                                                  size="sm"
+                                                  variant="outline"
+                                                  disabled={updatingBudget || editBudget === campaignDetail.budgetAmount}
+                                                  onClick={handleUpdateBudget}
+                                                >
+                                                  {updatingBudget ? (
+                                                    <RefreshCw className="h-3 w-3 animate-spin" />
+                                                  ) : (
+                                                    <>
+                                                      <DollarSign className="h-3 w-3 mr-1" />
+                                                      Uložit rozpočet
+                                                    </>
+                                                  )}
+                                                </Button>
+                                                {editBudget !== campaignDetail.budgetAmount && (
+                                                  <span className="text-xs text-muted-foreground">
+                                                    Aktuální: {formatCurrency(campaignDetail.budgetAmount)}
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground">Nepodařilo se načíst detaily</p>
+                                          )}
+                                        </TableCell>
+                                      </TableRow>
+                                    )}
+                                  </React.Fragment>
                                 );
                               })}
                             </TableBody>

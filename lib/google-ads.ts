@@ -92,6 +92,41 @@ export async function testGoogleAdsConnection(): Promise<{
   }
 }
 
+// Get all campaigns (without date filtering - shows even inactive ones)
+export async function getAllCampaigns() {
+  try {
+    const customer = getGoogleAdsCustomer();
+
+    const campaigns = await customer.query(`
+      SELECT
+        campaign.id,
+        campaign.name,
+        campaign.status,
+        campaign.advertising_channel_type
+      FROM campaign
+      WHERE campaign.status != 'REMOVED'
+      ORDER BY campaign.name ASC
+    `);
+
+    return campaigns.map((campaign: any) => ({
+      id: campaign.campaign.id,
+      name: campaign.campaign.name,
+      status: campaign.campaign.status,
+      channelType: campaign.campaign.advertising_channel_type,
+      impressions: 0,
+      clicks: 0,
+      ctr: 0,
+      avgCpc: 0,
+      cost: 0,
+      conversions: 0,
+      costPerConversion: null,
+    }));
+  } catch (error: any) {
+    console.error("Error fetching all campaigns:", error);
+    throw error;
+  }
+}
+
 // Get campaign performance data
 export async function getCampaignPerformance(
   dateRange: "LAST_7_DAYS" | "LAST_30_DAYS" | "THIS_MONTH" = "LAST_30_DAYS"

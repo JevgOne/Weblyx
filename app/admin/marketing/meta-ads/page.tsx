@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import {
@@ -84,6 +84,13 @@ import {
   Loader2,
 } from "lucide-react";
 import MetaRecommendationsPanel from "./_components/RecommendationsPanel";
+
+// Format helpers - defined outside component to avoid re-creation on every render
+const currencyFormatter = new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 });
+const numberFormatter = new Intl.NumberFormat("cs-CZ");
+const formatCurrency = (value: number) => currencyFormatter.format(value);
+const formatNumber = (value: number) => numberFormatter.format(value);
+const formatPercent = (value: number) => `${value.toFixed(2)}%`;
 
 interface Campaign {
   campaignId: string;
@@ -353,7 +360,7 @@ export default function MetaAdsPage() {
   const [creativeImages, setCreativeImages] = useState<Record<number, string>>({});
   const [generatingImage, setGeneratingImage] = useState<number | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setRefreshing(true);
       setError(null);
@@ -365,24 +372,21 @@ export default function MetaAdsPage() {
         setConnected(true);
         setAccountInfo(testData.data);
 
-        const campaignsRes = await fetch(
-          `/api/meta-ads/campaigns?date_preset=${dateRange}`
-        );
-        const campaignsData = await campaignsRes.json();
+        // Fetch campaigns, ad sets, and ads in parallel
+        const [campaignsRes, adSetsRes, adsRes] = await Promise.all([
+          fetch(`/api/meta-ads/campaigns?date_preset=${dateRange}`),
+          fetch(`/api/meta-ads/ad-sets?insights=true&date_preset=${dateRange}`),
+          fetch(`/api/meta-ads/ads?insights=true&date_preset=${dateRange}`),
+        ]);
+
+        const [campaignsData, adSetsData, adsData] = await Promise.all([
+          campaignsRes.json(),
+          adSetsRes.json(),
+          adsRes.json(),
+        ]);
+
         if (campaignsData.success) setCampaigns(campaignsData.data || []);
-
-        // Fetch ad sets with insights
-        const adSetsRes = await fetch(
-          `/api/meta-ads/ad-sets?insights=true&date_preset=${dateRange}`
-        );
-        const adSetsData = await adSetsRes.json();
         if (adSetsData.success) setAdSets(adSetsData.data || []);
-
-        // Fetch ads with insights
-        const adsRes = await fetch(
-          `/api/meta-ads/ads?insights=true&date_preset=${dateRange}`
-        );
-        const adsData = await adsRes.json();
         if (adsData.success) setAds(adsData.data || []);
       } else {
         setConnected(false);
@@ -395,23 +399,11 @@ export default function MetaAdsPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user, dateRange]);
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("cs-CZ", {
-      style: "currency",
-      currency: "CZK",
-      maximumFractionDigits: 0,
-    }).format(value);
-
-  const formatNumber = (value: number) =>
-    new Intl.NumberFormat("cs-CZ").format(value);
-
-  const formatPercent = (value: number) => `${value.toFixed(2)}%`;
+  }, [user, fetchData]);
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -547,8 +539,6 @@ export default function MetaAdsPage() {
       clearTimeout(timeoutId);
       const data = await res.json();
 
-      clearInterval(progressInterval);
-
       if (data.success) {
         setAnalysisProgress(100);
         setAnalysisStep("✅ Hotovo!");
@@ -559,7 +549,6 @@ export default function MetaAdsPage() {
         alert(`Error: ${data.error || "Unknown error"}`);
       }
     } catch (err: any) {
-      clearInterval(progressInterval);
       if (err.name === 'AbortError') {
         alert("Analýza trvala příliš dlouho (timeout). Zkuste to znovu.");
       } else {
@@ -567,6 +556,7 @@ export default function MetaAdsPage() {
         console.error("Analysis error:", err);
       }
     } finally {
+      clearInterval(progressInterval);
       setAnalyzing(false);
     }
   };
@@ -598,7 +588,7 @@ export default function MetaAdsPage() {
     }
   };
 
-  const totals = campaigns.reduce(
+  const totals = useMemo(() => campaigns.reduce(
     (acc, c) => ({
       impressions: acc.impressions + c.impressions,
       clicks: acc.clicks + c.clicks,
@@ -607,7 +597,7 @@ export default function MetaAdsPage() {
       conversions: acc.conversions + (c.conversions || 0),
     }),
     { impressions: 0, clicks: 0, spend: 0, reach: 0, conversions: 0 }
-  );
+  ), [campaigns]);
 
   if (!user || loading) {
     return (

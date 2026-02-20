@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
@@ -124,6 +124,12 @@ interface Recommendation {
   created_at: number;
 }
 
+// Format helpers - defined outside component to avoid re-creation on every render
+const currencyFormatter = new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 });
+const numberFormatter = new Intl.NumberFormat("cs-CZ");
+const overviewFormatCurrency = (value: number) => currencyFormatter.format(value);
+const overviewFormatNumber = (value: number) => numberFormatter.format(value);
+
 export default function MarketingOverviewPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
@@ -135,10 +141,10 @@ export default function MarketingOverviewPage() {
   const [chartMetric, setChartMetric] = useState<"spend" | "conversions">("spend");
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setRefreshing(true);
     try {
-      // Fetch from multiple endpoints
+      // Fetch from multiple endpoints in parallel
       const [googleTest, metaTest, googleCampaigns, metaCampaigns] = await Promise.all([
         fetch("/api/google-ads/test").then(r => r.json()).catch(() => ({ success: false })),
         fetch("/api/meta-ads/test").then(r => r.json()).catch(() => ({ success: false })),
@@ -271,21 +277,14 @@ export default function MarketingOverviewPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user, dateRange]);
+  }, [user, fetchData]);
 
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("cs-CZ", {
-      style: "currency",
-      currency: "CZK",
-      maximumFractionDigits: 0,
-    }).format(value);
-
-  const formatNumber = (value: number) =>
-    new Intl.NumberFormat("cs-CZ").format(value);
+  const formatCurrency = overviewFormatCurrency;
+  const formatNumber = overviewFormatNumber;
 
   const formatChange = (value: number) => {
     if (value === 0) return null;
