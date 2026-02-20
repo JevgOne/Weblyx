@@ -332,9 +332,9 @@ export function Contact({ isMainPage = false }: ContactProps) {
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="eshop" id="eshop" />
-                        <Label htmlFor="eshop" className="cursor-pointer font-normal">
-                          {t('form.projectType.eshop')}
+                        <RadioGroupItem value="web-app" id="web-app" />
+                        <Label htmlFor="web-app" className="cursor-pointer font-normal">
+                          Webová aplikace
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">

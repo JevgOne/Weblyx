@@ -153,12 +153,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const seoLandingRoutes: MetadataRoute.Sitemap = isGermanSite
     ? [
         {
-          url: `${baseUrl}/onlineshop-erstellen`,
-          lastModified: new Date(),
-          changeFrequency: 'weekly',
-          priority: 0.8,
-        },
-        {
           url: `${baseUrl}/wordpress-alternative`,
           lastModified: new Date(),
           changeFrequency: 'weekly',

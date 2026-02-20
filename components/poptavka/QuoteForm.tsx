@@ -21,7 +21,7 @@ import confetti from "canvas-confetti";
 const projectTypes = [
   { id: "new-web", label: "Nový web" },
   { id: "redesign", label: "Redesign" },
-  { id: "eshop", label: "E-shop" },
+  { id: "web-app", label: "Webová aplikace" },
   { id: "landing", label: "Landing page" },
   { id: "other", label: "Jiné" },
 ];
@@ -30,8 +30,7 @@ const budgetOptions = [
   { id: "landing", label: "Landing Page - 7 990 Kč", value: "7 990 Kč" },
   { id: "basic", label: "Základní Web - 9 990 Kč", value: "9 990 Kč" },
   { id: "standard", label: "Standardní Web - 24 990 Kč", value: "24 990 Kč" },
-  { id: "eshop-mini", label: "Mini E-shop - 49 990 Kč", value: "49 990 Kč" },
-  { id: "eshop-full", label: "Plnohodnotný E-shop - 89 990 Kč", value: "89 990 Kč" },
+  { id: "premium", label: "Premium Web - 49 990 Kč", value: "49 990 Kč" },
   { id: "custom", label: "Jiný rozpočet", value: "custom" },
 ];
 

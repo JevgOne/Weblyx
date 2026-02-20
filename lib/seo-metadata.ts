@@ -99,8 +99,8 @@ const seoContent: Record<Locale, SEOContent> = {
       'moderní technologie web',
 
       // Service-specific keywords
-      'e-shop na míru',
-      'tvorba e-shopu',
+      'webová aplikace na míru',
+      'tvorba webu na míru',
       'redesign webu',
       'webové řešení',
 

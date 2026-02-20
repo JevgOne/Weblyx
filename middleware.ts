@@ -91,6 +91,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
+  // E-shop pages temporarily disabled - redirect to services
+  if (pathname === '/tvorba-eshopu') {
+    return NextResponse.redirect(new URL('/sluzby', request.url), 302);
+  }
+  if (pathname === '/onlineshop-erstellen') {
+    return NextResponse.redirect(new URL('/leistungen', request.url), 302);
+  }
+
   const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
 
   // Skip security checks for static assets

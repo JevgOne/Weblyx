@@ -37,12 +37,12 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek | Od 7 990 Kč | E-shopy a SEO | Weblyx",
-  description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. E-shopy na míru, SEO optimalizace. Česká agentura.",
+  title: "Tvorba webových stránek | Od 7 990 Kč | SEO optimalizace | Weblyx",
+  description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. SEO optimalizace, redesign webu. Česká agentura.",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
-    "tvorba e-shopu",
+    "tvorba webu na míru",
     "SEO optimalizace",
     "redesign webu",
     "web pro živnostníky",
@@ -86,8 +86,8 @@ function getIdealForText(title: string, fallback: string): string {
   if (lower.includes("landing")) return "živnostníky, freelancery a startupy";
   if (lower.includes("základní")) return "malé firmy a lokální podnikání";
   if (lower.includes("standardní")) return "rostoucí firmy s více službami";
-  if (lower.includes("mini") && lower.includes("shop")) return "malé e-shopy do 100 produktů";
-  if (lower.includes("premium") && lower.includes("shop")) return "velké e-shopy s tisíci produkty";
+  if (lower.includes("mini") && lower.includes("shop")) return "malé firmy s online prodejem";
+  if (lower.includes("premium") && lower.includes("shop")) return "větší firmy s rozsáhlým katalogem";
   return fallback;
 }
 
@@ -205,7 +205,7 @@ export default async function ServicesPage() {
   // Generate webpage schema
   const webpageSchema = generateWebPageSchema({
     name: 'Služby',
-    description: 'Nabízíme tvorbu webových stránek, e-shopů, SEO optimalizaci, redesign, optimalizaci rychlosti a následnou podporu',
+    description: 'Nabízíme tvorbu webových stránek, SEO optimalizaci, redesign, optimalizaci rychlosti a následnou podporu',
     url: 'https://www.weblyx.cz/sluzby',
     breadcrumbs,
   });
@@ -259,7 +259,7 @@ export default async function ServicesPage() {
               <span className="text-primary">transparentní ceny bez skrytých poplatků</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Profesionální webové stránky a e-shopy za férové ceny.
+              Profesionální webové stránky za férové ceny.
               Víte přesně, co dostanete a za kolik. Bez překvapení.
             </p>
           </div>

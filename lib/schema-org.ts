@@ -36,7 +36,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
       name: 'Weblyx',
       url: 'https://www.weblyx.cz',
       logo: 'https://www.weblyx.cz/logo.png',
-      description: 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek a e-shopů s využitím AI technologií',
+      description: 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
       email: 'info@weblyx.cz',
       phone: '+420702110166',
       addressLocality: 'Praha',

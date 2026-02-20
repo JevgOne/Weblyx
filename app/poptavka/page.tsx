@@ -41,7 +41,7 @@ export const metadata: Metadata = isSeitelyx ? {
     "webové stránky Praha",
     "nový web",
     "redesign webu",
-    "e-shop na míru",
+    "web na míru",
     "landing page",
   ],
   openGraph: {

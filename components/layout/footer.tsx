@@ -31,7 +31,6 @@ export function Footer() {
     ],
     services: [
       { name: t('webDevelopment'), href: `${servicesRoute}#web` },
-      { name: t('ecommerce'), href: `${servicesRoute}#eshop` },
       { name: t('seo'), href: `${servicesRoute}#seo` },
       { name: t('redesign'), href: `${servicesRoute}#redesign` },
       { name: t('maintenance'), href: `${servicesRoute}#maintenance` },
