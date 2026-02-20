@@ -16,7 +16,10 @@ const anthropic = new Anthropic({
 });
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // Allow up to 5 minutes for thorough multi-agent collaboration
+export const maxDuration = 300;
+
+const FAST_MODEL = "claude-haiku-4-5-20251001";
+const QUALITY_MODEL = "claude-sonnet-4-6";
 
 interface AnalysisRequest {
   websiteUrl: string;
@@ -113,12 +116,18 @@ TOP ORGANIC PAGES: ${topPages.map((p: any) => `${p.page.replace(/https?:\/\/[^/]
   }
 }
 
-async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 3000): Promise<string> {
-  const maxRetries = 4;
+async function runAgent(
+  systemPrompt: string,
+  userPrompt: string,
+  temperature = 0.7,
+  maxTokens = 2000,
+  model: string = FAST_MODEL
+): Promise<string> {
+  const maxRetries = 2;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-6",
+        model,
         max_tokens: maxTokens,
         temperature,
         system: systemPrompt,
@@ -129,8 +138,7 @@ async function runAgent(systemPrompt: string, userPrompt: string, temperature = 
       const isOverloaded = error?.status === 529 || error?.status === 503;
       console.error(`Agent call attempt ${attempt + 1}/${maxRetries + 1} failed (${error?.status || 'unknown'}):`, error?.message?.slice(0, 200) || error);
       if (attempt === maxRetries) throw error;
-      // Exponential backoff: 3s, 6s, 12s, 24s (longer for overload)
-      const delay = isOverloaded ? 5000 * (attempt + 1) : 3000 * (attempt + 1);
+      const delay = isOverloaded ? 3000 * (attempt + 1) : 2000 * (attempt + 1);
       await new Promise((r) => setTimeout(r, delay));
     }
   }
@@ -150,7 +158,7 @@ export async function POST(request: NextRequest) {
     const langFull = langNames[language];
 
     // ========================================
-    // PHASE 1: DATA GATHERING
+    // PHASE 1: DATA GATHERING (parallel, no AI)
     // ========================================
 
     const [websiteContent, ...competitorContents] = await Promise.all([
@@ -158,7 +166,6 @@ export async function POST(request: NextRequest) {
       ...competitors.slice(0, 3).map(fetchWebsiteContent),
     ]);
 
-    // Fetch all Google data in parallel
     const [googleAdsData, ga4Data, gscData] = await Promise.all([
       getGoogleAdsInsights(),
       getGA4Insights(),
@@ -188,326 +195,136 @@ Target Language: ${langFull}
     `.trim();
 
     // ========================================
-    // PHASE 2: PROJECT MANAGER - INITIAL BRIEF
+    // PHASE 2: PM BRIEF (Haiku - fast ~3-5s)
     // ========================================
 
     const pmBrief = await runAgent(
-      `You are an experienced Digital Marketing Project Manager. Your job is to:
-1. Analyze all available data and create a comprehensive strategic brief
-2. Define clear objectives, constraints, and success criteria
-3. Identify key insights that the team must leverage
-4. Set the direction for each specialist
-
-Be thorough but concise. Think strategically. Output in ${langFull}.`,
-      `Create a strategic brief for the team based on this data:
+      `You are a Digital Marketing Project Manager. Analyze data and create a concise strategic brief.
+Be decisive and specific. Output in ${langFull}.`,
+      `Create a strategic brief based on this data:
 
 ${rawData}
 
-Your brief should include:
-1. EXECUTIVE SUMMARY - What are we dealing with?
-2. BUSINESS OBJECTIVES - What must this campaign achieve?
-3. TARGET AUDIENCE PROFILE - Who are we targeting? Be specific.
-4. COMPETITIVE LANDSCAPE - What are competitors doing? Gaps and opportunities?
-5. KEY CONSTRAINTS - Budget, market, timing considerations
-6. CRITICAL SUCCESS FACTORS - What will make or break this campaign?
-7. DIRECTION FOR EACH TEAM MEMBER:
-   - For Marketing Strategist: What positioning angle to explore?
-   - For SEO Expert: What keyword themes to prioritize?
-   - For PPC Specialist: What ad angles will resonate?
-8. PERSONAS - Define 3 specific customer personas:
-   For each persona provide:
-   - Name (fictional but realistic)
-   - Age and position/role
-   - Top 3 pain points
-   - Top 3 goals
-   - Top 3 objections to buying
-9. UVP ANGLES - Propose 3 different unique value proposition angles for A/B testing:
-   - Angle 1: [name] - positioning statement
-   - Angle 2: [name] - positioning statement
-   - Angle 3: [name] - positioning statement
-
-Be decisive and specific. The team relies on your direction.`
+Include:
+1. EXECUTIVE SUMMARY (2-3 sentences)
+2. TARGET AUDIENCE - Who are we targeting?
+3. COMPETITIVE GAPS - Key opportunities
+4. 3 CUSTOMER PERSONAS: Name, Age, Position, Pain Points (3), Goals (3), Objections (3)
+5. 3 UVP ANGLES for A/B testing: Angle name + positioning statement
+6. DIRECTION for Marketing Strategist, SEO Expert, and PPC Specialist`,
+      0.7,
+      2000,
+      FAST_MODEL
     );
 
     // ========================================
-    // PHASE 3: PARALLEL SPECIALIST WORK
+    // PHASE 3: PARALLEL SPECIALIST WORK (Haiku - fast ~5-8s)
     // ========================================
 
     const [marketingDraft, seoDraft, ppcDraft] = await Promise.all([
       // Marketing Strategist
       runAgent(
-        `You are a Brand & Marketing Strategist. You receive direction from the Project Manager and must develop the messaging strategy.
-Focus on: positioning, value proposition, emotional triggers, trust builders, competitive differentiation.
-Be creative but strategic. Ground everything in data. Output in ${langFull}.`,
-        `PROJECT MANAGER'S BRIEF:
+        `You are a Brand & Marketing Strategist. Focus on positioning, value proposition, emotional triggers, trust builders.
+Be concise. Output in ${langFull}.`,
+        `PM BRIEF:
 ${pmBrief}
 
-RAW DATA FOR REFERENCE:
-${rawData.slice(0, 8000)}
+RAW DATA:
+${rawData.slice(0, 6000)}
 
-Develop the marketing strategy:
-1. POSITIONING STATEMENT - How should we position against competitors?
-2. UNIQUE VALUE PROPOSITION - The #1 compelling reason to choose this company
-3. KEY MESSAGES (5-7) - Core messages that will resonate with the target audience
-4. EMOTIONAL TRIGGERS - What motivates our audience? Fear, aspiration, urgency?
-5. TRUST BUILDERS - What overcomes objections and builds credibility?
-6. MESSAGE HIERARCHY - Which messages are primary vs. supporting?
-7. TONE & VOICE - How should the ads sound?
-8. COMPETITIVE DIFFERENTIATION - Specific angles that competitors DON'T use`
+Develop:
+1. POSITIONING STATEMENT
+2. UNIQUE VALUE PROPOSITION
+3. KEY MESSAGES (5-7)
+4. EMOTIONAL TRIGGERS
+5. TRUST BUILDERS
+6. COMPETITIVE DIFFERENTIATION`,
+        0.7,
+        2000,
+        FAST_MODEL
       ),
 
       // SEO Expert
       runAgent(
-        `You are a Senior SEO & Keyword Research Specialist. You analyze search intent and find the most valuable keywords.
-Focus on: search intent, keyword clustering, competition analysis, long-tail opportunities.
-Be thorough and data-driven. Output in ${langFull}.`,
-        `PROJECT MANAGER'S BRIEF:
+        `You are a Senior SEO & Keyword Research Specialist. Focus on search intent, keyword clustering.
+Be data-driven. Output in ${langFull}.`,
+        `PM BRIEF:
 ${pmBrief}
 
-RAW DATA FOR REFERENCE:
-${rawData.slice(0, 8000)}
+RAW DATA:
+${rawData.slice(0, 6000)}
 
-Develop the keyword strategy:
-1. PRIMARY KEYWORDS (5-10) - Highest commercial intent, most valuable
-   - Include estimated monthly search volume if possible
-   - Note the search intent (transactional, commercial, informational)
-
-2. SECONDARY KEYWORDS (10-15) - Supporting terms with good potential
-
-3. LONG-TAIL KEYWORDS (10-20) - Specific, lower competition, higher conversion
-
-4. KEYWORD CLUSTERS - Group keywords by theme/intent
-   - Cluster 1: [theme] - keywords
-   - Cluster 2: [theme] - keywords
-
-5. NEGATIVE KEYWORDS (15-20) - What to exclude to avoid wasted spend
-
-6. SEARCH INTENT ANALYSIS - What does our audience actually search for at each buying stage?
-
-7. COMPETITOR KEYWORD GAPS - Keywords competitors rank for that we should target
-
-8. SEASONAL CONSIDERATIONS - Any timing factors to consider?`
+Develop:
+1. PRIMARY KEYWORDS (5-10) with intent
+2. SECONDARY KEYWORDS (10-15)
+3. LONG-TAIL KEYWORDS (10-20)
+4. KEYWORD CLUSTERS by theme
+5. NEGATIVE KEYWORDS (15-20)
+6. COMPETITOR KEYWORD GAPS`,
+        0.7,
+        2000,
+        FAST_MODEL
       ),
 
-      // PPC Specialist - First Draft
+      // PPC Specialist
       runAgent(
-        `You are an elite Google Ads Copywriter. You write ads that CONVERT.
-You know character limits perfectly:
-- Headlines: MAX 30 characters
-- Descriptions: MAX 90 characters
-
-Focus on: high CTR copy, clear CTAs, emotional resonance, testing angles.
+        `You are an elite Google Ads Copywriter. Headlines MAX 30 chars, Descriptions MAX 90 chars.
+FORBIDDEN: "Professional website", "Quality services", "Best solution", generic phrases.
 Output in ${langFull}.`,
-        `PROJECT MANAGER'S BRIEF:
+        `PM BRIEF:
 ${pmBrief}
 
-Create initial ad concepts using these 5 HEADLINE FORMULAS:
-1. NUMBER + BENEFIT (e.g. "3x More Leads in 30 Days")
-2. PAIN + SOLUTION (e.g. "Slow Website? We Fix It Fast")
-3. GUARANTEE (e.g. "Results or Money Back")
-4. URGENCY (e.g. "Only 3 Slots Left This Month")
-5. SOCIAL PROOF (e.g. "Trusted by 200+ Companies")
+Create ads using 5 HEADLINE FORMULAS (3 headlines each, under 30 chars):
+1. NUMBER+BENEFIT 2. PAIN+SOLUTION 3. GUARANTEE 4. URGENCY 5. SOCIAL PROOF
 
-For each formula, draft 3 sample headlines (under 30 chars each) in ${langFull}.
+DESCRIPTIONS (9 total, under 90 chars each):
+- 3x BENEFIT, 3x PROBLEM-SOLUTION, 3x SOCIAL PROOF
 
-FORBIDDEN GENERIC PHRASES - NEVER use these:
-- "Professional website" / "Profesionální web"
-- "Quality services" / "Kvalitní služby"
-- "Best solution" / "Nejlepší řešení"
-- "Great prices" / "Skvělé ceny"
-- Any headline that could apply to ANY business
-
-DESCRIPTIONS - Write 9 descriptions (under 90 chars each) in ${langFull}, in 3 categories:
-- 3x BENEFIT descriptions (what the customer gains)
-- 3x PROBLEM-SOLUTION descriptions (pain point → resolution)
-- 3x SOCIAL PROOF descriptions (trust, numbers, results)
-
-Also provide:
-- CALL-TO-ACTION OPTIONS - What CTAs will work best?
-- AD EXTENSION IDEAS - Callouts, sitelinks, structured snippets`
+Also: CTA options, callouts (4), sitelinks (4), structured snippets`,
+        0.7,
+        2000,
+        FAST_MODEL
       ),
     ]);
 
     // ========================================
-    // PHASE 4: CROSS-REVIEW & COLLABORATION
+    // PHASE 4: COMBINED FINAL (Sonnet - quality ~15-25s)
+    // Cross-review + PPC refinement + PM recommendations + JSON compilation in ONE call
     // ========================================
 
-    // Marketing reviews SEO keywords
-    const marketingReviewOfSEO = await runAgent(
-      `You are the Marketing Strategist. Review the SEO Expert's keyword research from a messaging perspective. Output in ${langFull}.`,
-      `Your marketing strategy:
-${marketingDraft}
-
-SEO Expert's keyword research:
-${seoDraft}
-
-REVIEW THE KEYWORDS:
-1. Which keywords align perfectly with our messaging strategy?
-2. Which keywords need different messaging angles?
-3. Are there any keywords that conflict with our brand positioning?
-4. What keyword-to-message mapping do you recommend?
-5. Any keywords missing that would support our messaging?`
-    );
-
-    // SEO reviews PPC copy
-    const seoReviewOfPPC = await runAgent(
-      `You are the SEO Expert. Review the PPC copy from a keyword optimization perspective. Output in ${langFull}.`,
-      `Your keyword research:
-${seoDraft}
-
-PPC Specialist's ad concepts:
-${ppcDraft}
-
-REVIEW THE AD COPY:
-1. Do the headlines include our top keywords naturally?
-2. Which headlines will likely have best Quality Score?
-3. Are there keyword opportunities missing from the copy?
-4. Suggest specific keyword insertions for headlines
-5. Which ad angles will best match search intent?`
-    );
-
-    // ========================================
-    // PHASE 5: PPC SPECIALIST FINAL CREATION
-    // ========================================
-
-    const ppcFinal = await runAgent(
-      `You are the PPC Specialist. Now create the FINAL ad content incorporating all team feedback.
-
-CRITICAL REQUIREMENTS:
-- ALL text content MUST be in ${langFull}
-- Headlines MUST be UNDER 30 characters (count carefully!)
-- Descriptions MUST be UNDER 90 characters
-- This is ONLY for Google Ads Search campaigns - do NOT include any Meta/Facebook ads content
-- Double-check every character count!`,
-      `YOUR INITIAL CONCEPTS:
-${ppcDraft}
-
-MARKETING STRATEGIST'S INPUT ON KEYWORDS:
-${marketingReviewOfSEO}
-
-SEO EXPERT'S INPUT ON YOUR COPY:
-${seoReviewOfPPC}
-
-MARKETING STRATEGY TO FOLLOW:
-${marketingDraft}
-
-KEYWORDS TO INCORPORATE:
-${seoDraft}
-
-PM BRIEF (for personas and UVP angles):
-${pmBrief}
-
-NOW CREATE THE FINAL ADS in ${langFull}:
-
-1. PERSONAS - Confirm or refine the 3 customer personas from the PM brief:
-   For each: Name, Age, Position, Pain Points (3), Goals (3), Objections (3)
-
-2. UVP ANGLES - Confirm or refine 3 unique value proposition angles:
-   For each: Angle name + positioning statement
-
-3. HEADLINES grouped by UVP angle (3 angles × 5 headlines = 15 total, each UNDER 30 characters):
-   Use these 5 formulas for each angle:
-   - Number+Benefit
-   - Pain+Solution
-   - Guarantee
-   - Urgency
-   - Social Proof
-   Format: "Headline text" (XX chars) [formula]
-
-4. DESCRIPTIONS by type (9 total, each UNDER 90 characters):
-   - 3x BENEFIT descriptions
-   - 3x PROBLEM-SOLUTION descriptions
-   - 3x SOCIAL PROOF descriptions
-   Format: "Description text" (XX chars) [type]
-
-5. KEYWORDS with match types:
-   - HIGH INTENT (EXACT match): list with [EXACT]
-   - MEDIUM INTENT (PHRASE match): list with [PHRASE]
-   - DISCOVERY (BROAD match): list with [BROAD]
-
-6. NEGATIVE KEYWORDS: list
-
-7. AD EXTENSIONS:
-   - Callouts (4):
-   - Sitelinks (4) with descriptions:
-   - Structured snippet header and values:`,
-      0.7,
-      4000
-    );
-
-    // ========================================
-    // PHASE 6: PROJECT MANAGER FINAL REVIEW
-    // ========================================
-
-    const pmFinalReview = await runAgent(
-      `You are the Project Manager. Review all team outputs and create the final strategic recommendations. Output in ${langFull}.`,
-      `TEAM OUTPUTS:
-
-MARKETING STRATEGY:
-${marketingDraft}
-
-KEYWORD RESEARCH:
-${seoDraft}
-
-FINAL ADS:
-${ppcFinal}
-
-Create the final campaign recommendations:
-1. CAMPAIGN STRUCTURE - How should campaigns be organized?
-2. BIDDING STRATEGY - What approach for a ${monthlyBudget} CZK/month budget?
-3. TARGET CPA/ROAS - What should we aim for?
-4. AD SCHEDULING - Best times/days to run?
-5. AUDIENCE TARGETING - Any additional targeting recommendations?
-6. TESTING PLAN - What to A/B test first? Provide specific Week 1, Week 2, Week 4 plans.
-7. SUCCESS METRICS - What KPIs to track?
-8. RISK FACTORS - What could go wrong?
-9. OPTIMIZATION ROADMAP - Week 1, 2, 4, 8 plans
-
-10. STRUCTURED EXPERT NOTES - For EACH team member (project_manager, marketing, seo, ppc), provide:
-    - INSIGHT: Why were these approaches chosen? Key strategic reasoning.
-    - TEST FIRST: What should be tested first and why?
-    - WARNING: What to watch out for, potential pitfalls.`
-    );
-
-    // ========================================
-    // PHASE 7: FINAL JSON OUTPUT
-    // ========================================
-
-    // Truncate inputs to avoid exceeding API limits / socket errors
-    const marketingTrunc = marketingDraft.slice(0, 3000);
-    const ppcTrunc = ppcFinal.slice(0, 6000);
-    const pmTrunc = pmFinalReview.slice(0, 3000);
-    const pmBriefTrunc = pmBrief.slice(0, 2000);
-
-    const phase7Call = async () => {
+    const combinedFinalCall = async () => {
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-6",
+        model: QUALITY_MODEL,
         max_tokens: 6000,
-        temperature: 0.2,
+        temperature: 0.3,
         messages: [
           {
             role: "user",
-            content: `Compile all team outputs into a final JSON structure.
+            content: `You are a senior marketing team lead. Review all specialist outputs, cross-reference them, and compile the final campaign plan as JSON.
 
-PM BRIEF (contains personas and UVP angles):
-${pmBriefTrunc}
+PM BRIEF:
+${pmBrief.slice(0, 2000)}
 
 MARKETING STRATEGY:
-${marketingTrunc}
+${marketingDraft.slice(0, 2500)}
 
-FINAL ADS (in ${langFull}):
-${ppcTrunc}
+KEYWORD RESEARCH:
+${seoDraft.slice(0, 2500)}
 
-PROJECT MANAGER RECOMMENDATIONS:
-${pmTrunc}
+PPC AD CONCEPTS:
+${ppcDraft.slice(0, 2500)}
 
-CRITICAL: Extract the actual headlines and descriptions from the PPC output. They MUST be in ${langFull}.
-- Headlines max 30 chars
-- Descriptions max 90 chars
-- This is ONLY for Google Ads - do NOT include any Meta/Facebook ads fields
+YOUR TASKS:
+1. Cross-review: Ensure keywords align with messaging, ad copy includes top keywords
+2. Refine PPC copy: Fix any character limit violations, improve based on keyword/marketing insights
+3. Add campaign recommendations: bidding strategy for ${monthlyBudget} CZK/month, scheduling, testing plan
+4. Add expert notes for each role
 
-Output ONLY valid JSON:
-\`\`\`json
+ALL text content MUST be in ${langFull}.
+Headlines MUST be UNDER 30 characters. Descriptions MUST be UNDER 90 characters.
+This is ONLY for Google Ads Search - NO Meta/Facebook ads.
+
+Output ONLY valid JSON (no markdown fences, no explanation):
 {
   "strategy": {
     "campaign_objective": "string",
@@ -550,11 +367,11 @@ Output ONLY valid JSON:
   },
   "campaign_settings": {
     "bidding_strategy": "string",
-    "daily_budget": number,
-    "target_cpa": number,
+    "daily_budget": ${Math.round(monthlyBudget / 30)},
+    "target_cpa": 0,
     "ad_schedule": "string",
     "locations": ["string"],
-    "devices": "all|mobile|desktop"
+    "devices": "all"
   },
   "testing_plan": {
     "week_1": "string",
@@ -567,22 +384,21 @@ Output ONLY valid JSON:
     "seo": {"insight": "string", "test_first": "string", "warning": "string"},
     "ppc": {"insight": "string", "test_first": "string", "warning": "string"}
   }
-}
-\`\`\``,
-        },
-      ],
-    });
+}`,
+          },
+        ],
+      });
       return response;
     };
 
-    // Retry logic for Phase 7
+    // Retry logic for final compilation
     let finalOutput;
     for (let attempt = 0; attempt <= 2; attempt++) {
       try {
-        finalOutput = await phase7Call();
+        finalOutput = await combinedFinalCall();
         break;
       } catch (error: any) {
-        console.error(`Phase 7 attempt ${attempt + 1} failed:`, error?.message || error);
+        console.error(`Final compilation attempt ${attempt + 1} failed:`, error?.message || error);
         if (attempt === 2) throw error;
         await new Promise((r) => setTimeout(r, 3000 * (attempt + 1)));
       }
@@ -598,16 +414,14 @@ Output ONLY valid JSON:
       return NextResponse.json({ success: false, error: "Failed to parse final output", raw: responseText }, { status: 500 });
     }
 
-    // Validate character limits — flat headlines/descriptions
+    // Validate character limits
     result.headlines = result.headlines?.filter((h: any) => h.text && h.text.length <= 30) || [];
     result.descriptions = result.descriptions?.filter((d: any) => d.text && d.text.length <= 90) || [];
 
-    // Validate headlines_by_angle
     if (result.headlines_by_angle) {
       for (const group of result.headlines_by_angle) {
         group.headlines = group.headlines?.filter((h: any) => h.text && h.text.length <= 30) || [];
       }
-      // Backward-compat: flatten into headlines[] if empty
       if (result.headlines.length === 0) {
         result.headlines = result.headlines_by_angle.flatMap((g: any) =>
           g.headlines.map((h: any) => ({ text: h.text, angle: g.angle, chars: h.chars || h.text.length }))
@@ -615,14 +429,12 @@ Output ONLY valid JSON:
       }
     }
 
-    // Validate descriptions_by_type
     if (result.descriptions_by_type) {
       for (const key of ["benefit", "problem_solution", "social_proof"]) {
         if (result.descriptions_by_type[key]) {
           result.descriptions_by_type[key] = result.descriptions_by_type[key].filter((d: any) => d.text && d.text.length <= 90);
         }
       }
-      // Backward-compat: flatten into descriptions[] if empty
       if (result.descriptions.length === 0) {
         result.descriptions = [
           ...(result.descriptions_by_type.benefit || []).map((d: any) => ({ text: d.text, angle: "benefit", chars: d.chars || d.text.length })),
@@ -632,7 +444,6 @@ Output ONLY valid JSON:
       }
     }
 
-    // Remove any meta_ads content if AI accidentally included it
     delete result.meta_ads;
 
     // ========================================
@@ -655,8 +466,8 @@ Output ONLY valid JSON:
         pmBrief: pmBrief.slice(0, 800) + "...",
         marketingStrategy: marketingDraft.slice(0, 800) + "...",
         seoKeywords: seoDraft.slice(0, 800) + "...",
-        ppcAds: ppcFinal.slice(0, 800) + "...",
-        pmRecommendations: pmFinalReview.slice(0, 800) + "...",
+        ppcAds: ppcDraft.slice(0, 800) + "...",
+        pmRecommendations: "Included in final compilation",
       };
 
       await saveAnalysis({
@@ -687,22 +498,18 @@ Output ONLY valid JSON:
       collaboration: {
         phases: [
           "Data Gathering",
-          "PM Strategic Brief",
-          "Parallel Specialist Work",
-          "Cross-Review & Collaboration",
-          "PPC Final Creation with Feedback",
-          "PM Final Review",
-          "JSON Compilation"
+          "PM Strategic Brief (Haiku)",
+          "Parallel Specialist Work (Haiku x3)",
+          "Combined Final Review + JSON (Sonnet)"
         ],
-        agentInteractions: 7,
-        totalApiCalls: 9,
+        agentInteractions: 4,
+        totalApiCalls: 5,
       },
       agentOutputs: {
         pmBrief: pmBrief.slice(0, 800) + "...",
         marketingStrategy: marketingDraft.slice(0, 800) + "...",
         seoKeywords: seoDraft.slice(0, 800) + "...",
-        ppcAds: ppcFinal.slice(0, 800) + "...",
-        pmRecommendations: pmFinalReview.slice(0, 800) + "...",
+        ppcAds: ppcDraft.slice(0, 800) + "...",
       },
       metadata: {
         websiteAnalyzed: websiteUrl,
@@ -713,7 +520,7 @@ Output ONLY valid JSON:
           searchConsole: gscData !== "Search Console data not available",
         },
         language,
-        collaborationModel: "cross-review-iteration",
+        collaborationModel: "optimized-fast",
       },
     });
   } catch (error: any) {
