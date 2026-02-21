@@ -342,21 +342,26 @@ The "descriptions" array MUST have 9 items. Do NOT skip it.
 
     delete result.meta_ads;
 
-    // Fallback: if descriptions are missing, generate them with a quick Haiku call
-    if (!result.descriptions || result.descriptions.length < 3) {
-      console.log(`[FALLBACK] Descriptions missing (${result.descriptions?.length || 0}), generating...`);
+    // Ensure exactly 9 descriptions - generate missing ones
+    const existingDescs = result.descriptions || [];
+    const needed = 9 - existingDescs.length;
+    if (needed > 0) {
+      console.log(`[FALLBACK] Have ${existingDescs.length} descriptions, need ${needed} more`);
       try {
+        const existingAngles = existingDescs.map((d: any) => d.angle).join(", ");
         const descResult = await runAgent(
-          `You are a Google Ads copywriter. Output ONLY a JSON array. No explanation.`,
-          `Write 9 Google Ads descriptions in ${langFull} for: ${result.strategy?.unique_value_proposition || websiteUrl}
-Each ≤90 characters. 3 benefit, 3 problem-solution, 3 social-proof.
-Output JSON array: [{"text":"...","angle":"benefit|problem-solution|social-proof","chars":80}]`,
-          0.3, 1500, FAST_MODEL
+          `You are a Google Ads copywriter. Output ONLY a JSON array. No other text.`,
+          `Write exactly ${needed} Google Ads descriptions in ${langFull}.
+Product: ${result.strategy?.unique_value_proposition || websiteUrl}
+Each MUST be ≤90 characters. Types needed: benefit, problem-solution, social-proof.
+${existingAngles ? `Already have: ${existingAngles}. Fill missing types to reach 3 of each.` : "Write 3 benefit, 3 problem-solution, 3 social-proof."}
+Output ONLY: [{"text":"...","angle":"benefit|problem-solution|social-proof","chars":80}]`,
+          0.3, 1000, FAST_MODEL
         );
         const arrMatch = descResult.match(/\[[\s\S]*\]/);
         if (arrMatch) {
-          const descs = JSON.parse(arrMatch[0]);
-          result.descriptions = descs.filter((d: any) => d.text && d.text.length <= 90);
+          const newDescs = JSON.parse(arrMatch[0]).filter((d: any) => d.text && d.text.length <= 90);
+          result.descriptions = [...existingDescs, ...newDescs].slice(0, 9);
         }
       } catch (e) {
         console.error("Fallback descriptions failed:", e);
