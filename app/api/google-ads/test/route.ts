@@ -8,10 +8,16 @@ export async function GET(request: NextRequest) {
     const result = await testGoogleAdsConnection();
 
     if (result.success) {
+      const customer = result.customerInfo?.customer;
       return NextResponse.json({
         success: true,
         message: "Google Ads API connection successful",
-        data: result.customerInfo,
+        data: {
+          customerId: customer?.id?.toString(),
+          descriptiveName: customer?.descriptive_name,
+          currencyCode: customer?.currency_code,
+          timeZone: customer?.time_zone,
+        },
       });
     } else {
       return NextResponse.json(
