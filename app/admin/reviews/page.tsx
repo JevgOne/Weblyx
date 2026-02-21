@@ -28,6 +28,7 @@ import {
   EyeOff,
   Star,
   StarOff,
+  Briefcase,
 } from "lucide-react";
 import { Review } from "@/types/review";
 
@@ -62,6 +63,8 @@ export default function AdminReviewsPage() {
           published: data.published || false,
           featured: data.featured || false,
           order: data.order || 0,
+          portfolioId: data.portfolioId || undefined,
+          portfolioTitle: data.portfolioTitle || undefined,
           createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
           updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
         }));
@@ -377,6 +380,7 @@ export default function AdminReviewsPage() {
                           <TableHead>Autor</TableHead>
                           <TableHead>Hodnocení</TableHead>
                           <TableHead>Text</TableHead>
+                          <TableHead>Portfolio</TableHead>
                           <TableHead>Zdroj</TableHead>
                           <TableHead className="text-center">Stav</TableHead>
                           <TableHead className="text-right">Akce</TableHead>
@@ -413,6 +417,16 @@ export default function AdminReviewsPage() {
                                 <TableCell>{renderStars(review.rating)}</TableCell>
                                 <TableCell>
                                   <div className="max-w-md truncate">{review.text}</div>
+                                </TableCell>
+                                <TableCell>
+                                  {review.portfolioTitle ? (
+                                    <Badge variant="outline" className="gap-1">
+                                      <Briefcase className="h-3 w-3" />
+                                      {review.portfolioTitle}
+                                    </Badge>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs">—</span>
+                                  )}
                                 </TableCell>
                                 <TableCell>
                                   <Badge variant={review.source === "manual" ? "secondary" : "default"}>

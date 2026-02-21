@@ -17,6 +17,8 @@ interface ReviewRow {
   featured: number;
   order: number;
   locale: string;
+  portfolio_id: string | null;
+  portfolio_title: string | null;
   created_at: number;
   updated_at: number;
 }
@@ -40,6 +42,8 @@ function rowToReview(row: ReviewRow): Review {
     featured: Boolean(row.featured),
     order: row.order,
     locale: (row.locale || 'cs') as 'cs' | 'de',
+    portfolioId: row.portfolio_id || undefined,
+    portfolioTitle: row.portfolio_title || undefined,
     createdAt: unixToDate(row.created_at) || fallbackDate,
     updatedAt: unixToDate(row.updated_at) || fallbackDate,
   };
@@ -47,14 +51,14 @@ function rowToReview(row: ReviewRow): Review {
 
 export async function getAllReviews(): Promise<Review[]> {
   const result = await turso.execute(
-    'SELECT * FROM reviews ORDER BY "order" ASC'
+    'SELECT r.*, p.title as portfolio_title FROM reviews r LEFT JOIN portfolio p ON r.portfolio_id = p.id ORDER BY r."order" ASC'
   );
   return result.rows.map((row) => rowToReview(row as unknown as ReviewRow));
 }
 
 export async function getReviewById(id: string): Promise<Review | null> {
   const result = await turso.execute({
-    sql: 'SELECT * FROM reviews WHERE id = ?',
+    sql: 'SELECT r.*, p.title as portfolio_title FROM reviews r LEFT JOIN portfolio p ON r.portfolio_id = p.id WHERE r.id = ?',
     args: [id],
   });
 
@@ -63,15 +67,15 @@ export async function getReviewById(id: string): Promise<Review | null> {
 }
 
 export async function getPublishedReviews(locale?: 'cs' | 'de'): Promise<Review[]> {
-  let sql = 'SELECT * FROM reviews WHERE published = 1';
+  let sql = 'SELECT r.*, p.title as portfolio_title FROM reviews r LEFT JOIN portfolio p ON r.portfolio_id = p.id WHERE r.published = 1';
   const args: any[] = [];
 
   if (locale) {
-    sql += ' AND locale = ?';
+    sql += ' AND r.locale = ?';
     args.push(locale);
   }
 
-  sql += ' ORDER BY "order" ASC';
+  sql += ' ORDER BY r."order" ASC';
 
   const result = await turso.execute(args.length > 0 ? { sql, args } : sql);
   return result.rows.map((row) => rowToReview(row as unknown as ReviewRow));
@@ -79,7 +83,7 @@ export async function getPublishedReviews(locale?: 'cs' | 'de'): Promise<Review[
 
 export async function getFeaturedReviews(): Promise<Review[]> {
   const result = await turso.execute(
-    'SELECT * FROM reviews WHERE published = 1 AND featured = 1 ORDER BY "order" ASC'
+    'SELECT r.*, p.title as portfolio_title FROM reviews r LEFT JOIN portfolio p ON r.portfolio_id = p.id WHERE r.published = 1 AND r.featured = 1 ORDER BY r."order" ASC'
   );
   return result.rows.map((row) => rowToReview(row as unknown as ReviewRow));
 }
@@ -96,6 +100,7 @@ export async function createReview(data: {
   published?: boolean;
   featured?: boolean;
   locale?: 'cs' | 'de';
+  portfolioId?: string;
 }): Promise<Review> {
   const id = nanoid();
   const now = Math.floor(Date.now() / 1000);
@@ -110,8 +115,8 @@ export async function createReview(data: {
     sql: `INSERT INTO reviews (
       id, author_name, author_image, author_role, rating, text,
       date, source, source_url, published, featured, "order", locale,
-      created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      portfolio_id, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.authorName,
@@ -126,6 +131,7 @@ export async function createReview(data: {
       data.featured ? 1 : 0,
       maxOrder + 1,
       data.locale || 'cs',
+      data.portfolioId || null,
       now,
       now,
     ],
@@ -150,6 +156,7 @@ export async function updateReview(
     published: boolean;
     featured: boolean;
     order: number;
+    portfolioId: string | null;
   }>
 ): Promise<Review> {
   const now = Math.floor(Date.now() / 1000);
@@ -199,6 +206,10 @@ export async function updateReview(
   if (data.order !== undefined) {
     updates.push('"order" = ?');
     args.push(data.order);
+  }
+  if (data.portfolioId !== undefined) {
+    updates.push('portfolio_id = ?');
+    args.push(data.portfolioId || null);
   }
 
   updates.push('updated_at = ?');

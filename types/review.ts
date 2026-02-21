@@ -14,6 +14,8 @@ export interface Review {
   featured: boolean; // zvýrazněná recenze
   order: number;
   locale: 'cs' | 'de'; // Language/locale for multi-domain support
+  portfolioId?: string; // linked portfolio item
+  portfolioTitle?: string; // portfolio title (joined from portfolio table)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,4 +32,5 @@ export interface ReviewFormData {
   published: boolean;
   featured: boolean;
   locale: 'cs' | 'de';
+  portfolioId?: string;
 }

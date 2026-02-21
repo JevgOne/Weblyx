@@ -361,12 +361,14 @@ CREATE TABLE IF NOT EXISTS reviews (
     published BOOLEAN DEFAULT 0,
     featured BOOLEAN DEFAULT 0,
     "order" INTEGER DEFAULT 0,
+    portfolio_id TEXT,
     created_at INTEGER NOT NULL DEFAULT (unixepoch()),
     updated_at INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
 CREATE INDEX IF NOT EXISTS idx_reviews_published ON reviews(published, "order");
 CREATE INDEX IF NOT EXISTS idx_reviews_featured ON reviews(featured);
+CREATE INDEX IF NOT EXISTS idx_reviews_portfolio ON reviews(portfolio_id);
 
 -- Media Library (for Vercel Blob integration)
 CREATE TABLE IF NOT EXISTS media (

@@ -10,13 +10,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ArrowLeft,
   Star,
   Loader2,
   User,
   Link as LinkIcon,
+  Briefcase,
 } from "lucide-react";
 import { ReviewFormData } from "@/types/review";
+
+interface PortfolioOption {
+  id: string;
+  title: string;
+}
 
 export default function EditReviewPage() {
   const router = useRouter();
@@ -26,6 +39,7 @@ export default function EditReviewPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioOption[]>([]);
   const [formData, setFormData] = useState<ReviewFormData>({
     authorName: "",
     authorImage: "",
@@ -38,7 +52,21 @@ export default function EditReviewPage() {
     published: false,
     featured: false,
     locale: "cs",
+    portfolioId: "",
   });
+
+  useEffect(() => {
+    fetch("/api/portfolio")
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.success && result.data) {
+          setPortfolioItems(
+            result.data.map((item: any) => ({ id: item.id, title: item.title }))
+          );
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -65,6 +93,7 @@ export default function EditReviewPage() {
           published: data.published || false,
           featured: data.featured || false,
           locale: data.locale || "cs",
+          portfolioId: data.portfolioId || "",
         });
       } else {
         alert("Recenze nenalezena");
@@ -262,6 +291,38 @@ export default function EditReviewPage() {
                 />
                 <p className="text-xs text-muted-foreground">
                   Odkaz na originální recenzi (např. z Google Maps)
+                </p>
+              </div>
+
+              {/* Portfolio Assignment */}
+              <div className="space-y-2">
+                <Label htmlFor="portfolioId">
+                  <Briefcase className="inline h-4 w-4 mr-1" />
+                  Přiřadit k portfoliu (volitelné)
+                </Label>
+                <Select
+                  value={formData.portfolioId || "none"}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      portfolioId: value === "none" ? "" : value,
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte projekt z portfolia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— Bez přiřazení —</SelectItem>
+                    {portfolioItems.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Propojí recenzi s konkrétním projektem v portfoliu
                 </p>
               </div>
 
