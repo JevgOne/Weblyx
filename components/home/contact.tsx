@@ -194,9 +194,18 @@ export function Contact({ isMainPage = false }: ContactProps) {
         message: t('messages.successMessage'),
       });
 
-      // Google Ads conversion tracking
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
+      // 🎯 Conversion tracking
+      if (typeof window !== 'undefined') {
+        if ((window as any).fbq) {
+          (window as any).fbq('track', 'Lead');
+        }
+        if ((window as any).gtag) {
+          (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
+          (window as any).gtag('event', 'generate_lead', {
+            'currency': 'CZK',
+            'value': 10000
+          });
+        }
       }
 
       // 🎉 Celebrate with confetti!

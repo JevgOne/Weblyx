@@ -37,7 +37,7 @@ export async function GET() {
       width: item.width,
       height: item.height,
       uploadedBy: item.uploaded_by,
-      tags: item.tags ? JSON.parse(item.tags) : [],
+      tags: (() => { try { return item.tags ? JSON.parse(item.tags) : []; } catch { return []; } })(),
       createdAt: item.created_at,
     }));
 

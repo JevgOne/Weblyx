@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
       project_id: payment.project_id,
       invoice_id: payment.invoice_id,
       subscription_id: payment.subscription_id,
-      metadata: payment.metadata ? JSON.parse(payment.metadata as string) : null,
+      metadata: (() => { try { return payment.metadata ? JSON.parse(payment.metadata as string) : null; } catch { return null; } })(),
       notes: payment.notes,
       created_at: payment.created_at,
       paid_at: payment.paid_at,

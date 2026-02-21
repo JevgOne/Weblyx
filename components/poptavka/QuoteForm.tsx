@@ -191,6 +191,26 @@ export function QuoteForm() {
         return;
       }
 
+      // 🎯 Conversion tracking
+      if (typeof window !== 'undefined') {
+        if ((window as any).fbq) {
+          (window as any).fbq('track', 'Lead');
+          (window as any).fbq('track', 'SubmitApplication');
+        }
+        if ((window as any).gtag) {
+          (window as any).gtag('event', 'conversion', {
+            'event_category': 'Lead',
+            'event_label': 'Quote Form Submitted',
+            'value': 1
+          });
+          (window as any).gtag('event', 'generate_lead', {
+            'currency': 'CZK',
+            'value': 10000
+          });
+          (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
+        }
+      }
+
       // 🎉 Celebrate with confetti!
       celebrateSuccess();
 

@@ -37,9 +37,16 @@ export async function POST(request: NextRequest) {
       'SELECT subscription FROM push_subscriptions WHERE active = 1'
     );
 
-    const subscriptions = result.rows.map((row) =>
-      JSON.parse(row.subscription as string)
-    );
+    const subscriptions = result.rows
+      .map((row) => {
+        try {
+          return JSON.parse(row.subscription as string);
+        } catch {
+          console.warn('Skipping malformed push subscription');
+          return null;
+        }
+      })
+      .filter(Boolean);
 
     if (subscriptions.length === 0) {
       console.warn('No active push subscriptions found');

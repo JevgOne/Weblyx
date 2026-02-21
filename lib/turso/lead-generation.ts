@@ -718,73 +718,64 @@ export async function getTrackingEventsByCode(trackingCode: string): Promise<Tra
 
 export async function getLeadGenerationStats(): Promise<LeadGenerationStats> {
   try {
-    // Get all leads
-    const leads = await getAllLeads();
+    // Single SQL query with aggregation instead of loading all leads into memory
+    const [leadStats, campaignStats] = await Promise.all([
+      executeQuery<any>(`
+        SELECT
+          COUNT(*) as total_leads,
+          COUNT(CASE WHEN analyzed_at IS NOT NULL THEN 1 END) as analyzed_leads,
+          COUNT(CASE WHEN email_sent = 1 THEN 1 END) as contacted_leads,
+          COUNT(CASE WHEN lead_status = 'converted' THEN 1 END) as converted_leads,
+          COALESCE(ROUND(AVG(CASE WHEN analysis_score > 0 THEN analysis_score END)), 0) as avg_analysis_score,
+          COALESCE(ROUND(AVG(CASE WHEN lead_score > 0 THEN lead_score END)), 0) as avg_lead_score,
+          COUNT(CASE WHEN email_sent = 1 THEN 1 END) as total_emails_sent,
+          COUNT(CASE WHEN email_opened = 1 THEN 1 END) as total_emails_opened,
+          COUNT(CASE WHEN link_clicked = 1 THEN 1 END) as total_links_clicked,
+          COUNT(CASE WHEN lead_status = 'new' THEN 1 END) as status_new,
+          COUNT(CASE WHEN lead_status = 'contacted' THEN 1 END) as status_contacted,
+          COUNT(CASE WHEN lead_status = 'interested' THEN 1 END) as status_interested,
+          COUNT(CASE WHEN lead_status = 'converted' THEN 1 END) as status_converted,
+          COUNT(CASE WHEN lead_status = 'rejected' THEN 1 END) as status_rejected
+        FROM lead_generation_leads
+      `),
+      executeQuery<any>(`
+        SELECT
+          COUNT(CASE WHEN status = 'active' THEN 1 END) as active_campaigns,
+          COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_campaigns
+        FROM campaigns
+      `),
+    ]);
 
-    // Calculate stats
-    const totalLeads = leads.length;
-    const analyzedLeads = leads.filter(l => l.analyzedAt).length;
-    const contactedLeads = leads.filter(l => l.emailSent).length;
-    const convertedLeads = leads.filter(l => l.leadStatus === 'converted').length;
+    const s = leadStats[0] || {};
+    const c = campaignStats[0] || {};
 
-    // Average scores
-    const analyzedScores = leads.filter(l => l.analysisScore > 0).map(l => l.analysisScore);
-    const averageAnalysisScore = analyzedScores.length > 0
-      ? Math.round(analyzedScores.reduce((a, b) => a + b, 0) / analyzedScores.length)
-      : 0;
-
-    const leadScores = leads.filter(l => l.leadScore > 0).map(l => l.leadScore);
-    const averageLeadScore = leadScores.length > 0
-      ? Math.round(leadScores.reduce((a, b) => a + b, 0) / leadScores.length)
-      : 0;
-
-    // Email performance
-    const totalEmailsSent = leads.filter(l => l.emailSent).length;
-    const totalEmailsOpened = leads.filter(l => l.emailOpened).length;
-    const totalLinksClicked = leads.filter(l => l.linkClicked).length;
-
-    const emailOpenRate = totalEmailsSent > 0
-      ? Math.round((totalEmailsOpened / totalEmailsSent) * 100)
-      : 0;
-
-    const linkClickRate = totalEmailsSent > 0
-      ? Math.round((totalLinksClicked / totalEmailsSent) * 100)
-      : 0;
-
-    const conversionRate = totalEmailsSent > 0
-      ? Math.round((convertedLeads / totalEmailsSent) * 100)
-      : 0;
-
-    // By status
-    const leadsByStatus = {
-      new: leads.filter(l => l.leadStatus === 'new').length,
-      contacted: leads.filter(l => l.leadStatus === 'contacted').length,
-      interested: leads.filter(l => l.leadStatus === 'interested').length,
-      converted: leads.filter(l => l.leadStatus === 'converted').length,
-      rejected: leads.filter(l => l.leadStatus === 'rejected').length,
-    };
-
-    // Campaigns
-    const campaigns = await getAllCampaigns();
-    const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
-    const completedCampaigns = campaigns.filter(c => c.status === 'completed').length;
+    const totalEmailsSent = Number(s.total_emails_sent) || 0;
+    const totalEmailsOpened = Number(s.total_emails_opened) || 0;
+    const totalLinksClicked = Number(s.total_links_clicked) || 0;
+    const convertedLeads = Number(s.converted_leads) || 0;
 
     return {
-      totalLeads,
-      analyzedLeads,
-      contactedLeads,
+      totalLeads: Number(s.total_leads) || 0,
+      analyzedLeads: Number(s.analyzed_leads) || 0,
+      contactedLeads: Number(s.contacted_leads) || 0,
       convertedLeads,
-      averageAnalysisScore,
-      averageLeadScore,
+      averageAnalysisScore: Number(s.avg_analysis_score) || 0,
+      averageLeadScore: Number(s.avg_lead_score) || 0,
       totalEmailsSent,
       totalEmailsOpened,
       totalLinksClicked,
-      emailOpenRate,
-      linkClickRate,
-      conversionRate,
-      leadsByStatus,
-      activeCampaigns,
-      completedCampaigns,
+      emailOpenRate: totalEmailsSent > 0 ? Math.round((totalEmailsOpened / totalEmailsSent) * 100) : 0,
+      linkClickRate: totalEmailsSent > 0 ? Math.round((totalLinksClicked / totalEmailsSent) * 100) : 0,
+      conversionRate: totalEmailsSent > 0 ? Math.round((convertedLeads / totalEmailsSent) * 100) : 0,
+      leadsByStatus: {
+        new: Number(s.status_new) || 0,
+        contacted: Number(s.status_contacted) || 0,
+        interested: Number(s.status_interested) || 0,
+        converted: Number(s.status_converted) || 0,
+        rejected: Number(s.status_rejected) || 0,
+      },
+      activeCampaigns: Number(c.active_campaigns) || 0,
+      completedCampaigns: Number(c.completed_campaigns) || 0,
     };
   } catch (error) {
     console.error('Error calculating stats:', error);

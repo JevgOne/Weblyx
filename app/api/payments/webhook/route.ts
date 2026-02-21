@@ -48,7 +48,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse payload
-    const payload = JSON.parse(rawBody);
+    let payload: any;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch {
+      console.error('❌ Invalid JSON in webhook payload');
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
 
     // Extract payment data
     const goPayId = payload.id?.toString();

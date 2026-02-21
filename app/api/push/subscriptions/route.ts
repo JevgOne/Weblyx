@@ -11,12 +11,20 @@ export async function GET(request: NextRequest) {
       'SELECT user_id, subscription, platform, created_at FROM push_subscriptions WHERE active = 1'
     );
 
-    const subscriptions = result.rows.map((row) => ({
-      userId: row.user_id,
-      subscription: JSON.parse(row.subscription as string),
-      platform: row.platform,
-      createdAt: row.created_at,
-    }));
+    const subscriptions = result.rows
+      .map((row) => {
+        try {
+          return {
+            userId: row.user_id,
+            subscription: JSON.parse(row.subscription as string),
+            platform: row.platform,
+            createdAt: row.created_at,
+          };
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
 
     return NextResponse.json({
       success: true,

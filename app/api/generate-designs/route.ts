@@ -79,7 +79,12 @@ Return ONLY valid JSON in this exact format:
       throw new Error('No valid JSON found in response');
     }
 
-    const parsedDesigns = JSON.parse(jsonMatch[0]);
+    let parsedDesigns: any;
+    try {
+      parsedDesigns = JSON.parse(jsonMatch[0]);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Failed to parse AI design response' }, { status: 500 });
+    }
 
     const aiGeneratedDesigns: AIGeneratedDesigns = {
       designs: parsedDesigns.designs as [AIDesignVariant, AIDesignVariant, AIDesignVariant],

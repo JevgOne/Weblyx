@@ -53,7 +53,12 @@ Odpověď musí být POUZE v tomto JSON formátu (bez dalšího textu):
       throw new Error("Invalid AI response format");
     }
 
-    const generated = JSON.parse(jsonMatch[0]);
+    let generated: any;
+    try {
+      generated = JSON.parse(jsonMatch[0]);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Failed to parse AI response' }, { status: 500 });
+    }
 
     // Validate lengths
     if (generated.metaTitle.length > 70) {
