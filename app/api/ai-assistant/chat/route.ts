@@ -326,7 +326,7 @@ ${dataContext}
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to process chat message",
+        error: "Failed to process chat message",
       },
       { status: 500 }
     );

@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to import leads from CSV',
+        error: 'Failed to import leads from CSV',
       },
       { status: 500 }
     );
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to generate CSV template',
+        error: 'Failed to generate CSV template',
       },
       { status: 500 }
     );

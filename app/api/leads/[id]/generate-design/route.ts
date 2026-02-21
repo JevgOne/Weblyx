@@ -188,7 +188,6 @@ export async function POST(
       return NextResponse.json(
         {
           error: "AI generation failed",
-          details: error.message,
         },
         { status: 500 }
       );
@@ -203,7 +202,6 @@ export async function POST(
       return NextResponse.json(
         {
           error: "Failed to parse AI response",
-          details: error.message,
         },
         { status: 500 }
       );
@@ -228,7 +226,7 @@ export async function POST(
     console.error("❌ Generate design error:", error);
     return NextResponse.json(
       {
-        error: error.message || "Failed to generate design",
+        error: "Failed to generate design",
       },
       { status: 500 }
     );

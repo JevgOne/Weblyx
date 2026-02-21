@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch ads",
+        error: "Failed to fetch ads",
       },
       { status: 500 }
     );
@@ -61,7 +61,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to update ad",
+        error: "Failed to update ad",
       },
       { status: 500 }
     );

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching portfolio:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch portfolio' },
+      { success: false, error: 'Failed to fetch portfolio' },
       { status: 500 }
     );
   }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating portfolio item:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create portfolio item' },
+      { success: false, error: 'Failed to create portfolio item' },
       { status: 500 }
     );
   }
@@ -125,7 +125,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating portfolio item:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update portfolio item' },
+      { success: false, error: 'Failed to update portfolio item' },
       { status: 500 }
     );
   }
@@ -153,7 +153,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error: any) {
     console.error('Error deleting portfolio item:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to delete portfolio item' },
+      { success: false, error: 'Failed to delete portfolio item' },
       { status: 500 }
     );
   }

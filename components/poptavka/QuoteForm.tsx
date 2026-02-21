@@ -17,25 +17,27 @@ import {
 } from "@/components/ui/select";
 import { Send } from "lucide-react";
 import confetti from "canvas-confetti";
-
-const projectTypes = [
-  { id: "new-web", label: "Nový web" },
-  { id: "redesign", label: "Redesign" },
-  { id: "web-app", label: "Webová aplikace" },
-  { id: "landing", label: "Landing page" },
-  { id: "other", label: "Jiné" },
-];
-
-const budgetOptions = [
-  { id: "landing", label: "Landing Page - 7 990 Kč", value: "7 990 Kč" },
-  { id: "basic", label: "Základní Web - 9 990 Kč", value: "9 990 Kč" },
-  { id: "standard", label: "Standardní Web - 24 990 Kč", value: "24 990 Kč" },
-  { id: "premium", label: "Premium Web - 49 990 Kč", value: "49 990 Kč" },
-  { id: "custom", label: "Jiný rozpočet", value: "custom" },
-];
+import { useTranslations } from "next-intl";
 
 export function QuoteForm() {
   const router = useRouter();
+  const t = useTranslations("contactForm");
+
+  const projectTypes = [
+    { id: "new-web", label: t("form.projectType.newWebsite") },
+    { id: "redesign", label: t("form.projectType.redesign") },
+    { id: "web-app", label: t("form.projectType.webApp") },
+    { id: "landing", label: t("form.projectType.landingPage") },
+    { id: "other", label: t("form.projectType.other") },
+  ];
+
+  const budgetOptions = [
+    { id: "landing", label: t("form.budgetOptions.landing"), value: t("form.budgetOptions.landing") },
+    { id: "basic", label: t("form.budgetOptions.basic"), value: t("form.budgetOptions.basic") },
+    { id: "standard", label: t("form.budgetOptions.standard"), value: t("form.budgetOptions.standard") },
+    { id: "premium", label: t("form.budgetOptions.premium"), value: t("form.budgetOptions.premium") },
+    { id: "custom", label: t("form.budgetOptions.custom"), value: "custom" },
+  ];
   const [formData, setFormData] = useState({
     projectType: "",
     companyName: "",
@@ -55,51 +57,51 @@ export function QuoteForm() {
     switch (name) {
       case "email":
         if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          newErrors.email = "Neplatná emailová adresa";
+          newErrors.email = t("errors.invalidEmail");
         } else {
           delete newErrors.email;
         }
         break;
       case "phone":
-        if (value && !/^(\+420)?[0-9\s]{9,}$/.test(value.replace(/\s/g, ""))) {
-          newErrors.phone = "Neplatné telefonní číslo";
+        if (value && !/^(\+420|\+49)?[0-9\s]{9,}$/.test(value.replace(/\s/g, ""))) {
+          newErrors.phone = t("errors.invalidPhone");
         } else {
           delete newErrors.phone;
         }
         break;
       case "companyName":
         if (!value.trim()) {
-          newErrors.companyName = "Název firmy/projektu je povinný";
+          newErrors.companyName = t("errors.companyNameRequired");
         } else {
           delete newErrors.companyName;
         }
         break;
       case "description":
         if (!value.trim()) {
-          newErrors.description = "Popis je povinný";
+          newErrors.description = t("errors.descriptionRequired");
         } else if (value.trim().length < 10) {
-          newErrors.description = "Popis musí obsahovat alespoň 10 znaků";
+          newErrors.description = t("errors.descriptionTooShort");
         } else {
           delete newErrors.description;
         }
         break;
       case "name":
         if (!value.trim()) {
-          newErrors.name = "Jméno je povinné";
+          newErrors.name = t("errors.nameRequired");
         } else {
           delete newErrors.name;
         }
         break;
       case "projectType":
         if (!value) {
-          newErrors.projectType = "Vyberte typ projektu";
+          newErrors.projectType = t("errors.projectTypeRequired");
         } else {
           delete newErrors.projectType;
         }
         break;
       case "budget":
         if (!value) {
-          newErrors.budget = "Vyberte rozpočet";
+          newErrors.budget = t("errors.budgetRequired");
         } else {
           delete newErrors.budget;
         }
@@ -152,13 +154,13 @@ export function QuoteForm() {
 
     // Final validation
     const finalErrors: Record<string, string> = {};
-    if (!formData.projectType) finalErrors.projectType = "Vyberte typ projektu";
+    if (!formData.projectType) finalErrors.projectType = t("errors.projectTypeRequired");
     if (!formData.companyName.trim())
-      finalErrors.companyName = "Název firmy/projektu je povinný";
-    if (!formData.description.trim()) finalErrors.description = "Popis je povinný";
-    if (!formData.budget) finalErrors.budget = "Vyberte rozpočet";
-    if (!formData.name.trim()) finalErrors.name = "Jméno je povinné";
-    if (!formData.email.trim()) finalErrors.email = "Email je povinný";
+      finalErrors.companyName = t("errors.companyNameRequired");
+    if (!formData.description.trim()) finalErrors.description = t("errors.descriptionRequired");
+    if (!formData.budget) finalErrors.budget = t("errors.budgetRequired");
+    if (!formData.name.trim()) finalErrors.name = t("errors.nameRequired");
+    if (!formData.email.trim()) finalErrors.email = t("errors.emailRequired");
 
     if (Object.keys(finalErrors).length > 0) {
       setErrors(finalErrors);
@@ -186,7 +188,7 @@ export function QuoteForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Došlo k chybě při odesílání.");
+        alert(data.error || t("errors.submitError"));
         setIsSubmitting(false);
         return;
       }
@@ -220,7 +222,7 @@ export function QuoteForm() {
       }, 1500);
     } catch (error) {
       console.error("Error:", error);
-      alert("Došlo k chybě při odesílání. Zkuste to prosím znovu.");
+      alert(t("errors.submitError"));
       setIsSubmitting(false);
     }
   };
@@ -231,7 +233,7 @@ export function QuoteForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Co potřebujete? */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Co potřebujete? *</Label>
+            <Label className="text-sm font-medium">{t("form.projectTypeLabel")} *</Label>
             <RadioGroup
               value={formData.projectType}
               onValueChange={(value) => handleInputChange("projectType", value)}
@@ -254,11 +256,11 @@ export function QuoteForm() {
           {/* Název firmy/projektu */}
           <div className="space-y-2">
             <Label htmlFor="companyName" className="text-sm font-medium">
-              Název firmy/projektu *
+              {t("form.companyNameLabel")} *
             </Label>
             <Input
               id="companyName"
-              placeholder="Např. Firma s.r.o."
+              placeholder={t("form.companyNamePlaceholder")}
               value={formData.companyName}
               onChange={(e) => handleInputChange("companyName", e.target.value)}
               className={errors.companyName ? "border-red-500" : ""}
@@ -271,11 +273,11 @@ export function QuoteForm() {
           {/* Stručný popis */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Stručný popis *
+              {t("form.descriptionLabel")} *
             </Label>
             <Textarea
               id="description"
-              placeholder="Stačí pár slov – čím se zabýváte? Nemusíte psát román."
+              placeholder={t("form.descriptionPlaceholder")}
               rows={3}
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
@@ -289,14 +291,14 @@ export function QuoteForm() {
           {/* Rozpočet */}
           <div className="space-y-2">
             <Label htmlFor="budget" className="text-sm font-medium">
-              Rozpočet *
+              {t("form.budgetLabel")} *
             </Label>
             <Select
               value={formData.budget}
               onValueChange={(value) => handleInputChange("budget", value)}
             >
               <SelectTrigger className={errors.budget ? "border-red-500" : ""}>
-                <SelectValue placeholder="Vyberte váš rozpočet" />
+                <SelectValue placeholder={t("form.budgetPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {budgetOptions.map((option) => (
@@ -310,18 +312,18 @@ export function QuoteForm() {
               <p className="text-sm text-red-500">{errors.budget}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              Pomůže nám připravit přesnou nabídku
+              {t("form.budgetHelp")}
             </p>
           </div>
 
           {/* Vaše jméno */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-sm font-medium">
-              Vaše jméno *
+              {t("form.nameLabel")} *
             </Label>
             <Input
               id="name"
-              placeholder="Jan Novák"
+              placeholder={t("form.namePlaceholder")}
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               className={errors.name ? "border-red-500" : ""}
@@ -335,12 +337,12 @@ export function QuoteForm() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email *
+                {t("form.emailLabel")} *
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="jan@priklad.cz"
+                placeholder={t("form.emailPlaceholder")}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 className={errors.email ? "border-red-500" : ""}
@@ -352,15 +354,12 @@ export function QuoteForm() {
 
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-sm font-medium">
-                Telefon{" "}
-                <span className="text-muted-foreground font-normal text-xs">
-                  (nepovinné)
-                </span>
+                {t("form.phoneLabel")}
               </Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder="+420 123 456 789"
+                placeholder={t("form.phonePlaceholder")}
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 className={errors.phone ? "border-red-500" : ""}
@@ -379,11 +378,11 @@ export function QuoteForm() {
             disabled={isSubmitting || Object.keys(errors).length > 0}
           >
             <Send className="mr-2 h-5 w-5" />
-            {isSubmitting ? "Odesílání..." : "Odeslat poptávku"}
+            {isSubmitting ? t("form.submitting") : t("form.submitButton")}
           </Button>
 
           <p className="text-sm text-muted-foreground text-center">
-            * Povinná pole
+            {t("form.requiredFields")}
           </p>
         </form>
       </CardContent>

@@ -529,7 +529,7 @@ Vrať POUZE validní JSON v tomto formátu:
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Neznámá chyba",
+        error: "Neznámá chyba",
       },
       { status: 500 }
     );

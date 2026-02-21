@@ -15,7 +15,7 @@ export async function GET() {
       const result = await turso.execute('SELECT COUNT(*) as count FROM leads');
       leadsCount = Number(result.rows[0].count) || 0;
     } catch (error: any) {
-      leadsError = error.message;
+      leadsError = 'Database connection error';
     }
 
     return NextResponse.json({
@@ -36,7 +36,7 @@ export async function GET() {
     });
   } catch (error: any) {
     return NextResponse.json({
-      error: error.message,
+      error: 'Internal server error',
       stack: error.stack,
     }, { status: 500 });
   }

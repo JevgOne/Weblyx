@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch leads'
+        error: 'Failed to fetch leads'
       },
       { status: 500 }
     );
@@ -118,7 +118,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to update lead'
+        error: 'Failed to update lead'
       },
       { status: 500 }
     );
@@ -154,7 +154,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to delete lead'
+        error: 'Failed to delete lead'
       },
       { status: 500 }
     );

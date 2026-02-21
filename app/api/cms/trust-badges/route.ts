@@ -16,7 +16,7 @@ export async function GET() {
   } catch (error: any) {
     console.error('Error fetching trust badges data:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch data' },
+      { success: false, error: 'Failed to fetch data' },
       { status: 500 }
     );
   }
@@ -34,7 +34,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating trust badges data:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update data' },
+      { success: false, error: 'Failed to update data' },
       { status: 500 }
     );
   }

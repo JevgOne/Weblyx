@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching contact info:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch contact info' },
+      { success: false, error: 'Failed to fetch contact info' },
       { status: 500 }
     );
   }
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating contact info:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update contact info' },
+      { success: false, error: 'Failed to update contact info' },
       { status: 500 }
     );
   }

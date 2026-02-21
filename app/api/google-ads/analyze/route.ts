@@ -444,6 +444,6 @@ Output ONLY: [{"text":"...","angle":"benefit|problem-solution|social-proof","cha
     });
   } catch (error: any) {
     console.error("Multi-agent analysis error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

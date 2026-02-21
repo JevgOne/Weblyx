@@ -363,7 +363,9 @@
       "descriptionTooShort": "Popis musí obsahovat alespoň 10 znaků",
       "nameRequired": "Jméno je povinné",
       "emailRequired": "Email je povinný",
-      "projectTypeRequired": "Vyberte typ projektu"
+      "projectTypeRequired": "Vyberte typ projektu",
+      "budgetRequired": "Vyberte rozpočet",
+      "submitError": "Došlo k chybě při odesílání. Zkuste to prosím znovu."
     },
     "messages": {
       "successTitle": "Děkujeme!",
@@ -379,8 +381,19 @@
         "newWebsite": "Nový web",
         "redesign": "Redesign",
         "eshop": "E-shop",
+        "webApp": "Webová aplikace",
         "landingPage": "Landing page",
         "other": "Jiné"
+      },
+      "budgetLabel": "Rozpočet",
+      "budgetPlaceholder": "Vyberte váš rozpočet",
+      "budgetHelp": "Pomůže nám připravit přesnou nabídku",
+      "budgetOptions": {
+        "landing": "Landing Page - 7 990 Kč",
+        "basic": "Základní Web - 9 990 Kč",
+        "standard": "Standardní Web - 24 990 Kč",
+        "premium": "Premium Web - 49 990 Kč",
+        "custom": "Jiný rozpočet"
       },
       "companyNameLabel": "Název firmy/projektu",
       "companyNamePlaceholder": "Např. Firma s.r.o.",

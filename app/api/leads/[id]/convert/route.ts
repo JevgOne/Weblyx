@@ -187,7 +187,7 @@ export async function POST(
   } catch (error: any) {
     console.error("❌ Lead conversion error:", error);
     return NextResponse.json(
-      { error: error.message || "Došlo k chybě při převodu poptávky" },
+      { error: "Došlo k chybě při převodu poptávky" },
       { status: 500 }
     );
   }

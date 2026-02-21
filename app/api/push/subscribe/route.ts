@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to save subscription',
+        error: 'Failed to save subscription',
       },
       { status: 500 }
     );

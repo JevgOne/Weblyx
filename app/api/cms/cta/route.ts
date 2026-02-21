@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching CTA section:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch CTA section' },
+      { success: false, error: 'Failed to fetch CTA section' },
       { status: 500 }
     );
   }
@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating CTA section:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update CTA section' },
+      { success: false, error: 'Failed to update CTA section' },
       { status: 500 }
     );
   }

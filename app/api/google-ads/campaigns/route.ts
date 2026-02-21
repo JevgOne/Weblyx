@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch campaigns",
+        error: "Failed to fetch campaigns",
       },
       { status: 500 }
     );

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching hero section:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch hero section' },
+      { success: false, error: 'Failed to fetch hero section' },
       { status: 500 }
     );
   }
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating hero section:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update hero section' },
+      { success: false, error: 'Failed to update hero section' },
       { status: 500 }
     );
   }

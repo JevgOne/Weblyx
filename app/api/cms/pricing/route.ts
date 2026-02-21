@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching pricing tiers:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch pricing tiers' },
+      { success: false, error: 'Failed to fetch pricing tiers' },
       { status: 500 }
     );
   }
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating pricing tier:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create pricing tier' },
+      { success: false, error: 'Failed to create pricing tier' },
       { status: 500 }
     );
   }
@@ -141,7 +141,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating pricing tier:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update pricing tier' },
+      { success: false, error: 'Failed to update pricing tier' },
       { status: 500 }
     );
   }
@@ -176,7 +176,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error: any) {
     console.error('Error deleting pricing tier:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to delete pricing tier' },
+      { success: false, error: 'Failed to delete pricing tier' },
       { status: 500 }
     );
   }

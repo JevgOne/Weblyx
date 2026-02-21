@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to create payment',
+        error: 'Failed to create payment',
       },
       { status: 500 }
     );

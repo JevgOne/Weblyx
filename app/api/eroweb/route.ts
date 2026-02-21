@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('EroWeb list error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch analyses', details: error.message },
+      { error: 'Failed to fetch analyses' },
       { status: 500 }
     );
   }
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('EroWeb create error:', error);
     return NextResponse.json(
-      { error: 'Failed to create analysis', details: error.message },
+      { error: 'Failed to create analysis' },
       { status: 500 }
     );
   }

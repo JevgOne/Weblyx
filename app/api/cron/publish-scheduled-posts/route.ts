@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
           }
         }
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        const errorMsg = 'Unknown error';
         console.error(`Failed to publish ${post.id}:`, errorMsg);
         results.errors.push({
           postId: post.id,
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
       results,
     });
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    const errorMsg = 'Unknown error';
     console.error('Cron job failed:', errorMsg);
 
     return NextResponse.json(

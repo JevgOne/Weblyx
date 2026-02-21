@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch ad sets",
+        error: "Failed to fetch ad sets",
       },
       { status: 500 }
     );
@@ -65,7 +65,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to update ad set",
+        error: "Failed to update ad set",
       },
       { status: 500 }
     );

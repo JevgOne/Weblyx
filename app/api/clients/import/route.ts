@@ -81,7 +81,7 @@ export async function POST() {
   } catch (error: any) {
     console.error('Error importing clients:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to import clients' },
+      { success: false, error: 'Failed to import clients' },
       { status: 500 }
     );
   }

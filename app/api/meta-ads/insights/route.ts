@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch account insights",
+        error: "Failed to fetch account insights",
       },
       { status: 500 }
     );

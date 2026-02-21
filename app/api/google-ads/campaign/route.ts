@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to create campaign",
+        error: "Failed to create campaign",
       },
       { status: 500 }
     );

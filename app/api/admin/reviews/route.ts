@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch reviews',
+        error: 'Failed to fetch reviews',
       },
       { status: 500 }
     );
@@ -55,7 +55,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to update review',
+        error: 'Failed to update review',
       },
       { status: 500 }
     );
@@ -87,7 +87,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to delete review',
+        error: 'Failed to delete review',
       },
       { status: 500 }
     );
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to process action',
+        error: 'Failed to process action',
       },
       { status: 500 }
     );

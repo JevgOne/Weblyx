@@ -316,7 +316,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: false,
       error: 'Internal error',
-      message: error.message,
     }, { status: 200 });
   }
 }

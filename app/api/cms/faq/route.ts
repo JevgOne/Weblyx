@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching FAQ data:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch FAQ data' },
+      { success: false, error: 'Failed to fetch FAQ data' },
       { status: 500 }
     );
   }
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating FAQ item:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create FAQ item' },
+      { success: false, error: 'Failed to create FAQ item' },
       { status: 500 }
     );
   }
@@ -146,7 +146,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating FAQ:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update FAQ' },
+      { success: false, error: 'Failed to update FAQ' },
       { status: 500 }
     );
   }
@@ -177,7 +177,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error: any) {
     console.error('Error deleting FAQ item:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to delete FAQ item' },
+      { success: false, error: 'Failed to delete FAQ item' },
       { status: 500 }
     );
   }

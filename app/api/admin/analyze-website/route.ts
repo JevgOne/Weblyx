@@ -515,7 +515,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to analyze website'
+        error: 'Failed to analyze website'
       },
       { status: 500 }
     );
@@ -538,7 +538,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch analyses'
+        error: 'Failed to fetch analyses'
       },
       { status: 500 }
     );

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch blog posts',
+        error: 'Failed to fetch blog posts',
       },
       { status: 500 }
     );
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to create blog post',
+        error: 'Failed to create blog post',
       },
       { status: 500 }
     );
@@ -214,7 +214,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to update blog post',
+        error: 'Failed to update blog post',
       },
       { status: 500 }
     );
@@ -257,7 +257,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to delete blog post',
+        error: 'Failed to delete blog post',
       },
       { status: 500 }
     );

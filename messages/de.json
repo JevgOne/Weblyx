@@ -154,7 +154,31 @@
     "q7": "Wie lange dauert es, bis meine Website online ist?",
     "a7": "3-7 Tage garantiert. Anders als bei WordPress-Agenturen, die Wochen oder Monate brauchen, erstellen wir deine professionelle Website in Rekordzeit – ohne Qualitätsverlust.",
     "q8": "Welche Zahlungsmöglichkeiten gibt es?",
-    "a8": "Banküberweisung, PayPal oder Ratenzahlung (bei größeren Projekten). 50% Anzahlung, 50% nach Go-Live – fair und transparent. Keine monatlichen Gebühren."
+    "a8": "Banküberweisung, PayPal oder Ratenzahlung (bei größeren Projekten). 50% Anzahlung, 50% nach Go-Live – fair und transparent. Keine monatlichen Gebühren.",
+    "q9": "Brauche ich eine Domain und Hosting?",
+    "a9": "Ja, aber wir helfen Ihnen bei der Auswahl. Wir empfehlen Vercel für das Hosting (Basisversion kostenlos) und gängige Registrare für die Domain (ca. 10-15 €/Jahr). Gesamtkosten ca. 15-25 € jährlich.",
+    "q10": "Was, wenn mir das Design nicht gefällt?",
+    "a10": "Im Preis sind 2 kostenlose Design-Revisionsrunden enthalten. Falls Sie auch danach nicht zufrieden sind, erstatten wir Ihre Anzahlung. Wir möchten, dass Sie vom Ergebnis begeistert sind.",
+    "q11": "Wie ist das mit der SEO-Optimierung?",
+    "a11": "Basis-SEO ist bei jeder Website inklusive: Meta-Tags, Sitemap, Ladegeschwindigkeit, responsives Design. Für fortgeschrittenes SEO (Keyword-Recherche, Linkaufbau, monatliche Optimierung) bieten wir Pakete ab 199 €/Monat.",
+    "q12": "Erstellen Sie auch Logos und Grafiken?",
+    "a12": "Grundlegende Grafikarbeiten sind im Preis enthalten. Für Logo-Design oder komplexe visuelle Identität arbeiten wir mit Grafikern zusammen – Logo-Preis ab 150 €.",
+    "q13": "Welche Zahlungsmethoden akzeptieren Sie?",
+    "a13": "Wir akzeptieren Banküberweisung und Kartenzahlung. Standardmäßig rechnen wir 50% Anzahlung vor Projektstart und 50% nach Fertigstellung ab.",
+    "q14": "Können Sie meine bestehende Website überarbeiten?",
+    "a14": "Ja, wir bieten Website-Redesign ab 600 € an. Ihre Domain und Inhalte bleiben erhalten, aber wir erstellen ein modernes, schnelles Design. SEO-Weiterleitungen sorgen dafür, dass keine Suchmaschinen-Rankings verloren gehen.",
+    "q15": "Funktionieren Ihre Websites auf Mobilgeräten?",
+    "a15": "Ja, alle unsere Websites sind vollständig responsiv. Wir testen auf Smartphones, Tablets und Desktop. Mehr als 60% der Besucher kommen heute über Mobilgeräte.",
+    "q16": "Was, wenn ich nach dem Launch Änderungen brauche?",
+    "a16": "Im ersten Monat beheben wir alle Fehler kostenlos. Danach bieten wir: Einzelanpassungen ab 50 €/Std., monatliches Paket ab 75 € (E-Mail + Telefon-Support + kleine Anpassungen).",
+    "q17": "Wie ist das mit DSGVO und Cookies?",
+    "a17": "Alle Websites enthalten einen Cookie-Banner und sind DSGVO-konform. Wir helfen Ihnen auch bei Datenschutzerklärung und Impressum.",
+    "q18": "Arbeiten Sie nur in Prag?",
+    "a18": "Nein, wir arbeiten online mit Kunden aus ganz Europa. Beratungen finden per Videocall statt (Google Meet, Zoom). Ein persönliches Treffen ist nicht nötig.",
+    "q19": "Welche Technologien verwenden Sie?",
+    "a19": "Wir verwenden Next.js (React-Framework), Tailwind CSS für das Styling und Vercel für das Hosting. Diese Technologien gewährleisten Geschwindigkeit, Sicherheit und einfache Wartung.",
+    "q20": "Warum Seitelyx wählen?",
+    "a20": "Wir sind eine europäische Agentur, die schnell liefert (3-7 Tage), zu fairen Preisen (ab 320 €), mit Qualitätsgarantie (PageSpeed 90+ oder Geld zurück). Seit Februar 2024 haben wir 15+ Projekte mit einer 5.0-Bewertung auf Google abgeschlossen."
   },
   "contact": {
     "title": "Sprich mit uns über dein Projekt",
@@ -341,7 +365,9 @@
       "descriptionTooShort": "Beschreibung muss mindestens 10 Zeichen enthalten",
       "nameRequired": "Name erforderlich",
       "emailRequired": "E-Mail erforderlich",
-      "projectTypeRequired": "Projekttyp auswählen"
+      "projectTypeRequired": "Projekttyp auswählen",
+      "budgetRequired": "Budget auswählen",
+      "submitError": "Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
     },
     "messages": {
       "successTitle": "Vielen Dank!",
@@ -357,8 +383,19 @@
         "newWebsite": "Neue Website",
         "redesign": "Redesign",
         "eshop": "Online-Shop",
+        "webApp": "Webanwendung",
         "landingPage": "Landing Page",
         "other": "Sonstiges"
+      },
+      "budgetLabel": "Budget",
+      "budgetPlaceholder": "Wählen Sie Ihr Budget",
+      "budgetHelp": "Hilft uns, ein passendes Angebot zu erstellen",
+      "budgetOptions": {
+        "landing": "Landing Page - 320 €",
+        "basic": "Basis-Website - 400 €",
+        "standard": "Standard-Website - 1.000 €",
+        "premium": "Premium-Website - 2.000 €",
+        "custom": "Anderes Budget"
       },
       "companyNameLabel": "Unternehmensname/Projekt",
       "companyNamePlaceholder": "z.B. Firma GmbH",

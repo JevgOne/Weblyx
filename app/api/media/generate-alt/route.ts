@@ -63,7 +63,7 @@ Return ONLY the ALT text, nothing else. No quotes, no explanations.`;
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to generate ALT text",
+        error: "Failed to generate ALT text",
       },
       { status: 500 }
     );

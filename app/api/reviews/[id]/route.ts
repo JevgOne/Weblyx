@@ -22,7 +22,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Error fetching review:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch review' },
+      { success: false, error: 'Failed to fetch review' },
       { status: 500 }
     );
   }

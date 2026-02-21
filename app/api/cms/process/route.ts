@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching process data:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch process data' },
+      { success: false, error: 'Failed to fetch process data' },
       { status: 500 }
     );
   }
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating process step:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create process step' },
+      { success: false, error: 'Failed to create process step' },
       { status: 500 }
     );
   }
@@ -135,7 +135,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating process:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update process' },
+      { success: false, error: 'Failed to update process' },
       { status: 500 }
     );
   }
@@ -166,7 +166,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error: any) {
     console.error('Error deleting process step:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to delete process step' },
+      { success: false, error: 'Failed to delete process step' },
       { status: 500 }
     );
   }

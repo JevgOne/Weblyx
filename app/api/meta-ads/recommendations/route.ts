@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to generate recommendations",
+        error: "Failed to generate recommendations",
       },
       { status: 500 }
     );

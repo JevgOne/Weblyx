@@ -48,7 +48,7 @@ export async function GET() {
   } catch (error: any) {
     console.error('List media error:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

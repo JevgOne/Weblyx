@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     console.error('Test email error:', error);
     return NextResponse.json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',
       stack: error.stack,
       config: {
         from: EMAIL_CONFIG.from,

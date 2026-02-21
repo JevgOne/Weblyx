@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch ad groups",
+        error: "Failed to fetch ad groups",
       },
       { status: 500 }
     );
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to create ad group",
+        error: "Failed to create ad group",
       },
       { status: 500 }
     );

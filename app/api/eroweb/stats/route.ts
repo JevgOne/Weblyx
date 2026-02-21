@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('EroWeb stats error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch stats', details: error.message },
+      { error: 'Failed to fetch stats' },
       { status: 500 }
     );
   }

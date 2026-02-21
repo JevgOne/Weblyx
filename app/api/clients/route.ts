@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error searching clients:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to search clients' },
+      { success: false, error: 'Failed to search clients' },
       { status: 500 }
     );
   }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating client:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create client' },
+      { success: false, error: 'Failed to create client' },
       { status: 500 }
     );
   }

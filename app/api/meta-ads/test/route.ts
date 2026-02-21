@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         message: "Failed to test Meta Ads API connection",
-        error: error.message || "Unknown error",
+        error: "Unknown error",
       },
       { status: 500 }
     );

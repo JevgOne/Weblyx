@@ -77,7 +77,7 @@ Odpověď musí být POUZE v tomto JSON formátu (bez dalšího textu):
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to generate meta tags",
+        error: "Failed to generate meta tags",
       },
       { status: 500 }
     );

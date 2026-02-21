@@ -28,7 +28,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Failed to fetch recommendation:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -69,7 +69,7 @@ export async function PATCH(
   } catch (error: any) {
     console.error("Failed to update recommendation:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -92,7 +92,7 @@ export async function DELETE(
   } catch (error: any) {
     console.error("Failed to delete recommendation:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

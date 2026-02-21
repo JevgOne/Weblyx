@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { Review } from "@/types/review";
@@ -90,7 +91,7 @@ export async function Reviews() {
                 {/* Author info */}
                 <div className="flex items-center gap-3 pt-4 border-t">
                   {review.authorImage ? (
-                    <img
+                    <Image
                       src={review.authorImage}
                       alt={review.authorName}
                       width={48}

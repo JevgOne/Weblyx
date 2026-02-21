@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   } catch (error: any) {
     console.error('EroWeb get error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch analysis', details: error.message },
+      { error: 'Failed to fetch analysis' },
       { status: 500 }
     );
   }
@@ -123,7 +123,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   } catch (error: any) {
     console.error('EroWeb update error:', error);
     return NextResponse.json(
-      { error: 'Failed to update analysis', details: error.message },
+      { error: 'Failed to update analysis' },
       { status: 500 }
     );
   }
@@ -153,7 +153,7 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   } catch (error: any) {
     console.error('EroWeb delete error:', error);
     return NextResponse.json(
-      { error: 'Failed to delete analysis', details: error.message },
+      { error: 'Failed to delete analysis' },
       { status: 500 }
     );
   }

@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch analytics data",
+        error: "Failed to fetch analytics data",
       },
       { status: 500 }
     );

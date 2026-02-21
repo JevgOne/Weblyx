@@ -135,7 +135,6 @@ Vytvoř kvalitní, SEO-optimalizovaný článek s praktickými informacemi.`;
     return NextResponse.json(
       {
         error: 'Chyba při generování článku',
-        details: error.message,
       },
       { status: 500 }
     );

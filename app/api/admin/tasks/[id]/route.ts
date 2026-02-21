@@ -42,7 +42,7 @@ export async function GET(
     return NextResponse.json({ task });
   } catch (error: any) {
     console.error('Task GET error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -95,7 +95,7 @@ export async function PATCH(
     return NextResponse.json({ task: updatedTask });
   } catch (error: any) {
     console.error('Task PATCH error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -130,6 +130,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Task DELETE error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

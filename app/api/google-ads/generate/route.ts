@@ -169,7 +169,6 @@ Create compelling ad copy that will maximize click-through rate and conversions.
       {
         success: false,
         error: "Failed to generate ad content",
-        details: error.message,
       },
       { status: 500 }
     );

@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to get subscriptions',
+        error: 'Failed to get subscriptions',
       },
       { status: 500 }
     );

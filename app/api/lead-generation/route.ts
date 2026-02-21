@@ -15,7 +15,8 @@ import { CreateLeadData } from '@/types/lead-generation';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? (parseInt(limitParam, 10) || undefined) : undefined;
     const includeAnalysis = searchParams.get('includeAnalysis') === 'true';
 
     // Default: limit 100 leads, exclude analysis_result for performance
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch leads',
+        error: 'Failed to fetch leads',
       },
       { status: 500 }
     );
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to create lead',
+        error: 'Failed to create lead',
       },
       { status: 500 }
     );

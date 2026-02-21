@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to send notification',
+        error: 'Failed to send notification',
       },
       { status: 500 }
     );

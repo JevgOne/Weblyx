@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching reviews:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch reviews' },
+      { success: false, error: 'Failed to fetch reviews' },
       { status: 500 }
     );
   }
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating review:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create review' },
+      { success: false, error: 'Failed to create review' },
       { status: 500 }
     );
   }
@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating review:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update review' },
+      { success: false, error: 'Failed to update review' },
       { status: 500 }
     );
   }
@@ -128,7 +128,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error: any) {
     console.error('Error deleting review:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to delete review' },
+      { success: false, error: 'Failed to delete review' },
       { status: 500 }
     );
   }

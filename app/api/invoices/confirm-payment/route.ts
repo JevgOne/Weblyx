@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('❌ Confirm payment error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to confirm payment' },
+      { error: 'Failed to confirm payment' },
       { status: 500 }
     );
   }

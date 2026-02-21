@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to generate PDF'
+        error: 'Failed to generate PDF'
       },
       { status: 500 }
     );

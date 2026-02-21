@@ -30,7 +30,7 @@ export async function PATCH(
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to update budget",
+        error: "Failed to update budget",
       },
       { status: 500 }
     );

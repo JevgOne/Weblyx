@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching recommendations:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error processing recommendation:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -183,7 +183,7 @@ export async function PATCH(request: NextRequest) {
   } catch (error: any) {
     console.error('Error processing bulk action:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

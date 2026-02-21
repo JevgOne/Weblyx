@@ -102,7 +102,7 @@ Return ONLY valid JSON in this exact format:
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to generate designs'
+        error: 'Failed to generate designs'
       },
       { status: 500 }
     );

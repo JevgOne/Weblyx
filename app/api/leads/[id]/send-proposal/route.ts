@@ -80,7 +80,7 @@ export async function POST(
     console.error("❌ Send proposal error:", error);
     return NextResponse.json(
       {
-        error: error.message || "Failed to send proposal",
+        error: "Failed to send proposal",
       },
       { status: 500 }
     );

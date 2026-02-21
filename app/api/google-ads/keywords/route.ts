@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch keywords",
+        error: "Failed to fetch keywords",
       },
       { status: 500 }
     );
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to add keywords",
+        error: "Failed to add keywords",
       },
       { status: 500 }
     );
@@ -111,7 +111,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to update keyword",
+        error: "Failed to update keyword",
       },
       { status: 500 }
     );

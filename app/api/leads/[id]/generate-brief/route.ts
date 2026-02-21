@@ -360,7 +360,7 @@ export async function POST(
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to generate brief",
+        error: "Failed to generate brief",
       },
       { status: 500 }
     );

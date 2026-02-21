@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     console.error('Send email error:', error);
     return NextResponse.json(
-      { error: 'Failed to send email', details: error.message },
+      { error: 'Failed to send email' },
       { status: 500 }
     );
   }

@@ -48,6 +48,17 @@ export const burstRateLimit = redis
 const memoryStore = new Map<string, { count: number; resetTime: number }>();
 const burstStore = new Map<string, { count: number; resetTime: number }>();
 
+// Periodic cleanup of expired entries to prevent memory leak
+function cleanupStore(store: Map<string, { count: number; resetTime: number }>) {
+  const now = Date.now();
+  for (const [key, record] of store) {
+    if (now > record.resetTime) store.delete(key);
+  }
+}
+if (typeof setInterval !== 'undefined') {
+  setInterval(() => { cleanupStore(memoryStore); cleanupStore(burstStore); }, 60_000);
+}
+
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const BURST_WINDOW = 10 * 1000;
 const BURST_MAX = 50;

@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch campaign details",
+        error: "Failed to fetch campaign details",
       },
       { status: 500 }
     );
@@ -76,7 +76,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to update campaign",
+        error: "Failed to update campaign",
       },
       { status: 500 }
     );

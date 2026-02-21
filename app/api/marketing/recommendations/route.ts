@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error("Failed to fetch recommendations:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Failed to create recommendation:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

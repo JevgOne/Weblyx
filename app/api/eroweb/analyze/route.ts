@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
     console.error('EroWeb analyze error:', error);
 
     return NextResponse.json(
-      { error: 'Nastala chyba při analýze', details: error.message },
+      { error: 'Nastala chyba při analýze' },
       { status: 500 }
     );
   }

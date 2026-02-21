@@ -68,13 +68,13 @@ export async function GET(request: NextRequest) {
     }
 
     if (startDate) {
-      conditions.push('created_at >= ?');
-      args.push(parseInt(startDate));
+      const ts = parseInt(startDate, 10);
+      if (!isNaN(ts)) { conditions.push('created_at >= ?'); args.push(ts); }
     }
 
     if (endDate) {
-      conditions.push('created_at <= ?');
-      args.push(parseInt(endDate));
+      const ts = parseInt(endDate, 10);
+      if (!isNaN(ts)) { conditions.push('created_at <= ?'); args.push(ts); }
     }
 
     if (overdueOnly) {
@@ -208,7 +208,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch invoices',
+        error: 'Failed to fetch invoices',
       },
       { status: 500 }
     );

@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to check payment status',
+        error: 'Failed to check payment status',
       },
       { status: 500 }
     );
