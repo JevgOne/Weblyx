@@ -41,7 +41,7 @@ async function fetchWebsiteContent(url: string): Promise<string> {
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, 12000);
+      .slice(0, 6000);
   } catch (error) {
     console.error(`Error fetching ${url}:`, error);
     return "";
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 ${websiteContent}
 
 === COMPETITOR WEBSITES ===
-${competitors.map((url, i) => `[${url}]: ${competitorContents[i]?.slice(0, 4000) || "N/A"}`).join("\n\n")}
+${competitors.map((url, i) => `[${url}]: ${competitorContents[i]?.slice(0, 2000) || "N/A"}`).join("\n\n")}
 
 === GOOGLE ADS HISTORICAL DATA (Paid Traffic) ===
 ${googleAdsData}
@@ -203,7 +203,7 @@ Target Language: ${langFull}
 Be decisive and specific. Output in ${langFull}.`,
       `Create a strategic brief based on this data:
 
-${rawData}
+${rawData.slice(0, 6000)}
 
 Include:
 1. EXECUTIVE SUMMARY (2-3 sentences)
@@ -213,7 +213,7 @@ Include:
 5. 3 UVP ANGLES for A/B testing: Angle name + positioning statement
 6. DIRECTION for Marketing Strategist, SEO Expert, and PPC Specialist`,
       0.7,
-      2000,
+      1500,
       FAST_MODEL
     );
 
@@ -240,7 +240,7 @@ Develop:
 5. TRUST BUILDERS
 6. COMPETITIVE DIFFERENTIATION`,
         0.7,
-        2000,
+        1500,
         FAST_MODEL
       ),
 
@@ -252,7 +252,7 @@ Be data-driven. Output in ${langFull}.`,
 ${pmBrief}
 
 RAW DATA:
-${rawData.slice(0, 6000)}
+${rawData.slice(0, 4000)}
 
 Develop:
 1. PRIMARY KEYWORDS (5-10) with intent
@@ -262,7 +262,7 @@ Develop:
 5. NEGATIVE KEYWORDS (15-20)
 6. COMPETITOR KEYWORD GAPS`,
         0.7,
-        2000,
+        1500,
         FAST_MODEL
       ),
 
@@ -282,20 +282,20 @@ DESCRIPTIONS (9 total, under 90 chars each):
 
 Also: CTA options, callouts (4), sitelinks (4), structured snippets`,
         0.7,
-        2000,
+        1500,
         FAST_MODEL
       ),
     ]);
 
     // ========================================
-    // PHASE 4: COMBINED FINAL (Sonnet - quality ~15-25s)
+    // PHASE 4: COMBINED FINAL (Haiku for speed - must complete under 60s total)
     // Cross-review + PPC refinement + PM recommendations + JSON compilation in ONE call
     // ========================================
 
     const combinedFinalCall = async () => {
       const response = await anthropic.messages.create({
-        model: QUALITY_MODEL,
-        max_tokens: 6000,
+        model: FAST_MODEL,
+        max_tokens: 4000,
         temperature: 0.3,
         messages: [
           {
@@ -303,16 +303,16 @@ Also: CTA options, callouts (4), sitelinks (4), structured snippets`,
             content: `You are a senior marketing team lead. Review all specialist outputs, cross-reference them, and compile the final campaign plan as JSON.
 
 PM BRIEF:
-${pmBrief.slice(0, 2000)}
+${pmBrief.slice(0, 1500)}
 
 MARKETING STRATEGY:
-${marketingDraft.slice(0, 2500)}
+${marketingDraft.slice(0, 1500)}
 
 KEYWORD RESEARCH:
-${seoDraft.slice(0, 2500)}
+${seoDraft.slice(0, 1500)}
 
 PPC AD CONCEPTS:
-${ppcDraft.slice(0, 2500)}
+${ppcDraft.slice(0, 1500)}
 
 YOUR TASKS:
 1. Cross-review: Ensure keywords align with messaging, ad copy includes top keywords
