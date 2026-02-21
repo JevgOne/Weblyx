@@ -14,10 +14,12 @@ export const googleAdsClient = new GoogleAdsApi(googleAdsConfig);
 export function getGoogleAdsCustomer(): Customer {
   const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
   const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN!;
+  const loginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
 
   return googleAdsClient.Customer({
     customer_id: customerId,
     refresh_token: refreshToken,
+    ...(loginCustomerId ? { login_customer_id: loginCustomerId } : {}),
   });
 }
 
