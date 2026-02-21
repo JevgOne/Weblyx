@@ -247,10 +247,22 @@ interface AnalysisResult {
     sitelinks: Array<{ text: string; description: string }>;
     structured_snippets: { header: string; values: string[] };
   };
+  budget_tiers?: Array<{
+    name: string;
+    monthly_budget: number;
+    daily_budget: number;
+    expected_clicks: string;
+    expected_leads: string;
+    expected_cpa: string;
+    campaign_plan: string;
+    best_for: string;
+    recommended: boolean;
+    explanation: string;
+  }>;
   campaign_settings: {
     bidding_strategy: string;
-    daily_budget: number;
-    target_cpa: number;
+    daily_budget?: number;
+    target_cpa?: number;
     ad_schedule: string;
     locations: string[];
     devices: string;
@@ -317,7 +329,6 @@ export default function GoogleAdsPage() {
     competitors: "https://flavor.cz, https://flavor-design.cz",
     language: "cs" as "cs" | "de" | "en",
     businessGoal: "leads" as "leads" | "traffic" | "sales" | "brand",
-    monthlyBudget: 15000,
   });
 
   // Copy state
@@ -874,32 +885,22 @@ export default function GoogleAdsPage() {
                                 onChange={(e) => setAnalyzeForm({ ...analyzeForm, competitors: e.target.value })}
                               />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Cíl kampaně</Label>
-                                <Select
-                                  value={analyzeForm.businessGoal}
-                                  onValueChange={(v: "leads" | "traffic" | "sales" | "brand") =>
-                                    setAnalyzeForm({ ...analyzeForm, businessGoal: v })
-                                  }
-                                >
-                                  <SelectTrigger><SelectValue /></SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="leads">Leady / Poptávky</SelectItem>
-                                    <SelectItem value="traffic">Návštěvnost</SelectItem>
-                                    <SelectItem value="sales">Prodeje</SelectItem>
-                                    <SelectItem value="brand">Brand awareness</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Měsíční rozpočet (CZK)</Label>
-                                <Input
-                                  type="number"
-                                  value={analyzeForm.monthlyBudget}
-                                  onChange={(e) => setAnalyzeForm({ ...analyzeForm, monthlyBudget: parseInt(e.target.value) || 0 })}
-                                />
-                              </div>
+                            <div className="space-y-2">
+                              <Label>Cíl kampaně</Label>
+                              <Select
+                                value={analyzeForm.businessGoal}
+                                onValueChange={(v: "leads" | "traffic" | "sales" | "brand") =>
+                                  setAnalyzeForm({ ...analyzeForm, businessGoal: v })
+                                }
+                              >
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="leads">Leady / Poptávky</SelectItem>
+                                  <SelectItem value="traffic">Návštěvnost</SelectItem>
+                                  <SelectItem value="sales">Prodeje</SelectItem>
+                                  <SelectItem value="brand">Brand awareness</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
                         </details>
@@ -951,6 +952,66 @@ export default function GoogleAdsPage() {
                           </div>
                         </CardContent>
                       </Card>
+
+                      {/* 1b. Budget Tiers */}
+                      {analysisResult.budget_tiers && analysisResult.budget_tiers.length > 0 && (
+                        <Card className="border-blue-200 bg-blue-50/50">
+                          <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <DollarSign className="h-5 w-5 text-blue-600" />
+                              Doporučené cenové plány
+                            </CardTitle>
+                            <CardDescription>AI doporučuje 3 varianty rozpočtu na základě analýzy trhu a konkurence</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {analysisResult.budget_tiers.map((tier, i) => (
+                                <div
+                                  key={i}
+                                  className={`relative border-2 rounded-xl p-5 space-y-4 transition-all ${
+                                    tier.recommended
+                                      ? "border-primary bg-primary/5 shadow-lg scale-[1.02]"
+                                      : "border-border hover:border-muted-foreground/30"
+                                  }`}
+                                >
+                                  {tier.recommended && (
+                                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary">
+                                      Doporučeno
+                                    </Badge>
+                                  )}
+                                  <div className="text-center">
+                                    <p className="text-sm font-medium text-muted-foreground">{tier.name}</p>
+                                    <p className="text-3xl font-bold mt-1">{formatCurrency(tier.monthly_budget)}</p>
+                                    <p className="text-xs text-muted-foreground">/ měsíc ({formatCurrency(tier.daily_budget)}/den)</p>
+                                  </div>
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Očekávané kliky</span>
+                                      <span className="font-medium">{tier.expected_clicks}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Očekávané leady</span>
+                                      <span className="font-medium">{tier.expected_leads}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Cena za lead</span>
+                                      <span className="font-medium">{tier.expected_cpa}</span>
+                                    </div>
+                                  </div>
+                                  <div className="border-t pt-3">
+                                    <p className="text-sm font-medium mb-1">Plán kampaně:</p>
+                                    <p className="text-sm text-muted-foreground">{tier.campaign_plan}</p>
+                                  </div>
+                                  <div className="bg-muted/50 rounded-lg p-3">
+                                    <p className="text-sm">{tier.explanation}</p>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground italic text-center">{tier.best_for}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
 
                       {/* 2. Personas */}
                       {analysisResult.personas && analysisResult.personas.length > 0 && (
@@ -1413,14 +1474,12 @@ export default function GoogleAdsPage() {
                               <span className="text-muted-foreground">Bidding:</span>
                               <span>{analysisResult.campaign_settings?.bidding_strategy}</span>
                             </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Denní rozpočet:</span>
-                              <span>{formatCurrency(analysisResult.campaign_settings?.daily_budget || 0)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Target CPA:</span>
-                              <span>{formatCurrency(analysisResult.campaign_settings?.target_cpa || 0)}</span>
-                            </div>
+                            {analysisResult.campaign_settings?.daily_budget != null && analysisResult.campaign_settings.daily_budget > 0 && (
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Denní rozpočet:</span>
+                                <span>{formatCurrency(analysisResult.campaign_settings.daily_budget)}</span>
+                              </div>
+                            )}
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Čas:</span>
                               <span>{analysisResult.campaign_settings?.ad_schedule}</span>

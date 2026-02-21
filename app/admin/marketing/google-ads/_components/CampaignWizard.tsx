@@ -52,8 +52,8 @@ interface AnalysisResult {
   };
   campaign_settings: {
     bidding_strategy: string;
-    daily_budget: number;
-    target_cpa: number;
+    daily_budget?: number;
+    target_cpa?: number;
     ad_schedule: string;
     locations: string[];
     devices: string;

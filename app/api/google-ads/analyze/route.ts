@@ -26,7 +26,6 @@ interface AnalysisRequest {
   competitors?: string[];
   language: "cs" | "de" | "en";
   businessGoal?: string;
-  monthlyBudget?: number;
 }
 
 async function fetchWebsiteContent(url: string): Promise<string> {
@@ -148,7 +147,7 @@ async function runAgent(
 export async function POST(request: NextRequest) {
   try {
     const body: AnalysisRequest = await request.json();
-    const { websiteUrl, competitors = [], language, businessGoal = "leads", monthlyBudget = 15000 } = body;
+    const { websiteUrl, competitors = [], language, businessGoal = "leads" } = body;
 
     if (!websiteUrl || !language) {
       return NextResponse.json({ success: false, error: "Missing websiteUrl or language" }, { status: 400 });
@@ -192,8 +191,8 @@ ${gscData}
 
 === BUSINESS CONTEXT ===
 Goal: ${businessGoal}
-Monthly Budget: ${monthlyBudget} CZK
 Target Language: ${langFull}
+Note: Do NOT use a fixed budget. You must recommend 3 budget tiers.
     `.trim();
 
     timing.dataGathering = Date.now() - t0;
@@ -249,8 +248,9 @@ KEYWORDS:\n${seoDraft.slice(0, 1200)}
 ADS:\n${ppcDraft.slice(0, 1200)}
 
 IMPORTANT: Output ONLY the raw JSON object. No markdown fences. No text before or after. Be compact - short strings.
-MANDATORY COUNTS: exactly 15 headlines (≤30 chars each), exactly 9 descriptions (≤90 chars each: 3 benefit, 3 problem-solution, 3 social-proof), 3 personas, 3 uvp_angles.
+MANDATORY COUNTS: exactly 15 headlines (≤30 chars each), exactly 9 descriptions (≤90 chars each: 3 benefit, 3 problem-solution, 3 social-proof), 3 personas, 3 uvp_angles, exactly 3 budget_tiers.
 The "descriptions" array MUST have 9 items. Do NOT skip it.
+BUDGET TIERS: You MUST recommend 3 realistic budget plans based on the industry, competition level, and business goal. Write in simple language that a non-expert understands. Each tier explains what you get, expected results, and the campaign strategy. Use CZK currency.
 {
   "strategy": {"campaign_objective":"string","target_audience":"string","unique_value_proposition":"string","key_differentiators":["string"],"brand_positioning":"string"},
   "personas": [{"name":"string","age":"string","position":"string","pain_points":["string"],"goals":["string"],"objections":["string"]}],
@@ -260,7 +260,12 @@ The "descriptions" array MUST have 9 items. Do NOT skip it.
   "keywords": {"high_intent":[{"text":"keyword","matchType":"EXACT"}],"medium_intent":[{"text":"keyword","matchType":"PHRASE"}],"discovery":[{"text":"keyword","matchType":"BROAD"}]},
   "negative_keywords": ["word"],
   "extensions": {"callouts":["text"],"sitelinks":[{"text":"Link","description":"Desc"}],"structured_snippets":{"header":"Services","values":["val"]}},
-  "campaign_settings": {"bidding_strategy":"string","daily_budget":${Math.round(monthlyBudget / 30)},"target_cpa":0,"ad_schedule":"string","locations":["string"],"devices":"all"},
+  "budget_tiers": [
+    {"name":"Starter","monthly_budget":0,"daily_budget":0,"expected_clicks":"range","expected_leads":"range","expected_cpa":"range CZK","campaign_plan":"What campaigns and strategy this budget allows - simple explanation","best_for":"Who is this tier for - 1 sentence","recommended":false,"explanation":"Simple explanation of what happens at this budget level, like explaining to a friend who knows nothing about ads"},
+    {"name":"Growth","monthly_budget":0,"daily_budget":0,"expected_clicks":"range","expected_leads":"range","expected_cpa":"range CZK","campaign_plan":"string","best_for":"string","recommended":true,"explanation":"string"},
+    {"name":"Scale","monthly_budget":0,"daily_budget":0,"expected_clicks":"range","expected_leads":"range","expected_cpa":"range CZK","campaign_plan":"string","best_for":"string","recommended":false,"explanation":"string"}
+  ],
+  "campaign_settings": {"bidding_strategy":"string","ad_schedule":"string","locations":["string"],"devices":"all"},
   "testing_plan": {"week_1":"string","week_2":"string","week_4":"string"},
   "expert_notes": {"project_manager":{"insight":"string","test_first":"string","warning":"string"},"marketing":{"insight":"string","test_first":"string","warning":"string"},"seo":{"insight":"string","test_first":"string","warning":"string"},"ppc":{"insight":"string","test_first":"string","warning":"string"}}
 }`,
