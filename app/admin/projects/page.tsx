@@ -101,11 +101,10 @@ export default function AdminProjectsPage() {
         const response = await fetch('/api/admin/projects');
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && Array.isArray(result.data)) {
           setProjects(result.data);
-          console.log("✅ Loaded projects from API:", result.data);
         } else {
-          throw new Error(result.error);
+          throw new Error('Failed to load projects');
         }
       } catch (error) {
         console.error("❌ Error loading projects:", error);
@@ -121,9 +120,9 @@ export default function AdminProjectsPage() {
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       const matchesSearch =
-        project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.projectNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.clientName.toLowerCase().includes(searchTerm.toLowerCase());
+        (project.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (project.projectNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (project.clientName || '').toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus = statusFilter === "all" || project.status === statusFilter;
 
@@ -386,9 +385,9 @@ export default function AdminProjectsPage() {
                   <TableRow key={project.id} className="cursor-pointer hover:bg-muted/50">
                     <TableCell>
                       <div>
-                        <div className="font-medium">{project.name}</div>
+                        <div className="font-medium">{project.name || 'Bez názvu'}</div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          {project.projectNumber}
+                          {project.projectNumber || '—'}
                         </div>
                       </div>
                     </TableCell>
@@ -396,31 +395,39 @@ export default function AdminProjectsPage() {
                       <div>
                         <div className="flex items-center gap-1 text-sm">
                           <User className="h-3 w-3 text-muted-foreground" />
-                          {project.clientName}
+                          {project.clientName || '—'}
                         </div>
-                        <div className="text-xs text-muted-foreground">{project.clientEmail}</div>
+                        <div className="text-xs text-muted-foreground">{project.clientEmail || ''}</div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{project.projectType}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        className={`${
-                          statusConfig[project.status as keyof typeof statusConfig].color
-                        } text-white`}
-                      >
-                        {statusConfig[project.status as keyof typeof statusConfig].label}
-                      </Badge>
+                      {statusConfig[project.status as keyof typeof statusConfig] ? (
+                        <Badge
+                          className={`${
+                            statusConfig[project.status as keyof typeof statusConfig].color
+                          } text-white`}
+                        >
+                          {statusConfig[project.status as keyof typeof statusConfig].label}
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">{project.status || '—'}</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className={`text-sm font-medium ${
-                          priorityConfig[project.priority as keyof typeof priorityConfig].color
-                        }`}
-                      >
-                        {priorityConfig[project.priority as keyof typeof priorityConfig].label}
-                      </span>
+                      {priorityConfig[project.priority as keyof typeof priorityConfig] ? (
+                        <span
+                          className={`text-sm font-medium ${
+                            priorityConfig[project.priority as keyof typeof priorityConfig].color
+                          }`}
+                        >
+                          {priorityConfig[project.priority as keyof typeof priorityConfig].label}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{project.priority || '—'}</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       {project.assignedTo ? (
@@ -462,7 +469,7 @@ export default function AdminProjectsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
-                        {new Date(project.deadline).toLocaleDateString("cs-CZ")}
+                        {project.deadline ? new Date(project.deadline).toLocaleDateString("cs-CZ") : '—'}
                       </div>
                     </TableCell>
                     <TableCell>
