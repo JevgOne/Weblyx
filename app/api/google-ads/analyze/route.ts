@@ -248,7 +248,9 @@ KEYWORDS:\n${seoDraft.slice(0, 1200)}
 
 ADS:\n${ppcDraft.slice(0, 1200)}
 
-IMPORTANT: Output ONLY the raw JSON object. No markdown fences. No text before or after. Be compact - short strings, no unnecessary whitespace. Include 15 headlines, 9 descriptions, 3 personas (2 pain_points each), 3 uvp_angles.
+IMPORTANT: Output ONLY the raw JSON object. No markdown fences. No text before or after. Be compact - short strings.
+MANDATORY COUNTS: exactly 15 headlines (≤30 chars each), exactly 9 descriptions (≤90 chars each: 3 benefit, 3 problem-solution, 3 social-proof), 3 personas, 3 uvp_angles.
+The "descriptions" array MUST have 9 items. Do NOT skip it.
 {
   "strategy": {"campaign_objective":"string","target_audience":"string","unique_value_proposition":"string","key_differentiators":["string"],"brand_positioning":"string"},
   "personas": [{"name":"string","age":"string","position":"string","pain_points":["string"],"goals":["string"],"objections":["string"]}],
@@ -339,6 +341,27 @@ IMPORTANT: Output ONLY the raw JSON object. No markdown fences. No text before o
     }
 
     delete result.meta_ads;
+
+    // Fallback: if descriptions are missing, generate them with a quick Haiku call
+    if (!result.descriptions || result.descriptions.length < 3) {
+      console.log(`[FALLBACK] Descriptions missing (${result.descriptions?.length || 0}), generating...`);
+      try {
+        const descResult = await runAgent(
+          `You are a Google Ads copywriter. Output ONLY a JSON array. No explanation.`,
+          `Write 9 Google Ads descriptions in ${langFull} for: ${result.strategy?.unique_value_proposition || websiteUrl}
+Each ≤90 characters. 3 benefit, 3 problem-solution, 3 social-proof.
+Output JSON array: [{"text":"...","angle":"benefit|problem-solution|social-proof","chars":80}]`,
+          0.3, 1500, FAST_MODEL
+        );
+        const arrMatch = descResult.match(/\[[\s\S]*\]/);
+        if (arrMatch) {
+          const descs = JSON.parse(arrMatch[0]);
+          result.descriptions = descs.filter((d: any) => d.text && d.text.length <= 90);
+        }
+      } catch (e) {
+        console.error("Fallback descriptions failed:", e);
+      }
+    }
 
     // ========================================
     // PERSIST ANALYSIS TO DATABASE
