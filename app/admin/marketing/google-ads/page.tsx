@@ -628,14 +628,18 @@ export default function GoogleAdsPage() {
     setAgentOutputs(null);
     setAnalysisProgress(0);
 
-    // Simulate progress steps
+    // Simulate progress steps (analysis takes ~2-3 min with Sonnet)
     const steps = [
-      { progress: 10, step: "Načítám web a konkurenci..." },
-      { progress: 25, step: "👔 Project Manager analyzuje situaci..." },
-      { progress: 45, step: "📊 Marketing Strategist tvoří positioning..." },
-      { progress: 65, step: "🔍 SEO Expert hledá klíčová slova..." },
-      { progress: 80, step: "💰 PPC Specialist píše reklamy..." },
-      { progress: 95, step: "🎯 Finalizuji výsledky..." },
+      { progress: 5, step: "Stahuji data z GA4, Search Console a Google Ads..." },
+      { progress: 12, step: "Analyzuji web a konkurenci..." },
+      { progress: 22, step: "📊 Marketing Strategist: Positioning & persony..." },
+      { progress: 35, step: "🔍 SEO Expert: Klíčová slova & search intent..." },
+      { progress: 48, step: "✍️ PPC Copywriter: Headlines & popisky reklam..." },
+      { progress: 60, step: "💰 Budget Strategist: Cenové plány & odhady..." },
+      { progress: 72, step: "4 specialisté pracují paralelně na Sonnet..." },
+      { progress: 82, step: "🧠 Kompiluji finální výstup..." },
+      { progress: 90, step: "Validuji headlines a popisky..." },
+      { progress: 95, step: "🎯 Ukládám výsledky..." },
     ];
 
     let stepIndex = 0;
@@ -645,7 +649,7 @@ export default function GoogleAdsPage() {
         setAnalysisStep(steps[stepIndex].step);
         stepIndex++;
       }
-    }, 4000);
+    }, 12000);
 
     try {
       const { data, status } = await adminFetch("/api/google-ads/analyze", {
@@ -764,7 +768,7 @@ export default function GoogleAdsPage() {
                           </div>
                           <Progress value={analysisProgress} />
                           <p className="text-xs text-muted-foreground">
-                            Analýza může trvat 30-60 sekund. 4 AI agenti pracují na vašem zadání...
+                            Hloubková analýza trvá 2-3 minuty. 4 AI specialisté (Sonnet) pracují paralelně na vašem zadání...
                           </p>
                         </div>
                       )}

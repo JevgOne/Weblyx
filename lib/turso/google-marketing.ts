@@ -358,7 +358,7 @@ export async function saveAnalysis(data: {
   campaignTrackingId: number;
   analysisType: 'scheduled' | 'manual' | 'alert_triggered';
   triggerReason?: string;
-  dataSources: { googleAds: boolean; ga4: boolean; searchConsole: boolean };
+  dataSources: { googleAds: boolean; ga4: boolean; searchConsole: boolean; metaAds?: boolean };
   metrics: { before: Record<string, number>; after?: Record<string, number> };
   recommendations: Recommendation[];
   aiInsights: string;
