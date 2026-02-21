@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { WebAnalysisResult } from '@/types/cms';
 import { generatePDFHTML } from '@/lib/pdf-template';
 import puppeteer from 'puppeteer';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     const { analysis, businessName } = await request.json();
 
     if (!analysis) {

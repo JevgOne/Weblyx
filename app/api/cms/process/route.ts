@@ -8,6 +8,7 @@ import {
   deleteProcessStep
 } from '@/lib/turso/cms';
 import { revalidatePath } from 'next/cache';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
@@ -40,6 +41,9 @@ export async function GET(request: NextRequest) {
 // POST /api/cms/process - Create new process step
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Validation
@@ -87,6 +91,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/cms/process - Update process section or step
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Check if updating section or step
@@ -137,6 +144,9 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/cms/process?id=xxx - Delete process step
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

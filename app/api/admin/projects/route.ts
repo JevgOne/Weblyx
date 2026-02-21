@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { turso } from "@/lib/turso";
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 // Helper to get admin user by ID
 async function getAdminById(adminId: string): Promise<{ id: string; email: string; name: string } | null> {
@@ -12,6 +13,8 @@ async function getAdminById(adminId: string): Promise<{ id: string; email: strin
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     // Fetch all projects from Turso
     const result = await turso.execute(
       "SELECT * FROM projects ORDER BY created_at DESC"

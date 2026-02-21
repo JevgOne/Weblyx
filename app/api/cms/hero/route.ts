@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getHomepageSections, updateHeroSection } from '@/lib/turso/cms';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
@@ -28,6 +29,9 @@ export async function GET(request: NextRequest) {
 // PUT /api/cms/hero - Update hero section
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     await updateHeroSection({

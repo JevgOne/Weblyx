@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { captureScreenshot, captureMultipleScreenshots } from '@/lib/screenshot';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     const { url, device, fullPage } = await request.json();
 
     if (!url) {

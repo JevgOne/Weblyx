@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getTargetAudienceData, updateTargetAudienceData } from '@/lib/turso/cms';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
@@ -23,6 +24,9 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
     await updateTargetAudienceData(body);
     revalidatePath('/');

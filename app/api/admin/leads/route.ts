@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 // GET - Retrieve all leads
 export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     const result = await turso.execute(
       'SELECT * FROM leads ORDER BY created_at DESC'
     );
@@ -70,6 +73,8 @@ export async function GET(request: NextRequest) {
 // PATCH - Update lead status or details
 export async function PATCH(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     const { leadId, updates } = await request.json();
 
     if (!leadId) {
@@ -123,6 +128,8 @@ export async function PATCH(request: NextRequest) {
 // DELETE - Delete a lead
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     const { searchParams } = new URL(request.url);
     const leadId = searchParams.get('id');
 

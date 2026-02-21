@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeWebsite } from '@/lib/web-analyzer';
 import { adminDbInstance } from '@/lib/firebase-admin';
 import { captureMultipleScreenshots } from '@/lib/screenshot';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 // Email template types
 type EmailTemplate = 'general' | 'slow-web' | 'bad-seo' | 'mobile-issues' | 'outdated-design' | 'follow-up';
@@ -402,6 +403,9 @@ function generateFollowUpEmail(analysis: any): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { url, contactEmail, contactName, businessName } = await request.json();
 
     if (!url) {
@@ -521,6 +525,8 @@ export async function POST(request: NextRequest) {
 // GET - Retrieve all analyses
 export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     // TODO: Migrate web_analyses to Turso if needed
     // For now, web analyses are not stored in database
     return NextResponse.json(

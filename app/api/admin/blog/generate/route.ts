@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -17,6 +18,9 @@ interface GenerateBlogRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body: GenerateBlogRequest = await request.json();
     const { topic, keywords = [], articleType, targetAudience, length, language, tone = 'professional' } = body;
 

@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllReviews, updateReview, deleteReview, reorderReviews } from '@/lib/turso/reviews';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const reviews = await getAllReviews();
 
     return NextResponse.json({
@@ -27,6 +31,9 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
     const { id, ...data } = body;
 
@@ -57,6 +64,9 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -86,6 +96,9 @@ export async function DELETE(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
     const { action, items } = body;
 

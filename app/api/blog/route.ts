@@ -8,6 +8,7 @@ import {
   deleteBlogPost,
 } from '@/lib/turso/blog';
 import type { CreateBlogPostData, UpdateBlogPostData } from '@/types/blog';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 // GET /api/blog - Get all blog posts (or published only with ?published=true)
 export async function GET(request: NextRequest) {
@@ -63,6 +64,9 @@ export async function GET(request: NextRequest) {
 // POST /api/blog - Create a new blog post
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Validate required fields
@@ -141,6 +145,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/blog - Update an existing blog post
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     if (!body.id) {
@@ -217,6 +224,9 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/blog?id={id} - Delete a blog post
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 

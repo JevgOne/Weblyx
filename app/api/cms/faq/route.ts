@@ -8,6 +8,7 @@ import {
   updateFAQItem,
   deleteFAQItem
 } from '@/lib/turso/cms';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
@@ -45,6 +46,9 @@ export async function GET(request: NextRequest) {
 // POST /api/cms/faq - Create FAQ item
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Validation
@@ -87,6 +91,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/cms/faq - Update FAQ section or item
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Check if updating section or item
@@ -148,6 +155,9 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/cms/faq - Delete FAQ item
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 

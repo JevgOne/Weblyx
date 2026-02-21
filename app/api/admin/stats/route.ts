@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { turso } from "@/lib/turso";
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
     // Single batch query - 1 round trip instead of 4
     const results = await turso.batch([
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN published = 1 THEN 1 ELSE 0 END) as published FROM portfolio", args: [] },

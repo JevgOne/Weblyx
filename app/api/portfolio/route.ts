@@ -6,6 +6,7 @@ import {
   updatePortfolio,
   deletePortfolio,
 } from '@/lib/turso/portfolio';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
@@ -42,6 +43,9 @@ export async function GET(request: NextRequest) {
 // POST /api/portfolio - Create new portfolio item
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Validation
@@ -91,6 +95,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/portfolio - Update portfolio item
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     if (!body.id) {
@@ -127,6 +134,9 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/portfolio - Delete portfolio item
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

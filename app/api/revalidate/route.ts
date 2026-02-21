@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export async function POST(request: NextRequest) {
   try {
     const { path, secret } = await request.json();
 
-    // Optional: Add secret validation for production
-    // const expectedSecret = process.env.REVALIDATE_SECRET;
-    // if (secret !== expectedSecret) {
-    //   return NextResponse.json(
-    //     { success: false, error: 'Invalid secret' },
-    //     { status: 401 }
-    //   );
-    // }
+    // Verify either admin session or revalidation secret
+    const user = await getAuthUser();
+    const expectedSecret = process.env.REVALIDATE_SECRET;
+    const hasValidSecret = expectedSecret && secret === expectedSecret;
+
+    if (!user && !hasValidSecret) {
+      return unauthorizedResponse();
+    }
 
     if (!path) {
       return NextResponse.json(
@@ -41,9 +42,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Also support GET for simple testing
+// GET for simple testing - requires admin auth
 export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const searchParams = request.nextUrl.searchParams;
     const path = searchParams.get('path');
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllPricingTiers, createPricingTier, updatePricingTier, deletePricingTier } from '@/lib/turso/cms';
 import { revalidatePath } from 'next/cache';
 import { PricingTier } from '@/types/cms';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
@@ -29,6 +30,9 @@ export async function GET(request: NextRequest) {
 // POST /api/cms/pricing - Create new pricing tier
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     // Validate required fields
@@ -97,6 +101,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/cms/pricing - Update existing pricing tier
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
 
     if (!body.id) {
@@ -143,6 +150,9 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/cms/pricing - Delete pricing tier
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
