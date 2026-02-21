@@ -77,6 +77,7 @@ import {
   Megaphone,
   Calendar,
   UserCircle,
+  Settings,
 } from "lucide-react";
 import RecommendationsPanel from "./_components/RecommendationsPanel";
 import CampaignWizard from "./_components/CampaignWizard";
@@ -725,7 +726,7 @@ export default function GoogleAdsPage() {
             <div className="flex gap-2">
               <Dialog open={showAnalyzeDialog} onOpenChange={setShowAnalyzeDialog}>
                 <DialogTrigger asChild>
-                  <Button variant="default" className="bg-gradient-to-r from-purple-600 to-blue-600">
+                  <Button variant="default" className="bg-gradient-to-r from-purple-600 to-blue-600" onClick={() => { if (!analysisResult) handleAnalyze(); }}>
                     <Brain className="h-4 w-4 mr-2" />
                     AI Analýza (4 Agenti)
                   </Button>
@@ -743,67 +744,7 @@ export default function GoogleAdsPage() {
 
                   {!analysisResult ? (
                     <div className="space-y-6 py-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>URL webu k analýze</Label>
-                          <Input
-                            value={analyzeForm.websiteUrl}
-                            onChange={(e) => setAnalyzeForm({ ...analyzeForm, websiteUrl: e.target.value })}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Jazyk reklam</Label>
-                          <Select
-                            value={analyzeForm.language}
-                            onValueChange={(v: "cs" | "de" | "en") => setAnalyzeForm({ ...analyzeForm, language: v })}
-                          >
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="cs">Čeština</SelectItem>
-                              <SelectItem value="de">Němčina</SelectItem>
-                              <SelectItem value="en">Angličtina</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Konkurenční weby (oddělené čárkou)</Label>
-                        <Input
-                          placeholder="https://competitor1.cz, https://competitor2.cz"
-                          value={analyzeForm.competitors}
-                          onChange={(e) => setAnalyzeForm({ ...analyzeForm, competitors: e.target.value })}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Cíl kampaně</Label>
-                          <Select
-                            value={analyzeForm.businessGoal}
-                            onValueChange={(v: "leads" | "traffic" | "sales" | "brand") =>
-                              setAnalyzeForm({ ...analyzeForm, businessGoal: v })
-                            }
-                          >
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="leads">Leady / Poptávky</SelectItem>
-                              <SelectItem value="traffic">Návštěvnost</SelectItem>
-                              <SelectItem value="sales">Prodeje</SelectItem>
-                              <SelectItem value="brand">Brand awareness</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Měsíční rozpočet (CZK)</Label>
-                          <Input
-                            type="number"
-                            value={analyzeForm.monthlyBudget}
-                            onChange={(e) => setAnalyzeForm({ ...analyzeForm, monthlyBudget: parseInt(e.target.value) || 0 })}
-                          />
-                        </div>
-                      </div>
-
+                      {/* Progress - always visible when analyzing */}
                       {analyzing && (
                         <div className="space-y-3 p-4 bg-muted rounded-lg">
                           <div className="flex items-center gap-2">
@@ -859,14 +800,10 @@ export default function GoogleAdsPage() {
                               </div>
                             </div>
                           </div>
-                          {campaigns.length === 0 && (
-                            <p className="text-xs text-muted-foreground mt-3 p-2 bg-yellow-500/10 rounded border border-yellow-500/20">
-                              💡 Tip: I bez historie Google Ads vytvoří AI kvalitní kampaň na základě GA4, Search Console a analýzy webu.
-                            </p>
-                          )}
                         </CardContent>
                       </Card>
 
+                      {/* Agent cards */}
                       <div className="grid grid-cols-4 gap-3">
                         <Card className="p-3">
                           <div className="flex items-center gap-2 text-sm">
@@ -898,19 +835,82 @@ export default function GoogleAdsPage() {
                         </Card>
                       </div>
 
-                      <Button onClick={handleAnalyze} disabled={analyzing} className="w-full" size="lg">
-                        {analyzing ? (
-                          <>
-                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                            Analyzuji...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="h-4 w-4 mr-2" />
-                            Spustit AI Analýzu
-                          </>
-                        )}
-                      </Button>
+                      {/* Collapsible settings - only if user wants to customize */}
+                      {!analyzing && (
+                        <details className="group">
+                          <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+                            <Settings className="h-3.5 w-3.5" />
+                            Upravit nastavení analýzy
+                          </summary>
+                          <div className="mt-4 space-y-4 p-4 border rounded-lg">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>URL webu k analýze</Label>
+                                <Input
+                                  value={analyzeForm.websiteUrl}
+                                  onChange={(e) => setAnalyzeForm({ ...analyzeForm, websiteUrl: e.target.value })}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Jazyk reklam</Label>
+                                <Select
+                                  value={analyzeForm.language}
+                                  onValueChange={(v: "cs" | "de" | "en") => setAnalyzeForm({ ...analyzeForm, language: v })}
+                                >
+                                  <SelectTrigger><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="cs">Čeština</SelectItem>
+                                    <SelectItem value="de">Němčina</SelectItem>
+                                    <SelectItem value="en">Angličtina</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Konkurenční weby (oddělené čárkou)</Label>
+                              <Input
+                                placeholder="https://competitor1.cz, https://competitor2.cz"
+                                value={analyzeForm.competitors}
+                                onChange={(e) => setAnalyzeForm({ ...analyzeForm, competitors: e.target.value })}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Cíl kampaně</Label>
+                                <Select
+                                  value={analyzeForm.businessGoal}
+                                  onValueChange={(v: "leads" | "traffic" | "sales" | "brand") =>
+                                    setAnalyzeForm({ ...analyzeForm, businessGoal: v })
+                                  }
+                                >
+                                  <SelectTrigger><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="leads">Leady / Poptávky</SelectItem>
+                                    <SelectItem value="traffic">Návštěvnost</SelectItem>
+                                    <SelectItem value="sales">Prodeje</SelectItem>
+                                    <SelectItem value="brand">Brand awareness</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Měsíční rozpočet (CZK)</Label>
+                                <Input
+                                  type="number"
+                                  value={analyzeForm.monthlyBudget}
+                                  onChange={(e) => setAnalyzeForm({ ...analyzeForm, monthlyBudget: parseInt(e.target.value) || 0 })}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      )}
+
+                      {!analyzing && (
+                        <Button onClick={handleAnalyze} className="w-full" size="lg">
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Spustit AI Analýzu
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-6 py-4">
@@ -1610,7 +1610,7 @@ export default function GoogleAdsPage() {
                         pro vytvoření optimální strategie, i bez historie Google Ads.
                       </p>
                       <div className="flex gap-3 justify-center">
-                        <Button onClick={() => setShowAnalyzeDialog(true)} className="bg-gradient-to-r from-purple-600 to-blue-600">
+                        <Button onClick={() => { setShowAnalyzeDialog(true); handleAnalyze(); }} className="bg-gradient-to-r from-purple-600 to-blue-600">
                           <Brain className="h-4 w-4 mr-2" />
                           Spustit AI Analýzu
                         </Button>
