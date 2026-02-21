@@ -50,39 +50,12 @@ export default function StatsPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Fetch all data in parallel from Turso-based APIs
-        const [portfolioRes, blogRes, reviewsRes, leadsRes] = await Promise.all([
-          fetch('/api/portfolio'),
-          fetch('/api/blog'),
-          fetch('/api/admin/reviews'),
-          fetch('/api/leads')
-        ]);
-
-        const [portfolio, blog, reviews, leads] = await Promise.all([
-          portfolioRes.json(),
-          blogRes.json(),
-          reviewsRes.json(),
-          leadsRes.json()
-        ]);
-
-        setStats({
-          portfolio: {
-            total: portfolio.success ? portfolio.data.length : 0,
-            published: portfolio.success ? portfolio.data.filter((p: any) => p.published).length : 0,
-          },
-          blog: {
-            total: blog.success ? blog.data.length : 0,
-            published: blog.success ? blog.data.filter((p: any) => p.published).length : 0,
-          },
-          reviews: {
-            total: reviews.success ? reviews.data.length : 0,
-            published: reviews.success ? reviews.data.filter((r: any) => r.published).length : 0,
-            featured: reviews.success ? reviews.data.filter((r: any) => r.featured).length : 0,
-          },
-          leads: {
-            total: leads.success ? leads.data.length : 0,
-          },
-        });
+        // Single API call - counts only, no full data transfer
+        const res = await fetch('/api/admin/stats');
+        const result = await res.json();
+        if (result.success) {
+          setStats(result.data);
+        }
       } catch (error) {
         console.error("Error fetching stats:", error);
       } finally {

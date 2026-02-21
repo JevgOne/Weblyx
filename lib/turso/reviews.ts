@@ -223,10 +223,12 @@ export async function deleteReview(id: string): Promise<void> {
 }
 
 export async function reorderReviews(items: { id: string; order: number }[]): Promise<void> {
-  for (const item of items) {
-    await turso.execute({
+  if (items.length === 0) return;
+  const now = Math.floor(Date.now() / 1000);
+  await turso.batch(
+    items.map((item) => ({
       sql: 'UPDATE reviews SET "order" = ?, updated_at = ? WHERE id = ?',
-      args: [item.order, Math.floor(Date.now() / 1000), item.id],
-    });
-  }
+      args: [item.order, now, item.id],
+    }))
+  );
 }

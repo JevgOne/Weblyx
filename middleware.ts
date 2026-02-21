@@ -134,24 +134,14 @@ export async function middleware(request: NextRequest) {
     return new NextResponse('Not Found', { status: 404 });
   }
 
-  // 4. Rate limiting (distributed via Upstash Redis, fallback to in-memory)
+  // 4. Rate limiting (single check - burst limit covers both burst and sustained)
   if (!isWhitelistedBot && !isAdminRoute) {
-    // Burst protection
-    const burstResult = await checkRateLimit(ip, 'burst');
-    if (burstResult.limited) {
-      return new NextResponse('Too Many Requests', {
-        status: 429,
-        headers: { 'Retry-After': '10' },
-      });
-    }
-
-    // Standard/API rate limit
-    const type = isApiRoute ? 'api' : 'standard';
+    const type = isApiRoute ? 'api' : 'burst';
     const rateResult = await checkRateLimit(ip, type);
     if (rateResult.limited) {
       return new NextResponse('Too Many Requests', {
         status: 429,
-        headers: { 'Retry-After': '60' },
+        headers: { 'Retry-After': isApiRoute ? '60' : '10' },
       });
     }
   }
