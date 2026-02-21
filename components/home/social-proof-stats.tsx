@@ -1,26 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { TrendingUp, Users, Zap, Award } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
-import type { SocialProofData, LocalizedSectionData } from "@/types/cms";
+import { useTranslations } from "next-intl";
+import type { SocialProofData } from "@/types/cms";
 
-export function SocialProofStats() {
+interface SocialProofStatsProps {
+  cmsData?: SocialProofData | null;
+}
+
+export function SocialProofStats({ cmsData = null }: SocialProofStatsProps) {
   const t = useTranslations("socialProof");
-  const locale = useLocale() as "cs" | "de";
-  const [cmsData, setCmsData] = useState<SocialProofData | null>(null);
-
-  useEffect(() => {
-    fetch("/api/cms/social-proof")
-      .then(res => res.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const localized = (result.data as LocalizedSectionData<SocialProofData>)[locale];
-          if (localized && localized.title) setCmsData(localized);
-        }
-      })
-      .catch(() => {});
-  }, [locale]);
 
   const icons = [TrendingUp, Users, Zap, Award];
 

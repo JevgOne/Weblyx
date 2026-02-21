@@ -1,27 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Briefcase, Rocket } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
-import type { TargetAudienceData, LocalizedSectionData } from "@/types/cms";
+import { useTranslations } from "next-intl";
+import type { TargetAudienceData } from "@/types/cms";
 
-export function TargetAudience() {
+interface TargetAudienceProps {
+  cmsData?: TargetAudienceData | null;
+}
+
+export function TargetAudience({ cmsData = null }: TargetAudienceProps) {
   const t = useTranslations("targetAudience");
-  const locale = useLocale() as "cs" | "de";
-  const [cmsData, setCmsData] = useState<TargetAudienceData | null>(null);
-
-  useEffect(() => {
-    fetch("/api/cms/target-audience")
-      .then(res => res.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const localized = (result.data as LocalizedSectionData<TargetAudienceData>)[locale];
-          if (localized && localized.title) setCmsData(localized);
-        }
-      })
-      .catch(() => {});
-  }, [locale]);
 
   const icons = [Users, Briefcase, Rocket];
 

@@ -1,28 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowRight, X, Check } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { LeadButton } from "@/components/tracking/LeadButton";
-import type { BeforeAfterData, LocalizedSectionData } from "@/types/cms";
+import type { BeforeAfterData } from "@/types/cms";
 
-export function BeforeAfter() {
+interface BeforeAfterProps {
+  cmsData?: BeforeAfterData | null;
+}
+
+export function BeforeAfter({ cmsData = null }: BeforeAfterProps) {
   const t = useTranslations("beforeAfter");
-  const locale = useLocale() as "cs" | "de";
-  const [cmsData, setCmsData] = useState<BeforeAfterData | null>(null);
-
-  useEffect(() => {
-    fetch("/api/cms/before-after")
-      .then(res => res.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const localized = (result.data as LocalizedSectionData<BeforeAfterData>)[locale];
-          if (localized && localized.title) setCmsData(localized);
-        }
-      })
-      .catch(() => {});
-  }, [locale]);
 
   // Use CMS data or fall back to translations
   const sTitle = cmsData?.title || t("title");

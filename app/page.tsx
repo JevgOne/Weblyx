@@ -30,10 +30,18 @@ import {
   generateLocalBusinessSchema,
 } from "@/lib/schema-org";
 import { generateServiceSchema, generateSpecialAnnouncementSchema } from "@/lib/schema-generators";
-import { getAllFAQItems } from "@/lib/turso/cms";
-import { getAllPricingTiers } from "@/lib/turso/cms";
+import {
+  getAllFAQItems,
+  getAllPricingTiers,
+  getSocialProofData,
+  getTargetAudienceData,
+  getBeforeAfterData,
+  getTrustBadgesData,
+  getFreeAuditData,
+} from "@/lib/turso/cms";
 import { PricingTier, FAQItem } from "@/types/cms";
 import { getPublishedReviews } from "@/lib/turso/reviews";
+import { getLocale } from "next-intl/server";
 
 async function getPricingTiers(): Promise<PricingTier[]> {
   try {
@@ -56,12 +64,26 @@ async function getFAQItems(): Promise<FAQItem[]> {
 }
 
 export default async function HomePage() {
-  // Fetch data for schemas
-  const [faqItems, pricingTiers, reviews] = await Promise.all([
+  const locale = await getLocale() as "cs" | "de";
+
+  // Fetch all data server-side in parallel (1 round trip)
+  const [faqItems, pricingTiers, reviews, socialProofData, targetAudienceData, beforeAfterData, trustBadgesData, freeAuditData] = await Promise.all([
     getFAQItems(),
     getPricingTiers(),
-    getPublishedReviews('cs').catch(() => []),
+    getPublishedReviews(locale).catch(() => []),
+    getSocialProofData().catch(() => null),
+    getTargetAudienceData().catch(() => null),
+    getBeforeAfterData().catch(() => null),
+    getTrustBadgesData().catch(() => null),
+    getFreeAuditData().catch(() => null),
   ]);
+
+  // Resolve locale-specific CMS data
+  const socialProof = socialProofData?.[locale] || null;
+  const targetAudience = targetAudienceData?.[locale] || null;
+  const beforeAfter = beforeAfterData?.[locale] || null;
+  const trustBadges = trustBadgesData?.[locale] || null;
+  const freeAudit = freeAuditData?.[locale] || null;
 
   // Already filtered enabled items in fetch functions
   const enabledFaqs = faqItems;
@@ -131,19 +153,19 @@ export default async function HomePage() {
 
       <main className="min-h-screen">
         <Hero />
-        <SocialProofStats />
-        <TargetAudience />
-        <BeforeAfter />
+        <SocialProofStats cmsData={socialProof} />
+        <TargetAudience cmsData={targetAudience} />
+        <BeforeAfter cmsData={beforeAfter} />
         <Services />
         <Process />
         <Portfolio />
         <CaseStudy />
         <Reviews />
         <ClientLogos />
-        <TrustBadges />
-        <Pricing />
+        <TrustBadges cmsData={trustBadges} />
+        <Pricing serverTiers={pricingTiers} />
         <FAQ />
-        <FreeAudit />
+        <FreeAudit cmsData={freeAudit} />
         <ContactWow />
       </main>
     </>

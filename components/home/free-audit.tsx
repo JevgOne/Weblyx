@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, Mail, Loader2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
-import { useTranslations, useLocale } from 'next-intl';
-import type { FreeAuditData, LocalizedSectionData } from "@/types/cms";
+import { useTranslations } from 'next-intl';
+import type { FreeAuditData } from "@/types/cms";
 
 interface AuditMetric {
   label: string;
@@ -59,27 +59,17 @@ function MetricRow({ metric }: { metric: AuditMetric }) {
   );
 }
 
-export function FreeAudit() {
+interface FreeAuditProps {
+  cmsData?: FreeAuditData | null;
+}
+
+export function FreeAudit({ cmsData = null }: FreeAuditProps) {
   const t = useTranslations('freeAudit');
-  const locale = useLocale() as "cs" | "de";
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AuditResponse | null>(null);
   const [error, setError] = useState("");
-  const [cmsData, setCmsData] = useState<FreeAuditData | null>(null);
-
-  useEffect(() => {
-    fetch("/api/cms/free-audit")
-      .then(res => res.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const localized = (result.data as LocalizedSectionData<FreeAuditData>)[locale];
-          if (localized && localized.title) setCmsData(localized);
-        }
-      })
-      .catch(() => {});
-  }, [locale]);
 
   // Use CMS data or fall back to translations
   const sBadge = cmsData?.badge || t('badge');

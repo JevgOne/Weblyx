@@ -1,27 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Shield, Award, Clock, Ban } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import type { TrustBadgesData, LocalizedSectionData } from "@/types/cms";
+import type { TrustBadgesData } from "@/types/cms";
 
-export function TrustBadges() {
+interface TrustBadgesProps {
+  cmsData?: TrustBadgesData | null;
+}
+
+export function TrustBadges({ cmsData = null }: TrustBadgesProps) {
   const t = useTranslations("trustBadges");
   const locale = useLocale() as "cs" | "de";
-  const [cmsData, setCmsData] = useState<TrustBadgesData | null>(null);
-
-  useEffect(() => {
-    fetch("/api/cms/trust-badges")
-      .then(res => res.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const localized = (result.data as LocalizedSectionData<TrustBadgesData>)[locale];
-          if (localized && localized.badges && localized.badges.length > 0) setCmsData(localized);
-        }
-      })
-      .catch(() => {});
-  }, [locale]);
 
   const icons = [Shield, Award, Clock, Ban];
   const defaultHrefs = [undefined, "/pagespeed-garance", undefined, undefined];

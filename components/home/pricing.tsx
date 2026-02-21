@@ -7,15 +7,19 @@ import { LeadButton } from "@/components/tracking/LeadButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PricingTier } from "@/types/cms";
 import { useLocale, useTranslations } from 'next-intl';
 
-export function Pricing() {
+interface PricingProps {
+  serverTiers?: PricingTier[];
+}
+
+export function Pricing({ serverTiers }: PricingProps) {
   const locale = useLocale();
   const t = useTranslations('pricing');
 
-  const [plans, setPlans] = useState<PricingTier[]>([]);
+  const [plans, setPlans] = useState<PricingTier[]>(serverTiers && serverTiers.length > 0 ? serverTiers : []);
   const [heading] = useState(t('title'));
   const [subheading] = useState(t('subtitle'));
   const [footerNote] = useState(t('pricingNote'));
@@ -153,28 +157,8 @@ export function Pricing() {
     ];
   };
 
-  useEffect(() => {
-    // Fetch pricing tiers from API
-    async function loadPricingTiers() {
-      try {
-        const res = await fetch('/api/cms/pricing');
-        const json = await res.json();
-
-        if (json.success && json.data) {
-          setPlans(json.data.filter((tier: PricingTier) => tier.enabled));
-          return;
-        }
-      } catch (error) {
-        console.error('Error loading pricing tiers:', error);
-      }
-
-      // Fallback to localized mock data if API fails
-      setPlans(getMockPlans());
-    }
-
-    loadPricingTiers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty array - only run once on mount
+  // Use server tiers, or fall back to mock plans
+  const displayPlans = plans.length > 0 ? plans : getMockPlans();
 
   // Helper function to format price
   const formatPrice = (price: number, currency: string = 'CZK') => {
@@ -335,7 +319,7 @@ export function Pricing() {
           {/* Scroll container */}
           <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
             <div className="flex gap-6 pb-8 px-4">
-              {plans.map((plan, index) => (
+              {displayPlans.map((plan, index) => (
                 <div
                   key={plan.id}
                   className="group relative animate-fade-in-up snap-center shrink-0 w-[300px] md:w-[320px]"
@@ -436,7 +420,7 @@ export function Pricing() {
 
           {/* Scroll indicators (dots) */}
           <div className="flex justify-center gap-2 mt-6">
-            {plans.map((_, index) => (
+            {displayPlans.map((_, index) => (
               <div
                 key={index}
                 className={`h-2 rounded-full transition-all duration-300 ${
