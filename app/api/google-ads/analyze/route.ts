@@ -156,6 +156,8 @@ export async function POST(request: NextRequest) {
 
     const langNames = { cs: "Czech", de: "German", en: "English" };
     const langFull = langNames[language];
+    const t0 = Date.now();
+    const timing: Record<string, number> = {};
 
     // ========================================
     // PHASE 1: DATA GATHERING (parallel, no AI)
@@ -194,98 +196,36 @@ Monthly Budget: ${monthlyBudget} CZK
 Target Language: ${langFull}
     `.trim();
 
-    // ========================================
-    // PHASE 2: PM BRIEF (Haiku - fast ~3-5s)
-    // ========================================
-
-    const pmBrief = await runAgent(
-      `You are a Digital Marketing Project Manager. Analyze data and create a concise strategic brief.
-Be decisive and specific. Output in ${langFull}.`,
-      `Create a strategic brief based on this data:
-
-${rawData.slice(0, 6000)}
-
-Include:
-1. EXECUTIVE SUMMARY (2-3 sentences)
-2. TARGET AUDIENCE - Who are we targeting?
-3. COMPETITIVE GAPS - Key opportunities
-4. 3 CUSTOMER PERSONAS: Name, Age, Position, Pain Points (3), Goals (3), Objections (3)
-5. 3 UVP ANGLES for A/B testing: Angle name + positioning statement
-6. DIRECTION for Marketing Strategist, SEO Expert, and PPC Specialist`,
-      0.7,
-      1500,
-      FAST_MODEL
-    );
+    timing.dataGathering = Date.now() - t0;
+    console.log(`[TIMING] Data gathering: ${timing.dataGathering}ms`);
 
     // ========================================
-    // PHASE 3: PARALLEL SPECIALIST WORK (Haiku - fast ~5-8s)
+    // PHASE 2: PARALLEL SPECIALISTS (Haiku - no PM brief needed)
+    // Each specialist works directly from raw data
     // ========================================
+
+    const dataSlice = rawData.slice(0, 4000);
 
     const [marketingDraft, seoDraft, ppcDraft] = await Promise.all([
-      // Marketing Strategist
       runAgent(
-        `You are a Brand & Marketing Strategist. Focus on positioning, value proposition, emotional triggers, trust builders.
-Be concise. Output in ${langFull}.`,
-        `PM BRIEF:
-${pmBrief}
-
-RAW DATA:
-${rawData.slice(0, 6000)}
-
-Develop:
-1. POSITIONING STATEMENT
-2. UNIQUE VALUE PROPOSITION
-3. KEY MESSAGES (5-7)
-4. EMOTIONAL TRIGGERS
-5. TRUST BUILDERS
-6. COMPETITIVE DIFFERENTIATION`,
-        0.7,
-        1500,
-        FAST_MODEL
+        `You are a Brand Strategist. Be very concise - bullet points only. Output in ${langFull}.`,
+        `DATA:\n${dataSlice}\n\nProvide:\n1. TARGET AUDIENCE (1 sentence)\n2. 3 PERSONAS: name, age, role, 2 pain points, 2 goals\n3. 3 UVP ANGLES: name + 1-sentence positioning\n4. KEY MESSAGES (5 bullet points)\n5. COMPETITIVE DIFFERENTIATION (3 points)`,
+        0.7, 1000, FAST_MODEL
       ),
-
-      // SEO Expert
       runAgent(
-        `You are a Senior SEO & Keyword Research Specialist. Focus on search intent, keyword clustering.
-Be data-driven. Output in ${langFull}.`,
-        `PM BRIEF:
-${pmBrief}
-
-RAW DATA:
-${rawData.slice(0, 4000)}
-
-Develop:
-1. PRIMARY KEYWORDS (5-10) with intent
-2. SECONDARY KEYWORDS (10-15)
-3. LONG-TAIL KEYWORDS (10-20)
-4. KEYWORD CLUSTERS by theme
-5. NEGATIVE KEYWORDS (15-20)
-6. COMPETITOR KEYWORD GAPS`,
-        0.7,
-        1500,
-        FAST_MODEL
+        `You are an SEO Specialist. Be very concise - lists only. Output in ${langFull}.`,
+        `DATA:\n${dataSlice}\n\nProvide:\n1. HIGH INTENT KEYWORDS (10): keyword [EXACT]\n2. MEDIUM INTENT (10): keyword [PHRASE]\n3. DISCOVERY (5): keyword [BROAD]\n4. NEGATIVE KEYWORDS (15)\n5. KEYWORD CLUSTERS: 3-4 theme groups`,
+        0.7, 1000, FAST_MODEL
       ),
-
-      // PPC Specialist
       runAgent(
-        `You are an elite Google Ads Copywriter. Headlines MAX 30 chars, Descriptions MAX 90 chars.
-FORBIDDEN: "Professional website", "Quality services", "Best solution", generic phrases.
-Output in ${langFull}.`,
-        `PM BRIEF:
-${pmBrief}
-
-Create ads using 5 HEADLINE FORMULAS (3 headlines each, under 30 chars):
-1. NUMBER+BENEFIT 2. PAIN+SOLUTION 3. GUARANTEE 4. URGENCY 5. SOCIAL PROOF
-
-DESCRIPTIONS (9 total, under 90 chars each):
-- 3x BENEFIT, 3x PROBLEM-SOLUTION, 3x SOCIAL PROOF
-
-Also: CTA options, callouts (4), sitelinks (4), structured snippets`,
-        0.7,
-        1500,
-        FAST_MODEL
+        `You are a Google Ads Copywriter. Headlines MAX 30 chars. Descriptions MAX 90 chars. NO generic phrases. Output in ${langFull}.`,
+        `DATA:\n${dataSlice}\n\nCreate:\n1. 15 HEADLINES (under 30 chars each) using formulas: number+benefit, pain+solution, guarantee, urgency, social proof\n2. 9 DESCRIPTIONS (under 90 chars): 3x benefit, 3x problem-solution, 3x social-proof\n3. 4 CALLOUTS\n4. 4 SITELINKS with descriptions`,
+        0.7, 1000, FAST_MODEL
       ),
     ]);
+
+    timing.specialists = Date.now() - t0 - timing.dataGathering;
+    console.log(`[TIMING] Specialists (parallel): ${timing.specialists}ms`);
 
     // ========================================
     // PHASE 4: COMBINED FINAL (Haiku for speed - must complete under 60s total)
@@ -295,95 +235,32 @@ Also: CTA options, callouts (4), sitelinks (4), structured snippets`,
     const combinedFinalCall = async () => {
       const response = await anthropic.messages.create({
         model: FAST_MODEL,
-        max_tokens: 4000,
-        temperature: 0.3,
+        max_tokens: 6000,
+        temperature: 0.2,
         messages: [
           {
             role: "user",
-            content: `You are a senior marketing team lead. Review all specialist outputs, cross-reference them, and compile the final campaign plan as JSON.
+            content: `Compile into JSON. All text in ${langFull}. Headlines ≤30 chars. Descriptions ≤90 chars. Google Ads only.
 
-PM BRIEF:
-${pmBrief.slice(0, 1500)}
+STRATEGY:\n${marketingDraft.slice(0, 1200)}
 
-MARKETING STRATEGY:
-${marketingDraft.slice(0, 1500)}
+KEYWORDS:\n${seoDraft.slice(0, 1200)}
 
-KEYWORD RESEARCH:
-${seoDraft.slice(0, 1500)}
+ADS:\n${ppcDraft.slice(0, 1200)}
 
-PPC AD CONCEPTS:
-${ppcDraft.slice(0, 1500)}
-
-YOUR TASKS:
-1. Cross-review: Ensure keywords align with messaging, ad copy includes top keywords
-2. Refine PPC copy: Fix any character limit violations, improve based on keyword/marketing insights
-3. Add campaign recommendations: bidding strategy for ${monthlyBudget} CZK/month, scheduling, testing plan
-4. Add expert notes for each role
-
-ALL text content MUST be in ${langFull}.
-Headlines MUST be UNDER 30 characters. Descriptions MUST be UNDER 90 characters.
-This is ONLY for Google Ads Search - NO Meta/Facebook ads.
-
-Output ONLY valid JSON (no markdown fences, no explanation):
+IMPORTANT: Output ONLY the raw JSON object. No markdown fences. No text before or after. Be compact - short strings, no unnecessary whitespace. Include 15 headlines, 9 descriptions, 3 personas (2 pain_points each), 3 uvp_angles.
 {
-  "strategy": {
-    "campaign_objective": "string",
-    "target_audience": "string",
-    "unique_value_proposition": "string",
-    "key_differentiators": ["string"],
-    "brand_positioning": "string",
-    "recommended_budget_split": {"search": 70, "display": 20, "remarketing": 10}
-  },
-  "personas": [
-    {"name": "string", "age": "string", "position": "string", "pain_points": ["string"], "goals": ["string"], "objections": ["string"]}
-  ],
-  "uvp_angles": [
-    {"name": "string", "positioning": "string"}
-  ],
-  "headlines": [
-    {"text": "Max 30 char headline in ${langFull}", "angle": "benefit|urgency|trust|feature|cta", "chars": 25}
-  ],
-  "headlines_by_angle": [
-    {"angle": "UVP angle name", "headlines": [{"text": "headline", "formula": "number_benefit|pain_solution|guarantee|urgency|social_proof", "chars": 25}]}
-  ],
-  "descriptions": [
-    {"text": "Max 90 char description in ${langFull}", "angle": "problem-solution|benefit|social-proof|cta", "chars": 80}
-  ],
-  "descriptions_by_type": {
-    "benefit": [{"text": "string", "chars": 80}],
-    "problem_solution": [{"text": "string", "chars": 80}],
-    "social_proof": [{"text": "string", "chars": 80}]
-  },
-  "keywords": {
-    "high_intent": [{"text": "keyword", "matchType": "EXACT", "intent": "transactional"}],
-    "medium_intent": [{"text": "keyword", "matchType": "PHRASE", "intent": "commercial"}],
-    "discovery": [{"text": "keyword", "matchType": "BROAD", "intent": "informational"}]
-  },
+  "strategy": {"campaign_objective":"string","target_audience":"string","unique_value_proposition":"string","key_differentiators":["string"],"brand_positioning":"string"},
+  "personas": [{"name":"string","age":"string","position":"string","pain_points":["string"],"goals":["string"],"objections":["string"]}],
+  "uvp_angles": [{"name":"string","positioning":"string"}],
+  "headlines": [{"text":"Max 30 chars in ${langFull}","angle":"benefit|urgency|trust","chars":25}],
+  "descriptions": [{"text":"Max 90 chars in ${langFull}","angle":"problem-solution|benefit|social-proof","chars":80}],
+  "keywords": {"high_intent":[{"text":"keyword","matchType":"EXACT"}],"medium_intent":[{"text":"keyword","matchType":"PHRASE"}],"discovery":[{"text":"keyword","matchType":"BROAD"}]},
   "negative_keywords": ["word"],
-  "extensions": {
-    "callouts": ["text"],
-    "sitelinks": [{"text": "Link", "description": "Desc"}],
-    "structured_snippets": {"header": "Services", "values": ["val"]}
-  },
-  "campaign_settings": {
-    "bidding_strategy": "string",
-    "daily_budget": ${Math.round(monthlyBudget / 30)},
-    "target_cpa": 0,
-    "ad_schedule": "string",
-    "locations": ["string"],
-    "devices": "all"
-  },
-  "testing_plan": {
-    "week_1": "string",
-    "week_2": "string",
-    "week_4": "string"
-  },
-  "expert_notes": {
-    "project_manager": {"insight": "string", "test_first": "string", "warning": "string"},
-    "marketing": {"insight": "string", "test_first": "string", "warning": "string"},
-    "seo": {"insight": "string", "test_first": "string", "warning": "string"},
-    "ppc": {"insight": "string", "test_first": "string", "warning": "string"}
-  }
+  "extensions": {"callouts":["text"],"sitelinks":[{"text":"Link","description":"Desc"}],"structured_snippets":{"header":"Services","values":["val"]}},
+  "campaign_settings": {"bidding_strategy":"string","daily_budget":${Math.round(monthlyBudget / 30)},"target_cpa":0,"ad_schedule":"string","locations":["string"],"devices":"all"},
+  "testing_plan": {"week_1":"string","week_2":"string","week_4":"string"},
+  "expert_notes": {"project_manager":{"insight":"string","test_first":"string","warning":"string"},"marketing":{"insight":"string","test_first":"string","warning":"string"},"seo":{"insight":"string","test_first":"string","warning":"string"},"ppc":{"insight":"string","test_first":"string","warning":"string"}}
 }`,
           },
         ],
@@ -404,14 +281,31 @@ Output ONLY valid JSON (no markdown fences, no explanation):
       }
     }
 
+    timing.finalCompilation = Date.now() - t0 - timing.dataGathering - timing.specialists;
+    timing.total = Date.now() - t0;
+    console.log(`[TIMING] Final compilation: ${timing.finalCompilation}ms`);
+    console.log(`[TIMING] TOTAL: ${timing.total}ms`);
+
     const responseText = finalOutput!.content[0].type === "text" ? finalOutput!.content[0].text : "";
 
     let result;
     try {
-      const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/) || responseText.match(/```\n([\s\S]*?)\n```/);
-      result = JSON.parse(jsonMatch ? jsonMatch[1] : responseText);
+      // Try to extract JSON from markdown fences first, then parse raw
+      const jsonMatch = responseText.match(/```json\n?([\s\S]*?)\n?```/) || responseText.match(/```\n?([\s\S]*?)\n?```/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : responseText;
+      result = JSON.parse(jsonStr.trim());
     } catch {
-      return NextResponse.json({ success: false, error: "Failed to parse final output", raw: responseText }, { status: 500 });
+      // Try to find JSON object in the text
+      const objectMatch = responseText.match(/\{[\s\S]*\}/);
+      if (objectMatch) {
+        try {
+          result = JSON.parse(objectMatch[0]);
+        } catch {
+          return NextResponse.json({ success: false, error: "Failed to parse final output", raw: responseText.slice(0, 2000), timing }, { status: 500 });
+        }
+      } else {
+        return NextResponse.json({ success: false, error: "No JSON found in output", raw: responseText.slice(0, 2000), timing }, { status: 500 });
+      }
     }
 
     // Validate character limits
@@ -463,11 +357,9 @@ Output ONLY valid JSON (no markdown fences, no explanation):
       }
 
       const agentOutputsData = {
-        pmBrief: pmBrief.slice(0, 800) + "...",
         marketingStrategy: marketingDraft.slice(0, 800) + "...",
         seoKeywords: seoDraft.slice(0, 800) + "...",
         ppcAds: ppcDraft.slice(0, 800) + "...",
-        pmRecommendations: "Included in final compilation",
       };
 
       await saveAnalysis({
@@ -498,15 +390,13 @@ Output ONLY valid JSON (no markdown fences, no explanation):
       collaboration: {
         phases: [
           "Data Gathering",
-          "PM Strategic Brief (Haiku)",
-          "Parallel Specialist Work (Haiku x3)",
-          "Combined Final Review + JSON (Sonnet)"
+          "Parallel Specialists (Haiku x3)",
+          "Final JSON Compilation (Haiku)"
         ],
-        agentInteractions: 4,
-        totalApiCalls: 5,
+        agentInteractions: 3,
+        totalApiCalls: 4,
       },
       agentOutputs: {
-        pmBrief: pmBrief.slice(0, 800) + "...",
         marketingStrategy: marketingDraft.slice(0, 800) + "...",
         seoKeywords: seoDraft.slice(0, 800) + "...",
         ppcAds: ppcDraft.slice(0, 800) + "...",
@@ -521,6 +411,7 @@ Output ONLY valid JSON (no markdown fences, no explanation):
         },
         language,
         collaborationModel: "optimized-fast",
+        timing,
       },
     });
   } catch (error: any) {
