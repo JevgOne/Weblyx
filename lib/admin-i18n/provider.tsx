@@ -16,15 +16,12 @@ const AdminLanguageContext = createContext<AdminLanguageContextType | undefined>
 
 export function AdminLanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<AdminLocale>(DEFAULT_LOCALE);
-  const [isHydrated, setIsHydrated] = useState(false);
-
   // Load saved language from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as AdminLocale | null;
     if (saved && ['cs', 'en', 'ru'].includes(saved)) {
       setLocaleState(saved);
     }
-    setIsHydrated(true);
   }, []);
 
   // Save language to localStorage when changed
@@ -34,11 +31,6 @@ export function AdminLanguageProvider({ children }: { children: React.ReactNode 
   }, []);
 
   const t = adminTranslations[locale] as AdminTranslations;
-
-  // Prevent hydration mismatch by showing nothing until hydrated
-  if (!isHydrated) {
-    return null;
-  }
 
   return (
     <AdminLanguageContext.Provider value={{ locale, setLocale, t }}>

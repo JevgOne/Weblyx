@@ -41,9 +41,10 @@ export default function AdminDashboard() {
   const { t } = useAdminTranslation();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    projects: 0,
-    leads: 0,
-    portfolio: 0,
+    portfolio: { total: 0, published: 0 },
+    blog: { total: 0, published: 0 },
+    reviews: { total: 0, published: 0, featured: 0 },
+    leads: { total: 0 },
   });
 
   useEffect(() => {
@@ -137,7 +138,7 @@ export default function AdminDashboard() {
                 </>
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{stats.projects}</div>
+                  <div className="text-3xl font-bold">{stats.blog.total}</div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {t.dashboard.totalProjects}
                   </p>
@@ -161,7 +162,7 @@ export default function AdminDashboard() {
                 </>
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{stats.leads}</div>
+                  <div className="text-3xl font-bold">{stats.leads.total}</div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {t.dashboard.totalLeads}
                   </p>
@@ -185,7 +186,7 @@ export default function AdminDashboard() {
                 </>
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{stats.portfolio}</div>
+                  <div className="text-3xl font-bold">{stats.portfolio.total}</div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {t.dashboard.publishedOnWeb}
                   </p>
