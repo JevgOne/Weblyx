@@ -29,7 +29,7 @@ import {
   generateOffersSchema,
   generateLocalBusinessSchema,
 } from "@/lib/schema-org";
-import { generateServiceSchema, generateSpecialAnnouncementSchema } from "@/lib/schema-generators";
+import { generateServiceSchema, generateSpecialAnnouncementSchema, generateReviewsSchema } from "@/lib/schema-generators";
 import {
   getAllFAQItems,
   getAllPricingTiers,
@@ -125,6 +125,18 @@ export default async function HomePage() {
     },
   });
 
+  // Individual Review schemas for each published review
+  const reviewSchemas = generateReviewsSchema(
+    reviews.map(r => ({
+      authorName: r.authorName,
+      authorImage: r.authorImage,
+      rating: r.rating,
+      text: r.text,
+      date: r.date,
+      locale: r.locale,
+    }))
+  );
+
   // SpecialAnnouncement schema for promotional offer
   const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
     name: "AKCE: Profesionální web od 7 990 Kč",
@@ -150,6 +162,11 @@ export default async function HomePage() {
 
       {/* SpecialAnnouncement schema for promotional offer (2025/2026) */}
       <JsonLd data={specialAnnouncementSchema} />
+
+      {/* Individual Review schemas for rich snippets */}
+      {reviewSchemas.map((schema, index) => (
+        <JsonLd key={`review-${index}`} data={schema} />
+      ))}
 
       <main className="min-h-screen">
         <Hero />
