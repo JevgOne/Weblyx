@@ -582,6 +582,127 @@ export async function updateKeywordStatus(
   }
 }
 
+// ============================================
+// RSA (RESPONSIVE SEARCH AD) FUNCTIONS
+// ============================================
+
+// Create a Responsive Search Ad in an ad group
+export async function createResponsiveSearchAd(params: {
+  adGroupId: string;
+  headlines: string[]; // 3-15 headlines, each max 30 chars
+  descriptions: string[]; // 2-4 descriptions, each max 90 chars
+  finalUrl: string;
+  path1?: string; // Display path part 1 (max 15 chars)
+  path2?: string; // Display path part 2 (max 15 chars)
+}) {
+  try {
+    const customer = getGoogleAdsCustomer();
+    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!;
+
+    // Validate limits
+    if (params.headlines.length < 3 || params.headlines.length > 15) {
+      throw new Error("RSA requires 3-15 headlines");
+    }
+    if (params.descriptions.length < 2 || params.descriptions.length > 4) {
+      throw new Error("RSA requires 2-4 descriptions");
+    }
+
+    const adGroupResourceName = `customers/${customerId}/adGroups/${params.adGroupId}`;
+
+    const operation: MutateOperation<resources.IAdGroupAd> = {
+      entity: "ad_group_ad",
+      operation: "create",
+      resource: {
+        ad_group: adGroupResourceName,
+        status: enums.AdGroupAdStatus.ENABLED,
+        ad: {
+          responsive_search_ad: {
+            headlines: params.headlines.map((text, index) => ({
+              text,
+              pinned_field: index < 3 ? undefined : undefined, // No pinning by default
+            })),
+            descriptions: params.descriptions.map((text) => ({
+              text,
+            })),
+            path1: params.path1,
+            path2: params.path2,
+          },
+          final_urls: [params.finalUrl],
+        },
+      },
+    };
+
+    const response = await customer.mutateResources([operation]);
+
+    return {
+      success: true,
+      resourceName: response.mutate_operation_responses?.[0]?.ad_group_ad_result?.resource_name,
+    };
+  } catch (error: any) {
+    console.error("Error creating RSA:", error);
+    throw error;
+  }
+}
+
+// Extract numeric ID from Google Ads resource name
+// e.g. "customers/1234567890/campaigns/9876543210" → "9876543210"
+export function extractIdFromResourceName(resourceName: string): string {
+  const parts = resourceName.split("/");
+  return parts[parts.length - 1];
+}
+
+// Get daily performance metrics for charts
+export async function getDailyPerformance(
+  dateRange: "LAST_7_DAYS" | "LAST_30_DAYS" | "LAST_90_DAYS" = "LAST_30_DAYS",
+  campaignId?: string
+) {
+  try {
+    const customer = getGoogleAdsCustomer();
+
+    const whereClause = campaignId
+      ? `WHERE campaign.id = ${campaignId} AND segments.date DURING ${dateRange}`
+      : `WHERE segments.date DURING ${dateRange}`;
+
+    const rows = await customer.query(`
+      SELECT
+        segments.date,
+        metrics.impressions,
+        metrics.clicks,
+        metrics.cost_micros,
+        metrics.conversions,
+        metrics.cost_per_conversion
+      FROM campaign
+      ${whereClause}
+      ORDER BY segments.date ASC
+    `);
+
+    // Aggregate by date (multiple campaigns may have data for same day)
+    const byDate: Record<string, {
+      date: string;
+      impressions: number;
+      clicks: number;
+      cost: number;
+      conversions: number;
+    }> = {};
+
+    for (const row of rows as any[]) {
+      const date = row.segments.date;
+      if (!byDate[date]) {
+        byDate[date] = { date, impressions: 0, clicks: 0, cost: 0, conversions: 0 };
+      }
+      byDate[date].impressions += row.metrics.impressions || 0;
+      byDate[date].clicks += row.metrics.clicks || 0;
+      byDate[date].cost += (row.metrics.cost_micros || 0) / 1000000;
+      byDate[date].conversions += row.metrics.conversions || 0;
+    }
+
+    return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
+  } catch (error: any) {
+    console.error("Error fetching daily performance:", error);
+    throw error;
+  }
+}
+
 // Helper function to format date as YYYY-MM-DD
 function formatDate(date: Date): string {
   return date.toISOString().split("T")[0];
