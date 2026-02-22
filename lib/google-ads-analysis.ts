@@ -450,8 +450,13 @@ NOW CREATE THE FINAL ADS in ${langFull}:
   report(6, "Project Manager final review...", 90);
 
   const pmFinalReview = await runAgent(
-    `You are the Project Manager. Review all team outputs and create the final strategic recommendations. Output in ${langFull}.`,
-    `TEAM OUTPUTS:
+    `You are the Project Manager. Review all team outputs and create the final strategic recommendations.
+You also perform a LANDING PAGE AUDIT based on real data - website content, GA4 metrics, and Google Ads conversion data.
+Output in ${langFull}.`,
+    `RAW DATA (website content, GA4, Google Ads, Search Console):
+${rawData}
+
+TEAM OUTPUTS:
 
 MARKETING STRATEGY:
 ${marketingDraft}
@@ -476,7 +481,37 @@ Create the final campaign recommendations:
 10. STRUCTURED EXPERT NOTES - For EACH team member (project_manager, marketing, seo, ppc), provide:
     - INSIGHT: Why were these approaches chosen? Key strategic reasoning.
     - TEST FIRST: What should be tested first and why?
-    - WARNING: What to watch out for, potential pitfalls.`
+    - WARNING: What to watch out for, potential pitfalls.
+
+11. ACTION PLAN - Based on the RAW DATA above, perform a landing page audit:
+    a) READINESS SCORE (0-100): How ready is this website for paid traffic?
+       - Score 80-100: Ready to go
+       - Score 40-79: Needs improvements
+       - Score 0-39: Critical issues, do NOT launch until fixed
+    b) READINESS LABEL: One of "Připraven", "Potřebuje úpravy", "Kritické problémy"
+    c) BLOCKING ISSUES: Critical problems that will waste ad budget. For EACH issue provide:
+       - What the issue is
+       - EVIDENCE from data (cite specific GA4 metrics, bounce rates, session durations, keyword conversion rates)
+       - How to fix it
+       - Priority: "critical" or "high"
+    d) WEBSITE CHANGES: Specific changes needed on the website. For EACH:
+       - Which page
+       - What to change
+       - Why (cite data)
+       - Priority: "critical", "high", or "medium"
+    e) CAMPAIGN CHANGES: Adjustments for the campaign based on data. For EACH:
+       - What to change
+       - Why (cite specific keywords with clicks but 0 conversions, or other data)
+       - Priority: "critical", "high", or "medium"
+
+    IMPORTANT for ACTION PLAN:
+    - Base EVERYTHING on actual data from RAW DATA section
+    - If GA4 shows high bounce rate, cite the exact number
+    - If Google Ads shows keywords with clicks but 0 conversions, cite those keywords
+    - If website content is missing CTA, forms, or trust signals, cite what you found
+    - Do NOT make generic recommendations - be specific to THIS website`,
+    0.7,
+    4500
   );
 
   // ========================================
@@ -583,6 +618,19 @@ Output ONLY valid JSON:
     "marketing": {"insight": "string", "test_first": "string", "warning": "string"},
     "seo": {"insight": "string", "test_first": "string", "warning": "string"},
     "ppc": {"insight": "string", "test_first": "string", "warning": "string"}
+  },
+  "action_plan": {
+    "readiness_score": 65,
+    "readiness_label": "Potřebuje úpravy",
+    "blocking_issues": [
+      {"issue": "string", "evidence": "string (cite specific data)", "fix": "string", "priority": "critical|high"}
+    ],
+    "website_changes": [
+      {"page": "/", "change": "string", "reason": "string (cite data)", "priority": "critical|high|medium"}
+    ],
+    "campaign_changes": [
+      {"change": "string", "reason": "string (cite data)", "priority": "critical|high|medium"}
+    ]
   }
 }
 \`\`\``,
@@ -644,6 +692,16 @@ Output ONLY valid JSON:
     result.meta_ads.primary_texts = result.meta_ads.primary_texts?.filter((t: any) => t.text && t.text.length <= 500) || [];
     result.meta_ads.headlines = result.meta_ads.headlines?.filter((h: any) => h.text && h.text.length <= 40) || [];
     result.meta_ads.descriptions = result.meta_ads.descriptions?.filter((d: any) => d.text && d.text.length <= 30) || [];
+  }
+
+  // Validate action_plan structure
+  if (result.action_plan) {
+    const ap = result.action_plan;
+    ap.readiness_score = Math.max(0, Math.min(100, Number(ap.readiness_score) || 50));
+    ap.readiness_label = ap.readiness_label || (ap.readiness_score >= 80 ? "Připraven" : ap.readiness_score >= 40 ? "Potřebuje úpravy" : "Kritické problémy");
+    ap.blocking_issues = (ap.blocking_issues || []).filter((i: any) => i.issue && i.evidence);
+    ap.website_changes = (ap.website_changes || []).filter((c: any) => c.change && c.reason);
+    ap.campaign_changes = (ap.campaign_changes || []).filter((c: any) => c.change && c.reason);
   }
 
   report(7, "Analysis complete!", 100);

@@ -30,6 +30,10 @@ import {
   AlertTriangle,
   Lightbulb,
   FlaskConical,
+  Shield,
+  CircleAlert,
+  Wrench,
+  TrendingUp,
 } from "lucide-react";
 
 interface SmartCampaignCreatorProps {
@@ -51,6 +55,34 @@ interface ExpertNotes {
   ppc?: ExpertNote;
 }
 
+interface BlockingIssue {
+  issue: string;
+  evidence: string;
+  fix: string;
+  priority: "critical" | "high";
+}
+
+interface WebsiteChange {
+  page: string;
+  change: string;
+  reason: string;
+  priority: "critical" | "high" | "medium";
+}
+
+interface CampaignChange {
+  change: string;
+  reason: string;
+  priority: "critical" | "high" | "medium";
+}
+
+interface ActionPlan {
+  readiness_score: number;
+  readiness_label: string;
+  blocking_issues: BlockingIssue[];
+  website_changes: WebsiteChange[];
+  campaign_changes: CampaignChange[];
+}
+
 interface AnalysisPreview {
   campaignId: string;
   campaignName: string;
@@ -63,6 +95,7 @@ interface AnalysisPreview {
   goal: Goal;
   analysis: any;
   expertNotes?: ExpertNotes;
+  actionPlan?: ActionPlan;
 }
 
 const BUDGET_PRESETS = [
@@ -180,6 +213,7 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
         goal: data.data.summary.goal,
         analysis: data.data.analysis,
         expertNotes: data.data.analysis?.expert_notes,
+        actionPlan: data.data.analysis?.action_plan,
       });
 
       // Small delay before showing preview
@@ -421,6 +455,9 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
             </div>
           </div>
 
+          {/* Action Plan */}
+          {preview.actionPlan && <ActionPlanSection actionPlan={preview.actionPlan} />}
+
           {/* Expert Notes */}
           {preview.expertNotes && Object.keys(preview.expertNotes).length > 0 && (
             <Accordion type="single" collapsible defaultValue="expert-notes">
@@ -473,6 +510,23 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+          )}
+
+          {preview.actionPlan && preview.actionPlan.readiness_score < 40 && (
+            <div className="p-4 bg-red-50 dark:bg-red-950/30 border-2 border-red-300 dark:border-red-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <CircleAlert className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-red-700 dark:text-red-400">
+                    Web není připraven na placený provoz
+                  </p>
+                  <p className="text-sm text-red-600 dark:text-red-400/80 mt-1">
+                    Readiness skóre je {preview.actionPlan.readiness_score}/100. Doporučujeme nejdříve opravit kritické
+                    problémy na webu, jinak riskujete zbytečné propalování rozpočtu.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
           <div className="flex gap-3">
@@ -540,6 +594,143 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
   }
 
   return null;
+}
+
+function ActionPlanSection({ actionPlan }: { actionPlan: ActionPlan }) {
+  const score = actionPlan.readiness_score;
+  const scoreColor =
+    score >= 70 ? "text-green-600 dark:text-green-400" : score >= 40 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400";
+  const scoreBg =
+    score >= 70 ? "bg-green-100 dark:bg-green-900/30" : score >= 40 ? "bg-yellow-100 dark:bg-yellow-900/30" : "bg-red-100 dark:bg-red-900/30";
+  const scoreBorder =
+    score >= 70 ? "border-green-300 dark:border-green-800" : score >= 40 ? "border-yellow-300 dark:border-yellow-800" : "border-red-300 dark:border-red-800";
+  const progressColor =
+    score >= 70 ? "bg-green-500" : score >= 40 ? "bg-yellow-500" : "bg-red-500";
+
+  const priorityBadge = (priority: string) => {
+    const colors: Record<string, string> = {
+      critical: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+      high: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400",
+      medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
+    };
+    return (
+      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colors[priority] || colors.medium}`}>
+        {priority}
+      </span>
+    );
+  };
+
+  const hasContent =
+    actionPlan.blocking_issues?.length > 0 ||
+    actionPlan.website_changes?.length > 0 ||
+    actionPlan.campaign_changes?.length > 0;
+
+  return (
+    <Accordion type="single" collapsible defaultValue={score < 70 ? "action-plan" : undefined}>
+      <AccordionItem value="action-plan" className={`border-2 rounded-lg ${scoreBorder}`}>
+        <AccordionTrigger className="px-4 hover:no-underline">
+          <span className="flex items-center gap-3 text-sm font-medium">
+            <Shield className={`h-4 w-4 ${scoreColor}`} />
+            Akční plán — Připravenost webu
+            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${scoreBg} ${scoreColor}`}>
+              {score}/100 — {actionPlan.readiness_label}
+            </span>
+          </span>
+        </AccordionTrigger>
+        <AccordionContent className="px-4 pb-4">
+          <div className="space-y-4">
+            {/* Readiness Score Bar */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Připravenost na placený provoz</span>
+                <span className={`font-semibold ${scoreColor}`}>{score}%</span>
+              </div>
+              <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${progressColor}`} style={{ width: `${score}%` }} />
+              </div>
+            </div>
+
+            {/* Blocking Issues */}
+            {actionPlan.blocking_issues?.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-semibold flex items-center gap-2 text-red-600 dark:text-red-400">
+                  <CircleAlert className="h-4 w-4" />
+                  Blokující problémy ({actionPlan.blocking_issues.length})
+                </p>
+                <div className="space-y-2">
+                  {actionPlan.blocking_issues.map((issue, i) => (
+                    <div key={i} className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg text-sm">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-medium text-red-800 dark:text-red-300">{issue.issue}</p>
+                        {priorityBadge(issue.priority)}
+                      </div>
+                      <p className="text-xs text-red-600/80 dark:text-red-400/70 mb-1.5">
+                        <span className="font-medium">Důkaz:</span> {issue.evidence}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium">Řešení:</span> {issue.fix}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Website Changes */}
+            {actionPlan.website_changes?.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-semibold flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <Wrench className="h-4 w-4" />
+                  Změny na webu ({actionPlan.website_changes.length})
+                </p>
+                <div className="space-y-1.5">
+                  {actionPlan.website_changes.map((change, i) => (
+                    <div key={i} className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg text-sm">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-medium">
+                          <Badge variant="outline" className="mr-2 text-xs">{change.page}</Badge>
+                          {change.change}
+                        </p>
+                        {priorityBadge(change.priority)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{change.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Campaign Changes */}
+            {actionPlan.campaign_changes?.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-semibold flex items-center gap-2 text-teal-600 dark:text-teal-400">
+                  <TrendingUp className="h-4 w-4" />
+                  Změny v kampani ({actionPlan.campaign_changes.length})
+                </p>
+                <div className="space-y-1.5">
+                  {actionPlan.campaign_changes.map((change, i) => (
+                    <div key={i} className="p-3 bg-teal-50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-900 rounded-lg text-sm">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-medium">{change.change}</p>
+                        {priorityBadge(change.priority)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{change.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!hasContent && (
+              <p className="text-sm text-muted-foreground text-center py-2">
+                Žádné konkrétní problémy nebyly identifikovány.
+              </p>
+            )}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
 }
 
 function ExpertNoteCard({
