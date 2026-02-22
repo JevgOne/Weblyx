@@ -71,7 +71,8 @@ export async function POST(request: NextRequest) {
     );
 
     // 3. Extract campaign creation data from analysis
-    const campaignName = `Smart - ${new URL(normalizedUrl).hostname} - ${goal}`;
+    const timestamp = new Date().toISOString().slice(5, 16).replace("T", " ");
+    const campaignName = `Smart - ${new URL(normalizedUrl).hostname} - ${goal} (${timestamp})`;
 
     // Get top keywords from analysis
     const allKeywords: Array<{ text: string; matchType: "EXACT" | "PHRASE" | "BROAD" }> = [];
@@ -135,14 +136,23 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Create campaign in Google Ads (PAUSED)
-    const campaignResult = await createSearchCampaign({
-      name: campaignName,
-      dailyBudgetCzk: dailyBudget,
-    });
+    let campaignResult;
+    try {
+      campaignResult = await createSearchCampaign({
+        name: campaignName,
+        dailyBudgetCzk: dailyBudget,
+      });
+    } catch (err: any) {
+      console.error("createSearchCampaign failed:", err?.message, err);
+      return NextResponse.json(
+        { success: false, error: `Nepodařilo se vytvořit kampaň v Google Ads: ${err?.message || "neznámá chyba"}` },
+        { status: 500 }
+      );
+    }
 
     if (!campaignResult.success || !campaignResult.campaignResourceName) {
       return NextResponse.json(
-        { success: false, error: "Failed to create campaign in Google Ads" },
+        { success: false, error: "Google Ads nevrátil ID kampaně. Zkuste to znovu." },
         { status: 500 }
       );
     }
@@ -151,22 +161,27 @@ export async function POST(request: NextRequest) {
 
     // 5. Create ad group
     const cpcBid = analysis.campaign_settings?.target_cpa
-      ? Math.round(analysis.campaign_settings.target_cpa * 0.1) // 10% of target CPA as initial bid
-      : Math.round(dailyBudget * 0.15); // 15% of daily budget as fallback
+      ? Math.round(analysis.campaign_settings.target_cpa * 0.1)
+      : Math.round(dailyBudget * 0.15);
 
-    const adGroupResult = await createAdGroup({
-      campaignId,
-      name: `${goal} - hlavní`,
-      cpcBidCzk: Math.max(cpcBid, 5), // Minimum 5 CZK CPC
-    });
+    let adGroupResult;
+    try {
+      adGroupResult = await createAdGroup({
+        campaignId,
+        name: `${goal} - hlavní`,
+        cpcBidCzk: Math.max(cpcBid, 5),
+      });
+    } catch (err: any) {
+      console.error("createAdGroup failed:", err?.message, err);
+      return NextResponse.json(
+        { success: false, error: `Kampaň vytvořena, ale selhala reklamní skupina: ${err?.message || "neznámá chyba"}` },
+        { status: 500 }
+      );
+    }
 
     if (!adGroupResult.success || !adGroupResult.resourceName) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Campaign created but failed to create ad group",
-          campaignId,
-        },
+        { success: false, error: "Google Ads nevrátil ID reklamní skupiny. Zkuste to znovu." },
         { status: 500 }
       );
     }

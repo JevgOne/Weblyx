@@ -177,6 +177,9 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
     setProgressPercent(10);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 240000); // 4 min timeout
+
       const res = await fetch("/api/google-ads/smart-create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -186,7 +189,10 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
           goal,
           language: "cs",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       clearInterval(progressInterval);
 
@@ -220,7 +226,11 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
       setTimeout(() => setStep("preview"), 500);
     } catch (err: any) {
       clearInterval(progressInterval);
-      setError(err?.message || "Připojení selhalo. Zkuste to znovu.");
+      if (err?.name === "AbortError") {
+        setError("Analýza trvala příliš dlouho (>4 min). Zkuste to znovu — obvykle to zabere 1-2 minuty.");
+      } else {
+        setError(err?.message || "Připojení selhalo. Zkuste to znovu.");
+      }
       setStep("input");
     }
   };

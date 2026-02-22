@@ -453,8 +453,19 @@ NOW CREATE THE FINAL ADS in ${langFull}:
     `You are the Project Manager. Review all team outputs and create the final strategic recommendations.
 You also perform a LANDING PAGE AUDIT based on real data - website content, GA4 metrics, and Google Ads conversion data.
 Output in ${langFull}.`,
-    `RAW DATA (website content, GA4, Google Ads, Search Console):
-${rawData}
+    `RAW DATA FOR LANDING PAGE AUDIT:
+
+=== WEBSITE CONTENT (first 3000 chars) ===
+${websiteContent.slice(0, 3000)}
+
+=== GOOGLE ADS PERFORMANCE ===
+${googleAdsData}
+
+=== GA4 WEBSITE BEHAVIOR ===
+${ga4Data}
+
+=== SEARCH CONSOLE ===
+${gscData}
 
 TEAM OUTPUTS:
 
@@ -510,8 +521,8 @@ Create the final campaign recommendations:
     - If Google Ads shows keywords with clicks but 0 conversions, cite those keywords
     - If website content is missing CTA, forms, or trust signals, cite what you found
     - Do NOT make generic recommendations - be specific to THIS website`,
-    0.7,
-    4500
+    0.3,
+    4000
   );
 
   // ========================================
