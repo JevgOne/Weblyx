@@ -7,6 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Rocket,
   Globe,
   Target,
@@ -17,6 +23,13 @@ import {
   Sparkles,
   ArrowRight,
   Zap,
+  Brain,
+  Megaphone,
+  Search,
+  MousePointer,
+  AlertTriangle,
+  Lightbulb,
+  FlaskConical,
 } from "lucide-react";
 
 interface SmartCampaignCreatorProps {
@@ -24,6 +37,19 @@ interface SmartCampaignCreatorProps {
 }
 
 type Goal = "leads" | "sales" | "traffic";
+
+interface ExpertNote {
+  insight: string;
+  test_first: string;
+  warning: string;
+}
+
+interface ExpertNotes {
+  project_manager?: ExpertNote;
+  marketing?: ExpertNote;
+  seo?: ExpertNote;
+  ppc?: ExpertNote;
+}
 
 interface AnalysisPreview {
   campaignId: string;
@@ -36,6 +62,7 @@ interface AnalysisPreview {
   dailyBudget: number;
   goal: Goal;
   analysis: any;
+  expertNotes?: ExpertNotes;
 }
 
 const BUDGET_PRESETS = [
@@ -152,6 +179,7 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
         dailyBudget: data.data.dailyBudget,
         goal: data.data.summary.goal,
         analysis: data.data.analysis,
+        expertNotes: data.data.analysis?.expert_notes,
       });
 
       // Small delay before showing preview
@@ -393,6 +421,60 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
             </div>
           </div>
 
+          {/* Expert Notes */}
+          {preview.expertNotes && Object.keys(preview.expertNotes).length > 0 && (
+            <Accordion type="single" collapsible defaultValue="expert-notes">
+              <AccordionItem value="expert-notes" className="border rounded-lg">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <span className="flex items-center gap-2 text-sm font-medium">
+                    <Brain className="h-4 w-4 text-teal-600" />
+                    Poznámky od AI expertů
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="grid gap-3">
+                    {preview.expertNotes.project_manager && (
+                      <ExpertNoteCard
+                        icon={<Brain className="h-4 w-4" />}
+                        title="Projektový manažer"
+                        color="text-blue-600 dark:text-blue-400"
+                        bgColor="bg-blue-50 dark:bg-blue-950/30"
+                        note={preview.expertNotes.project_manager}
+                      />
+                    )}
+                    {preview.expertNotes.marketing && (
+                      <ExpertNoteCard
+                        icon={<Megaphone className="h-4 w-4" />}
+                        title="Marketing stratég"
+                        color="text-purple-600 dark:text-purple-400"
+                        bgColor="bg-purple-50 dark:bg-purple-950/30"
+                        note={preview.expertNotes.marketing}
+                      />
+                    )}
+                    {preview.expertNotes.seo && (
+                      <ExpertNoteCard
+                        icon={<Search className="h-4 w-4" />}
+                        title="SEO expert"
+                        color="text-green-600 dark:text-green-400"
+                        bgColor="bg-green-50 dark:bg-green-950/30"
+                        note={preview.expertNotes.seo}
+                      />
+                    )}
+                    {preview.expertNotes.ppc && (
+                      <ExpertNoteCard
+                        icon={<MousePointer className="h-4 w-4" />}
+                        title="PPC specialista"
+                        color="text-orange-600 dark:text-orange-400"
+                        bgColor="bg-orange-50 dark:bg-orange-950/30"
+                        note={preview.expertNotes.ppc}
+                      />
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
+
           <div className="flex gap-3">
             <Button
               onClick={handleDeploy}
@@ -458,4 +540,47 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
   }
 
   return null;
+}
+
+function ExpertNoteCard({
+  icon,
+  title,
+  color,
+  bgColor,
+  note,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  color: string;
+  bgColor: string;
+  note: ExpertNote;
+}) {
+  return (
+    <div className={`rounded-lg border p-3 ${bgColor}`}>
+      <p className={`font-semibold text-sm flex items-center gap-2 mb-2 ${color}`}>
+        {icon}
+        {title}
+      </p>
+      <div className="space-y-2 text-sm">
+        {note.insight && (
+          <div className="flex gap-2">
+            <Lightbulb className="h-3.5 w-3.5 mt-0.5 shrink-0 text-yellow-500" />
+            <p className="text-muted-foreground">{note.insight}</p>
+          </div>
+        )}
+        {note.test_first && (
+          <div className="flex gap-2">
+            <FlaskConical className="h-3.5 w-3.5 mt-0.5 shrink-0 text-blue-500" />
+            <p className="text-muted-foreground">{note.test_first}</p>
+          </div>
+        )}
+        {note.warning && (
+          <div className="flex gap-2">
+            <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0 text-amber-500" />
+            <p className="text-muted-foreground">{note.warning}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
