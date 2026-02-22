@@ -143,9 +143,10 @@ export default function PerformanceChart() {
                   borderRadius: "8px",
                   fontSize: "13px",
                 }}
-                formatter={(value: number, name: string) => {
-                  if (name === "Útrata") return [formatCurrency(value), name];
-                  return [value, name];
+                formatter={(value: number | string | undefined, name: string | undefined) => {
+                  const v = typeof value === "number" ? value : 0;
+                  if (name === "Útrata") return [formatCurrency(v), name];
+                  return [v, name];
                 }}
               />
               <Legend />
