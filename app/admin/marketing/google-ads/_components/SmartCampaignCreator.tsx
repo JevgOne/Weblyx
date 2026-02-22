@@ -455,6 +455,24 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
             </div>
           </div>
 
+          {/* Low readiness warning - shown prominently before action plan */}
+          {preview.actionPlan && preview.actionPlan.readiness_score < 50 && (
+            <div className="p-4 bg-red-50 dark:bg-red-950/30 border-2 border-red-300 dark:border-red-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <CircleAlert className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-red-700 dark:text-red-400">
+                    Web není připraven na placený provoz
+                  </p>
+                  <p className="text-sm text-red-600 dark:text-red-400/80 mt-1">
+                    Skóre připravenosti je {preview.actionPlan.readiness_score}/100. Doporučujeme nejdříve opravit kritické
+                    problémy na webu, jinak riskujete zbytečné propalování rozpočtu.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Action Plan */}
           {preview.actionPlan && <ActionPlanSection actionPlan={preview.actionPlan} />}
 
@@ -512,31 +530,20 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
             </Accordion>
           )}
 
-          {preview.actionPlan && preview.actionPlan.readiness_score < 40 && (
-            <div className="p-4 bg-red-50 dark:bg-red-950/30 border-2 border-red-300 dark:border-red-800 rounded-lg">
-              <div className="flex items-start gap-3">
-                <CircleAlert className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-red-700 dark:text-red-400">
-                    Web není připraven na placený provoz
-                  </p>
-                  <p className="text-sm text-red-600 dark:text-red-400/80 mt-1">
-                    Readiness skóre je {preview.actionPlan.readiness_score}/100. Doporučujeme nejdříve opravit kritické
-                    problémy na webu, jinak riskujete zbytečné propalování rozpočtu.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
           <div className="flex gap-3">
             <Button
               onClick={handleDeploy}
               size="lg"
-              className="flex-1 h-14 text-lg bg-teal-600 hover:bg-teal-700"
+              className={`flex-1 h-14 text-lg ${
+                preview.actionPlan && preview.actionPlan.readiness_score < 50
+                  ? "bg-orange-600 hover:bg-orange-700"
+                  : "bg-teal-600 hover:bg-teal-700"
+              }`}
             >
               <Zap className="h-5 w-5 mr-2" />
-              Spustit kampaň
+              {preview.actionPlan && preview.actionPlan.readiness_score < 50
+                ? "Spustit i přes varování"
+                : "Spustit kampaň"}
             </Button>
             <Button
               variant="outline"
@@ -599,13 +606,13 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
 function ActionPlanSection({ actionPlan }: { actionPlan: ActionPlan }) {
   const score = actionPlan.readiness_score;
   const scoreColor =
-    score >= 70 ? "text-green-600 dark:text-green-400" : score >= 40 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400";
+    score >= 80 ? "text-green-600 dark:text-green-400" : score >= 50 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400";
   const scoreBg =
-    score >= 70 ? "bg-green-100 dark:bg-green-900/30" : score >= 40 ? "bg-yellow-100 dark:bg-yellow-900/30" : "bg-red-100 dark:bg-red-900/30";
+    score >= 80 ? "bg-green-100 dark:bg-green-900/30" : score >= 50 ? "bg-yellow-100 dark:bg-yellow-900/30" : "bg-red-100 dark:bg-red-900/30";
   const scoreBorder =
-    score >= 70 ? "border-green-300 dark:border-green-800" : score >= 40 ? "border-yellow-300 dark:border-yellow-800" : "border-red-300 dark:border-red-800";
+    score >= 80 ? "border-green-300 dark:border-green-800" : score >= 50 ? "border-yellow-300 dark:border-yellow-800" : "border-red-300 dark:border-red-800";
   const progressColor =
-    score >= 70 ? "bg-green-500" : score >= 40 ? "bg-yellow-500" : "bg-red-500";
+    score >= 80 ? "bg-green-500" : score >= 50 ? "bg-yellow-500" : "bg-red-500";
 
   const priorityBadge = (priority: string) => {
     const colors: Record<string, string> = {
@@ -613,9 +620,14 @@ function ActionPlanSection({ actionPlan }: { actionPlan: ActionPlan }) {
       high: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400",
       medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
     };
+    const labels: Record<string, string> = {
+      critical: "Kritické",
+      high: "Vysoká",
+      medium: "Střední",
+    };
     return (
       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colors[priority] || colors.medium}`}>
-        {priority}
+        {labels[priority] || priority}
       </span>
     );
   };
@@ -626,7 +638,7 @@ function ActionPlanSection({ actionPlan }: { actionPlan: ActionPlan }) {
     actionPlan.campaign_changes?.length > 0;
 
   return (
-    <Accordion type="single" collapsible defaultValue={score < 70 ? "action-plan" : undefined}>
+    <Accordion type="single" collapsible defaultValue={score < 80 ? "action-plan" : undefined}>
       <AccordionItem value="action-plan" className={`border-2 rounded-lg ${scoreBorder}`}>
         <AccordionTrigger className="px-4 hover:no-underline">
           <span className="flex items-center gap-3 text-sm font-medium">

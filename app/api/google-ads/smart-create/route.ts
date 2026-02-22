@@ -44,12 +44,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate URL format
+    try {
+      new URL(websiteUrl);
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Neplatný formát URL. Zadejte URL včetně https://" },
+        { status: 400 }
+      );
+    }
+
+    // Normalize URL — ensure it ends without trailing slash for Google Ads
+    const normalizedUrl = websiteUrl.replace(/\/+$/, "");
+
     const dailyBudget = Math.round(monthlyBudget / 30);
 
     // 2. Run AI analysis
     const { result: analysis, agentOutputs, metadata } = await runFullAnalysis(
       {
-        websiteUrl,
+        websiteUrl: normalizedUrl,
         competitors,
         language,
         businessGoal: goal,
@@ -58,7 +71,7 @@ export async function POST(request: NextRequest) {
     );
 
     // 3. Extract campaign creation data from analysis
-    const campaignName = `Smart - ${new URL(websiteUrl).hostname} - ${goal}`;
+    const campaignName = `Smart - ${new URL(normalizedUrl).hostname} - ${goal}`;
 
     // Get top keywords from analysis
     const allKeywords: Array<{ text: string; matchType: "EXACT" | "PHRASE" | "BROAD" }> = [];
@@ -84,14 +97,26 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Sanitize text for Google Ads API (remove disallowed characters/patterns)
+    const sanitizeAdText = (text: string): string => {
+      return text
+        .replace(/[{}[\]<>]/g, "") // Remove brackets that Google Ads rejects
+        .replace(/!{2,}/g, "!") // Multiple exclamation marks → single
+        .replace(/\s{2,}/g, " ") // Multiple spaces → single
+        .replace(/^\s+|\s+$/g, "") // Trim
+        .replace(/[^\p{L}\p{N}\p{P}\p{Z}]/gu, ""); // Keep only letters, numbers, punctuation, spaces
+    };
+
     // Get headlines and descriptions for RSA
     const headlines = (analysis.headlines || [])
-      .filter((h: any) => h.text && h.text.length <= 30)
+      .map((h: any) => ({ ...h, text: sanitizeAdText(h.text || "") }))
+      .filter((h: any) => h.text && h.text.length >= 3 && h.text.length <= 30)
       .map((h: any) => h.text)
       .slice(0, 15);
 
     const descriptions = (analysis.descriptions || [])
-      .filter((d: any) => d.text && d.text.length <= 90)
+      .map((d: any) => ({ ...d, text: sanitizeAdText(d.text || "") }))
+      .filter((d: any) => d.text && d.text.length >= 10 && d.text.length <= 90)
       .map((d: any) => d.text)
       .slice(0, 4);
 
@@ -168,7 +193,7 @@ export async function POST(request: NextRequest) {
         adGroupId,
         headlines: headlines.slice(0, 15),
         descriptions: descriptions.slice(0, 4),
-        finalUrl: websiteUrl,
+        finalUrl: normalizedUrl,
       });
     } catch (err) {
       console.error("Warning: Failed to create RSA:", err);
@@ -227,8 +252,20 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("Smart create error:", error);
+    // Provide user-friendly error messages
+    let userMessage = "Nepodařilo se vytvořit kampaň. Zkuste to znovu.";
+    const errMsg = error?.message || "";
+    if (errMsg.includes("pattern")) {
+      userMessage = "Google Ads odmítl text reklamy (nepovolené znaky v nadpisech/popisech). Zkuste to znovu.";
+    } else if (errMsg.includes("AUTHENTICATION") || errMsg.includes("auth")) {
+      userMessage = "Chyba autentizace Google Ads. Zkontrolujte připojení účtu.";
+    } else if (errMsg.includes("quota") || errMsg.includes("RATE")) {
+      userMessage = "Google Ads API limit. Zkuste to za chvíli.";
+    } else if (errMsg.includes("invalid output") || errMsg.includes("JSON")) {
+      userMessage = "AI analýza selhala. Zkuste to znovu.";
+    }
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to create smart campaign" },
+      { success: false, error: userMessage },
       { status: 500 }
     );
   }

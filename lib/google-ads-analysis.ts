@@ -521,7 +521,7 @@ Create the final campaign recommendations:
 
   const marketingTrunc = marketingDraft.slice(0, 3000);
   const ppcTrunc = ppcFinal.slice(0, 6000);
-  const pmTrunc = pmFinalReview.slice(0, 3000);
+  const pmTrunc = pmFinalReview.slice(0, 8000);
   const pmBriefTrunc = pmBrief.slice(0, 2000);
 
   const phase7Call = async () => {
@@ -655,8 +655,19 @@ Output ONLY valid JSON:
   const responseText = finalOutput!.content[0].type === "text" ? finalOutput!.content[0].text : "";
 
   let result;
-  const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/) || responseText.match(/```\n([\s\S]*?)\n```/);
-  result = JSON.parse(jsonMatch ? jsonMatch[1] : responseText);
+  try {
+    const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/) || responseText.match(/```\n([\s\S]*?)\n```/);
+    result = JSON.parse(jsonMatch ? jsonMatch[1] : responseText);
+  } catch (parseError) {
+    console.error("Phase 7 JSON parse failed, attempting recovery:", parseError);
+    // Try to find any JSON object in the response
+    const objectMatch = responseText.match(/\{[\s\S]*\}/);
+    if (objectMatch) {
+      result = JSON.parse(objectMatch[0]);
+    } else {
+      throw new Error("AI analysis produced invalid output. Please try again.");
+    }
+  }
 
   // Validate character limits
   result.headlines = result.headlines?.filter((h: any) => h.text && h.text.length <= 30) || [];
@@ -694,14 +705,33 @@ Output ONLY valid JSON:
     result.meta_ads.descriptions = result.meta_ads.descriptions?.filter((d: any) => d.text && d.text.length <= 30) || [];
   }
 
-  // Validate action_plan structure
-  if (result.action_plan) {
+  // Validate action_plan structure (with fallback if missing)
+  if (!result.action_plan) {
+    result.action_plan = {
+      readiness_score: 50,
+      readiness_label: "Potřebuje úpravy",
+      blocking_issues: [],
+      website_changes: [],
+      campaign_changes: [],
+    };
+  }
+  {
     const ap = result.action_plan;
+    const validPriorities = ["critical", "high", "medium"];
     ap.readiness_score = Math.max(0, Math.min(100, Number(ap.readiness_score) || 50));
-    ap.readiness_label = ap.readiness_label || (ap.readiness_score >= 80 ? "Připraven" : ap.readiness_score >= 40 ? "Potřebuje úpravy" : "Kritické problémy");
-    ap.blocking_issues = (ap.blocking_issues || []).filter((i: any) => i.issue && i.evidence);
-    ap.website_changes = (ap.website_changes || []).filter((c: any) => c.change && c.reason);
-    ap.campaign_changes = (ap.campaign_changes || []).filter((c: any) => c.change && c.reason);
+    ap.readiness_label = ap.readiness_label || (ap.readiness_score >= 80 ? "Připraven" : ap.readiness_score >= 50 ? "Potřebuje úpravy" : "Kritické problémy");
+    ap.blocking_issues = (ap.blocking_issues || [])
+      .filter((i: any) => i.issue && i.evidence)
+      .map((i: any) => ({ ...i, priority: validPriorities.includes(i.priority?.toLowerCase()) ? i.priority.toLowerCase() : "high" }))
+      .slice(0, 10);
+    ap.website_changes = (ap.website_changes || [])
+      .filter((c: any) => c.change && c.reason)
+      .map((c: any) => ({ ...c, priority: validPriorities.includes(c.priority?.toLowerCase()) ? c.priority.toLowerCase() : "medium" }))
+      .slice(0, 10);
+    ap.campaign_changes = (ap.campaign_changes || [])
+      .filter((c: any) => c.change && c.reason)
+      .map((c: any) => ({ ...c, priority: validPriorities.includes(c.priority?.toLowerCase()) ? c.priority.toLowerCase() : "medium" }))
+      .slice(0, 10);
   }
 
   report(7, "Analysis complete!", 100);
