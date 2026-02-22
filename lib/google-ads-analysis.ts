@@ -102,7 +102,7 @@ TOP ORGANIC PAGES: ${topPages.map((p: any) => `${p.page.replace(/https?:\/\/[^/]
 // AI AGENT RUNNER
 // ============================================
 
-export async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 3000): Promise<string> {
+export async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 2000): Promise<string> {
   const maxRetries = 2;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -255,7 +255,7 @@ Be creative but strategic. Ground everything in data. Output in ${langFull}.`,
 ${pmBrief}
 
 RAW DATA FOR REFERENCE:
-${rawData.slice(0, 8000)}
+${rawData.slice(0, 4000)}
 
 Develop the marketing strategy:
 1. POSITIONING STATEMENT - How should we position against competitors?
@@ -276,7 +276,7 @@ Be thorough and data-driven. Output in ${langFull}.`,
 ${pmBrief}
 
 RAW DATA FOR REFERENCE:
-${rawData.slice(0, 8000)}
+${rawData.slice(0, 4000)}
 
 Develop the keyword strategy:
 1. PRIMARY KEYWORDS (5-10) - Highest commercial intent, most valuable
@@ -383,22 +383,22 @@ CRITICAL REQUIREMENTS:
 - Meta Ads descriptions MUST be UNDER 30 characters
 - Double-check every character count!`,
     `YOUR INITIAL CONCEPTS:
-${ppcDraft}
+${ppcDraft.slice(0, 2000)}
 
 MARKETING STRATEGIST'S INPUT ON KEYWORDS:
-${marketingReviewOfSEO}
+${marketingReviewOfSEO.slice(0, 1500)}
 
 SEO EXPERT'S INPUT ON YOUR COPY:
-${seoReviewOfPPC}
+${seoReviewOfPPC.slice(0, 1500)}
 
 MARKETING STRATEGY TO FOLLOW:
-${marketingDraft}
+${marketingDraft.slice(0, 2000)}
 
 KEYWORDS TO INCORPORATE:
-${seoDraft}
+${seoDraft.slice(0, 2000)}
 
 PM BRIEF (for personas and UVP angles):
-${pmBrief}
+${pmBrief.slice(0, 2000)}
 
 NOW CREATE THE FINAL ADS in ${langFull}:
 
@@ -441,7 +441,7 @@ NOW CREATE THE FINAL ADS in ${langFull}:
    - Sitelinks (4) with descriptions:
    - Structured snippet header and values:`,
     0.7,
-    4000
+    3000
   );
 
   // ========================================
@@ -470,13 +470,13 @@ ${gscData}
 TEAM OUTPUTS:
 
 MARKETING STRATEGY:
-${marketingDraft}
+${marketingDraft.slice(0, 2000)}
 
 KEYWORD RESEARCH:
-${seoDraft}
+${seoDraft.slice(0, 2000)}
 
 FINAL ADS:
-${ppcFinal}
+${ppcFinal.slice(0, 3000)}
 
 Create the final campaign recommendations:
 1. CAMPAIGN STRUCTURE - How should campaigns be organized?
@@ -530,15 +530,15 @@ Create the final campaign recommendations:
   // ========================================
   report(7, "Compiling final results...", 95);
 
-  const marketingTrunc = marketingDraft.slice(0, 3000);
-  const ppcTrunc = ppcFinal.slice(0, 6000);
-  const pmTrunc = pmFinalReview.slice(0, 8000);
-  const pmBriefTrunc = pmBrief.slice(0, 2000);
+  const marketingTrunc = marketingDraft.slice(0, 2000);
+  const ppcTrunc = ppcFinal.slice(0, 4000);
+  const pmTrunc = pmFinalReview.slice(0, 5000);
+  const pmBriefTrunc = pmBrief.slice(0, 1500);
 
   const phase7Call = async () => {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 6000,
+      max_tokens: 5000,
       temperature: 0.2,
       messages: [
         {
