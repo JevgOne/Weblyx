@@ -11,7 +11,7 @@ export async function ClientLogos() {
   try {
     const items = await getHomepagePortfolio(locale);
     clients = items.map((item) => ({
-      name: item.title,
+      name: item.clientName || item.title.split(" – ")[0].split(" - ")[0].trim(),
       logoUrl: item.clientLogoUrl,
     }));
   } catch {}
