@@ -7,6 +7,7 @@ import { LeadButton } from "@/components/tracking/LeadButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { PricingTier } from "@/types/cms";
 import { useLocale, useTranslations } from 'next-intl';
@@ -239,6 +240,13 @@ export function Pricing({ serverTiers }: PricingProps) {
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        {/* Mascot background decorations */}
+        <div className="absolute -left-10 bottom-10 w-[280px] h-[350px] opacity-[0.07] mix-blend-screen hidden lg:block">
+          <Image src="/images/mascots/mascot-heart.jpg" alt="" fill className="object-contain" sizes="280px" />
+        </div>
+        <div className="absolute -right-10 bottom-10 w-[280px] h-[350px] opacity-[0.07] mix-blend-screen hidden lg:block">
+          <Image src="/images/mascots/mascot-clipboard.jpg" alt="" fill className="object-contain" sizes="280px" />
+        </div>
       </div>
 
       <div className="container mx-auto max-w-7xl relative z-10">
