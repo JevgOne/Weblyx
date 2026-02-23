@@ -29,7 +29,7 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "GEO optimalizace | Optimalizace pro AI vyhledávání | Weblyx",
+  title: "GEO optimalizace | Optimalizace pro AI vyhledávání",
   description:
     "Připravte web na AI vyhledávání (ChatGPT, Perplexity, Google AI). GEO optimalizace od 5 000 Kč/měsíc. Schema.org audit, strukturovaná data, AI-ready obsah.",
   keywords: [
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GEO optimalizace | Optimalizace pro AI vyhledávání | Weblyx",
     description:
-      "Připravte web na AI vyhledávání. GEO optimalizace od 4 000 Kč/měsíc.",
+      "Připravte web na AI vyhledávání. GEO optimalizace od 5 000 Kč/měsíc.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/geo-optimalizace",
