@@ -161,14 +161,10 @@ export function generateReviewSchema(data: ReviewSchemaData) {
     '@context': 'https://schema.org',
     '@type': 'Review',
     itemReviewed: {
-      '@type': 'Service',
-      name: serviceName,
-      description: serviceDesc,
-      provider: {
-        '@type': 'Organization',
-        name: orgName,
-        url: orgUrl,
-      },
+      '@type': 'LocalBusiness',
+      name: orgName,
+      url: orgUrl,
+      image: `${orgUrl}/images/og/og-homepage.png`,
     },
     author: {
       '@type': 'Person',
