@@ -179,7 +179,7 @@ export default async function PortfolioPage() {
 
                       {/* Category */}
                       <div className="absolute top-3 left-3">
-                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-black/70 text-foreground backdrop-blur-sm">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-white/15 dark:text-white text-foreground backdrop-blur-sm border dark:border-white/20">
                           {project.category}
                         </span>
                       </div>
@@ -201,7 +201,7 @@ export default async function PortfolioPage() {
                       {project.technologies && project.technologies.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 pt-1">
                           {project.technologies.slice(0, 3).map((tech, i) => (
-                            <span key={i} className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                            <span key={i} className="text-[11px] text-muted-foreground bg-muted dark:bg-white/10 dark:text-white/70 px-2 py-0.5 rounded-md border dark:border-white/10">
                               {tech}
                             </span>
                           ))}
@@ -222,8 +222,8 @@ export default async function PortfolioPage() {
             <div className="mt-16 text-center space-y-4">
               <p className="text-muted-foreground">
                 {isDE
-                  ? 'Über 15 realisierte Projekte. Möchten Sie das nächste sein?'
-                  : 'Více než 15 realizovaných projektů. Budete další?'}
+                  ? `${projects.length} realisierte Projekte. Möchten Sie das nächste sein?`
+                  : `${projects.length} realizovaných projektů. Budete další?`}
               </p>
               <Button asChild size="lg" className="group">
                 <Link href={isDE ? '/anfrage' : '/poptavka'}>
