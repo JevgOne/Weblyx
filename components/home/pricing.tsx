@@ -7,7 +7,6 @@ import { LeadButton } from "@/components/tracking/LeadButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { PricingTier } from "@/types/cms";
 import { useLocale, useTranslations } from 'next-intl';
