@@ -326,7 +326,7 @@ export function Pricing({ serverTiers }: PricingProps) {
         <div className="relative mb-12">
           {/* Scroll container */}
           <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-            <div className="flex gap-6 pb-8 px-4">
+            <div className="flex gap-6 pb-8 px-4 lg:justify-center">
               {displayPlans.map((plan, index) => (
                 <div
                   key={plan.id}
