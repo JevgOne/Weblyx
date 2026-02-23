@@ -16,6 +16,8 @@ export interface PortfolioProject {
   loadTimeAfter?: number; // Load time after optimization (seconds)
   published: boolean;
   featured: boolean;
+  showOnHomepage: boolean;
+  clientLogoUrl?: string;
   order: number;
   createdAt: Date;
   updatedAt: Date;
@@ -38,4 +40,6 @@ export interface PortfolioFormData {
   loadTimeAfter?: number;
   published: boolean;
   featured: boolean;
+  showOnHomepage: boolean;
+  clientLogoUrl?: string;
 }

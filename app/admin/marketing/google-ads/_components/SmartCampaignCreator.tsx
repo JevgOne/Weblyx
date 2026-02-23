@@ -34,6 +34,7 @@ import {
   CircleAlert,
   Wrench,
   TrendingUp,
+  Bot,
 } from "lucide-react";
 
 interface SmartCampaignCreatorProps {
@@ -83,6 +84,22 @@ interface ActionPlan {
   campaign_changes: CampaignChange[];
 }
 
+interface AISearchReadinessRecommendation {
+  action: string;
+  reason: string;
+  priority: "critical" | "high" | "medium";
+}
+
+interface AISearchReadiness {
+  score: number;
+  label: string;
+  schema_org_score: number;
+  content_clarity_score: number;
+  entity_authority_score: number;
+  technical_score: number;
+  recommendations: AISearchReadinessRecommendation[];
+}
+
 interface AnalysisPreview {
   campaignId: string;
   campaignName: string;
@@ -96,6 +113,7 @@ interface AnalysisPreview {
   analysis: any;
   expertNotes?: ExpertNotes;
   actionPlan?: ActionPlan;
+  aiSearchReadiness?: AISearchReadiness;
 }
 
 const BUDGET_PRESETS = [
@@ -220,6 +238,7 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
         analysis: data.data.analysis,
         expertNotes: data.data.analysis?.expert_notes,
         actionPlan: data.data.analysis?.action_plan,
+        aiSearchReadiness: data.data.analysis?.ai_search_readiness,
       });
 
       // Small delay before showing preview
@@ -485,6 +504,11 @@ export default function SmartCampaignCreator({ onCampaignCreated }: SmartCampaig
 
           {/* Action Plan */}
           {preview.actionPlan && <ActionPlanSection actionPlan={preview.actionPlan} />}
+
+          {/* AI Search Readiness */}
+          {preview.aiSearchReadiness && preview.aiSearchReadiness.score > 0 && (
+            <AISearchReadinessSection readiness={preview.aiSearchReadiness} />
+          )}
 
           {/* Expert Notes */}
           {preview.expertNotes && Object.keys(preview.expertNotes).length > 0 && (
@@ -795,5 +819,118 @@ function ExpertNoteCard({
         )}
       </div>
     </div>
+  );
+}
+
+function AISearchReadinessSection({ readiness }: { readiness: AISearchReadiness }) {
+  const score = readiness.score;
+  const scoreColor =
+    score >= 70 ? "text-green-600 dark:text-green-400" : score >= 40 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400";
+  const scoreBg =
+    score >= 70 ? "bg-green-100 dark:bg-green-900/30" : score >= 40 ? "bg-yellow-100 dark:bg-yellow-900/30" : "bg-red-100 dark:bg-red-900/30";
+  const scoreBorder =
+    score >= 70 ? "border-green-300 dark:border-green-800" : score >= 40 ? "border-yellow-300 dark:border-yellow-800" : "border-red-300 dark:border-red-800";
+  const progressColor =
+    score >= 70 ? "bg-green-500" : score >= 40 ? "bg-yellow-500" : "bg-red-500";
+
+  const subScores = [
+    { label: "Schema.org", score: readiness.schema_org_score, max: 25 },
+    { label: "Jasnost obsahu", score: readiness.content_clarity_score, max: 25 },
+    { label: "Entita / autorita", score: readiness.entity_authority_score, max: 25 },
+    { label: "Technické", score: readiness.technical_score, max: 25 },
+  ];
+
+  const priorityBadge = (priority: string) => {
+    const colors: Record<string, string> = {
+      critical: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+      high: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400",
+      medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
+    };
+    const labels: Record<string, string> = {
+      critical: "Kritické",
+      high: "Vysoká",
+      medium: "Střední",
+    };
+    return (
+      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colors[priority] || colors.medium}`}>
+        {labels[priority] || priority}
+      </span>
+    );
+  };
+
+  const labelMap: Record<string, string> = {
+    "AI-ready": "AI-ready",
+    "Needs improvement": "Potřebuje zlepšení",
+    "Not AI-ready": "Nepřipraveno pro AI",
+  };
+
+  return (
+    <Accordion type="single" collapsible defaultValue={score < 70 ? "ai-readiness" : undefined}>
+      <AccordionItem value="ai-readiness" className={`border-2 rounded-lg ${scoreBorder}`}>
+        <AccordionTrigger className="px-4 hover:no-underline">
+          <span className="flex items-center gap-3 text-sm font-medium">
+            <Bot className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            AI Search Readiness
+            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${scoreBg} ${scoreColor}`}>
+              {score}/100 — {labelMap[readiness.label] || readiness.label}
+            </span>
+          </span>
+        </AccordionTrigger>
+        <AccordionContent className="px-4 pb-4">
+          <div className="space-y-4">
+            {/* Overall Score Bar */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Připravenost na AI vyhledávání</span>
+                <span className={`font-semibold ${scoreColor}`}>{score}%</span>
+              </div>
+              <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${progressColor}`} style={{ width: `${score}%` }} />
+              </div>
+            </div>
+
+            {/* Sub-scores */}
+            <div className="grid grid-cols-2 gap-3">
+              {subScores.map((sub) => {
+                const pct = Math.round((sub.score / sub.max) * 100);
+                const subColor = pct >= 70 ? "bg-green-500" : pct >= 40 ? "bg-yellow-500" : "bg-red-500";
+                return (
+                  <div key={sub.label} className="space-y-1">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>{sub.label}</span>
+                      <span className="font-medium">{sub.score}/{sub.max}</span>
+                    </div>
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full transition-all ${subColor}`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Recommendations */}
+            {readiness.recommendations.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-semibold flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                  <Lightbulb className="h-4 w-4" />
+                  Doporučení pro AI viditelnost ({readiness.recommendations.length})
+                </p>
+                <div className="space-y-1.5">
+                  {readiness.recommendations.map((rec, i) => (
+                    <div key={i} className="p-3 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900 rounded-lg text-sm">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-medium">{rec.action}</p>
+                        {priorityBadge(rec.priority)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{rec.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }

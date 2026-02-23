@@ -80,6 +80,8 @@ export async function POST(request: NextRequest) {
       category: body.category,
       featured: Boolean(body.featured),
       published: Boolean(body.published),
+      showOnHomepage: Boolean(body.showOnHomepage),
+      clientLogoUrl: body.clientLogoUrl || undefined,
     });
 
     return NextResponse.json({ success: true, data: item });
@@ -118,6 +120,8 @@ export async function PUT(request: NextRequest) {
       category: body.category,
       featured: body.featured,
       published: body.published,
+      showOnHomepage: body.showOnHomepage,
+      clientLogoUrl: body.clientLogoUrl,
       order: body.order,
     });
 

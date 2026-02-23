@@ -21,6 +21,8 @@ interface PortfolioRow {
   load_time_after: number | null;
   featured: number;
   published: number;
+  show_on_homepage: number;
+  client_logo_url: string | null;
   order: number;
   created_at: number;
   updated_at: number;
@@ -44,6 +46,8 @@ function rowToPortfolio(row: PortfolioRow, locale?: string): PortfolioItem {
     loadTimeAfter: row.load_time_after || undefined,
     featured: Boolean(row.featured),
     published: Boolean(row.published),
+    showOnHomepage: Boolean(row.show_on_homepage),
+    clientLogoUrl: row.client_logo_url || undefined,
     order: row.order,
     createdAt: unixToDate(row.created_at) || new Date(),
     updatedAt: unixToDate(row.updated_at) || new Date(),
@@ -84,6 +88,8 @@ export async function createPortfolio(data: {
   category: string;
   featured?: boolean;
   published?: boolean;
+  showOnHomepage?: boolean;
+  clientLogoUrl?: string;
 }): Promise<PortfolioItem> {
   const id = nanoid();
   const now = Math.floor(Date.now() / 1000);
@@ -97,9 +103,9 @@ export async function createPortfolio(data: {
   await turso.execute({
     sql: `INSERT INTO portfolio (
       id, title, description, client_name, project_url, image_url,
-      technologies, category, featured, published, "order",
-      created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      technologies, category, featured, published, show_on_homepage,
+      client_logo_url, "order", created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.title,
@@ -111,6 +117,8 @@ export async function createPortfolio(data: {
       data.category,
       data.featured ? 1 : 0,
       data.published ? 1 : 0,
+      data.showOnHomepage ? 1 : 0,
+      data.clientLogoUrl || null,
       maxOrder + 1,
       now,
       now,
@@ -135,6 +143,8 @@ export async function updatePortfolio(
     category: string;
     featured: boolean;
     published: boolean;
+    showOnHomepage: boolean;
+    clientLogoUrl: string;
     order: number;
   }>
 ): Promise<PortfolioItem> {
@@ -182,6 +192,14 @@ export async function updatePortfolio(
     updates.push('published = ?');
     args.push(data.published ? 1 : 0);
   }
+  if (data.showOnHomepage !== undefined) {
+    updates.push('show_on_homepage = ?');
+    args.push(data.showOnHomepage ? 1 : 0);
+  }
+  if (data.clientLogoUrl !== undefined) {
+    updates.push('client_logo_url = ?');
+    args.push(data.clientLogoUrl || null);
+  }
   if (data.order !== undefined) {
     updates.push('"order" = ?');
     args.push(data.order);
@@ -199,6 +217,13 @@ export async function updatePortfolio(
   const updated = await getPortfolioById(id);
   if (!updated) throw new Error('Portfolio item not found after update');
   return updated;
+}
+
+export async function getHomepagePortfolio(locale?: string): Promise<PortfolioItem[]> {
+  const result = await turso.execute(
+    'SELECT * FROM portfolio WHERE published = 1 AND show_on_homepage = 1 ORDER BY "order" ASC'
+  );
+  return result.rows.map((row) => rowToPortfolio(row as unknown as PortfolioRow, locale));
 }
 
 export async function deletePortfolio(id: string): Promise<void> {

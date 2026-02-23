@@ -29,6 +29,8 @@ const pathMapping: Record<string, { cs: string; de: string }> = {
   '/onlineshop-erstellen': { cs: '/onlineshop-erstellen', de: '/onlineshop-erstellen' },
   '/wordpress-alternative': { cs: '/wordpress-alternativa', de: '/wordpress-alternative' },
   '/website-fuer-aerzte': { cs: '/website-fuer-aerzte', de: '/website-fuer-aerzte' },
+  // GEO landing page
+  '/geo-optimalizace': { cs: '/geo-optimalizace', de: '/geo-optimalizace' },
 };
 
 interface SEOContent {

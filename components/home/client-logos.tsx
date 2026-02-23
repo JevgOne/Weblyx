@@ -1,35 +1,25 @@
 import { getLocale } from "next-intl/server";
-import { getClientLogosData } from "@/lib/turso/cms";
-import type { ClientLogosData } from "@/types/cms";
-
-// Default client logos — used when no CMS data exists
-const defaultClients = [
-  { name: "Titan Gym", slug: "titan-gym" },
-  { name: "MŮZA Hair", slug: "muza-hair" },
-  { name: "CarMakléř", slug: "car-makler" },
-  { name: "FitCoach", slug: "fitcoach" },
-  { name: "ProdavameSRO", slug: "prodavame-sro" },
-  { name: "VykupujemeSRO", slug: "vykupujeme-sro" },
-];
+import { getHomepagePortfolio } from "@/lib/turso/portfolio";
+import Image from "next/image";
 
 export async function ClientLogos() {
   const locale = await getLocale();
   const isDE = locale === "de";
 
-  // Load CMS data
-  let cmsData: ClientLogosData | null = null;
+  // Load portfolio items marked for homepage
+  let clients: { name: string; logoUrl?: string }[] = [];
   try {
-    const data = await getClientLogosData();
-    if (data) {
-      const localized = data[locale as 'cs' | 'de'];
-      if (localized && (localized.heading || (localized.clients && localized.clients.length > 0))) {
-        cmsData = localized;
-      }
-    }
+    const items = await getHomepagePortfolio(locale);
+    clients = items.map((item) => ({
+      name: item.title,
+      logoUrl: item.clientLogoUrl,
+    }));
   } catch {}
 
-  const heading = cmsData?.heading || (isDE ? "Vertrauen uns" : "Důvěřují nám");
-  const clients = cmsData?.clients && cmsData.clients.length > 0 ? cmsData.clients : defaultClients;
+  // Don't render if no clients selected for homepage
+  if (clients.length === 0) return null;
+
+  const heading = isDE ? "Vertrauen uns" : "Důvěřují nám";
 
   return (
     <section className="py-12 px-4 border-t border-border/40">
@@ -38,13 +28,25 @@ export async function ClientLogos() {
           {heading}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-          {clients.map((client) => (
+          {clients.map((client, i) => (
             <div
-              key={client.slug}
-              className="text-lg md:text-xl font-semibold text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
+              key={i}
+              className="flex items-center justify-center"
               title={client.name}
             >
-              {client.name}
+              {client.logoUrl ? (
+                <Image
+                  src={client.logoUrl}
+                  alt={client.name}
+                  width={120}
+                  height={48}
+                  className="h-10 md:h-12 w-auto object-contain opacity-50 hover:opacity-80 transition-opacity grayscale hover:grayscale-0"
+                />
+              ) : (
+                <span className="text-lg md:text-xl font-semibold text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors">
+                  {client.name}
+                </span>
+              )}
             </div>
           ))}
         </div>

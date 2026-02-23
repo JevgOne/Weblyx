@@ -32,6 +32,9 @@ export default function NewPortfolioPage() {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [techInput, setTechInput] = useState("");
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string>("");
+  const [logoMediaPickerOpen, setLogoMediaPickerOpen] = useState(false);
   const [formData, setFormData] = useState<PortfolioFormData>({
     title: "",
     category: "",
@@ -41,6 +44,8 @@ export default function NewPortfolioPage() {
     projectUrl: "",
     published: false,
     featured: false,
+    showOnHomepage: false,
+    clientLogoUrl: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -399,6 +404,108 @@ export default function NewPortfolioPage() {
                   Označit jako featured (zvýrazněný projekt)
                 </Label>
               </div>
+
+              {/* Show on Homepage */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="showOnHomepage"
+                  checked={formData.showOnHomepage}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, showOnHomepage: checked as boolean }))
+                  }
+                />
+                <Label htmlFor="showOnHomepage" className="cursor-pointer">
+                  Zobrazit na homepage (sekce &quot;Důvěřují nám&quot;)
+                </Label>
+              </div>
+
+              {/* Client Logo (shown when showOnHomepage is checked) */}
+              {formData.showOnHomepage && (
+                <div className="space-y-2 pl-6 border-l-2 border-primary/20">
+                  <Label htmlFor="clientLogo">Logo klienta (volitelné)</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Logo se zobrazí v sekci &quot;Důvěřují nám&quot; na homepage. Bez loga se zobrazí název projektu.
+                  </p>
+                  <div className="flex flex-col items-start gap-3">
+                    {logoPreview ? (
+                      <div className="relative">
+                        <img
+                          src={logoPreview}
+                          alt="Logo preview"
+                          className="h-12 object-contain rounded border p-1 bg-white"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 h-5 w-5 p-0"
+                          onClick={() => {
+                            setLogoPreview("");
+                            setFormData((prev) => ({ ...prev, clientLogoUrl: "" }));
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ) : null}
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingLogo}
+                        onClick={() => document.getElementById("clientLogo")?.click()}
+                      >
+                        {uploadingLogo ? (
+                          <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Nahrávám...</>
+                        ) : (
+                          <><Upload className="mr-2 h-4 w-4" />{logoPreview ? "Změnit logo" : "Nahrát logo"}</>
+                        )}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={uploadingLogo}
+                        onClick={() => setLogoMediaPickerOpen(true)}
+                      >
+                        <FolderOpen className="mr-2 h-4 w-4" />
+                        Z knihovny
+                      </Button>
+                    </div>
+                    <input
+                      id="clientLogo"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file || !file.type.startsWith("image/")) return;
+                        setUploadingLogo(true);
+                        try {
+                          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 400, useWebWorker: true };
+                          const compressedFile = await imageCompression(file, options);
+                          const reader = new FileReader();
+                          reader.onloadend = () => setLogoPreview(reader.result as string);
+                          reader.readAsDataURL(compressedFile);
+                          const fd = new FormData();
+                          fd.append("file", compressedFile, file.name);
+                          const response = await fetch("/api/upload", { method: "POST", body: fd });
+                          const result = await response.json();
+                          if (!result.success) throw new Error(result.error || "Upload failed");
+                          setFormData((prev) => ({ ...prev, clientLogoUrl: result.url }));
+                        } catch (error) {
+                          console.error("Error uploading logo:", error);
+                          alert("Chyba při nahrávání loga");
+                        } finally {
+                          setUploadingLogo(false);
+                        }
+                      }}
+                      disabled={uploadingLogo}
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -430,6 +537,14 @@ export default function NewPortfolioPage() {
         open={mediaPickerOpen}
         onOpenChange={setMediaPickerOpen}
         onSelect={handleMediaSelect}
+      />
+      <MediaPicker
+        open={logoMediaPickerOpen}
+        onOpenChange={setLogoMediaPickerOpen}
+        onSelect={(url: string) => {
+          setLogoPreview(url);
+          setFormData((prev) => ({ ...prev, clientLogoUrl: url }));
+        }}
       />
     </div>
   );

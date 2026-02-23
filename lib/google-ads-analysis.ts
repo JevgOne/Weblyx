@@ -11,6 +11,91 @@ const anthropic = new Anthropic({
 // DATA GATHERING FUNCTIONS
 // ============================================
 
+export interface SchemaData {
+  jsonLdTypes: string[];
+  hasOpenGraph: boolean;
+  ogTags: Record<string, string>;
+  metaDescription: string;
+  canonicalUrl: string;
+  headingStructure: { h1: string[]; h2: string[]; h3: string[] };
+  hasRobotsTxt: boolean;
+  hasSitemap: boolean;
+}
+
+export async function fetchWebsiteSchemaData(url: string): Promise<SchemaData> {
+  const result: SchemaData = {
+    jsonLdTypes: [],
+    hasOpenGraph: false,
+    ogTags: {},
+    metaDescription: "",
+    canonicalUrl: "",
+    headingStructure: { h1: [], h2: [], h3: [] },
+    hasRobotsTxt: false,
+    hasSitemap: false,
+  };
+
+  try {
+    const response = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; WeblyxBot/1.0)" },
+    });
+    const html = await response.text();
+
+    // Extract JSON-LD schema types
+    const jsonLdMatches = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi) || [];
+    for (const match of jsonLdMatches) {
+      try {
+        const content = match.replace(/<script[^>]*>|<\/script>/gi, "").trim();
+        const parsed = JSON.parse(content);
+        const types = Array.isArray(parsed) ? parsed.map((p: any) => p["@type"]).filter(Boolean) : [parsed["@type"]].filter(Boolean);
+        result.jsonLdTypes.push(...types);
+      } catch { /* ignore parse errors */ }
+    }
+
+    // Extract OpenGraph tags
+    const ogMatches = html.match(/<meta[^>]*property="og:[^"]*"[^>]*>/gi) || [];
+    for (const ogTag of ogMatches) {
+      const propMatch = ogTag.match(/property="(og:[^"]*)"/);
+      const contentMatch = ogTag.match(/content="([^"]*)"/);
+      if (propMatch && contentMatch) {
+        result.ogTags[propMatch[1]] = contentMatch[1];
+      }
+    }
+    result.hasOpenGraph = Object.keys(result.ogTags).length > 0;
+
+    // Extract meta description
+    const descMatch = html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"[^>]*>/i)
+      || html.match(/<meta[^>]*content="([^"]*)"[^>]*name="description"[^>]*>/i);
+    result.metaDescription = descMatch?.[1] || "";
+
+    // Extract canonical URL
+    const canonicalMatch = html.match(/<link[^>]*rel="canonical"[^>]*href="([^"]*)"[^>]*>/i);
+    result.canonicalUrl = canonicalMatch?.[1] || "";
+
+    // Extract heading structure
+    const h1Matches = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/gi) || [];
+    result.headingStructure.h1 = h1Matches.map((h) => h.replace(/<[^>]+>/g, "").trim()).filter(Boolean).slice(0, 5);
+
+    const h2Matches = html.match(/<h2[^>]*>([\s\S]*?)<\/h2>/gi) || [];
+    result.headingStructure.h2 = h2Matches.map((h) => h.replace(/<[^>]+>/g, "").trim()).filter(Boolean).slice(0, 10);
+
+    const h3Matches = html.match(/<h3[^>]*>([\s\S]*?)<\/h3>/gi) || [];
+    result.headingStructure.h3 = h3Matches.map((h) => h.replace(/<[^>]+>/g, "").trim()).filter(Boolean).slice(0, 10);
+
+    // Check robots.txt and sitemap
+    const baseUrl = new URL(url).origin;
+    const [robotsRes, sitemapRes] = await Promise.all([
+      fetch(`${baseUrl}/robots.txt`, { headers: { "User-Agent": "WeblyxBot" } }).catch(() => null),
+      fetch(`${baseUrl}/sitemap.xml`, { headers: { "User-Agent": "WeblyxBot" } }).catch(() => null),
+    ]);
+    result.hasRobotsTxt = robotsRes?.ok || false;
+    result.hasSitemap = sitemapRes?.ok || false;
+  } catch (error) {
+    console.error(`Error fetching schema data for ${url}:`, error);
+  }
+
+  return result;
+}
+
 export async function fetchWebsiteContent(url: string): Promise<string> {
   try {
     const response = await fetch(url, {
@@ -165,8 +250,9 @@ export async function runFullAnalysis(
   // ========================================
   report(1, "Gathering website and competitor data...", 10);
 
-  const [websiteContent, ...competitorContents] = await Promise.all([
+  const [websiteContent, schemaData, ...competitorContents] = await Promise.all([
     fetchWebsiteContent(websiteUrl),
+    fetchWebsiteSchemaData(websiteUrl),
     ...competitors.slice(0, 3).map(fetchWebsiteContent),
   ]);
 
@@ -176,9 +262,24 @@ export async function runFullAnalysis(
     getSearchConsoleInsights(),
   ]);
 
+  const schemaDataString = `
+=== SCHEMA.ORG & STRUCTURED DATA ===
+JSON-LD Types Found: ${schemaData.jsonLdTypes.length > 0 ? schemaData.jsonLdTypes.join(", ") : "NONE"}
+OpenGraph Tags: ${schemaData.hasOpenGraph ? Object.entries(schemaData.ogTags).map(([k, v]) => `${k}="${v}"`).join("; ") : "NONE"}
+Meta Description: ${schemaData.metaDescription || "MISSING"}
+Canonical URL: ${schemaData.canonicalUrl || "MISSING"}
+H1 Tags: ${schemaData.headingStructure.h1.length > 0 ? schemaData.headingStructure.h1.join(" | ") : "NONE"}
+H2 Tags: ${schemaData.headingStructure.h2.length > 0 ? schemaData.headingStructure.h2.join(" | ") : "NONE"}
+H3 Tags (first 5): ${schemaData.headingStructure.h3.slice(0, 5).join(" | ") || "NONE"}
+robots.txt: ${schemaData.hasRobotsTxt ? "EXISTS" : "MISSING"}
+sitemap.xml: ${schemaData.hasSitemap ? "EXISTS" : "MISSING"}
+  `.trim();
+
   const rawData = `
 === CLIENT WEBSITE (${websiteUrl}) ===
 ${websiteContent}
+
+${schemaDataString}
 
 === COMPETITOR WEBSITES ===
 ${competitors.map((url, i) => `[${url}]: ${competitorContents[i]?.slice(0, 4000) || "N/A"}`).join("\n\n")}
@@ -424,6 +525,8 @@ Output in ${langFull}.`,
 === WEBSITE CONTENT (first 3000 chars) ===
 ${websiteContent.slice(0, 3000)}
 
+${schemaDataString}
+
 === GOOGLE ADS PERFORMANCE ===
 ${googleAdsData}
 
@@ -486,7 +589,17 @@ Create the final campaign recommendations:
     - If GA4 shows high bounce rate, cite the exact number
     - If Google Ads shows keywords with clicks but 0 conversions, cite those keywords
     - If website content is missing CTA, forms, or trust signals, cite what you found
-    - Do NOT make generic recommendations - be specific to THIS website`,
+    - Do NOT make generic recommendations - be specific to THIS website
+
+12. AI SEARCH READINESS SCORE - Based on the SCHEMA.ORG & STRUCTURED DATA section above, evaluate how ready this website is for AI search engines (ChatGPT, Perplexity, Google AI Overviews):
+    a) AI_READINESS_SCORE (0-100) with breakdown:
+       - Schema.org score (0-25): How many relevant JSON-LD types are implemented? Are they correct?
+       - Content clarity score (0-25): Are headings structured as Q&A? Is content clear and factual?
+       - Entity/authority score (0-25): Is the organization properly defined? Are there trust signals?
+       - Technical score (0-25): robots.txt, sitemap, canonical URLs, OpenGraph tags?
+    b) AI_READINESS_LABEL: One of "AI-ready", "Needs improvement", "Not AI-ready"
+    c) AI_RECOMMENDATIONS (3-5 specific actions with priority "critical", "high", or "medium"):
+       For each: what to do and why (cite specific missing schema types, missing tags, etc.)`,
     0.3,
     4000
   );
@@ -608,6 +721,17 @@ Output ONLY valid JSON:
     "campaign_changes": [
       {"change": "string", "reason": "string (cite data)", "priority": "critical|high|medium"}
     ]
+  },
+  "ai_search_readiness": {
+    "score": 45,
+    "label": "Needs improvement",
+    "schema_org_score": 10,
+    "content_clarity_score": 15,
+    "entity_authority_score": 10,
+    "technical_score": 10,
+    "recommendations": [
+      {"action": "string", "reason": "string", "priority": "critical|high|medium"}
+    ]
   }
 }
 \`\`\``,
@@ -709,6 +833,33 @@ Output ONLY valid JSON:
       .filter((c: any) => c.change && c.reason)
       .map((c: any) => ({ ...c, priority: validPriorities.includes(c.priority?.toLowerCase()) ? c.priority.toLowerCase() : "medium" }))
       .slice(0, 10);
+  }
+
+  // Validate ai_search_readiness structure (with fallback if missing)
+  if (!result.ai_search_readiness) {
+    result.ai_search_readiness = {
+      score: 0,
+      label: "Not AI-ready",
+      schema_org_score: 0,
+      content_clarity_score: 0,
+      entity_authority_score: 0,
+      technical_score: 0,
+      recommendations: [],
+    };
+  }
+  {
+    const air = result.ai_search_readiness;
+    const validPriorities = ["critical", "high", "medium"];
+    air.score = Math.max(0, Math.min(100, Number(air.score) || 0));
+    air.schema_org_score = Math.max(0, Math.min(25, Number(air.schema_org_score) || 0));
+    air.content_clarity_score = Math.max(0, Math.min(25, Number(air.content_clarity_score) || 0));
+    air.entity_authority_score = Math.max(0, Math.min(25, Number(air.entity_authority_score) || 0));
+    air.technical_score = Math.max(0, Math.min(25, Number(air.technical_score) || 0));
+    air.label = air.label || (air.score >= 70 ? "AI-ready" : air.score >= 40 ? "Needs improvement" : "Not AI-ready");
+    air.recommendations = (air.recommendations || [])
+      .filter((r: any) => r.action && r.reason)
+      .map((r: any) => ({ ...r, priority: validPriorities.includes(r.priority?.toLowerCase()) ? r.priority.toLowerCase() : "medium" }))
+      .slice(0, 5);
   }
 
   report(7, "Analysis complete!", 100);
