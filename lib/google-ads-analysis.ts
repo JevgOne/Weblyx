@@ -102,12 +102,12 @@ TOP ORGANIC PAGES: ${topPages.map((p: any) => `${p.page.replace(/https?:\/\/[^/]
 // AI AGENT RUNNER
 // ============================================
 
-export async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 2000): Promise<string> {
+export async function runAgent(systemPrompt: string, userPrompt: string, temperature = 0.7, maxTokens = 2000, model = "claude-sonnet-4-20250514"): Promise<string> {
   const maxRetries = 2;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
+        model,
         max_tokens: maxTokens,
         temperature,
         system: systemPrompt,
@@ -246,6 +246,8 @@ Be decisive and specific. The team relies on your direction.`
   // ========================================
   report(3, "Specialists working in parallel...", 40);
 
+  const FAST_MODEL = "claude-haiku-4-5-20251001";
+
   const [marketingDraft, seoDraft, ppcDraft] = await Promise.all([
     runAgent(
       `You are a Brand & Marketing Strategist. You receive direction from the Project Manager and must develop the messaging strategy.
@@ -265,7 +267,8 @@ Develop the marketing strategy:
 5. TRUST BUILDERS - What overcomes objections and builds credibility?
 6. MESSAGE HIERARCHY - Which messages are primary vs. supporting?
 7. TONE & VOICE - How should the ads sound?
-8. COMPETITIVE DIFFERENTIATION - Specific angles that competitors DON'T use`
+8. COMPETITIVE DIFFERENTIATION - Specific angles that competitors DON'T use`,
+      0.7, 2000, FAST_MODEL
     ),
 
     runAgent(
@@ -286,7 +289,8 @@ Develop the keyword strategy:
 5. NEGATIVE KEYWORDS (15-20) - What to exclude to avoid wasted spend
 6. SEARCH INTENT ANALYSIS - What does our audience actually search for at each buying stage?
 7. COMPETITOR KEYWORD GAPS - Keywords competitors rank for that we should target
-8. SEASONAL CONSIDERATIONS - Any timing factors to consider?`
+8. SEASONAL CONSIDERATIONS - Any timing factors to consider?`,
+      0.7, 2000, FAST_MODEL
     ),
 
     runAgent(
@@ -323,48 +327,16 @@ DESCRIPTIONS - Write 9 descriptions (under 90 chars each) in ${langFull}, in 3 c
 
 Also provide:
 - CALL-TO-ACTION OPTIONS - What CTAs will work best?
-- AD EXTENSION IDEAS - Callouts, sitelinks, structured snippets`
+- AD EXTENSION IDEAS - Callouts, sitelinks, structured snippets`,
+      0.7, 2000, FAST_MODEL
     ),
   ]);
 
   // ========================================
-  // PHASE 4: CROSS-REVIEW & COLLABORATION
+  // PHASE 4: SKIPPED (cost optimization)
+  // Cross-review removed — specialists' outputs go directly to Phase 5
   // ========================================
-  report(4, "Team cross-reviewing each other's work...", 60);
-
-  const [marketingReviewOfSEO, seoReviewOfPPC] = await Promise.all([
-    runAgent(
-      `You are the Marketing Strategist. Review the SEO Expert's keyword research from a messaging perspective. Output in ${langFull}.`,
-      `Your marketing strategy:
-${marketingDraft}
-
-SEO Expert's keyword research:
-${seoDraft}
-
-REVIEW THE KEYWORDS:
-1. Which keywords align perfectly with our messaging strategy?
-2. Which keywords need different messaging angles?
-3. Are there any keywords that conflict with our brand positioning?
-4. What keyword-to-message mapping do you recommend?
-5. Any keywords missing that would support our messaging?`
-    ),
-
-    runAgent(
-      `You are the SEO Expert. Review the PPC copy from a keyword optimization perspective. Output in ${langFull}.`,
-      `Your keyword research:
-${seoDraft}
-
-PPC Specialist's ad concepts:
-${ppcDraft}
-
-REVIEW THE AD COPY:
-1. Do the headlines include our top keywords naturally?
-2. Which headlines will likely have best Quality Score?
-3. Are there keyword opportunities missing from the copy?
-4. Suggest specific keyword insertions for headlines
-5. Which ad angles will best match search intent?`
-    ),
-  ]);
+  report(4, "Preparing final ad creation...", 60);
 
   // ========================================
   // PHASE 5: PPC SPECIALIST FINAL CREATION
@@ -384,12 +356,6 @@ CRITICAL REQUIREMENTS:
 - Double-check every character count!`,
     `YOUR INITIAL CONCEPTS:
 ${ppcDraft.slice(0, 2000)}
-
-MARKETING STRATEGIST'S INPUT ON KEYWORDS:
-${marketingReviewOfSEO.slice(0, 1500)}
-
-SEO EXPERT'S INPUT ON YOUR COPY:
-${seoReviewOfPPC.slice(0, 1500)}
 
 MARKETING STRATEGY TO FOLLOW:
 ${marketingDraft.slice(0, 2000)}
