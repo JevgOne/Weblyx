@@ -12,8 +12,8 @@ export function AdminLayoutClient({
 }) {
   const pathname = usePathname();
 
-  // Don't wrap login page with auth provider
-  if (pathname === "/admin/login") {
+  // Don't wrap login/register pages with auth provider
+  if (pathname === "/admin/login" || pathname === "/admin/register") {
     return (
       <AdminLanguageProvider>
         {children}

@@ -7,42 +7,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, UserPlus, Mail, Lock, User } from "lucide-react";
 
-export default function AdminLoginPage() {
+export default function AdminRegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Chyba při přihlašování');
+        throw new Error(data.error || "Chyba při registraci");
       }
 
-      // Success - redirect to dashboard
       router.push("/admin/dashboard");
       router.refresh();
-    } catch (err: any) {
-      console.error("Login error:", err);
-      setError(err.message || "Chyba při přihlašování. Zkuste to znovu.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Chyba při registraci. Zkuste to znovu.";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -53,16 +51,16 @@ export default function AdminLoginPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto h-16 w-16 rounded-full bg-gradient-primary flex items-center justify-center">
-            <Lock className="h-8 w-8 text-white" />
+            <UserPlus className="h-8 w-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Admin přihlášení</CardTitle>
+          <CardTitle className="text-2xl font-bold">Registrace</CardTitle>
           <CardDescription>
-            Přihlaste se do administračního panelu Weblyx
+            Vytvořte si administrátorský účet
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleRegister} className="space-y-6">
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
@@ -71,6 +69,24 @@ export default function AdminLoginPage() {
 
             <div className="space-y-4">
               <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Jméno
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Jan Novák"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  minLength={2}
+                  disabled={loading}
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   Email
@@ -78,7 +94,7 @@ export default function AdminLoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@weblyx.cz"
+                  placeholder="jan@example.cz"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -96,10 +112,11 @@ export default function AdminLoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="Min. 8 znaků"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={8}
                     disabled={loading}
                     className="h-11 pr-10"
                   />
@@ -123,13 +140,13 @@ export default function AdminLoginPage() {
               className="w-full h-11 text-base"
               disabled={loading}
             >
-              {loading ? "Přihlašování..." : "Přihlásit se"}
+              {loading ? "Vytvářím účet..." : "Vytvořit účet"}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Nemáte účet?{" "}
-              <Link href="/admin/register" className="text-primary hover:underline font-medium">
-                Zaregistrujte se
+              Již máte účet?{" "}
+              <Link href="/admin/login" className="text-primary hover:underline font-medium">
+                Přihlaste se
               </Link>
             </p>
           </form>

@@ -162,7 +162,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // CSRF double-submit cookie check (skip for public form endpoints and admin sessions)
-    const publicEndpoints = ['/api/contact', '/api/leads', '/api/audit', '/api/newsletter', '/api/auth/login'];
+    const publicEndpoints = ['/api/contact', '/api/leads', '/api/audit', '/api/newsletter', '/api/auth/login', '/api/auth/register'];
     const isPublicEndpoint = publicEndpoints.some(ep => pathname.startsWith(ep));
 
     // Admin session cookie uses sameSite: strict, which already prevents CSRF attacks

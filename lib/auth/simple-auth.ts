@@ -64,6 +64,7 @@ export async function comparePassword(password: string, hash: string): Promise<b
 async function getDbAdminByEmail(email: string): Promise<DbAdminUser | null> {
   try {
     const { turso } = await import('@/lib/turso');
+    await ensureAdminsTable();
     const result = await turso.execute({
       sql: 'SELECT * FROM admins WHERE email = ? AND active = 1',
       args: [email],
@@ -85,6 +86,7 @@ async function getDbAdminByEmail(email: string): Promise<DbAdminUser | null> {
 export async function getDbAdminById(id: string): Promise<DbAdminUser | null> {
   try {
     const { turso } = await import('@/lib/turso');
+    await ensureAdminsTable();
     const result = await turso.execute({
       sql: 'SELECT * FROM admins WHERE id = ? AND active = 1',
       args: [id],
@@ -129,6 +131,7 @@ export function getLegacyAdmins(): Array<{
 export async function getAllDbAdmins(): Promise<DbAdminUser[]> {
   try {
     const { turso } = await import('@/lib/turso');
+    await ensureAdminsTable();
     const result = await turso.execute({
       sql: 'SELECT id, email, name, role, active, created_at FROM admins ORDER BY created_at DESC',
       args: [],
@@ -138,6 +141,41 @@ export async function getAllDbAdmins(): Promise<DbAdminUser[]> {
   } catch (error) {
     console.error('Error fetching all DB admins:', error);
     return [];
+  }
+}
+
+/**
+ * Ensure admins table exists in database
+ */
+export async function ensureAdminsTable(): Promise<void> {
+  const { turso } = await import('@/lib/turso');
+  await turso.execute(`
+    CREATE TABLE IF NOT EXISTS admins (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'admin',
+      active INTEGER NOT NULL DEFAULT 1,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )
+  `);
+  await turso.execute(`CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email)`);
+}
+
+/**
+ * Check if any admin users exist in the database
+ */
+export async function hasAnyAdmins(): Promise<boolean> {
+  try {
+    const { turso } = await import('@/lib/turso');
+    await ensureAdminsTable();
+    const result = await turso.execute('SELECT COUNT(*) as count FROM admins WHERE active = 1');
+    const count = Number((result.rows[0] as unknown as Record<string, unknown>).count);
+    return count > 0;
+  } catch {
+    return false;
   }
 }
 
@@ -152,6 +190,7 @@ export async function createDbAdmin(
 ): Promise<DbAdminUser | null> {
   try {
     const { turso } = await import('@/lib/turso');
+    await ensureAdminsTable();
     const id = `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const passwordHash = await hashPassword(password);
 
