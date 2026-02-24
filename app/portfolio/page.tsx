@@ -178,8 +178,8 @@ export default async function PortfolioPage() {
                       )}
 
                       {/* Category */}
-                      <div className="absolute top-3 left-3">
-                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-white/15 dark:text-white text-foreground backdrop-blur-sm border dark:border-white/20">
+                      <div className="absolute top-3 left-3 max-w-[80%]">
+                        <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-black/60 text-white backdrop-blur-md truncate max-w-full">
                           {project.category}
                         </span>
                       </div>
