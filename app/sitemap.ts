@@ -164,6 +164,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'weekly',
           priority: 0.8,
         },
+        {
+          url: `${baseUrl}/onlineshop-erstellen`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
       ]
     : [
         {
@@ -177,6 +183,60 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: new Date(),
           changeFrequency: 'weekly',
           priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/seo-optimalizace`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.9,
+        },
+        {
+          url: `${baseUrl}/geo-optimalizace`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/redesign-webu`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/tvorba-eshopu`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/web-pro-restaurace`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/web-pro-zivnostniky`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/web-pro-pravniky`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/audit`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/recenze`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.6,
         },
       ];
 

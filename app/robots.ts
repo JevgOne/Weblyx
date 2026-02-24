@@ -27,7 +27,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: ['GPTBot', 'ChatGPT-User', 'CCBot', 'PerplexityBot', 'anthropic-ai', 'Claude-Web'],
         allow: isGerman
           ? ['/blog/*', '/leistungen/*', '/portfolio/*', '/uber-uns*', '/preise*', '/kontakt*', '/']
-          : ['/blog/*', '/sluzby/*', '/portfolio/*', '/o-nas*', '/cenik*', '/kontakt*', '/'],
+          : ['/blog/*', '/sluzby/*', '/portfolio/*', '/o-nas*', '/cenik*', '/kontakt*', '/seo-optimalizace*', '/geo-optimalizace*', '/redesign-webu*', '/tvorba-eshopu*', '/recenze*', '/'],
         disallow: ['/admin/*', '/api/*', '/t/*', '/poptavka/dekujeme'],
       },
     ],

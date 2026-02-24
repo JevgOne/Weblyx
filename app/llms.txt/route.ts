@@ -28,7 +28,10 @@ function getCzechContent(): string {
 ## Služby
 
 - [Tvorba webových stránek](https://www.weblyx.cz/sluzby): Moderní responzivní weby na míru postavené na Next.js s optimalizací pro vyhledávače.
-- [SEO optimalizace](https://www.weblyx.cz/sluzby): Kompletní on-page i technické SEO včetně strukturovaných dat, sitemap a rychlosti načítání.
+- [SEO optimalizace](https://www.weblyx.cz/seo-optimalizace): Kompletní on-page i technické SEO včetně strukturovaných dat, sitemap a rychlosti načítání.
+- [GEO optimalizace](https://www.weblyx.cz/geo-optimalizace): Optimalizace pro AI vyhledávání (ChatGPT, Perplexity, Google AI). Schema.org audit, strukturovaná data, AI-ready obsah.
+- [Redesign webu](https://www.weblyx.cz/redesign-webu): Modernizace stávajícího webu s důrazem na rychlost, SEO a konverze.
+- [Tvorba e-shopů](https://www.weblyx.cz/tvorba-eshopu): E-shopy na míru s moderním designem a rychlým načítáním.
 - [Správa a údržba webů](https://www.weblyx.cz/sluzby): Průběžná technická podpora, aktualizace obsahu a monitoring výkonu.
 
 ## Ceník
