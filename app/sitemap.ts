@@ -86,6 +86,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'monthly',
           priority: 0.9,
         },
+        {
+          url: `${baseUrl}/kalkulacka`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.9,
+        },
       ];
 
   // German-specific routes

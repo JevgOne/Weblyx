@@ -18,6 +18,7 @@ export const revalidate = 60;
 // Dynamic imports for heavy below-the-fold client components (code splitting)
 const loadingSpinner = <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center"><div className="h-6 w-6 mx-auto border-2 border-primary/30 border-t-primary rounded-full animate-spin" /></div></div>;
 const Pricing = dynamic(() => import("@/components/home/pricing").then(mod => ({ default: mod.Pricing })), { loading: () => loadingSpinner });
+const WebPriceCalculator = dynamic(() => import("@/components/calculator/WebPriceCalculator").then(mod => ({ default: mod.WebPriceCalculator })), { loading: () => loadingSpinner });
 const FreeAudit = dynamic(() => import("@/components/home/free-audit").then(mod => ({ default: mod.FreeAudit })), { loading: () => loadingSpinner });
 const ContactWow = dynamic(() => import("@/components/home/contact-wow").then(mod => ({ default: mod.ContactWow })), { loading: () => loadingSpinner });
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -180,6 +181,7 @@ export default async function HomePage() {
         <ClientLogos />
         <TrustBadges cmsData={trustBadges} />
         <Pricing serverTiers={pricingTiers} />
+        <WebPriceCalculator embedded />
         <FAQ />
         <FreeAudit cmsData={freeAudit} />
         <ContactWow />
