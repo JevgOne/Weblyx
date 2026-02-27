@@ -7,6 +7,7 @@ import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
+import { CalculatorLeadCapture } from "@/components/calculator/CalculatorLeadCapture";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { NextIntlClientProvider } from 'next-intl';
@@ -92,6 +93,7 @@ export default async function RootLayout({
               {children}
               <Footer />
               <CookieConsent />
+              <CalculatorLeadCapture />
               <WhatsAppChat />
             </PWAProvider>
           </ThemeProvider>

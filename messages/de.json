@@ -540,5 +540,13 @@
     "ctaButton": "Kostenlose unverbindliche Beratung",
     "ctaLink": "/anfrage",
     "resetButton": "Andere Website analysieren →"
+  },
+  "calculatorPopup": {
+    "barText": "Berechnen Sie Ihren Webpreis in 2 Minuten — kostenlos & unverbindlich",
+    "barButton": "Preis berechnen",
+    "exitTitle": "Warten Sie! Berechnen Sie Ihren Webpreis",
+    "exitSubtitle": "Beantworten Sie 4 Fragen und erfahren Sie in 2 Minuten den ungefähren Preis. Kostenlos und unverbindlich.",
+    "exitButton": "Webpreis kostenlos berechnen",
+    "exitDismiss": "Nein, danke"
   }
 }
