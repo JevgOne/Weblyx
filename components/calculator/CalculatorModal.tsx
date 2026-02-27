@@ -21,7 +21,8 @@ export function CalculatorModal({ open, onOpenChange }: CalculatorModalProps) {
           <DialogTitle>Kalkulačka ceny webu</DialogTitle>
         </VisuallyHidden>
         <div className="p-4 md:p-6">
-          <WebPriceCalculator />
+          {/* Key forces remount on open → resets calculator state */}
+          {open && <WebPriceCalculator key={Date.now()} />}
         </div>
       </DialogContent>
     </Dialog>
