@@ -1,18 +1,13 @@
-export type ProjectType = 'landing' | 'basic' | 'standard' | 'eshop';
-export type DesignStyle = 'minimal' | 'creative' | 'corporate' | 'undecided';
-export type BrandingStatus = 'has-branding' | 'has-logo' | 'needs-everything';
-export type Timeline = 'urgent' | 'normal' | 'relaxed' | 'flexible';
+export type ProjectType = 'landing' | 'basic' | 'standard';
+
+export type AddonService = 'seo' | 'lead-generation' | 'email-marketing' | 'ai-ads';
 
 export interface CalculatorData {
   // Step 1
   projectType: ProjectType | '';
   // Step 2
-  features: string[];
+  addons: AddonService[];
   // Step 3
-  designStyle: DesignStyle | '';
-  brandingStatus: BrandingStatus | '';
-  timeline: Timeline | '';
-  // Step 4
   email: string;
   name: string;
   phone: string;
@@ -20,27 +15,17 @@ export interface CalculatorData {
   gdprConsent: boolean;
 }
 
-export interface PriceBreakdownItem {
-  label: string;
-  amount: number;
-  type: 'base' | 'feature' | 'modifier';
-}
-
-export interface PriceResult {
-  totalMin: number;
-  totalMax: number;
-  breakdown: PriceBreakdownItem[];
-  estimatedDays: { min: number; max: number };
-  recommendedPackage: string;
-  includedFeatures: string[];
+export interface PackageResult {
+  packageName: string;
+  price: number;
+  features: string[];
+  deliveryDays: { min: number; max: number };
+  addons: { id: AddonService; label: string }[];
 }
 
 export const INITIAL_CALCULATOR_DATA: CalculatorData = {
   projectType: '',
-  features: [],
-  designStyle: '',
-  brandingStatus: '',
-  timeline: '',
+  addons: [],
   email: '',
   name: '',
   phone: '',

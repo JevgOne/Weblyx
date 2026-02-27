@@ -5,22 +5,17 @@ import { nanoid } from 'nanoid';
 import { sendEmail, EMAIL_CONFIG } from '@/lib/email/resend-client';
 import { generateCalculatorResultEmail, generateCalculatorAdminEmail } from '@/lib/email/calculator-template';
 import { calculatePrice, CalculateInput } from '@/lib/calculator/pricing-engine';
-import { ProjectType, DesignStyle, BrandingStatus, Timeline } from '@/lib/calculator/types';
+import { ProjectType, AddonService } from '@/lib/calculator/types';
 
-const VALID_PROJECT_TYPES: ProjectType[] = ['landing', 'basic', 'standard', 'eshop'];
-const VALID_DESIGN_STYLES: DesignStyle[] = ['minimal', 'creative', 'corporate', 'undecided'];
-const VALID_BRANDING: BrandingStatus[] = ['has-branding', 'has-logo', 'needs-everything'];
-const VALID_TIMELINES: Timeline[] = ['urgent', 'normal', 'relaxed', 'flexible'];
+const VALID_PROJECT_TYPES: ProjectType[] = ['landing', 'basic', 'standard'];
+const VALID_ADDONS: AddonService[] = ['seo', 'lead-generation', 'email-marketing', 'ai-ads'];
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
       projectType,
-      features,
-      designStyle,
-      brandingStatus,
-      timeline,
+      addons,
       email,
       name,
       phone,
@@ -32,14 +27,14 @@ export async function POST(request: NextRequest) {
     // Bot detection
     if (!validateHoneypot(body)) {
       return NextResponse.json(
-        { success: true, priceResult: { totalMin: 9990, totalMax: 14990 } },
+        { success: true, priceResult: { packageName: 'Web', price: 9990, features: [], deliveryDays: { min: 5, max: 7 }, addons: [] } },
         { status: 200 }
       );
     }
 
     if (__form_timestamp && !validateSubmissionTime(__form_timestamp, 3)) {
       return NextResponse.json(
-        { success: true, priceResult: { totalMin: 9990, totalMax: 14990 } },
+        { success: true, priceResult: { packageName: 'Web', price: 9990, features: [], deliveryDays: { min: 5, max: 7 }, addons: [] } },
         { status: 200 }
       );
     }
@@ -64,26 +59,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Neplatný typ projektu.' }, { status: 400 });
     }
 
+    // Filter valid addons
+    const validAddons = Array.isArray(addons)
+      ? addons.filter((a: string) => VALID_ADDONS.includes(a as AddonService))
+      : [];
+
     // Calculate price
     const calcInput: CalculateInput = {
       projectType,
-      features: Array.isArray(features) ? features : [],
-      designStyle: VALID_DESIGN_STYLES.includes(designStyle) ? designStyle : 'undecided',
-      brandingStatus: VALID_BRANDING.includes(brandingStatus) ? brandingStatus : 'has-logo',
-      timeline: VALID_TIMELINES.includes(timeline) ? timeline : 'normal',
+      addons: validAddons,
     };
 
     const priceResult = calculatePrice(calcInput);
 
     // Save lead to Turso
     const leadId = nanoid();
-    const budgetRange = `${priceResult.totalMin.toLocaleString('cs-CZ')} – ${priceResult.totalMax.toLocaleString('cs-CZ')} Kč`;
-    const servicesJson = JSON.stringify(features || []);
+    const budgetRange = `${priceResult.price.toLocaleString('cs-CZ')} Kč`;
+    const servicesJson = JSON.stringify(validAddons);
     const extraData = JSON.stringify({
-      designStyle,
-      brandingStatus,
-      timeline,
-      priceResult: { totalMin: priceResult.totalMin, totalMax: priceResult.totalMax },
+      package: priceResult.packageName,
+      price: priceResult.price,
+      addons: validAddons,
     });
 
     await turso.execute({
@@ -115,12 +111,12 @@ export async function POST(request: NextRequest) {
         name,
         priceResult,
         projectType,
-        features: features || [],
+        features: validAddons,
       });
 
       await sendEmail({
         to: email,
-        subject: `Vaše cenová kalkulace – ${budgetRange}`,
+        subject: `Váš doporučený balíček – ${priceResult.packageName} (${budgetRange})`,
         html: clientHtml,
       });
     } catch (emailError) {
@@ -135,17 +131,17 @@ export async function POST(request: NextRequest) {
         phone,
         company,
         projectType,
-        features: features || [],
-        designStyle,
-        brandingStatus,
-        timeline,
+        features: validAddons,
+        designStyle: 'undecided',
+        brandingStatus: 'has-logo',
+        timeline: 'normal',
         priceResult,
         leadId,
       });
 
       await sendEmail({
         to: EMAIL_CONFIG.adminEmail,
-        subject: `Nový lead z kalkulačky – ${name} (${budgetRange})`,
+        subject: `Nový lead z kalkulačky – ${name} (${priceResult.packageName}, ${budgetRange})`,
         html: adminHtml,
         replyTo: email,
       });

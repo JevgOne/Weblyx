@@ -1,8 +1,8 @@
-import { PriceResult } from '@/lib/calculator/types';
+import { PackageResult } from '@/lib/calculator/types';
 
 interface CalculatorEmailOptions {
   name: string;
-  priceResult: PriceResult;
+  priceResult: PackageResult;
   projectType: string;
   features: string[];
 }
@@ -10,23 +10,7 @@ interface CalculatorEmailOptions {
 export function generateCalculatorResultEmail(options: CalculatorEmailOptions): string {
   const { name, priceResult } = options;
 
-  const breakdownRows = priceResult.breakdown
-    .map((item) => {
-      const sign = item.type === 'modifier' && item.amount < 0 ? '' : item.type === 'base' ? '' : '+';
-      const color = item.amount < 0 ? '#10b981' : '#374151';
-      return `
-        <tr>
-          <td style="padding: 8px 0; font-size: 14px; color: #6b7280; border-bottom: 1px solid #f3f4f6;">
-            ${item.type === 'base' ? '<strong>' : ''}${item.label}${item.type === 'base' ? '</strong>' : ''}
-          </td>
-          <td style="padding: 8px 0; font-size: 14px; color: ${color}; text-align: right; border-bottom: 1px solid #f3f4f6; white-space: nowrap;">
-            ${sign}${formatPrice(item.amount)} Kč
-          </td>
-        </tr>`;
-    })
-    .join('');
-
-  const includedRows = priceResult.includedFeatures
+  const includedRows = priceResult.features
     .map(
       (f) => `
         <tr>
@@ -37,13 +21,35 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
     )
     .join('');
 
+  const addonsSection = priceResult.addons.length > 0
+    ? `
+      <!-- Addons -->
+      <tr>
+        <td style="padding: 10px 30px 20px 30px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #111827;">Doplňkové služby (individuální nabídka)</h3>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            ${priceResult.addons.map((a) => `
+              <tr>
+                <td style="padding: 6px 0; font-size: 14px; color: #374151;">
+                  <span style="color: #14B8A6; margin-right: 8px;">&#10003;</span> ${a.label}
+                </td>
+              </tr>
+            `).join('')}
+          </table>
+          <p style="margin: 10px 0 0 0; font-size: 13px; color: #6b7280;">
+            Cenu doplňkových služeb vám připravíme individuálně při konzultaci.
+          </p>
+        </td>
+      </tr>`
+    : '';
+
   return `
 <!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cenová kalkulace | Weblyx</title>
+  <title>Doporučený balíček | Weblyx</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
@@ -55,10 +61,10 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
           <tr>
             <td style="background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); padding: 40px 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700;">
-                Vaše cenová kalkulace
+                Váš doporučený balíček
               </h1>
               <p style="color: #ccfbf1; margin: 10px 0 0 0; font-size: 15px;">
-                Orientační cena na základě vašich požadavků
+                Na základě vašich požadavků
               </p>
             </td>
           </tr>
@@ -70,7 +76,7 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
                 Dobrý den ${name},
               </p>
               <p style="margin: 12px 0 0 0; font-size: 15px; color: #6b7280; line-height: 1.6;">
-                děkujeme za vyplnění kalkulačky. Zde je přehled orientační ceny vašeho projektu.
+                děkujeme za vyplnění kalkulačky. Zde je přehled doporučeného balíčku pro váš projekt.
               </p>
             </td>
           </tr>
@@ -82,10 +88,10 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
                 <tr>
                   <td align="center" style="padding: 30px 20px;">
                     <p style="margin: 0 0 8px 0; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px;">
-                      Orientační cena
+                      ${priceResult.packageName}
                     </p>
                     <p style="margin: 0; font-size: 36px; font-weight: 800; color: #0D9488;">
-                      ${formatPrice(priceResult.totalMin)} – ${formatPrice(priceResult.totalMax)} Kč
+                      ${formatPrice(priceResult.price)} Kč
                     </p>
                     <p style="margin: 8px 0 0 0; font-size: 13px; color: #6b7280;">
                       Jednorázová platba &bull; bez měsíčních poplatků
@@ -96,25 +102,17 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
             </td>
           </tr>
 
-          <!-- Breakdown -->
-          <tr>
-            <td style="padding: 20px 30px;">
-              <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #111827;">Rozpad ceny</h3>
-              <table width="100%" cellpadding="0" cellspacing="0">
-                ${breakdownRows}
-              </table>
-            </td>
-          </tr>
-
           <!-- Included Features -->
           <tr>
-            <td style="padding: 10px 30px 20px 30px;">
+            <td style="padding: 20px 30px;">
               <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #111827;">V ceně zahrnuto</h3>
               <table width="100%" cellpadding="0" cellspacing="0">
                 ${includedRows}
               </table>
             </td>
           </tr>
+
+          ${addonsSection}
 
           <!-- Delivery -->
           <tr>
@@ -123,7 +121,7 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
                 <tr>
                   <td style="padding: 15px; text-align: center;">
                     <p style="margin: 0; font-size: 14px; color: #6b7280;">
-                      Odhadované dodání: <strong style="color: #111827;">${priceResult.estimatedDays.min}–${priceResult.estimatedDays.max} pracovních dní</strong>
+                      Odhadované dodání: <strong style="color: #111827;">${priceResult.deliveryDays.min}–${priceResult.deliveryDays.max} pracovních dní</strong>
                     </p>
                   </td>
                 </tr>
@@ -135,7 +133,7 @@ export function generateCalculatorResultEmail(options: CalculatorEmailOptions): 
           <tr>
             <td style="padding: 10px 30px 30px 30px; text-align: center;">
               <p style="margin: 0 0 15px 0; font-size: 15px; color: #374151;">
-                Chcete přesnou nabídku na míru?
+                Chcete se domluvit na dalších krocích?
               </p>
               <a href="https://www.weblyx.cz/poptavka?ref=calculator" style="display: inline-block; background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
                 Domluvit konzultaci zdarma
@@ -171,13 +169,13 @@ export function generateCalculatorAdminEmail(data: {
   company?: string;
   projectType: string;
   features: string[];
-  designStyle: string;
-  brandingStatus: string;
-  timeline: string;
-  priceResult: PriceResult;
+  designStyle?: string;
+  brandingStatus?: string;
+  timeline?: string;
+  priceResult: PackageResult;
   leadId: string;
 }): string {
-  const featuresList = data.features.length > 0 ? data.features.join(', ') : 'Žádné doplňky';
+  const addonsList = data.features.length > 0 ? data.features.join(', ') : 'Žádné';
 
   return `
 <!DOCTYPE html>
@@ -198,13 +196,9 @@ export function generateCalculatorAdminEmail(data: {
           ${data.phone ? `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Telefon</td><td style="padding: 6px 0;"><a href="tel:${data.phone}" style="color: #14B8A6;">${data.phone}</a></td></tr>` : ''}
           ${data.company ? `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Firma</td><td style="padding: 6px 0;">${data.company}</td></tr>` : ''}
           <tr><td colspan="2" style="padding: 12px 0 6px 0; border-top: 1px solid #e5e7eb;"></td></tr>
-          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Typ projektu</td><td style="padding: 6px 0; font-weight: 600;">${data.projectType}</td></tr>
-          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Funkce</td><td style="padding: 6px 0;">${featuresList}</td></tr>
-          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Design</td><td style="padding: 6px 0;">${data.designStyle}</td></tr>
-          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Branding</td><td style="padding: 6px 0;">${data.brandingStatus}</td></tr>
-          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Timeline</td><td style="padding: 6px 0;">${data.timeline}</td></tr>
-          <tr><td colspan="2" style="padding: 12px 0 6px 0; border-top: 1px solid #e5e7eb;"></td></tr>
-          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Cena</td><td style="padding: 6px 0; font-weight: 700; color: #0D9488; font-size: 18px;">${formatPrice(data.priceResult.totalMin)} – ${formatPrice(data.priceResult.totalMax)} Kč</td></tr>
+          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Balíček</td><td style="padding: 6px 0; font-weight: 600;">${data.priceResult.packageName}</td></tr>
+          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Cena</td><td style="padding: 6px 0; font-weight: 700; color: #0D9488; font-size: 18px;">${formatPrice(data.priceResult.price)} Kč</td></tr>
+          <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Doplňky</td><td style="padding: 6px 0;">${addonsList}</td></tr>
           <tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">Lead ID</td><td style="padding: 6px 0; font-family: monospace; font-size: 12px;">${data.leadId}</td></tr>
         </table>
       </td>

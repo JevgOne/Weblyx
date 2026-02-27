@@ -7,13 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Calculator } from 'lucide-react';
 import { CalculatorStep } from './CalculatorStep';
 import { StepProjectType } from './steps/StepProjectType';
-import { StepFeatures } from './steps/StepFeatures';
-import { StepDesign } from './steps/StepDesign';
+import { StepAddons } from './steps/StepAddons';
 import { StepContact } from './steps/StepContact';
 import { StepResult } from './steps/StepResult';
 import {
   CalculatorData,
-  PriceResult,
+  PackageResult,
   INITIAL_CALCULATOR_DATA,
 } from '@/lib/calculator/types';
 
@@ -21,14 +20,14 @@ interface WebPriceCalculatorProps {
   embedded?: boolean;
 }
 
-const TOTAL_STEPS = 5;
-const STEP_LABELS = ['Typ projektu', 'Funkce', 'Design & termín', 'Kontakt', 'Výsledek'];
+const TOTAL_STEPS = 4;
+const STEP_LABELS = ['Balíček', 'Doplňky', 'Kontakt', 'Doporučení'];
 
 export function WebPriceCalculator({ embedded = false }: WebPriceCalculatorProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [data, setData] = useState<CalculatorData>(INITIAL_CALCULATOR_DATA);
-  const [priceResult, setPriceResult] = useState<PriceResult | null>(null);
+  const [priceResult, setPriceResult] = useState<PackageResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const stepKey = useRef(0);
@@ -55,7 +54,6 @@ export function WebPriceCalculator({ embedded = false }: WebPriceCalculatorProps
     setError('');
 
     try {
-      // Collect honeypot fields from form
       const form = document.querySelector('form');
       const formData = form ? new FormData(form) : new FormData();
       const honeypotFields: Record<string, string> = {};
@@ -89,7 +87,6 @@ export function WebPriceCalculator({ embedded = false }: WebPriceCalculatorProps
       stepKey.current++;
       setCurrentStep(TOTAL_STEPS);
 
-      // Conversion tracking
       trackConversion(result.priceResult);
     } catch {
       setError('Nepodařilo se spojit se serverem. Zkuste to prosím znovu.');
@@ -119,7 +116,7 @@ export function WebPriceCalculator({ embedded = false }: WebPriceCalculatorProps
               Kolik bude stát váš web?
             </h2>
             <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Odpovězte na 4 otázky a za 2 minuty zjistíte orientační cenu.
+              Odpovězte na 3 otázky a zjistíte doporučený balíček i cenu.
             </p>
           </div>
         )}
@@ -148,12 +145,9 @@ export function WebPriceCalculator({ embedded = false }: WebPriceCalculatorProps
                   <StepProjectType data={data} onUpdate={updateData} onNext={goNext} />
                 )}
                 {currentStep === 2 && (
-                  <StepFeatures data={data} onUpdate={updateData} onNext={goNext} onBack={goBack} />
+                  <StepAddons data={data} onUpdate={updateData} onNext={goNext} onBack={goBack} />
                 )}
                 {currentStep === 3 && (
-                  <StepDesign data={data} onUpdate={updateData} onNext={goNext} onBack={goBack} />
-                )}
-                {currentStep === 4 && (
                   <StepContact
                     data={data}
                     onUpdate={updateData}
@@ -162,7 +156,7 @@ export function WebPriceCalculator({ embedded = false }: WebPriceCalculatorProps
                     isSubmitting={isSubmitting}
                   />
                 )}
-                {currentStep === 5 && priceResult && (
+                {currentStep === 4 && priceResult && (
                   <StepResult priceResult={priceResult} data={data} />
                 )}
               </CalculatorStep>
@@ -197,27 +191,26 @@ function trackStep(step: number) {
   }
 }
 
-function trackConversion(result: PriceResult) {
+function trackConversion(result: PackageResult) {
   if (typeof window === 'undefined') return;
   const w = window as any;
 
-  // GA4
   if (w.gtag) {
     w.gtag('event', 'generate_lead', {
       currency: 'CZK',
-      value: result.totalMin,
+      value: result.price,
     });
     w.gtag('event', 'calculator_complete', {
       event_category: 'Lead',
-      value: result.totalMin,
+      value: result.price,
     });
   }
 
-  // Facebook Pixel
   if (w.fbq) {
     w.fbq('track', 'Lead');
     w.fbq('trackCustom', 'CalculatorComplete', {
-      priceRange: `${result.totalMin}-${result.totalMax}`,
+      package: result.packageName,
+      price: result.price,
     });
   }
 }

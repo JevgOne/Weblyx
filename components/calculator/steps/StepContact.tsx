@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CalculatorData } from '@/lib/calculator/types';
 import { HoneypotInput } from '@/components/security/HoneypotInput';
-import { Calculator, Loader2, Shield } from 'lucide-react';
+import { Sparkles, Loader2, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 interface StepContactProps {
@@ -180,8 +180,8 @@ export function StepContact({ data, onUpdate, onSubmit, onBack, isSubmitting }: 
             </>
           ) : (
             <>
-              <Calculator className="w-4 h-4" />
-              Zobrazit moji cenu
+              <Sparkles className="w-4 h-4" />
+              Zobrazit doporučení
             </>
           )}
         </Button>
