@@ -1,5 +1,8 @@
 import Script from 'next/script';
 
+// Google Ads conversion tag ID
+const GOOGLE_ADS_ID = 'AW-8291837393';
+
 export function GoogleAnalytics() {
   // Dynamic GA4 ID based on domain
   const isGermanSite = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de';
@@ -27,9 +30,9 @@ export function GoogleAnalytics() {
 
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
-      <Script id="google-analytics" strategy="lazyOnload">
+      <Script id="google-analytics" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
@@ -37,6 +40,7 @@ export function GoogleAnalytics() {
           gtag('config', '${GA_MEASUREMENT_ID}', {
             'anonymize_ip': true
           });
+          gtag('config', '${GOOGLE_ADS_ID}');
         `}
       </Script>
     </>

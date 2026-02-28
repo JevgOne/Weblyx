@@ -27,8 +27,12 @@ export default function ThankYouPage() {
         'currency': 'CZK',
         'value': 10000 // Estimated project value
       });
-      // Google Ads conversion tracking
-      (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
+      // Google Ads conversion tracking (Submit Lead Form)
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-8291837393',
+        'value': 10000,
+        'currency': 'CZK'
+      });
     }
 
     // Konfety při načtení stránky
