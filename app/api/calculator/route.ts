@@ -132,9 +132,6 @@ export async function POST(request: NextRequest) {
         company,
         projectType,
         features: validAddons,
-        designStyle: 'undecided',
-        brandingStatus: 'has-logo',
-        timeline: 'normal',
         priceResult,
         leadId,
       });

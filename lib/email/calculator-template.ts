@@ -169,9 +169,6 @@ export function generateCalculatorAdminEmail(data: {
   company?: string;
   projectType: string;
   features: string[];
-  designStyle?: string;
-  brandingStatus?: string;
-  timeline?: string;
   priceResult: PackageResult;
   leadId: string;
 }): string {
