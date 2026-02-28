@@ -37,7 +37,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek | Od 7 990 Kč | SEO optimalizace | Weblyx",
+  title: "Tvorba webových stránek | Od 7 990 Kč | SEO optimalizace",
   description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. SEO optimalizace, redesign webu. Česká agentura.",
   keywords: [
     "tvorba webových stránek",

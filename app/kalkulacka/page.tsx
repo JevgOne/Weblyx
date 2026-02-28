@@ -3,7 +3,7 @@ import { WebPriceCalculator } from '@/components/calculator/WebPriceCalculator';
 import { Calculator } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kalkulačka ceny webu | Weblyx – webové stránky od 7 990 Kč',
+  title: 'Kalkulačka ceny webu – webové stránky od 7 990 Kč',
   description:
     'Zjistěte orientační cenu vašeho webu za 2 minuty. Interaktivní kalkulačka ceny webových stránek. Výsledek ihned na email.',
   keywords: [

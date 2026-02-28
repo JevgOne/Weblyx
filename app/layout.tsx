@@ -50,9 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     manifest: "/site.webmanifest",
-    verification: {
-      google: "google-site-verification-code", // TODO: Add actual verification code
-    },
+    // verification: { google: "ADD_YOUR_CODE_HERE" }, // Add Google Search Console verification code
   };
 }
 

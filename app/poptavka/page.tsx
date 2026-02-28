@@ -32,7 +32,7 @@ export const metadata: Metadata = isSeitelyx ? {
     languages: getAlternateLanguages('/anfrage'),
   },
 } : {
-  title: "Nezávazná poptávka – webové stránky od 7 990 Kč | Weblyx",
+  title: "Nezávazná poptávka – webové stránky od 7 990 Kč",
   description: "Vyplňte nezávaznou poptávku na tvorbu webových stránek. Nový web, redesign, e-shop nebo landing page. Odpovíme do 24 hodin s návrhem řešení a cenou.",
   keywords: [
     "poptávka web",
