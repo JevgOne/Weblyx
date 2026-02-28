@@ -1,9 +1,35 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Script from 'next/script';
+import Cookies from 'js-cookie';
 
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || '883179307835842';
 
 export function FacebookPixel() {
-  if (!FB_PIXEL_ID) return null;
+  const [marketingConsent, setMarketingConsent] = useState(false);
+
+  useEffect(() => {
+    const checkConsent = () => {
+      const consent = Cookies.get('cookie-consent');
+      if (consent) {
+        try {
+          const parsed = JSON.parse(consent);
+          setMarketingConsent(parsed.marketing === true);
+        } catch {
+          setMarketingConsent(false);
+        }
+      }
+    };
+
+    checkConsent();
+
+    // Re-check when cookie changes (user accepts cookies)
+    const interval = setInterval(checkConsent, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!FB_PIXEL_ID || !marketingConsent) return null;
 
   return (
     <>
@@ -43,17 +69,11 @@ export function FacebookPixel() {
  * Usage: trackLeadEvent() when user clicks CTA button
  */
 export function trackLeadEvent() {
-  // @ts-ignore
   if (typeof window !== 'undefined' && window.fbq) {
-    // @ts-ignore
     window.fbq('track', 'Lead');
-    console.log('✅ Facebook Pixel: Lead event tracked');
   }
 }
 
-/**
- * Helper to declare fbq type for TypeScript
- */
 declare global {
   interface Window {
     fbq: any;

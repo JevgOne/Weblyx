@@ -80,7 +80,6 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Analytics - placed in head for optimal tracking */}
         <GoogleAnalytics />
-        <FacebookPixel />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
@@ -90,6 +89,7 @@ export default async function RootLayout({
               {children}
               <Footer />
               <CookieConsent />
+              <FacebookPixel />
               <CalculatorLeadCapture />
             </PWAProvider>
           </ThemeProvider>
