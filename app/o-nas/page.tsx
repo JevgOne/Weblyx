@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
-  title: "O nás – Weblyx | Česká webová agentura | Tvorba webů od 7 990 Kč",
+  title: "O nás | Česká webová agentura od 7 990 Kč",
   description: "Weblyx je česká webová agentura. Od 2024 jsme dokončili 15+ projektů. Web za 5–7 dní, načítání pod 2s. Férové ceny, žádné skryté poplatky.",
   keywords: [
     "o nás webová agentura",

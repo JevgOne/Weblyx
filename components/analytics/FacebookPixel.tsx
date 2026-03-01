@@ -1,35 +1,56 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
 
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || '883179307835842';
 
 export function FacebookPixel() {
-  const [marketingConsent, setMarketingConsent] = useState(false);
-
   useEffect(() => {
-    const checkConsent = () => {
+    const checkAndUpdateConsent = () => {
+      if (typeof window === 'undefined' || !window.fbq) return;
+
       const consent = Cookies.get('cookie-consent');
       if (consent) {
         try {
           const parsed = JSON.parse(consent);
-          setMarketingConsent(parsed.marketing === true);
+          if (parsed.marketing === true) {
+            window.fbq('consent', 'grant');
+          }
         } catch {
-          setMarketingConsent(false);
+          // Invalid cookie, keep revoked
         }
       }
     };
 
-    checkConsent();
+    // Check immediately and on cookie changes
+    checkAndUpdateConsent();
+    const interval = setInterval(checkAndUpdateConsent, 2000);
 
-    // Re-check when cookie changes (user accepts cookies)
-    const interval = setInterval(checkConsent, 1000);
-    return () => clearInterval(interval);
+    // Stop polling once consent is granted
+    const stopWhenGranted = setInterval(() => {
+      const consent = Cookies.get('cookie-consent');
+      if (consent) {
+        try {
+          const parsed = JSON.parse(consent);
+          if (parsed.marketing === true) {
+            clearInterval(interval);
+            clearInterval(stopWhenGranted);
+          }
+        } catch {
+          // keep polling
+        }
+      }
+    }, 2000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(stopWhenGranted);
+    };
   }, []);
 
-  if (!FB_PIXEL_ID || !marketingConsent) return null;
+  if (!FB_PIXEL_ID) return null;
 
   return (
     <>
@@ -46,27 +67,18 @@ export function FacebookPixel() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('consent', 'revoke');
             fbq('init', '${FB_PIXEL_ID}');
             fbq('track', 'PageView');
           `,
         }}
       />
-      <noscript>
-        <img
-          height="1"
-          width="1"
-          style={{ display: 'none' }}
-          src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
-          alt=""
-        />
-      </noscript>
     </>
   );
 }
 
 /**
  * Helper function to track Facebook Pixel events
- * Usage: trackLeadEvent() when user clicks CTA button
  */
 export function trackLeadEvent() {
   if (typeof window !== 'undefined' && window.fbq) {

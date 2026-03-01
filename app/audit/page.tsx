@@ -5,8 +5,8 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Zdarma audit vašeho webu | PageSpeed, SEO, bezpečnost | Weblyx",
-  description: "Získejte zdarma profesionální audit vašeho webu. Zanalyzujeme rychlost, SEO, bezpečnost a UX. Výsledky do 48 hodin na email.",
+  title: "Audit webu zdarma | PageSpeed, SEO, bezpečnost",
+  description: "Získejte zdarma profesionální audit vašeho webu. Zanalyzujeme rychlost, SEO, bezpečnost a UX. Výsledky do 48 hodin na email. Zjistěte, co zlepšit pro více návštěvníků.",
   keywords: [
     "audit webu zdarma",
     "analýza webu",

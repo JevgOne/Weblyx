@@ -31,7 +31,7 @@ import { isSeitelyx } from "@/lib/brand";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek Praha | Moderní weby od 7 990 Kč | Weblyx",
+  title: "Tvorba webových stránek Praha | Od 7 990 Kč",
   description:
     "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby s PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Sídlíme na Praze 1 — sejdeme se osobně.",
   keywords: [

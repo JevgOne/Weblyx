@@ -26,9 +26,9 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "SEO optimalizace | SEO služby pro vyšší návštěvnost | Od 5 000 Kč/měsíc | Weblyx",
+  title: "SEO optimalizace a služby | Od 5 000 Kč/měsíc",
   description:
-    "⚡ Profesionální SEO optimalizace a SEO služby od 5 000 Kč/měsíc. Optimalizace pro vyhledávače, keyword research, technické SEO, linkbuilding. Garance měřitelných výsledků.",
+    "Profesionální SEO optimalizace od 5 000 Kč/měsíc. Keyword research, technické SEO, on-page optimalizace a linkbuilding. Garance měřitelných výsledků a vyšší návštěvnosti.",
   keywords: [
     "SEO optimalizace",
     "SEO služby",
@@ -44,16 +44,16 @@ export const metadata: Metadata = {
     "SEO agentura",
   ],
   openGraph: {
-    title: "SEO optimalizace | SEO služby | Od 5 000 Kč/měsíc | Weblyx",
+    title: "SEO optimalizace a služby | Od 5 000 Kč/měsíc | Weblyx",
     description:
-      "⚡ Profesionální SEO optimalizace od 5 000 Kč/měsíc. Optimalizace pro vyhledávače s garancí měřitelných výsledků.",
+      "Profesionální SEO optimalizace od 5 000 Kč/měsíc. Optimalizace pro vyhledávače s garancí měřitelných výsledků.",
     url: "https://www.weblyx.cz/seo-optimalizace",
     type: "website",
     images: [{ url: "/images/og/og-seo-optimalizace.png", width: 1200, height: 630, alt: "Weblyx - SEO optimalizace" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SEO optimalizace | SEO služby | Od 5 000 Kč/měsíc | Weblyx",
+    title: "SEO optimalizace a služby | Od 5 000 Kč/měsíc | Weblyx",
     description:
       "⚡ Profesionální SEO optimalizace od 5 000 Kč/měsíc. Garance měřitelných výsledků.",
   },

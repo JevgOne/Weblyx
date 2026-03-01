@@ -4,7 +4,7 @@ import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import { checkRateLimit } from './lib/rate-limit';
 
-// WHITELIST: Legitimate search engine bots + AI crawlers (NEVER block these!)
+// WHITELIST: Legitimate search engine bots + AI crawlers + monitoring tools (NEVER block these!)
 const WHITELISTED_BOTS = [
   'googlebot', 'google-inspectiontool', 'bingbot', 'slurp',
   'duckduckbot', 'baiduspider', 'yandexbot', 'facebot',
@@ -13,20 +13,21 @@ const WHITELISTED_BOTS = [
   // AI crawlers — allowed per robots.txt for AI search visibility
   'gptbot', 'chatgpt-user', 'ccbot', 'perplexitybot',
   'anthropic-ai', 'claude-web', 'cohere-ai', 'google-extended',
+  // Performance & monitoring tools
+  'lighthouse', 'pagespeed', 'chrome-lighthouse',
+  'gtmetrix', 'pingdom', 'uptimerobot',
+  'vercel-edge-functions', 'vercel',
 ];
 
-// Block ALL bots and automated tools EXCEPT whitelisted
+// Block known malicious bots and scraping tools EXCEPT whitelisted
 const BLOCKED_USER_AGENTS = [
-  'spider', 'scraper', 'scrape', 'crawl',
-  'curl', 'wget', 'aria2', 'axel', 'download', 'fetch',
+  'spider', 'scraper', 'scrape',
+  'curl', 'wget', 'aria2', 'axel',
   'python-requests', 'python-urllib', 'urllib', 'httpie', 'http-client',
-  'axios', 'got', 'node-fetch', 'superagent', 'request',
-  'selenium', 'webdriver', 'headless', 'phantom', 'puppeteer', 'playwright',
+  'axios', 'got', 'node-fetch', 'superagent',
+  'selenium', 'webdriver', 'phantom', 'puppeteer', 'playwright',
   'mechanize', 'beautifulsoup', 'scrapy', 'jsdom', 'cheerio',
-  // AI/LLM bots — MOVED TO WHITELIST
   'archive', 'wayback', 'snapshot', 'mirror', 'httrack', 'teleport',
-  'pingdom', 'uptime', 'monitor', 'check', 'test', 'benchmark',
-  'auto', 'script', 'program', 'library', 'framework',
 ];
 
 const REQUIRED_BROWSER_KEYWORDS = ['mozilla', 'chrome', 'safari', 'firefox', 'edge', 'opera'];
