@@ -540,11 +540,11 @@
     "resetButton": "Analyzovat jiný web →"
   },
   "calculatorPopup": {
-    "barText": "Zjistěte cenu webu za 2 minuty — zdarma a nezávazně",
-    "barButton": "Spočítat cenu",
+    "barText": "Zjistěte cenu webu za 30 sekund — zdarma a nezávazně",
+    "barButton": "Zjistit cenu",
     "exitTitle": "Počkejte! Zjistěte cenu svého webu",
-    "exitSubtitle": "Odpovězte na 4 otázky a za 2 minuty zjistíte orientační cenu. Zdarma a nezávazně.",
-    "exitButton": "Spočítat cenu webu zdarma",
+    "exitSubtitle": "Odpovězte na 3 otázky a ihned zjistíte cenu. Zdarma a nezávazně.",
+    "exitButton": "Zjistit cenu webu zdarma",
     "exitDismiss": "Ne, děkuji"
   }
 }
