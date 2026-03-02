@@ -17,6 +17,8 @@ const WHITELISTED_BOTS = [
   'lighthouse', 'pagespeed', 'chrome-lighthouse',
   'gtmetrix', 'pingdom', 'uptimerobot',
   'vercel-edge-functions', 'vercel',
+  // Internal bots
+  'weblyxbot',
 ];
 
 // Block known malicious bots and scraping tools EXCEPT whitelisted

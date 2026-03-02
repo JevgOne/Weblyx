@@ -36,7 +36,10 @@ export async function fetchWebsiteSchemaData(url: string): Promise<SchemaData> {
 
   try {
     const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; WeblyxBot/1.0)" },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; WeblyxBot/1.0)",
+        "Accept": "text/html,application/xhtml+xml,*/*",
+      },
     });
     const html = await response.text();
 
@@ -99,7 +102,10 @@ export async function fetchWebsiteSchemaData(url: string): Promise<SchemaData> {
 export async function fetchWebsiteContent(url: string): Promise<string> {
   try {
     const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; WeblyxBot/1.0)" },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; WeblyxBot/1.0)",
+        "Accept": "text/html,application/xhtml+xml,*/*",
+      },
     });
     const html = await response.text();
     return html
