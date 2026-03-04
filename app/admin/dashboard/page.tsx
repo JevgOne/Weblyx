@@ -409,25 +409,6 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-teal-500/5 to-emerald-500/5 border-teal-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>Rezervace</CardTitle>
-                    <CardDescription>Správa rezervací a kalendáře</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="default" className="w-full bg-teal-600 hover:bg-teal-700" onClick={() => router.push("/admin/bookings")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <div className="flex items-center gap-4">

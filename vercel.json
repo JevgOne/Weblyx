@@ -41,10 +41,6 @@
     {
       "path": "/api/google-marketing/cron",
       "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/release-expired",
-      "schedule": "*/15 * * * *"
     }
   ]
 }
