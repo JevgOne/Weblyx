@@ -1,16 +1,13 @@
 import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
-import { SocialProofStats } from "@/components/home/social-proof-stats";
-import { TargetAudience } from "@/components/home/target-audience";
+import { TrustBar } from "@/components/home/trust-bar";
 import { BeforeAfter } from "@/components/home/before-after";
 import { Services } from "@/components/home/services";
 import { Process } from "@/components/home/process";
 import { Portfolio } from "@/components/home/portfolio";
 import { Reviews } from "@/components/home/reviews";
-import { ClientLogos } from "@/components/home/client-logos";
-import { TrustBadges } from "@/components/home/trust-badges";
-import { FAQ } from "@/components/home/faq";
 import { CaseStudy } from "@/components/home/case-study";
+import { FAQ } from "@/components/home/faq";
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
@@ -18,8 +15,6 @@ export const revalidate = 60;
 // Dynamic imports for heavy below-the-fold client components (code splitting)
 const loadingSpinner = <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center"><div className="h-6 w-6 mx-auto border-2 border-primary/30 border-t-primary rounded-full animate-spin" /></div></div>;
 const Pricing = dynamic(() => import("@/components/home/pricing").then(mod => ({ default: mod.Pricing })), { loading: () => loadingSpinner });
-const WebPriceCalculator = dynamic(() => import("@/components/calculator/WebPriceCalculator").then(mod => ({ default: mod.WebPriceCalculator })), { loading: () => loadingSpinner });
-const FreeAudit = dynamic(() => import("@/components/home/free-audit").then(mod => ({ default: mod.FreeAudit })), { loading: () => loadingSpinner });
 const ContactWow = dynamic(() => import("@/components/home/contact-wow").then(mod => ({ default: mod.ContactWow })), { loading: () => loadingSpinner });
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -34,10 +29,8 @@ import {
   getAllFAQItems,
   getAllPricingTiers,
   getSocialProofData,
-  getTargetAudienceData,
   getBeforeAfterData,
   getTrustBadgesData,
-  getFreeAuditData,
 } from "@/lib/turso/cms";
 import { PricingTier, FAQItem } from "@/types/cms";
 import { getPublishedReviews } from "@/lib/turso/reviews";
@@ -67,31 +60,25 @@ export default async function HomePage() {
   const locale = await getLocale() as "cs" | "de";
 
   // Fetch all data server-side in parallel (1 round trip)
-  const [faqItems, pricingTiers, reviews, socialProofData, targetAudienceData, beforeAfterData, trustBadgesData, freeAuditData] = await Promise.all([
+  const [faqItems, pricingTiers, reviews, socialProofData, beforeAfterData, trustBadgesData] = await Promise.all([
     getFAQItems(),
     getPricingTiers(),
     getPublishedReviews(locale).catch(() => []),
     getSocialProofData().catch(() => null),
-    getTargetAudienceData().catch(() => null),
     getBeforeAfterData().catch(() => null),
     getTrustBadgesData().catch(() => null),
-    getFreeAuditData().catch(() => null),
   ]);
 
   // Resolve locale-specific CMS data
   const socialProof = socialProofData?.[locale] || null;
-  const targetAudience = targetAudienceData?.[locale] || null;
   const beforeAfter = beforeAfterData?.[locale] || null;
   const trustBadges = trustBadgesData?.[locale] || null;
-  const freeAudit = freeAuditData?.[locale] || null;
 
-  // Already filtered enabled items in fetch functions
   const enabledFaqs = faqItems;
 
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
-  // Calculate real aggregate rating from published reviews
   const reviewCount = reviews.length;
   const avgRating = reviewCount > 0
     ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10) / 10
@@ -112,8 +99,6 @@ export default async function HomePage() {
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;
 
-  // Service schema WITHOUT AggregateRating (Google doesn't support it for Service type in rich results)
-  // AggregateRating is on LocalBusiness schema instead
   const serviceSchema = generateServiceSchema({
     serviceName: "Profesionální tvorba webových stránek",
     description: "Tvorba webových stránek pro živnostníky a firmy. Dodání za 5-7 dní, garantované načítání pod 2 sekundy, SEO optimalizace v ceně. Česká agentura.",
@@ -125,7 +110,6 @@ export default async function HomePage() {
     },
   });
 
-  // Individual Review schemas for each published review
   const reviewSchemas = generateReviewsSchema(
     reviews.map(r => ({
       authorName: r.authorName,
@@ -137,7 +121,6 @@ export default async function HomePage() {
     }))
   );
 
-  // SpecialAnnouncement schema for promotional offer
   const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
     name: "AKCE: Profesionální web od 7 990 Kč",
     text: "Tvorba webových stránek od 7 990 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
@@ -156,34 +139,40 @@ export default async function HomePage() {
       {offersSchema && offersSchema.map((offer, index) => (
         <JsonLd key={index} data={offer} />
       ))}
-
-      {/* Enhanced Service schema with AggregateRating (2025/2026) */}
       <JsonLd data={serviceSchema} />
-
-      {/* SpecialAnnouncement schema for promotional offer (2025/2026) */}
       <JsonLd data={specialAnnouncementSchema} />
-
-      {/* Individual Review schemas for rich snippets */}
       {reviewSchemas.map((schema, index) => (
         <JsonLd key={`review-${index}`} data={schema} />
       ))}
 
       <main className="min-h-screen">
+        {/* 1. Hero — value proposition + CTA */}
         <Hero />
-        <SocialProofStats cmsData={socialProof} />
-        <TargetAudience cmsData={targetAudience} />
+
+        {/* 2. Trust Bar — stats + badges + client logos (merged) */}
+        <TrustBar socialProofData={socialProof} trustBadgesData={trustBadges} />
+
+        {/* 3. Problem → Solution — before/after comparison + case study metrics */}
         <BeforeAfter cmsData={beforeAfter} />
-        <Services />
-        <Process />
-        <Portfolio />
         <CaseStudy />
+
+        {/* 4. Services */}
+        <Services />
+
+        {/* 5. Process */}
+        <Process />
+
+        {/* 6. Portfolio + Reviews */}
+        <Portfolio />
         <Reviews />
-        <ClientLogos />
-        <TrustBadges cmsData={trustBadges} />
+
+        {/* 7. Pricing */}
         <Pricing serverTiers={pricingTiers} />
-        <WebPriceCalculator embedded />
+
+        {/* 8. FAQ */}
         <FAQ />
-        <FreeAudit cmsData={freeAudit} />
+
+        {/* 9. Contact */}
         <ContactWow />
       </main>
     </>

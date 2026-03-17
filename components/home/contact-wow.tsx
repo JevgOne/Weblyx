@@ -19,10 +19,8 @@ import {
   Phone,
   User,
   Briefcase,
-  DollarSign,
   MessageSquare,
   Send,
-  Sparkles,
   Check,
   ArrowRight
 } from "lucide-react";
@@ -37,26 +35,29 @@ export function ContactWow() {
   const formFields = [
     { id: "name", label: t('fields.name'), icon: User, placeholder: t('fields.namePlaceholder'), type: "text", required: true },
     { id: "email", label: t('fields.email'), icon: Mail, placeholder: t('fields.emailPlaceholder'), type: "email", required: true },
-    { id: "phone", label: t('fields.phone'), icon: Phone, placeholder: t('fields.phonePlaceholder'), type: "tel", required: false },
     { id: "projectType", label: t('fields.projectType'), icon: Briefcase, type: "select", required: true },
-    { id: "budget", label: t('fields.budget'), icon: DollarSign, type: "select", required: false },
     { id: "message", label: t('fields.message'), icon: MessageSquare, placeholder: t('fields.messagePlaceholder'), type: "textarea", required: true },
+  ];
+
+  // Group fields into 3 steps for a faster form experience
+  const formSteps = [
+    [formFields[0], formFields[1]], // Name + Email
+    [formFields[2]],                // Project type
+    [formFields[3]],                // Message
   ];
 
   const [currentField, setCurrentField] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
     projectType: "",
-    budget: "",
     message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const progress = ((currentField + 1) / formFields.length) * 100;
+  const progress = ((currentField + 1) / formSteps.length) * 100;
 
   // Trigger confetti when success screen appears
   useEffect(() => {
@@ -97,15 +98,20 @@ export function ContactWow() {
   };
 
   const handleNext = () => {
-    const field = formFields[currentField];
-    const error = validateField(field.id, formData[field.id as keyof typeof formData]);
+    const stepFields = formSteps[currentField];
+    let hasError = false;
 
-    if (error) {
-      setErrors(prev => ({ ...prev, [field.id]: error }));
-      return;
-    }
+    stepFields.forEach(field => {
+      const error = validateField(field.id, formData[field.id as keyof typeof formData]);
+      if (error) {
+        setErrors(prev => ({ ...prev, [field.id]: error }));
+        hasError = true;
+      }
+    });
 
-    if (currentField < formFields.length - 1) {
+    if (hasError) return;
+
+    if (currentField < formSteps.length - 1) {
       setCurrentField(prev => prev + 1);
     }
   };
@@ -159,16 +165,14 @@ export function ContactWow() {
       // Success! 🎉
       setIsSuccess(true);
 
-      // Reset form after 3 seconds
+      // Reset form after 5 seconds
       setTimeout(() => {
         setIsSuccess(false);
         setCurrentField(0);
         setFormData({
           name: "",
           email: "",
-          phone: "",
           projectType: "",
-          budget: "",
           message: "",
         });
       }, 3000);
@@ -183,7 +187,7 @@ export function ContactWow() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (currentField === formFields.length - 1) {
+      if (currentField === formSteps.length - 1) {
         handleSubmit();
       } else {
         handleNext();
@@ -421,7 +425,7 @@ export function ContactWow() {
                   {/* Progress Bar */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="font-medium">{t('progress.step')} {currentField + 1} {t('progress.of')} {formFields.length}</span>
+                      <span className="font-medium">{t('progress.step')} {currentField + 1} {t('progress.of')} {formSteps.length}</span>
                       <span className="text-muted-foreground">{Math.round(progress)}%</span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -431,11 +435,14 @@ export function ContactWow() {
                     </div>
                   </div>
 
-                  {/* Current Field */}
+                  {/* Current Step Fields */}
                   <div
                     key={currentField}
+                    className="space-y-4"
                   >
-                    {renderField(formFields[currentField])}
+                    {formSteps[currentField].map(field => (
+                      <div key={field.id}>{renderField(field)}</div>
+                    ))}
                   </div>
 
                   {/* Navigation */}
@@ -450,7 +457,7 @@ export function ContactWow() {
                       {t('buttons.back')}
                     </Button>
 
-                    {currentField === formFields.length - 1 ? (
+                    {currentField === formSteps.length - 1 ? (
                       <Button
                         onClick={handleSubmit}
                         disabled={isSubmitting}

@@ -48,8 +48,8 @@ export async function FAQ() {
     ];
   }
 
-  // Limit to top 5 for homepage
-  faqs = faqs.slice(0, 5);
+  // Limit to top 10 for homepage
+  faqs = faqs.slice(0, 10);
 
   if (!section || !section.enabled || faqs.length === 0) {
     return null;
