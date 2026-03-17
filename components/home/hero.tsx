@@ -73,10 +73,10 @@ export async function Hero() {
     <section className="relative min-h-[90vh] flex items-center py-20 md:py-0 px-4 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
       {/* Animated background elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-0 right-1/4 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-1/4 w-[350px] h-[350px] sm:w-[600px] sm:h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)] opacity-20"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:2rem_2rem] sm:bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)] opacity-20"></div>
       </div>
 
       <div className="container mx-auto max-w-7xl relative z-10">
@@ -94,7 +94,7 @@ export async function Hero() {
 
             {/* Heading */}
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
                 <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
                   {data.title}
                 </span>
@@ -135,7 +135,7 @@ export async function Hero() {
             </div>
 
             {/* Stats - Compact Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-6">
               {data.stats.map((stat, index) => {
                 const IconComponent = iconMap[stat.icon] || Zap;
                 return (

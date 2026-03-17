@@ -52,7 +52,7 @@ export function Footer() {
     <footer className="border-t bg-muted/50">
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-8 py-12">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center space-x-2">

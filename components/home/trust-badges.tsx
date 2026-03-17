@@ -33,7 +33,7 @@ export function TrustBadges({ cmsData = null }: TrustBadgesProps) {
   return (
     <section className="py-12 px-4 bg-muted/20 border-y border-border/50">
       <div className="container mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {badges.map((badge, index) => {
             const IconComponent = badge.icon;
             const content = (

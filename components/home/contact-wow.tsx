@@ -343,7 +343,7 @@ export function ContactWow() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Contact Info */}
           <div
             className="space-y-6"

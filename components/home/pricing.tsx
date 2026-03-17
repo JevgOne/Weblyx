@@ -318,11 +318,11 @@ export function Pricing({ serverTiers }: PricingProps) {
         <div className="relative mb-12">
           {/* Scroll container */}
           <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-            <div className="flex gap-6 pb-8 px-4 lg:justify-center">
+            <div className="flex gap-4 sm:gap-6 pb-8 px-4 lg:justify-center">
               {displayPlans.map((plan, index) => (
                 <div
                   key={plan.id}
-                  className="group relative animate-fade-in-up snap-center shrink-0 w-[300px] md:w-[320px]"
+                  className="group relative animate-fade-in-up snap-center shrink-0 w-[280px] sm:w-[300px] md:w-[320px]"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
               <Card

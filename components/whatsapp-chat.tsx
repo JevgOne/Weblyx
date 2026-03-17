@@ -20,7 +20,7 @@ export function WhatsAppChat() {
       {/* Floating WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-50">
         {isOpen && (
-          <div className="mb-4 w-80 rounded-2xl bg-background shadow-2xl border border-primary/10 overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+          <div className="mb-4 w-[calc(100vw-3rem)] sm:w-80 rounded-2xl bg-background shadow-2xl border border-primary/10 overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#25D366] to-[#128C7E] p-4 text-white">
               <div className="flex items-center justify-between">

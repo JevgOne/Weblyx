@@ -43,19 +43,19 @@ export function SocialProofStats({ cmsData = null }: SocialProofStatsProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
               <div
                 key={index}
-                className="group relative p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                className="group relative p-4 sm:p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
               >
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-4 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <IconComponent className="h-8 w-8 text-primary" />
+                <div className="flex flex-col items-center text-center space-y-2 sm:space-y-4">
+                  <div className="p-3 sm:p-4 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                    <IconComponent className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                   </div>
-                  <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+                  <div className="text-2xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
                     {stat.value}
                   </div>
                   <div className="space-y-1">

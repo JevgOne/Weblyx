@@ -66,25 +66,25 @@ export function BeforeAfter({ cmsData = null }: BeforeAfterProps) {
         </div>
 
         {/* Comparison Cards */}
-        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 max-w-6xl mx-auto">
           {/* BEFORE */}
           <Card className="relative overflow-hidden border-2 border-red-200 dark:border-red-900/30">
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-semibold">
               {sBadgeBefore}
             </div>
-            <CardContent className="p-8 space-y-6">
+            <CardContent className="p-5 sm:p-8 space-y-6">
               <div>
-                <h3 className="text-2xl font-bold mb-1">{sBeforeTitle}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold mb-1">{sBeforeTitle}</h3>
                 <p className="text-sm text-muted-foreground">{sBeforeSubtitle}</p>
               </div>
               <div className="space-y-3">
                 {beforeMetrics.map((metric, i) => {
                   const IconComponent = metric.icon;
                   return (
-                    <div key={i} className="flex items-center justify-between py-2 border-b border-border/50">
-                      <span className="text-sm font-medium">{metric.label}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold">{metric.value}</span>
+                    <div key={i} className="flex items-center justify-between gap-2 py-2 border-b border-border/50">
+                      <span className="text-xs sm:text-sm font-medium shrink-0">{metric.label}</span>
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <span className="text-xs sm:text-sm font-semibold text-right">{metric.value}</span>
                         <IconComponent className={`h-4 w-4 ${metric.color}`} />
                       </div>
                     </div>
@@ -99,19 +99,19 @@ export function BeforeAfter({ cmsData = null }: BeforeAfterProps) {
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
               {sBadgeAfter}
             </div>
-            <CardContent className="p-8 space-y-6">
+            <CardContent className="p-5 sm:p-8 space-y-6">
               <div>
-                <h3 className="text-2xl font-bold mb-1">{sAfterTitle}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold mb-1">{sAfterTitle}</h3>
                 <p className="text-sm text-muted-foreground">{sAfterSubtitle}</p>
               </div>
               <div className="space-y-3">
                 {afterMetrics.map((metric, i) => {
                   const IconComponent = metric.icon;
                   return (
-                    <div key={i} className="flex items-center justify-between py-2 border-b border-border/50">
-                      <span className="text-sm font-medium">{metric.label}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold">{metric.value}</span>
+                    <div key={i} className="flex items-center justify-between gap-2 py-2 border-b border-border/50">
+                      <span className="text-xs sm:text-sm font-medium shrink-0">{metric.label}</span>
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <span className="text-xs sm:text-sm font-semibold text-right">{metric.value}</span>
                         <IconComponent className={`h-4 w-4 ${metric.color}`} />
                       </div>
                     </div>
@@ -124,7 +124,7 @@ export function BeforeAfter({ cmsData = null }: BeforeAfterProps) {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-12 p-8 rounded-2xl bg-primary/5 border border-primary/20">
+        <div className="text-center mt-8 sm:mt-12 p-5 sm:p-8 rounded-2xl bg-primary/5 border border-primary/20">
           <p className="text-lg font-semibold mb-1">
             {sCtaTitle} <span className="text-primary">{sCtaHighlight}</span>
           </p>
