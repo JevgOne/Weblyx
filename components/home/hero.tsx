@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
-import { Zap, Clock, TrendingUp } from "lucide-react";
+import { Zap, Clock, TrendingUp, Check } from "lucide-react";
 import { HeroSection } from "@/types/cms";
 import { HeroData } from "@/types/homepage";
 import { getHomepageSections } from "@/lib/turso/cms";
@@ -28,7 +28,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
       badge: t('badge'),
       title: t('title'),
       titleHighlight: '',
-      subtitle: t('subtitle'),
+      subtitle: t.raw('subtitle'),
       ctaPrimary: {
         text: t('cta'),
         href: t('ctaPrimaryLink')
@@ -51,7 +51,7 @@ async function getHeroData(): Promise<{ data: HeroData; heroSection: HeroSection
         badge: t('badge'),
         title: t('title'),
         titleHighlight: '',
-        subtitle: t('subtitle'),
+        subtitle: t.raw('subtitle'),
         ctaPrimary: { text: t('cta'), href: t('ctaPrimaryLink') },
         ctaSecondary: { text: t('ctaSecondary'), href: t('ctaSecondaryLink') },
         stats: [
@@ -134,6 +134,22 @@ export async function Hero() {
               </Button>
             </div>
 
+            {/* Trust micro-signals row */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground pt-1">
+              <div className="flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-primary" />
+                <span>{t('trustNoCommitment')}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-primary" />
+                <span>{t('trustFastResponse')}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-primary" />
+                <span>{t('trustSatisfaction')}</span>
+              </div>
+            </div>
+
             {/* Stats - Compact Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-6">
               {data.stats.map((stat, index) => {
@@ -141,14 +157,14 @@ export async function Hero() {
                 return (
                   <div
                     key={index}
-                    className="group relative p-6 rounded-2xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                    className="group relative p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 min-h-[150px]"
                   >
-                    <div className="flex flex-col items-center text-center space-y-3">
-                      <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                        <IconComponent className="h-6 w-6 text-primary" />
+                    <div className="flex flex-col items-center justify-center text-center h-full space-y-2">
+                      <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <IconComponent className="h-5 w-5 text-primary" />
                       </div>
-                      <div className="text-2xl font-bold">{stat.value}</div>
-                      <div className="text-sm text-foreground/70 leading-relaxed">
+                      <div className="text-lg lg:text-xl font-bold whitespace-nowrap">{stat.value}</div>
+                      <div className="text-xs sm:text-sm text-foreground/70 leading-tight">
                         {stat.label}
                       </div>
                     </div>

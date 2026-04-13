@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LeadButton } from "@/components/tracking/LeadButton";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { getAllPortfolio } from "@/lib/turso/portfolio";
 import { getPageContent } from "@/lib/firestore-pages";
@@ -133,13 +134,22 @@ export async function Portfolio() {
 
         {/* CTA */}
         {projects.length > 0 && (
-          <div className="text-center">
-            <Button asChild variant="outline" size="lg" className="group">
-              <Link href="/portfolio">
-                {locale === 'de' ? 'Alle Projekte ansehen' : 'Zobrazit všechny projekty'}
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
+          <div className="text-center space-y-4">
+            <LeadButton
+              href={locale === 'de' ? '/anfrage' : '/poptavka'}
+              size="lg"
+              className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+            >
+              {locale === 'de' ? 'Mein Projekt starten' : 'Chci svůj projekt'}
+            </LeadButton>
+            <div>
+              <Button asChild variant="outline" size="sm" className="group">
+                <Link href="/portfolio">
+                  {locale === 'de' ? 'Alle Projekte ansehen' : 'Zobrazit všechny projekty'}
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </div>
           </div>
         )}
       </div>

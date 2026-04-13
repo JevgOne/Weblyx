@@ -424,7 +424,7 @@ export function PricingCalculator() {
         <div className="mt-12 max-w-4xl mx-auto">
           <Card className="bg-muted/50 border-0">
             <CardContent className="p-6">
-              <p className="text-sm text-muted-foreground text-center" dangerouslySetInnerHTML={{ __html: t('infoNote') }} />
+              <p className="text-sm text-muted-foreground text-center" dangerouslySetInnerHTML={{ __html: t.raw('infoNote') }} />
             </CardContent>
           </Card>
         </div>

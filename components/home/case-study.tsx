@@ -2,7 +2,8 @@ import { getPublishedPortfolio } from "@/lib/turso/portfolio";
 import { getCaseStudyData } from "@/lib/turso/cms";
 import { ArrowDown, Clock, Gauge, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { LeadButton } from "@/components/tracking/LeadButton";
 import type { CaseStudyData } from "@/types/cms";
 
 interface CaseMetric {
@@ -16,6 +17,7 @@ interface CaseMetric {
 export async function CaseStudy() {
   const locale = await getLocale();
   const isDE = locale === 'de';
+  const tHero = await getTranslations('hero');
 
   // Load CMS data
   let cmsTexts: CaseStudyData | null = null;
@@ -147,13 +149,22 @@ export async function CaseStudy() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-10">
-          <Link
-            href="/portfolio"
-            className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-400 font-medium transition-colors"
+        <div className="text-center mt-10 space-y-4">
+          <LeadButton
+            href={tHero('ctaPrimaryLink')}
+            size="lg"
+            className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
           >
-            {ctaText}
-          </Link>
+            {isDE ? 'Ähnliche Ergebnisse für mein Projekt' : 'Chci podobné výsledky pro svůj projekt'}
+          </LeadButton>
+          <div>
+            <Link
+              href="/portfolio"
+              className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-400 font-medium transition-colors"
+            >
+              {ctaText}
+            </Link>
+          </div>
         </div>
       </div>
     </section>

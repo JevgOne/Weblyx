@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, Sparkles, Zap, Clock, Tag, X } from "lucide-react";
+import { Check, Sparkles, Zap, Clock, Tag, X, Shield, Wallet, RefreshCcw, Headphones } from "lucide-react";
 import { useState } from "react";
 import { PricingTier } from "@/types/cms";
 import { useLocale, useTranslations } from 'next-intl';
@@ -234,7 +234,7 @@ export function Pricing({ serverTiers }: PricingProps) {
   };
 
   return (
-    <section className="relative py-16 md:py-24 px-4 overflow-hidden">
+    <section id="pricing" className="relative py-16 md:py-24 px-4 overflow-hidden scroll-mt-20">
       {/* Animated background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
@@ -433,6 +433,59 @@ export function Pricing({ serverTiers }: PricingProps) {
           {/* Gradient fade edges */}
           <div className="absolute left-0 top-0 bottom-8 w-20 bg-gradient-to-r from-background to-transparent pointer-events-none hidden md:block"></div>
           <div className="absolute right-0 top-0 bottom-8 w-20 bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block"></div>
+        </div>
+
+        {/* Trust badges — risk reversal under price cards */}
+        <div className="mt-10 mb-12 animate-fade-in delay-1000">
+          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex flex-col items-center text-center gap-2 p-5 rounded-2xl bg-card border border-border/60 hover:border-primary/30 transition-colors">
+              <div className="p-3 rounded-xl bg-primary/10">
+                <Wallet className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="font-semibold text-sm">
+                {locale === 'de' ? 'Bezahlung nach Lieferung' : 'Platba až po předání'}
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {locale === 'de' ? 'Kein Vorschuss, Sie zahlen erst, wenn Sie zufrieden sind.' : 'Žádná záloha předem, platíte až jste spokojeni.'}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-2 p-5 rounded-2xl bg-card border border-border/60 hover:border-primary/30 transition-colors">
+              <div className="p-3 rounded-xl bg-primary/10">
+                <Shield className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="font-semibold text-sm">
+                {locale === 'de' ? 'Keine versteckten Kosten' : 'Bez skrytých poplatků'}
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {locale === 'de' ? 'Festpreis. Was Sie sehen, ist was Sie zahlen.' : 'Pevná cena. Co vidíte, to platíte.'}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-2 p-5 rounded-2xl bg-card border border-border/60 hover:border-primary/30 transition-colors">
+              <div className="p-3 rounded-xl bg-primary/10">
+                <RefreshCcw className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="font-semibold text-sm">
+                {locale === 'de' ? 'Unbegrenzte Korrekturen' : 'Neomezené revize'}
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {locale === 'de' ? 'Wir ändern alles, bis es perfekt passt.' : 'Upravujeme dokud nebudete 100% spokojeni.'}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-2 p-5 rounded-2xl bg-card border border-border/60 hover:border-primary/30 transition-colors">
+              <div className="p-3 rounded-xl bg-primary/10">
+                <Headphones className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="font-semibold text-sm">
+                {locale === 'de' ? 'Support inklusive' : 'Podpora v ceně'}
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {locale === 'de' ? '30 Tage kostenlose Betreuung nach Launch.' : '30 dní bezplatné podpory po spuštění.'}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="text-center space-y-4 animate-fade-in delay-1000">

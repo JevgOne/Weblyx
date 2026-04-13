@@ -2,6 +2,7 @@ import { ProcessSection, ProcessStep } from "@/types/cms";
 import { getProcessSection, getAllProcessSteps } from "@/lib/turso/cms";
 import { getIcon } from "@/lib/icon-map";
 import { getTranslations, getLocale } from 'next-intl/server';
+import { LeadButton } from "@/components/tracking/LeadButton";
 
 async function getProcessData(locale?: string): Promise<{ section: ProcessSection | null; steps: ProcessStep[] }> {
   try {
@@ -95,8 +96,15 @@ export async function Process() {
           })}
         </div>
 
-        {/* Bottom CTA hint */}
-        <div className="mt-16 text-center">
+        {/* Bottom CTA */}
+        <div className="mt-16 text-center space-y-4">
+          <LeadButton
+            href={locale === 'de' ? '/anfrage' : '/poptavka'}
+            size="lg"
+            className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+          >
+            {locale === 'de' ? 'Kostenlose Erstberatung' : 'Začít s nezávaznou konzultací'}
+          </LeadButton>
           <p className="text-sm text-muted-foreground">
             {t('bottomHint')}
           </p>

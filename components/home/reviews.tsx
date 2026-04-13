@@ -5,6 +5,7 @@ import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getTranslations, getLocale } from "next-intl/server";
 import { GoogleReviewsBadge } from "@/components/google-reviews/GoogleReviewsBadge";
+import { LeadButton } from "@/components/tracking/LeadButton";
 // NOTE: Individual Review JSON-LD schemas were removed (2026-02-01)
 // Google does NOT support Review rich results for @type:Service (itemReviewed).
 // The AggregateRating on LocalBusiness schema (in app/page.tsx) handles star ratings in search.
@@ -45,6 +46,7 @@ function StarRating({ rating }: { rating: number }) {
 
 export async function Reviews() {
   const t = await getTranslations("reviews");
+  const locale = await getLocale();
   const reviews = await getReviews();
 
   // Don't render section if no reviews
@@ -130,6 +132,17 @@ export async function Reviews() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-12">
+          <LeadButton
+            href={locale === 'de' ? '/anfrage' : '/poptavka'}
+            size="lg"
+            className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+          >
+            {locale === 'de' ? 'Werde unser nächster zufriedener Kunde' : 'Staňte se naším dalším spokojeným klientem'}
+          </LeadButton>
         </div>
       </div>
     </section>
