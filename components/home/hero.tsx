@@ -70,7 +70,7 @@ export async function Hero() {
   const t = await getTranslations('hero');
 
   return (
-    <section className="relative min-h-[90vh] flex items-center py-20 md:py-0 px-4 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
+    <section className="relative flex items-center py-16 md:py-20 lg:py-24 px-4 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
       {/* Animated background elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 right-1/4 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -80,9 +80,9 @@ export async function Hero() {
       </div>
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 xl:gap-24 items-center">
           {/* Left Column - Content */}
-          <div className="space-y-8 lg:space-y-10">
+          <div className="space-y-6 lg:space-y-8 max-w-2xl">
             {/* Badge */}
             <div
               className="inline-flex items-center gap-2 px-4 py-2 mt-6 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-transparent text-primary text-sm font-medium border border-primary/20 shadow-lg shadow-primary/5 backdrop-blur-sm"
@@ -93,8 +93,8 @@ export async function Hero() {
             </div>
 
             {/* Heading */}
-            <div className="space-y-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+            <div className="space-y-5">
+              <h1 className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-[3.25rem] lg:text-[3.5rem] xl:text-6xl font-bold tracking-tight">
                 <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
                   {data.title}
                 </span>
@@ -109,18 +109,18 @@ export async function Hero() {
               </h1>
 
               <p
-                className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed"
+                className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: data.subtitle }}
               />
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-1">
               {/* Primary CTA with Facebook Pixel Lead tracking */}
               <LeadButton
                 href={data.ctaPrimary.href}
                 size="lg"
-                className="text-base px-8 py-6 shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-primary to-primary/90"
+                className="w-full sm:w-auto text-sm sm:text-base px-6 py-5 shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 bg-gradient-to-r from-primary to-primary/90"
               >
                 {data.ctaPrimary.text}
               </LeadButton>
@@ -128,7 +128,7 @@ export async function Hero() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-base px-8 py-6 border-2 hover:bg-muted hover:border-primary/50 transition-all duration-300"
+                className="w-full sm:w-auto text-sm sm:text-base px-6 py-5 border-2 hover:bg-muted hover:border-primary/50 transition-all duration-300"
               >
                 <Link href={data.ctaSecondary.href}>{data.ctaSecondary.text}</Link>
               </Button>
@@ -151,20 +151,20 @@ export async function Hero() {
             </div>
 
             {/* Stats - Compact Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-6">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4">
               {data.stats.map((stat, index) => {
                 const IconComponent = iconMap[stat.icon] || Zap;
                 return (
                   <div
                     key={index}
-                    className="group relative p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 min-h-[150px]"
+                    className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
                   >
-                    <div className="flex flex-col items-center justify-center text-center h-full space-y-2">
-                      <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                        <IconComponent className="h-5 w-5 text-primary" />
+                    <div className="flex flex-col items-center justify-center text-center space-y-1.5">
+                      <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <IconComponent className="h-4 w-4 text-primary" />
                       </div>
-                      <div className="text-lg lg:text-xl font-bold whitespace-nowrap">{stat.value}</div>
-                      <div className="text-xs sm:text-sm text-foreground/70 leading-tight">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">{stat.value}</div>
+                      <div className="text-[11px] sm:text-xs text-foreground/70 leading-tight">
                         {stat.label}
                       </div>
                     </div>
@@ -175,8 +175,8 @@ export async function Hero() {
           </div>
 
           {/* Right Column - Visual/Image */}
-          <div className="relative lg:h-[600px] h-[400px] flex items-center justify-center">
-            <div className="relative w-full h-full max-w-lg mx-auto">
+          <div className="relative lg:h-[560px] h-[360px] sm:h-[440px] flex items-center justify-center lg:justify-end">
+            <div className="relative w-full h-full max-w-md lg:max-w-none lg:ml-auto">
               {/* Decorative elements */}
               <div className="absolute -top-4 -right-4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
               <div className="absolute -bottom-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>

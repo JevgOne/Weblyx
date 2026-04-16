@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/cookie-consent";
+import { OrderPauseModal } from "@/components/order-pause-modal";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 import { CalculatorLeadCapture } from "@/components/calculator/CalculatorLeadCapture";
@@ -90,6 +91,7 @@ export default async function RootLayout({
               {children}
               <Footer />
               <CookieConsent />
+              <OrderPauseModal />
               <FacebookPixel />
               <CalculatorLeadCapture />
               <WhatsAppChat />
