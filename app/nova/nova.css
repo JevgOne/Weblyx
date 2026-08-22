@@ -1,0 +1,208 @@
+/**
+ * Design tokens for the Weblyx redesign, scoped to `.nova` so they cannot
+ * leak into the existing site (which runs its own teal-on-slate system).
+ */
+
+.nova {
+  /* Brand */
+  --n-brand: #14b8a6;
+  --n-brand-dark: #0d9488; /* teal that clears contrast on white */
+  --n-brand-light: #2dd4bf; /* teal for dark backgrounds */
+  --n-brand-tint: rgba(20, 184, 166, 0.1);
+
+  /* Ink & text */
+  --n-ink: #0f172a;
+  --n-ink-2: #17253f;
+  --n-text-body: #334155;
+  --n-text-muted: #475569;
+  --n-text-dim: #94a3b8;
+
+  /* Surfaces */
+  --n-bg: #ffffff;
+  --n-bg-alt: #f8fafc;
+  --n-bg-slot: #f1f5f9;
+
+  /* Borders */
+  --n-border: rgba(15, 23, 42, 0.1);
+  --n-border-soft: rgba(15, 23, 42, 0.08);
+  --n-border-dark: rgba(255, 255, 255, 0.14);
+
+  background: var(--n-bg);
+  color: var(--n-ink);
+  font-family: var(--font-manrope), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.nova ::selection {
+  background: var(--n-ink);
+  color: #ffffff;
+}
+
+/* --- Entrance animation ---------------------------------------------------
+   One keyframe, staggered by delay. Matches the prototype's timing curve. */
+@keyframes wbxup {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nova-up {
+  animation: wbxup 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.nova-d1 { animation-delay: 0.05s; }
+.nova-d2 { animation-delay: 0.12s; }
+.nova-d3 { animation-delay: 0.22s; }
+.nova-d4 { animation-delay: 0.32s; }
+.nova-d5 { animation-delay: 0.42s; }
+.nova-d6 { animation-delay: 0.52s; }
+
+/* --- Layout primitives ---------------------------------------------------- */
+.nova-container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+.nova-container-hero {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+.nova-container-text {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+/* Section rhythm: 130px light, 120px dark. */
+.nova-section {
+  padding-top: 130px;
+  padding-bottom: 130px;
+}
+
+.nova-section-dark {
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+/* --- Type scale ----------------------------------------------------------- */
+.nova-h1 {
+  font-size: clamp(40px, 4.6vw, 62px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.06;
+  margin: 0;
+}
+
+.nova-h2 {
+  font-size: clamp(34px, 4.6vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.nova-h2-dark {
+  font-size: clamp(32px, 4.4vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.nova-quote {
+  font-size: clamp(28px, 4.2vw, 54px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.nova-price {
+  font-size: clamp(40px, 4.4vw, 58px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.nova-lead {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--n-text-muted);
+  margin: 16px 0 0;
+}
+
+/* Small-caps style label used above configurator groups. */
+.nova-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--n-text-muted);
+}
+
+/* --- Focus ---------------------------------------------------------------- */
+.nova a:focus-visible,
+.nova button:focus-visible,
+.nova input:focus-visible {
+  outline: 2px solid var(--n-brand-dark);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --- Responsive ----------------------------------------------------------
+   Single breakpoint at 1080px collapses the two-column layouts, matching the
+   prototype; 641–1080px keeps 3/4-column grids at two columns. */
+@media (max-width: 1080px) {
+  .nova-col2,
+  .nova-col3,
+  .nova-col4,
+  .nova-conf {
+    grid-template-columns: 1fr !important;
+  }
+
+  .nova-conf-sticky {
+    position: static !important;
+  }
+
+  .nova-hero {
+    gap: 44px !important;
+  }
+
+  .nova-section {
+    padding-top: 88px;
+    padding-bottom: 88px;
+  }
+
+  .nova-section-dark {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1080px) {
+  .nova-col3,
+  .nova-col4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-up {
+    animation: none;
+  }
+
+  .nova * {
+    transition-duration: 0.01ms !important;
+  }
+}
