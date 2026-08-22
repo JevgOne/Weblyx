@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { isWritableLeadStatus } from '@/lib/leads/status';
 
 // GET - Retrieve all leads
 export async function GET(request: NextRequest) {
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
         projectTypeOther: row.project_type_other,
         businessDescription: row.business_description,
         projectDetails: parseJSON(row.project_details),
+        configuration: parseJSON(row.configuration),
         features: parseJSON(row.features),
         designPreferences: parseJSON(row.design_preferences),
         budgetRange: row.budget_range,
@@ -55,7 +57,9 @@ export async function GET(request: NextRequest) {
       data: leads,
     }, {
       headers: {
-        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
+        // No caching: the panel refetches right after a status change and a
+        // cached copy would flip the row back to its previous state.
+        'Cache-Control': 'private, no-store',
       },
     });
   } catch (error: any) {
@@ -69,6 +73,31 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+/**
+ * Columns the admin UI may write, mapped from the camelCase keys it sends.
+ * The column name used to be derived from the request key, which put caller
+ * input straight into the SQL string.
+ */
+const UPDATABLE_COLUMNS: Record<string, string> = {
+  status: 'status',
+  assignedTo: 'assigned_to',
+  budgetRange: 'budget_range',
+  timeline: 'timeline',
+  projectType: 'project_type',
+  projectTypeOther: 'project_type_other',
+  businessDescription: 'business_description',
+  projectDetails: 'project_details',
+  features: 'features',
+  designPreferences: 'design_preferences',
+  configuration: 'configuration',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  company: 'company',
+  proposalEmailSent: 'proposal_email_sent',
+  proposalEmailSentAt: 'proposal_email_sent_at',
+};
 
 // PATCH - Update lead status or details
 export async function PATCH(request: NextRequest) {
@@ -88,17 +117,37 @@ export async function PATCH(request: NextRequest) {
     const setClauses: string[] = [];
     const args: any[] = [];
 
-    for (const [key, value] of Object.entries(updates)) {
-      // Convert camelCase to snake_case for database columns
-      const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      setClauses.push(`${dbKey} = ?`);
+    for (const [key, value] of Object.entries(updates || {})) {
+      const column = UPDATABLE_COLUMNS[key];
+      if (!column) {
+        return NextResponse.json(
+          { success: false, error: `Unknown field: ${key}` },
+          { status: 400 }
+        );
+      }
+
+      if (column === 'status' && !isWritableLeadStatus(value)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid lead status' },
+          { status: 400 }
+        );
+      }
+
+      setClauses.push(`${column} = ?`);
 
       // Stringify objects/arrays for JSON fields
       if (typeof value === 'object' && value !== null) {
         args.push(JSON.stringify(value));
       } else {
-        args.push(value);
+        args.push(value as any);
       }
+    }
+
+    if (setClauses.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'No fields to update' },
+        { status: 400 }
+      );
     }
 
     // Always update updated_at

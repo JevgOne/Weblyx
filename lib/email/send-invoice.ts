@@ -30,6 +30,12 @@ interface SendInvoiceEmailParams {
  */
 export async function sendInvoiceEmail(params: SendInvoiceEmailParams) {
   try {
+    // 🛑 Global kill switch — set EMAILS_DISABLED=true to stop ALL outgoing emails.
+    if (process.env.EMAILS_DISABLED === 'true') {
+      console.warn(`🛑 Email sending is disabled (EMAILS_DISABLED=true) — skipped invoice email to ${params.to}`);
+      return { success: false, error: 'Email sending disabled' };
+    }
+
     if (!process.env.RESEND_API_KEY) {
       console.warn('⚠️ RESEND_API_KEY not configured - invoice email not sent');
       return { success: false, error: 'Email service not configured' };

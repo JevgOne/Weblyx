@@ -13,7 +13,7 @@ export async function GET() {
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN published = 1 THEN 1 ELSE 0 END) as published FROM portfolio", args: [] },
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN published = 1 THEN 1 ELSE 0 END) as published FROM blog_posts", args: [] },
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN published = 1 THEN 1 ELSE 0 END) as published, SUM(CASE WHEN featured = 1 THEN 1 ELSE 0 END) as featured FROM reviews", args: [] },
-      { sql: "SELECT COUNT(*) as total FROM leads", args: [] },
+      { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_leads, SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress, SUM(CASE WHEN status IN ('done', 'converted') THEN 1 ELSE 0 END) as done FROM leads", args: [] },
     ]);
 
     const portfolio = results[0].rows[0];
@@ -27,7 +27,12 @@ export async function GET() {
         portfolio: { total: Number(portfolio.total) || 0, published: Number(portfolio.published) || 0 },
         blog: { total: Number(blog.total) || 0, published: Number(blog.published) || 0 },
         reviews: { total: Number(reviews.total) || 0, published: Number(reviews.published) || 0, featured: Number(reviews.featured) || 0 },
-        leads: { total: Number(leads.total) || 0 },
+        leads: {
+          total: Number(leads.total) || 0,
+          new: Number(leads.new_leads) || 0,
+          inProgress: Number(leads.in_progress) || 0,
+          done: Number(leads.done) || 0,
+        },
       },
     });
   } catch (error: any) {

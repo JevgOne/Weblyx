@@ -32,6 +32,13 @@ export async function sendEmail(params: {
   from?: string; // Optional override for testing
 }) {
   try {
+    // 🛑 Global kill switch — set EMAILS_DISABLED=true to stop ALL outgoing emails.
+    // Reversible: remove the env var (or set to anything but "true") to re-enable.
+    if (process.env.EMAILS_DISABLED === 'true') {
+      console.warn(`🛑 Email sending is disabled (EMAILS_DISABLED=true) — skipped email to ${params.to}`);
+      return { success: false, error: 'Email sending disabled' };
+    }
+
     if (!process.env.RESEND_API_KEY) {
       console.warn('⚠️ RESEND_API_KEY not configured - email not sent');
       return { success: false, error: 'Email service not configured' };

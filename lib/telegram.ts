@@ -7,6 +7,8 @@
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+import type { LeadConfiguration } from '@/lib/pricing/types';
+
 interface LeadNotificationData {
   name: string;
   email: string;
@@ -16,6 +18,7 @@ interface LeadNotificationData {
   budget?: string;
   description?: string;
   leadId?: string;
+  configuration?: LeadConfiguration | null;
 }
 
 /**
@@ -105,6 +108,17 @@ function formatLeadMessage(lead: LeadNotificationData): string {
 
   if (lead.budget) {
     message += `💰 <b>Rozpočet:</b> ${lead.budget}\n`;
+  }
+
+  if (lead.configuration) {
+    const config = lead.configuration;
+    message += `🧩 <b>Balíček:</b> ${config.tierName}\n`;
+    if (config.addons.length > 0) {
+      message += `➕ <b>Doplňky:</b> ${config.addons.map((a) => a.name).join(', ')}\n`;
+    }
+    message += `💵 <b>Cena:</b> ${config.totalPrice.toLocaleString('cs-CZ')} Kč · ${config.totalHours} h`;
+    if (config.deliveryDays) message += ` · dodání ${config.deliveryDays} dní`;
+    message += '\n';
   }
 
   if (lead.description) {
