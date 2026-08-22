@@ -8,6 +8,8 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
@@ -95,6 +97,12 @@ const nextConfig: NextConfig = {
         destination: 'https://www.seitelyx.de/:path*',
         permanent: true, // 301
       },
+      // Retired standalone calculator — the price configurator lives in the pricing section
+      {
+        source: '/kalkulacka',
+        destination: '/#cenik',
+        statusCode: 301,
+      },
       // German route aliases: /referenzen → /portfolio (nav says "Referenzen" but page is /portfolio)
       {
         source: '/referenzen',
@@ -141,17 +149,24 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
-          // HSTS - force HTTPS
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
-          },
+          // HSTS - force HTTPS. Never in dev: the browser would pin
+          // localhost to HTTPS for a year, and `next dev` speaks plain HTTP.
+          ...(isDev
+            ? []
+            : [
+                {
+                  key: 'Strict-Transport-Security',
+                  value: 'max-age=31536000; includeSubDomains',
+                },
+              ]),
           // Content Security Policy
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://connect.facebook.net",
+              // Next.js dev bundles (webpack eval source maps) need 'unsafe-eval',
+              // production builds do not — never ship it.
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://connect.facebook.net`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
@@ -161,8 +176,14 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
-            ].join('; '),
+              // Rewrites every http:// subresource to https://. On localhost
+              // that points every stylesheet, script and image at a TLS port
+              // `next dev` does not serve, so the page renders unstyled.
+              // Chrome exempts localhost, Safari does not.
+              ...(isDev ? [] : ['upgrade-insecure-requests']),
+            ]
+              .filter(Boolean)
+              .join('; '),
           },
         ],
       },

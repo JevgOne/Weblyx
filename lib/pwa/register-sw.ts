@@ -13,6 +13,23 @@ export function registerServiceWorker() {
           return;
         }
 
+        // Never run a worker against the dev server. Its asset URLs are not
+        // content-hashed and change on every restart, so a cached document ends
+        // up pointing at chunks that no longer exist and the page renders with
+        // no CSS at all. Tear down anything a previous session left behind.
+        if (
+          window.location.hostname === 'localhost' ||
+          window.location.hostname === '127.0.0.1'
+        ) {
+          await unregisterServiceWorker();
+          if ('caches' in window) {
+            const names = await caches.keys();
+            await Promise.all(names.map((name) => caches.delete(name)));
+          }
+          console.log('⚠️ Service Worker disabled on localhost');
+          return;
+        }
+
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
         });

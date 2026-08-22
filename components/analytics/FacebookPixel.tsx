@@ -4,7 +4,16 @@ import { useEffect } from 'react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
 
-const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || '883179307835842';
+/**
+ * The ID is interpolated into an inline <Script>, so anything but digits can
+ * break the surrounding JavaScript. A literal `\n` inside the double quotes in
+ * .env.local — which dotenv expands into a real newline — once produced
+ * `fbq('init', '1388…` followed by a line break, an unterminated string that
+ * threw "Invalid or unexpected token" on every page and took the pixel with it.
+ * Trim, then verify, then use.
+ */
+const RAW_FB_PIXEL_ID = (process.env.NEXT_PUBLIC_FB_PIXEL_ID || '883179307835842').trim();
+const FB_PIXEL_ID = /^\d+$/.test(RAW_FB_PIXEL_ID) ? RAW_FB_PIXEL_ID : '';
 
 export function FacebookPixel() {
   useEffect(() => {
