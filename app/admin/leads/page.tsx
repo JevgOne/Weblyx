@@ -27,58 +27,19 @@ import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight
 import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
 import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
 import { NotificationPermission } from "@/components/admin/NotificationPermission";
-
-// Mock data pro demo
-const mockLeads = [
-  {
-    id: "1",
-    name: "Jan Novák",
-    email: "jan@priklad.cz",
-    phone: "+420 777 888 999",
-    company: "Stavební firma",
-    projectType: "Web",
-    status: "new",
-    created: "2025-01-19",
-    budget: "20 000 - 50 000 Kč"
-  },
-  {
-    id: "2",
-    name: "Marie Svobodová",
-    email: "marie@fitness.cz",
-    phone: "+420 666 555 444",
-    company: "Fitness Studio",
-    projectType: "Web + E-shop",
-    status: "contacted",
-    created: "2025-01-18",
-    budget: "50 000 - 100 000 Kč"
-  },
-  {
-    id: "3",
-    name: "Tomáš Dvořák",
-    email: "tomas@startup.cz",
-    phone: null,
-    company: "SaaS Startup",
-    projectType: "Landing page",
-    status: "quoted",
-    created: "2025-01-17",
-    budget: "10 000 - 20 000 Kč"
-  },
-];
-
-const statusConfig = {
-  new: { label: "Nová", color: "bg-red-500" },
-  contacted: { label: "Kontaktován", color: "bg-blue-500" },
-  quoted: { label: "Nabídka odeslána", color: "bg-yellow-500" },
-  approved: { label: "Schváleno", color: "bg-cyan-500" },
-  converted: { label: "Převedeno na projekt", color: "bg-primary" },
-  rejected: { label: "Zamítnuto", color: "bg-gray-500" },
-  paused: { label: "Pozastaveno", color: "bg-orange-500" },
-};
+import {
+  LEAD_STATUS_OPTIONS,
+  canonicalLeadStatus,
+  leadStatusMeta,
+  nextLeadStatus,
+} from "@/lib/leads/status";
 
 export default function AdminLeadsPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [statusSaving, setStatusSaving] = useState<string | null>(null);
   const [leads, setLeads] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -95,27 +56,8 @@ export default function AdminLeadsPage() {
   `;
 
   useEffect(() => {
-    const loadLeads = async () => {
-      // Načíst leady z API
-      try {
-        const response = await fetch('/api/admin/leads');
-        const result = await response.json();
-
-        if (result.success) {
-          setLeads(result.data);
-          console.log("✅ Loaded leads from API:", result.data);
-        } else {
-          throw new Error(result.error);
-        }
-      } catch (error) {
-        console.error("❌ Error loading leads:", error);
-        // Fallback na mock data
-        setLeads(mockLeads);
-      }
-      setLoading(false);
-    };
-
-    loadLeads();
+    fetchLeads();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredLeads = useMemo(() => {
@@ -125,7 +67,9 @@ export default function AdminLeadsPage() {
         lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.company?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
+      // Legacy 'converted' rows filter under "Hotovo" like the badge shows them
+      const matchesStatus =
+        statusFilter === "all" || canonicalLeadStatus(lead.status) === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -143,27 +87,73 @@ export default function AdminLeadsPage() {
 
   const fetchLeads = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const response = await fetch('/api/admin/leads');
+
+      if (response.status === 401) {
+        throw new Error("Přihlášení vypršelo. Přihlaste se prosím znovu.");
+      }
+
       const result = await response.json();
 
-      if (result.success) {
-        setLeads(result.data);
-        // Also update selectedLead if it exists and matches
-        if (selectedLead) {
-          const updatedLead = result.data.find((l: any) => l.id === selectedLead.id);
-          if (updatedLead) {
-            setSelectedLead(updatedLead);
-          }
-        }
-      } else {
-        throw new Error(result.error);
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Poptávky se nepodařilo načíst.");
       }
-    } catch (error) {
+
+      setLeads(result.data);
+      // Also update selectedLead if it exists and matches
+      if (selectedLead) {
+        const updatedLead = result.data.find((l: any) => l.id === selectedLead.id);
+        if (updatedLead) {
+          setSelectedLead(updatedLead);
+        }
+      }
+    } catch (error: any) {
       console.error("Error loading leads:", error);
-      setLeads(mockLeads);
+      setLeads([]);
+      setLoadError(error.message || "Poptávky se nepodařilo načíst.");
     }
     setLoading(false);
+  };
+
+  /**
+   * Status pill doubles as the control that moves the lead along. Optimistic
+   * with rollback, and locked while the request is in flight so three quick
+   * clicks cannot send three PATCHes.
+   */
+  const handleCycleStatus = async (lead: any) => {
+    if (statusSaving) return;
+
+    const previous = lead.status;
+    const next = nextLeadStatus(previous);
+
+    setStatusSaving(lead.id);
+    setLoadError(null);
+    setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: next } : l)));
+    setSelectedLead((prev: any) => (prev?.id === lead.id ? { ...prev, status: next } : prev));
+
+    try {
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          response.status === 401 ? "Přihlášení vypršelo." : "Změna stavu selhala."
+        );
+      }
+    } catch (error: any) {
+      setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: previous } : l)));
+      setSelectedLead((prev: any) =>
+        prev?.id === lead.id ? { ...prev, status: previous } : prev
+      );
+      setLoadError(error.message || "Změna stavu selhala.");
+    } finally {
+      setStatusSaving(null);
+    }
   };
 
   const handleLeadUpdate = (updatedLead: any) => {
@@ -283,18 +273,26 @@ export default function AdminLeadsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Všechny stavy</SelectItem>
-                  <SelectItem value="new">Nové</SelectItem>
-                  <SelectItem value="contacted">Kontaktované</SelectItem>
-                  <SelectItem value="quoted">Nabídka odeslána</SelectItem>
-                  <SelectItem value="approved">Schváleno</SelectItem>
-                  <SelectItem value="converted">Převedeno na projekt</SelectItem>
-                  <SelectItem value="rejected">Zamítnuto</SelectItem>
-                  <SelectItem value="paused">Pozastaveno</SelectItem>
+                  {LEAD_STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value!} value={option.value!}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </CardContent>
         </Card>
+
+        {/* Load / update errors — no mock data stands in for a failed request */}
+        {loadError && (
+          <div className="mb-4 rounded-lg border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{loadError}</span>
+            <Button size="sm" variant="outline" onClick={fetchLeads}>
+              Zkusit znovu
+            </Button>
+          </div>
+        )}
 
         {/* Results count */}
         <div className="mb-4 text-sm text-muted-foreground">
@@ -409,11 +407,17 @@ export default function AdminLeadsPage() {
                     </TableCell>
                     <TableCell className="text-sm">{lead.budgetRange || lead.budget || '-'}</TableCell>
                     <TableCell>
-                      <Badge
-                        className={`${statusConfig[lead.status as keyof typeof statusConfig].color} text-white`}
+                      <button
+                        type="button"
+                        onClick={() => handleCycleStatus(lead)}
+                        disabled={statusSaving === lead.id}
+                        title="Kliknutím posunete stav"
+                        className="disabled:opacity-60"
                       >
-                        {statusConfig[lead.status as keyof typeof statusConfig].label}
-                      </Badge>
+                        <Badge className={`${leadStatusMeta(lead.status).badgeClass} text-white`}>
+                          {leadStatusMeta(lead.status).label}
+                        </Badge>
+                      </button>
                     </TableCell>
                     <TableCell className="text-sm">
                       {lead.assignedTo ? (
@@ -515,11 +519,17 @@ export default function AdminLeadsPage() {
                         </p>
                       )}
                     </div>
-                    <Badge
-                      className={`${statusConfig[lead.status as keyof typeof statusConfig].color} text-white`}
+                    <button
+                      type="button"
+                      onClick={() => handleCycleStatus(lead)}
+                      disabled={statusSaving === lead.id}
+                      title="Kliknutím posunete stav"
+                      className="disabled:opacity-60"
                     >
-                      {statusConfig[lead.status as keyof typeof statusConfig].label}
-                    </Badge>
+                      <Badge className={`${leadStatusMeta(lead.status).badgeClass} text-white`}>
+                        {leadStatusMeta(lead.status).label}
+                      </Badge>
+                    </button>
                   </div>
 
                   {/* Contact */}

@@ -1,0 +1,145 @@
+/**
+ * Admin panel design tokens, scoped to `.wbx-admin` so they stay clear of the
+ * public site's theme. Values come from the design handoff.
+ */
+
+.wbx-admin {
+  --a-ink: #0f172a;
+  --a-brand: #0e9c90;
+  --a-brand-soft: #0d9488;
+  --a-muted: #6e7c80;
+  --a-nav-idle: #8fa3be;
+  --a-bg: #ffffff;
+  --a-bg-alt: #f8fafc;
+  --a-slot: #e2e8f0;
+  --a-border: rgba(15, 23, 42, 0.08);
+  --a-border-row: rgba(15, 23, 42, 0.06);
+
+  font-family: var(--font-manrope), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--a-ink);
+  background: var(--a-bg);
+}
+
+/* --- Status pills ---------------------------------------------------------
+   Three lead states, each a tinted pill of its own hue. */
+.wbx-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 100px;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.wbx-status-new {
+  color: #0d9488;
+  background: rgba(20, 184, 166, 0.12);
+}
+
+.wbx-status-progress {
+  color: #2563eb;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.wbx-status-done {
+  color: #0f9268;
+  background: rgba(16, 185, 129, 0.14);
+}
+
+/* --- Sidebar navigation --------------------------------------------------- */
+.wbx-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--a-nav-idle);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wbx-nav-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.wbx-nav-item[data-active="true"] {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.wbx-nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.wbx-nav-item[data-active="true"] .wbx-nav-dot {
+  background: var(--a-brand);
+}
+
+.wbx-nav-badge {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--a-ink);
+  background: var(--a-brand);
+  min-width: 20px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 100px;
+}
+
+.wbx-nav-group {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(143, 163, 190, 0.65);
+  padding: 18px 12px 6px;
+}
+
+/* --- Cards & filters ------------------------------------------------------ */
+.wbx-card {
+  background: var(--a-bg-alt);
+  border: 1px solid var(--a-border);
+  border-radius: 16px;
+}
+
+.wbx-filter {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  color: #334155;
+  background: var(--a-bg-alt);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  transition: all 0.15s ease;
+}
+
+.wbx-filter[data-active="true"] {
+  color: #ffffff;
+  background: var(--a-ink);
+  border-color: var(--a-ink);
+}
+
+.wbx-admin a:focus-visible,
+.wbx-admin button:focus-visible {
+  outline: 2px solid var(--a-brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wbx-admin * {
+    transition-duration: 0.01ms !important;
+  }
+}

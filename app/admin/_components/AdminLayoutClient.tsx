@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { AdminAuthProvider } from "./AdminAuthProvider";
 import { QueryProvider } from "./QueryProvider";
 import { AdminLanguageProvider } from "@/lib/admin-i18n";
+import { AdminShell } from "./AdminShell";
 
 export function AdminLayoutClient({
   children,
@@ -25,7 +26,9 @@ export function AdminLayoutClient({
     <AdminLanguageProvider>
       <QueryProvider>
         <AdminAuthProvider>
-          {children}
+          {/* Shell sits inside the auth provider so navigation can be filtered
+              by the signed-in user's permissions. */}
+          <AdminShell>{children}</AdminShell>
         </AdminAuthProvider>
       </QueryProvider>
     </AdminLanguageProvider>

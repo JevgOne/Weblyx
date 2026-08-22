@@ -328,8 +328,16 @@ export default function AdminPaymentsPage() {
               </TableHeader>
               <TableBody>
                 {filteredPayments.map((payment) => {
-                  const statusInfo = statusConfig[payment.status];
-                  const typeInfo = paymentTypeConfig[payment.payment_type];
+                  // An unknown status/type from the gateway must not blank the table
+                  const statusInfo = statusConfig[payment.status] ?? {
+                    label: payment.status ?? "Neznámý",
+                    color: "bg-gray-400",
+                    icon: Clock,
+                  };
+                  const typeInfo = paymentTypeConfig[payment.payment_type] ?? {
+                    label: payment.payment_type ?? "—",
+                    color: "bg-gray-100 text-gray-800",
+                  };
                   const StatusIcon = statusInfo.icon;
 
                   return (

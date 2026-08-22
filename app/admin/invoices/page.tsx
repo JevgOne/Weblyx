@@ -394,8 +394,16 @@ export default function AdminInvoicesPage() {
               </TableHeader>
               <TableBody>
                 {filteredInvoices.map((invoice) => {
-                  const statusInfo = statusConfig[invoice.status];
-                  const typeInfo = typeConfig[invoice.invoice_type];
+                  // An unknown status/type must not blank the table
+                  const statusInfo = statusConfig[invoice.status] ?? {
+                    label: invoice.status ?? "Neznámý",
+                    color: "bg-gray-400",
+                    icon: FileText,
+                  };
+                  const typeInfo = typeConfig[invoice.invoice_type] ?? {
+                    label: invoice.invoice_type ?? "—",
+                    color: "bg-gray-100 text-gray-800",
+                  };
                   const StatusIcon = statusInfo.icon;
 
                   return (

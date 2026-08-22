@@ -1,605 +1,351 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  LayoutDashboard,
-  Users,
-  FolderKanban,
-  Mail,
-  Calendar,
-  BarChart,
-  FileText,
-  Settings,
-  LogOut,
-  Image,
-  Images,
-  FileEdit,
-  Tag,
-  Globe,
-  MessageSquareQuote,
-  Target,
-  Bot,
-  CreditCard,
-  Receipt,
-  UserCog,
-  History,
-  ClipboardList,
-  TrendingUp,
-  Brain,
-} from "lucide-react";
-import { useAdminTranslation, LanguageSelector } from "@/lib/admin-i18n";
-import { ROLE_NAMES, isAdminOrHigher } from "@/lib/auth/permissions";
+import { LogOut } from "lucide-react";
+import { LanguageSelector } from "@/lib/admin-i18n";
+import { canonicalLeadStatus, leadStatusMeta, nextLeadStatus } from "@/lib/leads/status";
+
+interface Stats {
+  portfolio: { total: number; published: number };
+  blog: { total: number; published: number };
+  reviews: { total: number; published: number; featured: number };
+  leads: { total: number; new?: number };
+}
+
+interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  projectType?: string;
+  budgetRange?: string;
+  status: string;
+  createdAt: string;
+}
+
+const EMPTY_STATS: Stats = {
+  portfolio: { total: 0, published: 0 },
+  blog: { total: 0, published: 0 },
+  reviews: { total: 0, published: 0, featured: 0 },
+  leads: { total: 0 },
+};
+
+function initialsOf(name: string) {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .filter(Boolean)
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function StatCard({
+  label,
+  value,
+  note,
+  loading,
+}: {
+  label: string;
+  value: number | string;
+  note: string;
+  loading: boolean;
+}) {
+  return (
+    <div className="wbx-card p-6">
+      <p className="text-[13px] font-semibold" style={{ color: "var(--a-muted)" }}>
+        {label}
+      </p>
+      {loading ? (
+        <Skeleton className="mt-3 h-10 w-20" />
+      ) : (
+        <p className="mt-3 text-[38px] font-extrabold leading-none" style={{ letterSpacing: "-.04em" }}>
+          {value}
+        </p>
+      )}
+      <p className="mt-2 text-[13px] font-semibold" style={{ color: "#0F9268" }}>
+        {note}
+      </p>
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { user, can } = useAdminAuth();
-  const { t } = useAdminTranslation();
+  const { user } = useAdminAuth();
+  const [stats, setStats] = useState<Stats>(EMPTY_STATS);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    portfolio: { total: 0, published: 0 },
-    blog: { total: 0, published: 0 },
-    reviews: { total: 0, published: 0, featured: 0 },
-    leads: { total: 0 },
-  });
+  const [statusSaving, setStatusSaving] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      console.time("Dashboard Load");
-      try {
-        const response = await fetch('/api/admin/stats');
-        const result = await response.json();
+    let cancelled = false;
 
-        if (result.success) {
-          setStats(result.data);
-        } else {
-          console.error("Failed to fetch stats:", result.error);
-        }
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      }
+    Promise.all([
+      fetch("/api/admin/stats").then((r) => (r.ok ? r.json() : null)),
+      fetch("/api/admin/leads").then((r) => (r.ok ? r.json() : null)),
+    ])
+      .then(([statsResult, leadsResult]) => {
+        if (cancelled) return;
+        if (statsResult?.success) setStats(statsResult.data);
 
-      setLoading(false);
-      console.timeEnd("Dashboard Load");
+        const list = leadsResult?.leads ?? leadsResult?.data ?? leadsResult;
+        if (Array.isArray(list)) setLeads(list);
+      })
+      .catch((error) => console.error("Dashboard load failed:", error))
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
     };
-
-    fetchStats();
   }, []);
 
+  const derived = useMemo(() => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const parsed = leads.map((lead) => ({ ...lead, date: new Date(lead.createdAt) }));
+
+    return {
+      newLeads: parsed.filter((l) => l.status === "new").length,
+      thisWeek: parsed.filter((l) => l.date >= weekAgo).length,
+      thisMonth: parsed.filter((l) => l.date >= monthStart).length,
+      closedThisMonth: parsed.filter(
+        (l) => l.date >= monthStart && canonicalLeadStatus(l.status) === "done"
+      ).length,
+      recent: parsed
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 5),
+    };
+  }, [leads]);
+
+  const monthLabel = useMemo(
+    () =>
+      new Date().toLocaleDateString("cs-CZ", { month: "long", year: "numeric" }),
+    []
+  );
+
+  // Same cycle as the leads table: optimistic, guarded, rolled back on failure.
+  const handleCycleStatus = async (lead: Lead) => {
+    if (statusSaving) return;
+
+    const previous = lead.status;
+    const next = nextLeadStatus(previous);
+
+    setStatusSaving(lead.id);
+    setStatusError(null);
+    setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: next } : l)));
+
+    try {
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          response.status === 401 ? "Přihlášení vypršelo." : "Změna stavu selhala."
+        );
+      }
+    } catch (error: any) {
+      setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: previous } : l)));
+      setStatusError(error.message || "Změna stavu selhala.");
+    } finally {
+      setStatusSaving(null);
+    }
+  };
+
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
     router.push("/admin/login");
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <span className="text-white font-bold text-xl">W</span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">{t.header.title}</h1>
-              <p className="text-sm text-muted-foreground">{t.header.dashboard}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <LanguageSelector variant="compact" />
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium">{user?.email}</p>
-              <p className="text-xs text-muted-foreground">
-                {user?.role ? ROLE_NAMES[user.role]?.cs : t.header.administrator}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.header.logout}</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">{t.dashboard.welcome}</h2>
-          <p className="text-muted-foreground">
-            {t.dashboard.overview}
+    <div>
+      {/* Account row — the shell owns the page title, so this only carries
+          identity and session actions. */}
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-[15px] font-semibold">{user?.name || user?.email}</p>
+          <p className="text-[13px] font-medium" style={{ color: "var(--a-muted)" }}>
+            Přihlášen · {monthLabel}
           </p>
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t.dashboard.activeProjects}
-              </CardTitle>
-              <FolderKanban className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <>
-                  <Skeleton className="h-9 w-16 mb-2" />
-                  <Skeleton className="h-3 w-24" />
-                </>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold">{stats.blog.total}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t.dashboard.totalProjects}
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t.dashboard.leads}
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <>
-                  <Skeleton className="h-9 w-16 mb-2" />
-                  <Skeleton className="h-3 w-24" />
-                </>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold">{stats.leads.total}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t.dashboard.totalLeads}
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t.dashboard.portfolioProjects}
-              </CardTitle>
-              <Image className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <>
-                  <Skeleton className="h-9 w-16 mb-2" />
-                  <Skeleton className="h-3 w-24" />
-                </>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold">{stats.portfolio.total}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t.dashboard.publishedOnWeb}
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
+        <div className="flex items-center gap-3">
+          <LanguageSelector variant="compact" />
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:bg-slate-50"
+            style={{ borderColor: "var(--a-border)" }}
+          >
+            <LogOut className="h-4 w-4" />
+            Odhlásit
+          </button>
         </div>
+      </div>
 
-        {/* Quick Access */}
-        <div>
-          <h3 className="text-xl font-bold mb-4">{t.dashboard.quickAccess}</h3>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.leadsTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.leadsDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/leads")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
+      {/* Stat cards */}
+      <div className="mb-9 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Nové poptávky"
+          value={derived.newLeads}
+          note={`${derived.thisWeek} za posledních 7 dní`}
+          loading={loading}
+        />
+        <StatCard
+          label="Poptávky celkem"
+          value={stats.leads.total}
+          note={`${derived.thisMonth} tento měsíc`}
+          loading={loading}
+        />
+        <StatCard
+          label="Reference na webu"
+          value={stats.portfolio.published}
+          note={`z ${stats.portfolio.total} celkem`}
+          loading={loading}
+        />
+        <StatCard
+          label="Publikované recenze"
+          value={stats.reviews.published}
+          note={`${stats.reviews.featured} vybraných`}
+          loading={loading}
+        />
+      </div>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FolderKanban className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.projectsTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.projectsDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/projects")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Image className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.portfolioTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.portfolioDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/portfolio")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-primary/5 to-secondary/5">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-primary flex items-center justify-center">
-                    <Images className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.mediaTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.mediaDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="default" className="w-full" onClick={() => router.push("/admin/media")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FileEdit className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.contentTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.contentDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/content")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <BarChart className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.statsTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.statsDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/stats")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.blogTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.blogDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/blog")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <MessageSquareQuote className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.reviewsTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.reviewsDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/reviews")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Tag className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.promoCodesTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.promoCodesDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/promo-codes")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                    <CreditCard className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.paymentsTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.paymentsDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="default" className="w-full bg-green-600 hover:bg-green-700" onClick={() => router.push("/admin/payments")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border-blue-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
-                    <Receipt className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.invoicesTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.invoicesDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="default" className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push("/admin/invoices")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Globe className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.webAnalyzerTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.webAnalyzerDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1" onClick={() => router.push("/admin/tools/web-analyzer")}>
-                    {t.dashboard.analyze}
-                  </Button>
-                  <Button variant="default" className="flex-1" onClick={() => router.push("/admin/web-leads")}>
-                    Leads
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
-                    <Target className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {t.dashboard.leadGenTitle}
-                    </CardTitle>
-                    <CardDescription>{t.dashboard.leadGenDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <Button variant="default" className="flex-1 bg-teal-600 hover:bg-teal-700" onClick={() => router.push("/admin/lead-generation")}>
-                    <Bot className="h-4 w-4 mr-1" />
-                    {t.common.open}
-                  </Button>
-                  <Button variant="outline" className="flex-1 border-teal-300" onClick={() => router.push("/admin/lead-generation/stats")}>
-                    <BarChart className="h-4 w-4 mr-1" />
-                    Stats
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Unified Marketing Module */}
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      Marketing
-                      <Brain className="h-4 w-4 text-purple-500" />
-                    </CardTitle>
-                    <CardDescription>Google Ads + Meta Ads + AI</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <Button variant="default" className="flex-1 bg-purple-600 hover:bg-purple-700" onClick={() => router.push("/admin/marketing")}>
-                    {t.common.open}
-                  </Button>
-                  <Button variant="outline" className="flex-1 border-purple-300" onClick={() => router.push("/admin/ai-assistant")}>
-                    <Brain className="h-4 w-4 mr-1" />
-                    AI
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* EroWeb - only for Owner/Admin */}
-            {can('eroweb') && (
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <Globe className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <CardTitle>{t.dashboard.erowebTitle}</CardTitle>
-                      <CardDescription>{t.dashboard.erowebDesc}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="default" className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => router.push("/admin/eroweb-analyza")}>
-                    {t.common.open}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Tasks - available to all roles */}
-            {can('tasks') && (
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                      <ClipboardList className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <CardTitle>{isAdminOrHigher(user?.role) ? 'Úkoly' : 'Moje úkoly'}</CardTitle>
-                      <CardDescription>
-                        {isAdminOrHigher(user?.role)
-                          ? 'Správa úkolů pro specialisty'
-                          : 'Vaše přiřazené úkoly'}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="default" className="w-full bg-green-600 hover:bg-green-700" onClick={() => router.push("/admin/tasks")}>
-                    {t.common.open}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-zinc-500/10 to-zinc-600/10 border-zinc-300">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
-                    <Settings className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.settingsTitle}</CardTitle>
-                    <CardDescription>{t.dashboard.settingsDesc}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" onClick={() => router.push("/admin/settings")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-200">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                    <UserCog className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>{t.dashboard.usersTitle || 'User Management'}</CardTitle>
-                    <CardDescription>{t.dashboard.usersDesc || 'Manage admin accounts'}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button variant="default" className="w-full bg-amber-600 hover:bg-amber-700" onClick={() => router.push("/admin/users")}>
-                  {t.common.open}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Activity Logs - only for Owner and Admin */}
-            {isAdminOrHigher(user?.role) && (
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-slate-500/10 to-slate-600/10 border-slate-300">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
-                      <History className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <CardTitle>Záznamy aktivit</CardTitle>
-                      <CardDescription>Historie akcí uživatelů</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" className="w-full" onClick={() => router.push("/admin/activity-logs")}>
-                    {t.common.open}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+      <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
+        {/* Recent leads */}
+        <div className="wbx-card p-[26px]">
+          <div className="mb-[18px] flex items-center justify-between gap-4">
+            <h2 className="text-[17px] font-bold" style={{ letterSpacing: "-.02em" }}>
+              Nejnovější poptávky
+            </h2>
+            <Link
+              href="/admin/leads"
+              className="text-sm font-semibold"
+              style={{ color: "var(--a-brand)" }}
+            >
+              Vše ›
+            </Link>
           </div>
+
+          {statusError && (
+            <p className="mb-3 text-[13px] font-semibold" style={{ color: "#DC2626" }}>
+              {statusError}
+            </p>
+          )}
+
+          {loading ? (
+            <div className="space-y-4">
+              {[0, 1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+              ))}
+            </div>
+          ) : derived.recent.length === 0 ? (
+            <p className="py-6 text-sm font-medium" style={{ color: "var(--a-muted)" }}>
+              Zatím žádné poptávky.
+            </p>
+          ) : (
+            <ul>
+              {derived.recent.map((lead) => {
+                const pill = leadStatusMeta(lead.status);
+                return (
+                  <li
+                    key={lead.id}
+                    className="flex items-center gap-3.5 border-t py-3.5"
+                    style={{ borderColor: "var(--a-border-row)" }}
+                  >
+                    <span
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold"
+                      style={{ background: "#F1F5F9", color: "#334155" }}
+                    >
+                      {initialsOf(lead.name || lead.email)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[15px] font-semibold">{lead.name || lead.email}</p>
+                      <p
+                        className="truncate text-[13px] font-medium"
+                        style={{ color: "var(--a-muted)" }}
+                      >
+                        {[lead.projectType, lead.budgetRange].filter(Boolean).join(" · ") ||
+                          lead.email}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCycleStatus(lead)}
+                      disabled={statusSaving === lead.id}
+                      title="Kliknutím posunete stav"
+                      className={`${pill.pillClass} disabled:opacity-60`}
+                    >
+                      {pill.label}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
-      </main>
+
+        {/* This month */}
+        <div
+          className="flex flex-col rounded-2xl p-[26px] text-white"
+          style={{ background: "var(--a-ink)" }}
+        >
+          <h2 className="text-[17px] font-bold" style={{ letterSpacing: "-.02em" }}>
+            Tento měsíc
+          </h2>
+          <p className="mb-6 mt-1 text-[13px] font-medium capitalize" style={{ color: "var(--a-muted)" }}>
+            {monthLabel}
+          </p>
+
+          <dl className="flex flex-col gap-[18px]">
+            <div>
+              <dt className="text-[13px]" style={{ color: "var(--a-muted)" }}>
+                Nové poptávky
+              </dt>
+              <dd className="text-[28px] font-extrabold" style={{ letterSpacing: "-.03em" }}>
+                {loading ? "—" : derived.thisMonth}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[13px]" style={{ color: "var(--a-muted)" }}>
+                Uzavřené poptávky
+              </dt>
+              <dd className="text-[28px] font-extrabold" style={{ letterSpacing: "-.03em" }}>
+                {loading ? "—" : derived.closedThisMonth}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[13px]" style={{ color: "var(--a-muted)" }}>
+                Článků na blogu
+              </dt>
+              <dd
+                className="text-[28px] font-extrabold"
+                style={{ letterSpacing: "-.03em", color: "var(--a-brand)" }}
+              >
+                {loading ? "—" : stats.blog.published}
+              </dd>
+            </div>
+          </dl>
+
+          <Link
+            href="/admin/invoices"
+            className="mt-auto pt-6 text-sm font-semibold"
+            style={{ color: "var(--a-brand)" }}
+          >
+            Přehled fakturace ›
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
