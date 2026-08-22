@@ -294,6 +294,10 @@ export async function getAllPricingTiers(): Promise<PricingTier[]> {
       id: row.id,
       name: row.name,
       description: row.description || '',
+      hours: Number(row.hours) || 0,
+      deliveryDays: row.delivery_days || '',
+      shortDesc: row.short_desc || '',
+      supportMonths: Number(row.support_months) || 0,
       price: row.price,
       currency: row.currency || 'CZK',
       interval: (row.interval as 'month' | 'year' | 'one-time') || 'month',
@@ -324,6 +328,10 @@ export async function getPricingTier(id: string): Promise<PricingTier | null> {
         id: result.id,
         name: result.name,
         description: result.description || '',
+        hours: Number(result.hours) || 0,
+        deliveryDays: result.delivery_days || '',
+        shortDesc: result.short_desc || '',
+        supportMonths: Number(result.support_months) || 0,
         price: result.price,
         currency: result.currency || 'CZK',
         interval: (result.interval as 'month' | 'year' | 'one-time') || 'month',
@@ -350,12 +358,16 @@ export async function createPricingTier(tier: Omit<PricingTier, 'id' | 'createdA
     const now = Math.floor(Date.now() / 1000);
 
     await executeQuery(
-      `INSERT INTO pricing_tiers (id, name, description, price, currency, interval, features, highlighted, cta_text, cta_link, "order", active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO pricing_tiers (id, name, description, short_desc, hours, delivery_days, support_months, price, currency, interval, features, highlighted, cta_text, cta_link, "order", active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         tier.name,
         tier.description || '',
+        tier.shortDesc || '',
+        tier.hours,
+        tier.deliveryDays || '',
+        tier.supportMonths ?? 0,
         tier.price,
         tier.currency,
         tier.interval,
@@ -390,6 +402,22 @@ export async function updatePricingTier(id: string, tier: Partial<PricingTier>):
     if (tier.description !== undefined) {
       updates.push('description = ?');
       params.push(tier.description);
+    }
+    if (tier.hours !== undefined) {
+      updates.push('hours = ?');
+      params.push(tier.hours);
+    }
+    if (tier.deliveryDays !== undefined) {
+      updates.push('delivery_days = ?');
+      params.push(tier.deliveryDays);
+    }
+    if (tier.shortDesc !== undefined) {
+      updates.push('short_desc = ?');
+      params.push(tier.shortDesc);
+    }
+    if (tier.supportMonths !== undefined) {
+      updates.push('support_months = ?');
+      params.push(tier.supportMonths);
     }
     if (tier.price !== undefined) {
       updates.push('price = ?');
@@ -449,6 +477,103 @@ export async function deletePricingTier(id: string): Promise<void> {
     console.error('Error deleting pricing tier:', error);
     throw error;
   }
+}
+
+// Pricing Add-ons. Price is stored, not derived; `availableTiers` names the
+// packages allowed to sell it, so a tier never charges for what it includes.
+export interface PricingAddonRecord {
+  id?: string;
+  name: string;
+  hours: number;
+  price: number;
+  availableTiers: string[];
+  order: number;
+  enabled: boolean;
+}
+
+export async function getAllPricingAddons(): Promise<PricingAddonRecord[]> {
+  try {
+    const results = await executeQuery<any>(
+      'SELECT * FROM pricing_addons ORDER BY "order" ASC'
+    );
+
+    return results.map(row => ({
+      id: row.id,
+      name: row.name,
+      hours: Number(row.hours) || 0,
+      price: Number(row.price) || 0,
+      availableTiers: String(row.available_tiers || '')
+        .split(',')
+        .map((t: string) => t.trim())
+        .filter(Boolean),
+      order: Number(row.order) || 0,
+      enabled: Boolean(row.active),
+    }));
+  } catch (error) {
+    console.error('Error fetching pricing addons:', error);
+    throw error;
+  }
+}
+
+export async function createPricingAddon(addon: Omit<PricingAddonRecord, 'id'>): Promise<string> {
+  const id = `addon-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  await executeQuery(
+    `INSERT INTO pricing_addons (id, name, hours, price, available_tiers, "order", active, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())`,
+    [
+      id,
+      addon.name,
+      addon.hours,
+      addon.price,
+      addon.availableTiers.join(','),
+      addon.order,
+      addon.enabled ? 1 : 0,
+    ]
+  );
+
+  return id;
+}
+
+export async function updatePricingAddon(id: string, addon: Partial<PricingAddonRecord>): Promise<void> {
+  const updates: string[] = [];
+  const params: any[] = [];
+
+  if (addon.name !== undefined) {
+    updates.push('name = ?');
+    params.push(addon.name);
+  }
+  if (addon.hours !== undefined) {
+    updates.push('hours = ?');
+    params.push(addon.hours);
+  }
+  if (addon.price !== undefined) {
+    updates.push('price = ?');
+    params.push(addon.price);
+  }
+  if (addon.availableTiers !== undefined) {
+    updates.push('available_tiers = ?');
+    params.push(addon.availableTiers.join(','));
+  }
+  if (addon.order !== undefined) {
+    updates.push('"order" = ?');
+    params.push(addon.order);
+  }
+  if (addon.enabled !== undefined) {
+    updates.push('active = ?');
+    params.push(addon.enabled ? 1 : 0);
+  }
+
+  if (updates.length === 0) return;
+
+  updates.push('updated_at = unixepoch()');
+  params.push(id);
+
+  await executeQuery(`UPDATE pricing_addons SET ${updates.join(', ')} WHERE id = ?`, params);
+}
+
+export async function deletePricingAddon(id: string): Promise<void> {
+  await executeQuery('DELETE FROM pricing_addons WHERE id = ?', [id]);
 }
 
 // Process Section & Steps

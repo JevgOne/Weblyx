@@ -19,15 +19,52 @@ import {
   AlertCircle,
   CheckCircle2,
   Star,
-  DollarSign,
-} from "lucide-react";
+  } from "lucide-react";
 import { PricingTier } from "@/types/cms";
+
+/**
+ * Price is edited directly. It used to be derived as `hours x rate`, which
+ * forced every package onto a multiple of the rate and could not express the
+ * live prices (7 990 / 14 900 / 29 900). Hours stay as the public statement of
+ * scope; the rate is no longer shown to visitors, so nothing has to divide.
+ */
+type TierForm = Omit<PricingTier, "id" | "createdAt" | "updatedAt">;
+
+interface AddonForm {
+  id?: string;
+  name: string;
+  hours: number;
+  price: number;
+  /** Tier ids that may offer this add-on; a tier including it must be absent. */
+  availableTiers: string[];
+  order: number;
+  enabled: boolean;
+}
+
+const EMPTY_TIER: TierForm = {
+  name: "",
+  description: "",
+  shortDesc: "",
+  hours: 0,
+  price: 0,
+  supportMonths: 1,
+  deliveryDays: "",
+  currency: "CZK",
+  interval: "one-time",
+  features: [""],
+  highlighted: false,
+  ctaText: "",
+  ctaLink: "",
+  order: 0,
+  enabled: true,
+};
 
 export default function PricingManagementPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<PricingTier[]>([]);
+  const [addons, setAddons] = useState<AddonForm[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -36,23 +73,11 @@ export default function PricingManagementPage() {
     message: string;
   } | null>(null);
 
-  const [formData, setFormData] = useState<Omit<PricingTier, "id" | "createdAt" | "updatedAt">>({
-    name: "",
-    description: "",
-    price: 0,
-    currency: "CZK",
-    interval: "month",
-    features: [""],
-    highlighted: false,
-    ctaText: "",
-    ctaLink: "",
-    order: 0,
-    enabled: true,
-  });
+  const [formData, setFormData] = useState<TierForm>(EMPTY_TIER);
 
   useEffect(() => {
     const loadData = async () => {
-      await loadPricingTiers();
+      await Promise.all([loadPricingTiers(), loadAddons()]);
       setLoading(false);
     };
 
@@ -73,6 +98,62 @@ export default function PricingManagementPage() {
     }
   };
 
+  const loadAddons = async () => {
+    try {
+      const response = await fetch('/api/cms/pricing/addons');
+      const result = await response.json();
+      if (result.success) setAddons(result.data || []);
+    } catch (error) {
+      console.error("Error loading addons:", error);
+    }
+  };
+
+  const saveAddon = async (addon: AddonForm) => {
+    if (!addon.name.trim() || addon.hours <= 0) {
+      showNotification("error", "Doplněk potřebuje název a kladný počet hodin");
+      return;
+    }
+    if (addon.availableTiers.length === 0) {
+      showNotification("error", `Doplněk „${addon.name}" musí být nabízen aspoň u jednoho balíčku`);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/cms/pricing/addons', {
+        method: addon.id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addon),
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+
+      showNotification("success", "Doplněk uložen");
+      await loadAddons();
+    } catch (error) {
+      console.error("Error saving addon:", error);
+      showNotification("error", "Chyba při ukládání doplňku");
+    }
+  };
+
+  const deleteAddon = async (id?: string) => {
+    if (!id) {
+      setAddons((prev) => prev.filter((a) => a.id));
+      return;
+    }
+    if (!confirm("Opravdu chcete smazat tento doplněk?")) return;
+
+    try {
+      const response = await fetch(`/api/cms/pricing/addons?id=${id}`, { method: 'DELETE' });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+      showNotification("success", "Doplněk smazán");
+      await loadAddons();
+    } catch (error) {
+      console.error("Error deleting addon:", error);
+      showNotification("error", "Chyba při mazání doplňku");
+    }
+  };
+
   const handleInputChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -80,7 +161,7 @@ export default function PricingManagementPage() {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "price" || name === "order"
+        name === "hours" || name === "order" || name === "price" || name === "supportMonths"
           ? parseFloat(value) || 0
           : value,
     }));
@@ -121,17 +202,10 @@ export default function PricingManagementPage() {
 
   const startCreating = () => {
     setFormData({
-      name: "",
-      description: "",
-      price: 0,
-      currency: "CZK",
-      interval: "month",
-      features: [""],
-      highlighted: false,
+      ...EMPTY_TIER,
       ctaText: "Vybrat plán",
-      ctaLink: "/kontakt",
+      ctaLink: "/poptavka",
       order: tiers.length,
-      enabled: true,
     });
     setIsCreating(true);
     setEditingId(null);
@@ -141,7 +215,11 @@ export default function PricingManagementPage() {
     setFormData({
       name: tier.name,
       description: tier.description,
+      shortDesc: tier.shortDesc || "",
+      hours: tier.hours,
       price: tier.price,
+      supportMonths: tier.supportMonths ?? 0,
+      deliveryDays: tier.deliveryDays,
       currency: tier.currency,
       interval: tier.interval,
       features: tier.features.length > 0 ? tier.features : [""],
@@ -158,19 +236,7 @@ export default function PricingManagementPage() {
   const cancelEditing = () => {
     setEditingId(null);
     setIsCreating(false);
-    setFormData({
-      name: "",
-      description: "",
-      price: 0,
-      currency: "CZK",
-      interval: "month",
-      features: [""],
-      highlighted: false,
-      ctaText: "",
-      ctaLink: "",
-      order: 0,
-      enabled: true,
-    });
+    setFormData(EMPTY_TIER);
   };
 
   const handleSave = async () => {
@@ -183,8 +249,12 @@ export default function PricingManagementPage() {
       showNotification("error", "Popis plánu je povinný");
       return;
     }
-    if (formData.price < 0) {
-      showNotification("error", "Cena musí být kladné číslo");
+    if (!formData.price || formData.price <= 0) {
+      showNotification("error", "Cena musí být větší než nula");
+      return;
+    }
+    if (!formData.hours || formData.hours <= 0) {
+      showNotification("error", "Odhad hodin musí být kladné číslo");
       return;
     }
     if (!formData.ctaText.trim()) {
@@ -354,10 +424,33 @@ export default function PricingManagementPage() {
                   />
                 </div>
 
-                {/* Price */}
+                {/* Hours (price is derived from them) */}
+                <div className="space-y-2">
+                  <Label htmlFor="hours">
+                    Odhad hodin <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="hours"
+                    name="hours"
+                    type="number"
+                    value={formData.hours}
+                    onChange={handleInputChange}
+                    placeholder="20"
+                    min="1"
+                    step="1"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Ukazuje se návštěvníkovi jako rozsah práce. Cenu neurčuje.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Price — entered directly, not derived */}
                 <div className="space-y-2">
                   <Label htmlFor="price">
-                    Cena <span className="text-destructive">*</span>
+                    Cena ({formData.currency}) <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="price"
@@ -365,10 +458,57 @@ export default function PricingManagementPage() {
                     type="number"
                     value={formData.price}
                     onChange={handleInputChange}
-                    placeholder="0"
-                    min="0"
-                    step="0.01"
+                    placeholder="14900"
+                    min="1"
+                    step="10"
                     required
+                  />
+                  {formData.hours > 0 && formData.price > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      Vychází na{" "}
+                      {Math.round(formData.price / formData.hours).toLocaleString("cs-CZ")} Kč/h —
+                      jen pro tvoji kontrolu, na webu se sazba neukazuje.
+                    </p>
+                  )}
+                </div>
+
+                {/* Post-launch support */}
+                <div className="space-y-2">
+                  <Label htmlFor="supportMonths">Podpora po spuštění (měsíce)</Label>
+                  <Input
+                    id="supportMonths"
+                    name="supportMonths"
+                    type="number"
+                    value={formData.supportMonths ?? 0}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="1"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Short description shown in the configurator */}
+                <div className="space-y-2">
+                  <Label htmlFor="shortDesc">Krátký popis (konfigurátor)</Label>
+                  <Input
+                    id="shortDesc"
+                    name="shortDesc"
+                    value={formData.shortDesc || ""}
+                    onChange={handleInputChange}
+                    placeholder="3–5 podstránek, blog"
+                  />
+                </div>
+
+                {/* Delivery */}
+                <div className="space-y-2">
+                  <Label htmlFor="deliveryDays">Dodání (dny)</Label>
+                  <Input
+                    id="deliveryDays"
+                    name="deliveryDays"
+                    value={formData.deliveryDays}
+                    onChange={handleInputChange}
+                    placeholder="5–7"
                   />
                 </div>
               </div>
@@ -600,7 +740,9 @@ export default function PricingManagementPage() {
                   <CardContent>
                     <div className="mb-4">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">{tier.price}</span>
+                        <span className="text-3xl font-bold">
+                          {tier.price.toLocaleString("cs-CZ")}
+                        </span>
                         <span className="text-muted-foreground">
                           {tier.currency}
                         </span>
@@ -608,6 +750,11 @@ export default function PricingManagementPage() {
                           / {tier.interval === "month" ? "měsíc" : tier.interval === "year" ? "rok" : "jednorázově"}
                         </span>
                       </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {tier.hours} h práce
+                        {tier.deliveryDays ? ` · dodání ${tier.deliveryDays} dní` : ""}
+                        {tier.supportMonths ? ` · podpora ${tier.supportMonths} měs.` : ""}
+                      </p>
                       <p className="text-sm text-muted-foreground mt-2">
                         {tier.description}
                       </p>
@@ -639,6 +786,164 @@ export default function PricingManagementPage() {
                 </Card>
               ))}
             </div>
+          )}
+        </div>
+
+        {/* Add-ons */}
+        <div className="space-y-4 mt-10">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Doplňky</h2>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() =>
+                setAddons((prev) => [
+                  ...prev,
+                  { name: "", hours: 1, price: 0, availableTiers: [], order: prev.length, enabled: true },
+                ])
+              }
+            >
+              <Plus className="h-4 w-4" />
+              Přidat doplněk
+            </Button>
+          </div>
+
+          {addons.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Zatím žádné doplňky.
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="space-y-3 py-6">
+                {addons.map((addon, index) => (
+                  <div
+                    key={addon.id ?? `new-${index}`}
+                    className="flex flex-wrap items-end gap-3 border-b pb-3 last:border-b-0 last:pb-0"
+                  >
+                    <div className="flex-1 min-w-[200px] space-y-2">
+                      <Label>Název</Label>
+                      <Input
+                        value={addon.name}
+                        onChange={(e) =>
+                          setAddons((prev) =>
+                            prev.map((a, i) => (i === index ? { ...a, name: e.target.value } : a))
+                          )
+                        }
+                        placeholder="Blog s CMS editorem"
+                      />
+                    </div>
+                    <div className="w-28 space-y-2">
+                      <Label>Hodiny</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={addon.hours}
+                        onChange={(e) =>
+                          setAddons((prev) =>
+                            prev.map((a, i) =>
+                              i === index ? { ...a, hours: parseInt(e.target.value) || 0 } : a
+                            )
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="w-28 space-y-2">
+                      <Label>Pořadí</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={addon.order}
+                        onChange={(e) =>
+                          setAddons((prev) =>
+                            prev.map((a, i) =>
+                              i === index ? { ...a, order: parseInt(e.target.value) || 0 } : a
+                            )
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="w-32 space-y-2">
+                      <Label>Cena (Kč)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="10"
+                        value={addon.price}
+                        onChange={(e) =>
+                          setAddons((prev) =>
+                            prev.map((a, i) =>
+                              i === index ? { ...a, price: parseInt(e.target.value) || 0 } : a
+                            )
+                          )
+                        }
+                      />
+                    </div>
+                    {/* A package that already includes the add-on must not be
+                        ticked here, or the configurator sells it twice. */}
+                    <div className="w-full space-y-2">
+                      <Label className="text-xs">Nabízet u balíčků</Label>
+                      <div className="flex flex-wrap gap-3">
+                        {tiers
+                          .filter((tier): tier is typeof tier & { id: string } => Boolean(tier.id))
+                          .map((tier) => (
+                          <label key={tier.id} className="flex items-center gap-1.5 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={addon.availableTiers.includes(tier.id)}
+                              onChange={(e) =>
+                                setAddons((prev) =>
+                                  prev.map((a, i) =>
+                                    i === index
+                                      ? {
+                                          ...a,
+                                          availableTiers: e.target.checked
+                                            ? [...a.availableTiers, tier.id]
+                                            : a.availableTiers.filter((t) => t !== tier.id),
+                                        }
+                                      : a
+                                  )
+                                )
+                              }
+                            />
+                            {tier.name}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <label className="flex items-center gap-2 pb-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={addon.enabled}
+                        onChange={(e) =>
+                          setAddons((prev) =>
+                            prev.map((a, i) =>
+                              i === index ? { ...a, enabled: e.target.checked } : a
+                            )
+                          )
+                        }
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      Zobrazit
+                    </label>
+                    <div className="flex gap-2 pb-1">
+                      <Button size="sm" onClick={() => saveAddon(addon)} className="gap-2">
+                        <Save className="h-4 w-4" />
+                        Uložit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => deleteAddon(addon.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           )}
         </div>
       </main>

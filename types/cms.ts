@@ -26,6 +26,12 @@ export interface PricingTier {
   id?: string;
   name: string;
   description: string;
+  /** Estimated work, shown to visitors as scope. Does not determine the price. */
+  hours: number;
+  deliveryDays: string;
+  /** Months of support after launch, included in the package. */
+  supportMonths?: number;
+  shortDesc?: string;
   price: number;
   currency: string;
   interval: 'month' | 'year' | 'one-time';

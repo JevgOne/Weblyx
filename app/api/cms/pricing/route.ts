@@ -6,6 +6,11 @@ import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 export const runtime = 'nodejs';
 
+function revalidatePricing() {
+  revalidatePath('/');
+  revalidatePath('/nova');
+}
+
 // GET /api/cms/pricing - Get all pricing tiers
 export async function GET(request: NextRequest) {
   try {
@@ -43,7 +48,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (body.price === undefined || body.price < 0) {
+    // Price and hours are independent since migration 008: hours describe the
+    // scope shown to visitors, price is what we charge.
+    const hours = Number(body.hours);
+    if (!Number.isFinite(hours) || hours <= 0) {
+      return NextResponse.json(
+        { success: false, error: 'Valid hours estimate is required' },
+        { status: 400 }
+      );
+    }
+
+    const price = Number(body.price);
+    if (!Number.isFinite(price) || price <= 0) {
       return NextResponse.json(
         { success: false, error: 'Valid price is required' },
         { status: 400 }
@@ -68,9 +84,13 @@ export async function POST(request: NextRequest) {
     const tierData: Omit<PricingTier, 'id' | 'createdAt' | 'updatedAt'> = {
       name: body.name,
       description: body.description,
-      price: Number(body.price),
+      shortDesc: body.shortDesc || '',
+      hours,
+      deliveryDays: body.deliveryDays || '',
+      price,
+      supportMonths: Number(body.supportMonths) || 0,
       currency: body.currency || 'CZK',
-      interval: body.interval || 'month',
+      interval: body.interval || 'one-time',
       features: body.features,
       highlighted: Boolean(body.highlighted),
       ctaText: body.ctaText,
@@ -81,9 +101,7 @@ export async function POST(request: NextRequest) {
 
     const id = await createPricingTier(tierData);
 
-    // Revalidate pricing page
-    revalidatePath('/');
-    revalidatePath('/pricing');
+    revalidatePricing();
 
     return NextResponse.json({
       success: true,
@@ -118,7 +136,35 @@ export async function PUT(request: NextRequest) {
 
     if (body.name !== undefined) updates.name = body.name;
     if (body.description !== undefined) updates.description = body.description;
-    if (body.price !== undefined) updates.price = Number(body.price);
+    if (body.shortDesc !== undefined) updates.shortDesc = body.shortDesc;
+    if (body.deliveryDays !== undefined) updates.deliveryDays = body.deliveryDays;
+
+    if (body.hours !== undefined) {
+      const hours = Number(body.hours);
+      if (!Number.isFinite(hours) || hours <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Valid hours estimate is required' },
+          { status: 400 }
+        );
+      }
+      updates.hours = hours;
+    }
+
+    if (body.price !== undefined) {
+      const price = Number(body.price);
+      if (!Number.isFinite(price) || price <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Valid price is required' },
+          { status: 400 }
+        );
+      }
+      updates.price = price;
+    }
+
+    if (body.supportMonths !== undefined) {
+      updates.supportMonths = Number(body.supportMonths) || 0;
+    }
+
     if (body.currency !== undefined) updates.currency = body.currency;
     if (body.interval !== undefined) updates.interval = body.interval;
     if (body.features !== undefined) updates.features = body.features;
@@ -130,9 +176,7 @@ export async function PUT(request: NextRequest) {
 
     await updatePricingTier(body.id, updates);
 
-    // Revalidate pricing page
-    revalidatePath('/');
-    revalidatePath('/pricing');
+    revalidatePricing();
 
     return NextResponse.json({
       success: true,
@@ -165,9 +209,7 @@ export async function DELETE(request: NextRequest) {
 
     await deletePricingTier(id);
 
-    // Revalidate pricing page
-    revalidatePath('/');
-    revalidatePath('/pricing');
+    revalidatePricing();
 
     return NextResponse.json({
       success: true,
