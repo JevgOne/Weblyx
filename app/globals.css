@@ -41,6 +41,18 @@
     --popover-foreground: 220 15% 15%;
 
     --radius: 0.75rem;
+
+    /* --- Redesign layer: surfaces & hairlines --- */
+    /* Alternating section surfaces — subtle, but enough to read as separate bands */
+    --surface: 210 20% 99%;
+    --surface-sunken: 213 24% 96%;
+    /* Ink scale for real typographic hierarchy (headline → body → meta) */
+    --ink: 222 47% 11%;
+    --ink-soft: 215 19% 35%;
+    --ink-faint: 215 16% 55%;
+    /* Hairline borders — crisper than the default border token */
+    --hairline: 214 24% 89%;
+    --hairline-strong: 214 20% 82%;
   }
 
   .dark {
@@ -78,6 +90,15 @@
 
     --popover: 220 18% 12%;
     --popover-foreground: 0 0% 98%;
+
+    /* --- Redesign layer: surfaces & hairlines --- */
+    --surface: 220 18% 10%;
+    --surface-sunken: 220 20% 7%;
+    --ink: 0 0% 98%;
+    --ink-soft: 220 12% 72%;
+    --ink-faint: 220 10% 55%;
+    --hairline: 220 16% 20%;
+    --hairline-strong: 220 14% 28%;
   }
 }
 
@@ -147,4 +168,152 @@ html {
 /* Focus visible for accessibility */
 *:focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* ==========================================================================
+   REDESIGN LAYER — homepage visual system
+   Principles: teal is an accent, never a fill. Hairlines instead of glows.
+   One consistent vertical rhythm. Hierarchy carried by type scale, not colour.
+   ========================================================================== */
+
+/* --- Section rhythm -------------------------------------------------------
+   Every homepage band uses .section so spacing is uniform down the page.
+   .section-tight for interstitial bands (trust bar), .section-lead for hero. */
+.section {
+  padding-top: clamp(4.5rem, 9vw, 8rem);
+  padding-bottom: clamp(4.5rem, 9vw, 8rem);
+}
+
+.section-tight {
+  padding-top: clamp(2.5rem, 4vw, 3.5rem);
+  padding-bottom: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+/* --- Surfaces -------------------------------------------------------------
+   Alternate .surface-raised / .surface-sunken down the page so adjacent
+   sections separate without needing a border on every one. */
+.surface-raised {
+  background-color: hsl(var(--surface));
+}
+
+.surface-sunken {
+  background-color: hsl(var(--surface-sunken));
+}
+
+.hairline-top {
+  border-top: 1px solid hsl(var(--hairline));
+}
+
+.hairline-bottom {
+  border-bottom: 1px solid hsl(var(--hairline));
+}
+
+/* --- Eyebrow --------------------------------------------------------------
+   Replaces the teal pill badges. A small letterspaced label with a single
+   teal tick — one accent, not a filled shape. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(var(--ink-faint));
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background-color: hsl(var(--primary));
+  flex-shrink: 0;
+}
+
+/* Centred section headers need the rule on both sides for symmetry */
+.eyebrow-center::after {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background-color: hsl(var(--primary));
+  flex-shrink: 0;
+}
+
+/* --- Display type ---------------------------------------------------------
+   Tighter tracking + real optical sizing. Replaces gradient-clipped headings,
+   which washed out to low contrast at the tail of the gradient. */
+.display {
+  font-weight: 700;
+  letter-spacing: -0.033em;
+  line-height: 1.05;
+  color: hsl(var(--ink));
+  text-wrap: balance;
+}
+
+.display-xl {
+  font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+}
+
+.display-lg {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+.lede {
+  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  line-height: 1.6;
+  color: hsl(var(--ink-soft));
+  text-wrap: pretty;
+}
+
+/* --- Flat card ------------------------------------------------------------
+   One hairline, one shadow step on hover. No translate, no glow, no blur.
+   The restraint is the point: cards read as a grid, not as 6 competing tiles. */
+.card-flat {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--hairline));
+  border-radius: 1rem;
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.card-flat:hover {
+  border-color: hsl(var(--hairline-strong));
+  box-shadow: 0 1px 2px hsl(var(--ink) / 0.04), 0 12px 28px -12px hsl(var(--ink) / 0.14);
+}
+
+/* Accent-on-hover variant for interactive cards (services, process) */
+.card-flat-accent:hover {
+  border-color: hsl(var(--primary) / 0.45);
+}
+
+/* --- Icon mark ------------------------------------------------------------
+   Outlined, not filled. The teal lives in the glyph and the hairline. */
+.icon-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--primary) / 0.28);
+  background-color: hsl(var(--primary) / 0.06);
+  color: hsl(var(--primary));
+  flex-shrink: 0;
+}
+
+/* --- Numeral --------------------------------------------------------------
+   Tabular figures keep stat rows and pricing from shifting on hover/re-render */
+.numeral {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* --- Respect reduced motion ---------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .card-flat {
+    transition: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }

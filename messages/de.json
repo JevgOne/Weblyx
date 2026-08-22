@@ -370,7 +370,8 @@
       "emailRequired": "E-Mail erforderlich",
       "projectTypeRequired": "Projekttyp auswählen",
       "budgetRequired": "Budget auswählen",
-      "submitError": "Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+      "submitError": "Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+      "gdprRequired": "Ohne Einwilligung zur Datenverarbeitung kann die Anfrage nicht gesendet werden"
     },
     "messages": {
       "successTitle": "Vielen Dank!",
@@ -412,7 +413,15 @@
       "descriptionPlaceholder": "Ein paar Worte genügen – beschreibe kurz dein Geschäftsfeld.",
       "submitButton": "Anfrage absenden",
       "submitting": "Wird gesendet...",
-      "requiredFields": "* Erforderliche Felder"
+      "requiredFields": "* Erforderliche Felder",
+      "configurationTitle": "Ihre Konfiguration aus der Preisliste",
+      "configurationPackage": "Paket",
+      "configurationAddons": "Zusatzleistungen",
+      "configurationPrice": "Preis",
+      "configurationHours": "Aufwandsschätzung",
+      "configurationDelivery": "Lieferung (Tage)",
+      "gdprConsent": "Ich stimme der Verarbeitung meiner personenbezogenen Daten gemäß der",
+      "gdprLink": "Datenschutzerklärung"
     },
     "contact": {
       "title": "Kontakt",

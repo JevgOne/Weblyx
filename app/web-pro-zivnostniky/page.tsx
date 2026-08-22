@@ -26,9 +26,9 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Web pro živnostníky | Webové stránky pro OSVČ od 7 990 Kč | Weblyx",
+  title: "Web pro živnostníky | Webové stránky pro OSVČ od 8 000 Kč | Weblyx",
   description:
-    "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Levný web pro podnikatele s garancí PageSpeed 90+, SEO v ceně, dodání za 5–7 dní. Bez měsíčních poplatků.",
+    "⚡ Profesionální web pro živnostníky a OSVČ od 8 000 Kč. Levný web pro podnikatele s garancí PageSpeed 90+, SEO v ceně, dodání za 5–7 dní. Bez měsíčních poplatků.",
   keywords: [
     "web pro živnostníky",
     "webové stránky pro OSVČ",
@@ -42,17 +42,17 @@ export const metadata: Metadata = {
     "web pro řemeslníky",
   ],
   openGraph: {
-    title: "Web pro živnostníky | Od 7 990 Kč | Weblyx",
+    title: "Web pro živnostníky | Od 8 000 Kč | Weblyx",
     description:
-      "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní, SEO v ceně.",
+      "⚡ Profesionální web pro živnostníky a OSVČ od 8 000 Kč. Dodání za 5–7 dní, SEO v ceně.",
     url: "https://www.weblyx.cz/web-pro-zivnostniky",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-zivnostniky.png", width: 1200, height: 630, alt: "Weblyx - Web pro živnostníky" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Web pro živnostníky | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní.",
+    title: "Web pro živnostníky | Od 8 000 Kč | Weblyx",
+    description: "⚡ Profesionální web pro živnostníky a OSVČ od 8 000 Kč. Dodání za 5–7 dní.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-zivnostniky",
@@ -67,7 +67,7 @@ const PAIN_POINTS = [
   },
   {
     problem: "Nemám na to rozpočet",
-    solution: "Web pro živnostníky od 7 990 Kč jednorázově. Žádné měsíční poplatky.",
+    solution: "Web pro živnostníky od 8 000 Kč jednorázově. Žádné měsíční poplatky.",
   },
   {
     problem: "Nevím, co na web dát",
@@ -92,7 +92,7 @@ const FAQS = [
   {
     question: "Kolik stojí web pro živnostníka?",
     answer:
-      "Webové stránky pro OSVČ začínají od 7 990 Kč jednorázově. V ceně je profesionální design, SEO optimalizace, mobilní responzivita a SSL certifikát. Žádné měsíční poplatky za platformu — web je váš navždy.",
+      "Webové stránky pro OSVČ začínají od 8 000 Kč jednorázově. V ceně je profesionální design, SEO optimalizace, mobilní responzivita a SSL certifikát. Žádné měsíční poplatky za platformu — web je váš navždy.",
   },
   {
     question: "Potřebuji jako živnostník vůbec web?",
@@ -119,7 +119,7 @@ export default function WebProZivnostnikyPage() {
 
   const webpageSchema = generateWebPageSchema({
     name: "Web pro živnostníky",
-    description: "Profesionální webové stránky pro OSVČ a živnostníky od 7 990 Kč.",
+    description: "Profesionální webové stránky pro OSVČ a živnostníky od 8 000 Kč.",
     url: "https://www.weblyx.cz/web-pro-zivnostniky",
     breadcrumbs,
   });
@@ -150,7 +150,7 @@ export default function WebProZivnostnikyPage() {
             </Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
               Web pro živnostníky —{" "}
-              <span className="text-primary">profesionální web od 7 990 Kč</span>
+              <span className="text-primary">profesionální web od 8 000 Kč</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Jako živnostník potřebujete <strong>web, který pracuje za vás</strong>. Žádné složitosti,
@@ -246,7 +246,7 @@ export default function WebProZivnostnikyPage() {
               Transparentní <span className="text-primary">ceny bez háčků</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
-              <strong>Webové stránky pro OSVČ od 7 990 Kč</strong>. Jednorázová platba, žádné skryté poplatky.
+              <strong>Webové stránky pro OSVČ od 8 000 Kč</strong>. Jednorázová platba, žádné skryté poplatky.
             </p>
 
             <Card className="border-2 border-primary/40 shadow-xl max-w-lg mx-auto">
@@ -254,7 +254,7 @@ export default function WebProZivnostnikyPage() {
                 <Badge className="w-fit mx-auto">Nejoblíbenější pro živnostníky</Badge>
                 <Briefcase className="h-10 w-10 text-primary mx-auto" />
                 <h3 className="text-2xl font-bold">Prezentační web</h3>
-                <p className="text-4xl font-black text-primary">od 7 990 Kč</p>
+                <p className="text-4xl font-black text-primary">od 8 000 Kč</p>
                 <p className="text-sm text-muted-foreground">jednorázově</p>
               </CardHeader>
               <CardContent className="space-y-4">

@@ -33,7 +33,7 @@ const baseOptions: PricingOption[] = [
     id: "landing",
     label: "Landing Page",
     description: "Jedna stránka s 3-5 sekcemi",
-    price: 7990,
+    price: 8000,
     features: [
       "1 stránka, 3–5 sekcí",
       "Responzivní design",
@@ -48,7 +48,7 @@ const baseOptions: PricingOption[] = [
     id: "basic",
     label: "Základní Web",
     description: "3-5 podstránek s moderním designem",
-    price: 9990,
+    price: 10000,
     popular: true,
     features: [
       "3–5 podstránek",
@@ -65,7 +65,7 @@ const baseOptions: PricingOption[] = [
     id: "standard",
     label: "Standardní Web",
     description: "10+ podstránek, premium design",
-    price: 24990,
+    price: 25000,
     features: [
       "10+ podstránek",
       "Premium design na míru",

@@ -20,7 +20,7 @@ export function BlogCTA({ locale }: BlogCTAProps) {
           <p className="text-sm text-neutral-500 dark:text-muted-foreground leading-relaxed">
             {isDE
               ? "Wir erstellen moderne Websites ab 320 € — in 5–7 Tagen, mit PageSpeed 90+. Kostenlose Beratung."
-              : "Děláme moderní weby od 7 990 Kč — za 5–7 dní, s PageSpeed 90+. Konzultace zdarma."}
+              : "Děláme moderní weby od 8 000 Kč — za 5–7 dní, s PageSpeed 90+. Konzultace zdarma."}
           </p>
         </div>
         <Link

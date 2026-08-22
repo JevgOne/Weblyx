@@ -3,11 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { SiteChrome, CookieChrome } from "@/components/layout/site-chrome";
 import { CookieConsent } from "@/components/cookie-consent";
 import { OrderPauseModal } from "@/components/order-pause-modal";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { FacebookPixel } from "@/components/analytics/FacebookPixel";
-import { CalculatorLeadCapture } from "@/components/calculator/CalculatorLeadCapture";
 import { WhatsAppChat } from "@/components/whatsapp-chat";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -87,14 +87,20 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <PWAProvider>
-              <Header />
+              <SiteChrome>
+                <Header />
+              </SiteChrome>
               {children}
-              <Footer />
-              <CookieConsent />
-              <OrderPauseModal />
+              <SiteChrome>
+                <Footer />
+                <OrderPauseModal />
+                <WhatsAppChat />
+              </SiteChrome>
+              <CookieChrome>
+                <CookieConsent />
+              </CookieChrome>
+              {/* Pixel stays on every route so tracking is never gated by chrome */}
               <FacebookPixel />
-              <CalculatorLeadCapture />
-              <WhatsAppChat />
             </PWAProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

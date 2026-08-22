@@ -29,7 +29,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "WordPress alternativa 2026 | WordPress vs Next.js srovnání | Weblyx",
   description:
-    "⚡ WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa WordPress od 7 990 Kč bez měsíčních poplatků.",
+    "⚡ WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa WordPress od 8 000 Kč bez měsíčních poplatků.",
   keywords: [
     "wordpress alternativa",
     "wordpress vs next.js",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "WordPress alternativa 2026 | WordPress vs Next.js | Weblyx",
     description:
-      "⚡ WordPress je pomalý, zranitelný a předražený. Moderní alternativa od 7 990 Kč.",
+      "⚡ WordPress je pomalý, zranitelný a předražený. Moderní alternativa od 8 000 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/wordpress-alternativa",
@@ -101,7 +101,7 @@ const FAQS = [
   {
     question: "Kolik stojí přechod z WordPress na Next.js?",
     answer:
-      "Migrace z WordPress na Next.js web začíná od 7 990 Kč. V ceně je přenos obsahu, nový design, SEO nastavení a přesměrování starých URL (301). Garantujeme nulový výpadek v indexaci.",
+      "Migrace z WordPress na Next.js web začíná od 8 000 Kč. V ceně je přenos obsahu, nový design, SEO nastavení a přesměrování starých URL (301). Garantujeme nulový výpadek v indexaci.",
   },
   {
     question: "Co moje WordPress pluginy? Najdu je i v Next.js?",
@@ -118,7 +118,7 @@ export default function WordpressAlternativaPage() {
 
   const webpageSchema = generateWebPageSchema({
     name: "WordPress alternativa 2026",
-    description: "Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa od 7 990 Kč.",
+    description: "Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa od 8 000 Kč.",
     url: "https://www.weblyx.cz/wordpress-alternativa",
     breadcrumbs,
   });
@@ -154,7 +154,7 @@ export default function WordpressAlternativaPage() {
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               WordPress pohání 40 % internetu — a <strong>většina z nich má PageSpeed pod 50</strong>.
               Naše weby v Next.js dosahují <strong>skóre 90–100</strong> za cenu od{" "}
-              <strong>7 990 Kč</strong>. Přečtěte si{" "}
+              <strong>8 000 Kč</strong>. Přečtěte si{" "}
               <Link href="/blog/wordpress-vs-nextjs-srovnani-2026" className="text-primary hover:underline">
                 kompletní srovnání WordPress vs Next.js
               </Link>.

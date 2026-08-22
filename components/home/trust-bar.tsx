@@ -61,31 +61,40 @@ export async function TrustBar({ socialProofData = null, trustBadgesData = null 
         ];
 
   return (
-    <section className="py-10 md:py-14 px-4 border-y border-border/50 bg-muted/20">
-      <div className="container mx-auto max-w-7xl space-y-8">
-        {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+    <section className="section-tight surface-raised hairline-top hairline-bottom px-4">
+      <div className="container mx-auto max-w-7xl">
+        {/* Stats row — figures in ink, teal reserved for the icon only.
+            Four bold teal numbers in a row read as decoration, not as proof. */}
+        <dl className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[hsl(var(--hairline))]">
           {stats.map((stat, i) => {
             const Icon = statIcons[i % statIcons.length];
             return (
-              <div key={i} className="flex flex-col items-center text-center gap-1">
-                <Icon className="h-5 w-5 text-primary mb-1" />
-                <div className="text-xl sm:text-2xl font-bold text-primary">{stat.value}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
+              <div
+                key={i}
+                className="flex flex-col items-center text-center gap-1.5 px-4 py-5 md:py-2"
+              >
+                <Icon className="h-4 w-4 text-primary" strokeWidth={2} />
+                <dd className="numeral text-2xl sm:text-3xl font-bold text-foreground leading-none">
+                  {stat.value}
+                </dd>
+                <dt className="text-xs sm:text-[13px] text-[hsl(var(--ink-faint))] leading-snug">
+                  {stat.label}
+                </dt>
               </div>
             );
           })}
-        </div>
+        </dl>
 
         {/* Trust badges row */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
           {badges.map((badge, i) => {
             const Icon = badge.icon;
             return (
-              <div key={i} className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                <div className="p-1.5 rounded-full bg-green-500/10">
-                  <Icon className="h-3.5 w-3.5 text-green-600" />
-                </div>
+              <div
+                key={i}
+                className="flex items-center gap-2 text-[13px] text-[hsl(var(--ink-soft))]"
+              >
+                <Icon className="h-4 w-4 text-primary shrink-0" strokeWidth={2} />
                 {badge.title}
               </div>
             );
@@ -94,8 +103,8 @@ export async function TrustBar({ socialProofData = null, trustBadgesData = null 
 
         {/* Client logos */}
         {clients.length > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 pt-2">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+          <div className="mt-9 pt-8 border-t border-[hsl(var(--hairline))] flex flex-wrap items-center justify-center gap-x-9 gap-y-5">
+            <span className="text-[11px] text-[hsl(var(--ink-faint))] uppercase tracking-[0.14em] font-semibold">
               {isDE ? "Vertrauen uns" : "Důvěřují nám"}
             </span>
             {clients.map((client, i) => (
@@ -106,10 +115,10 @@ export async function TrustBar({ socialProofData = null, trustBadgesData = null 
                     alt={client.name}
                     width={100}
                     height={40}
-                    className="h-8 w-auto object-contain opacity-40 hover:opacity-70 transition-opacity grayscale hover:grayscale-0"
+                    className="h-7 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity duration-200 grayscale hover:grayscale-0"
                   />
                 ) : (
-                  <span className="text-sm font-semibold text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors">
+                  <span className="text-sm font-semibold text-[hsl(var(--ink-faint))] hover:text-[hsl(var(--ink-soft))] transition-colors duration-200">
                     {client.name}
                   </span>
                 )}

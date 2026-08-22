@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import {
   Mail,
   MapPin,
@@ -301,29 +300,18 @@ export function ContactWow() {
 
   if (isSuccess) {
     return (
-      <section id="contact" className="relative py-16 md:py-24 px-4 overflow-hidden">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/3 animate-gradient" />
-
-        <div className="container mx-auto max-w-4xl relative z-10">
-          <div
-            className="text-center space-y-6"
-          >
-            <div
-              className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-primary to-blue-600 shadow-2xl"
-            >
-              <Check className="w-12 h-12 text-white" />
+      <section id="contact" className="section surface-sunken hairline-top px-4">
+        <div className="container mx-auto max-w-2xl">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-primary/30 bg-primary/[0.06]">
+              <Check className="w-7 h-7 text-primary" strokeWidth={2.5} />
             </div>
 
-            <div>
-              <h2 className="text-4xl font-bold mb-2">{t('success.title')}</h2>
-              <p className="text-xl text-muted-foreground">
-                {t('success.message')}
-              </p>
-              <p className="text-sm text-muted-foreground mt-4">
-                {t('success.followUp')}
-              </p>
-            </div>
+            <h2 className="display display-lg mt-7">{t('success.title')}</h2>
+            <p className="lede mt-4">{t('success.message')}</p>
+            <p className="mt-5 text-sm text-[hsl(var(--ink-faint))]">
+              {t('success.followUp')}
+            </p>
           </div>
         </div>
       </section>
@@ -331,40 +319,32 @@ export function ContactWow() {
   }
 
   return (
-    <section id="contact" className="relative py-16 md:py-24 px-4 overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/3 animate-gradient" />
-
-      <div className="container mx-auto max-w-7xl relative z-10">
-        <div
-          className="text-center space-y-4 mb-12"
-        >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            {t('title')}
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            {t('subtitle')}
-          </p>
+    <section id="contact" className="section surface-sunken hairline-top px-4">
+      <div className="container mx-auto max-w-7xl">
+        <div className="max-w-2xl">
+          <p className="eyebrow">Kontakt</p>
+          <h2 className="display display-lg mt-5">{t('title')}</h2>
+          <p className="lede mt-5">{t('subtitle')}</p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
+        <div className="mt-14 grid lg:grid-cols-3 gap-5">
           {/* Contact Info */}
           <div
-            className="space-y-6"
+            className="space-y-5"
           >
-            <Card className="backdrop-blur-sm bg-card/50 border-2">
+            <div className="card-flat">
               <div className="p-6 space-y-6">
                 <div
                   className="flex items-start gap-4"
                 >
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Mail className="h-6 w-6 text-primary" />
-                  </div>
+                  <span className="icon-mark h-11 w-11">
+                    <Mail className="h-5 w-5" strokeWidth={1.75} />
+                  </span>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.email')}</h3>
+                    <h3 className="text-sm font-semibold text-foreground mb-1">{t('contact.email')}</h3>
                     <a
                       href={`mailto:${contactEmail}`}
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-sm text-[hsl(var(--ink-soft))] hover:text-primary transition-colors duration-200"
                     >
                       {contactEmail}
                     </a>
@@ -374,14 +354,14 @@ export function ContactWow() {
                 <div
                   className="flex items-start gap-4"
                 >
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Phone className="h-6 w-6 text-primary" />
-                  </div>
+                  <span className="icon-mark h-11 w-11">
+                    <Phone className="h-5 w-5" strokeWidth={1.75} />
+                  </span>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.phone')}</h3>
+                    <h3 className="text-sm font-semibold text-foreground mb-1">{t('contact.phone')}</h3>
                     <a
                       href="tel:+420702110166"
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-sm text-[hsl(var(--ink-soft))] hover:text-primary transition-colors duration-200"
                     >
                       +420 702 110 166
                     </a>
@@ -391,28 +371,28 @@ export function ContactWow() {
                 <div
                   className="flex items-start gap-4"
                 >
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <MapPin className="h-6 w-6 text-primary" />
-                  </div>
+                  <span className="icon-mark h-11 w-11">
+                    <MapPin className="h-5 w-5" strokeWidth={1.75} />
+                  </span>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.address')}</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="text-sm font-semibold text-foreground mb-1">{t('contact.address')}</h3>
+                    <p className="text-sm text-[hsl(var(--ink-soft))]">
                       {t('contact.addressValue')}
                     </p>
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="backdrop-blur-sm bg-card/50 border-2">
+            <div className="card-flat">
               <div className="p-4">
-                <h3 className="font-semibold mb-2">{t('contact.hours')}</h3>
-                <div className="text-sm text-muted-foreground space-y-1">
+                <h3 className="text-sm font-semibold text-foreground mb-2">{t('contact.hours')}</h3>
+                <div className="text-sm text-[hsl(var(--ink-soft))] space-y-1">
                   <p>{t('contact.weekdays')}</p>
                   <p>{t('contact.weekend')}</p>
                 </div>
               </div>
-            </Card>
+            </div>
 
           </div>
 
@@ -420,17 +400,17 @@ export function ContactWow() {
           <div className="lg:col-span-2">
             <div
             >
-              <Card className="backdrop-blur-sm bg-card/50 border-2">
+              <div className="card-flat">
                 <div className="p-6 space-y-6">
                   {/* Progress Bar */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="font-medium">{t('progress.step')} {currentField + 1} {t('progress.of')} {formSteps.length}</span>
-                      <span className="text-muted-foreground">{Math.round(progress)}%</span>
+                      <span className="numeral text-[hsl(var(--ink-faint))]">{Math.round(progress)}%</span>
                     </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-[hsl(var(--hairline))] rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-primary to-secondary"
+                        className="h-full bg-primary transition-[width] duration-300"
                       />
                     </div>
                   </div>
@@ -489,7 +469,7 @@ export function ContactWow() {
                     {t('keyboardHint')}
                   </p>
                 </div>
-              </Card>
+              </div>
             </div>
           </div>
         </div>

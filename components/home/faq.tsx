@@ -60,28 +60,33 @@ export async function FAQ() {
   const subheading = isDE ? tFaq('subtitle') : section.subheading;
 
   return (
-    <section className="py-16 md:py-24 px-4 bg-muted/50">
-      <div className="container mx-auto max-w-4xl">
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            {heading}
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            {subheading}
-          </p>
+    <section className="section surface-sunken hairline-top px-4">
+      <div className="container mx-auto max-w-3xl">
+        <div className="max-w-2xl">
+          <p className="eyebrow">FAQ</p>
+          <h2 className="display display-lg mt-5">{heading}</h2>
+          <p className="lede mt-5">{subheading}</p>
         </div>
 
-        <Accordion type="single" collapsible className="space-y-4">
+        {/* Questions as a single hairline-divided list — a stack of bordered
+            boxes fragments the eye; one continuous list reads faster. */}
+        <Accordion
+          type="single"
+          collapsible
+          className="mt-12 border-t border-[hsl(var(--hairline))]"
+        >
           {faqs.map((faq) => (
             <AccordionItem
               key={faq.id}
               value={faq.id || ''}
-              className="bg-background rounded-lg px-6 border"
+              className="border-b border-[hsl(var(--hairline))]"
             >
-              <AccordionTrigger className="text-left hover:no-underline py-6">
-                <span className="font-semibold">{faq.question}</span>
+              <AccordionTrigger className="text-left hover:no-underline py-5 gap-6 [&[data-state=open]>svg]:text-primary">
+                <span className="text-base font-semibold tracking-tight text-foreground">
+                  {faq.question}
+                </span>
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground pb-6">
+              <AccordionContent className="pb-6 pr-8 text-[15px] leading-relaxed text-[hsl(var(--ink-soft))]">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -89,18 +94,20 @@ export async function FAQ() {
         </Accordion>
 
         {/* CTA and Link to full FAQ page */}
-        <div className="text-center mt-8 space-y-4">
-          <LeadButton href={t('ctaLink')} size="lg">
+        <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-4">
+          <LeadButton
+            href={t('ctaLink')}
+            size="lg"
+            className="h-12 px-7 text-base font-semibold rounded-xl"
+          >
             {t('ctaButton')}
           </LeadButton>
-          <div>
-            <a
-              href={t('allFaqsHref')}
-              className="inline-flex items-center text-primary hover:underline font-medium text-sm"
-            >
-              {t('allFaqsLink')}
-            </a>
-          </div>
+          <a
+            href={t('allFaqsHref')}
+            className="inline-flex items-center text-sm font-medium text-[hsl(var(--ink-soft))] underline underline-offset-4 decoration-[hsl(var(--hairline-strong))] hover:text-primary hover:decoration-primary transition-colors duration-200"
+          >
+            {t('allFaqsLink')}
+          </a>
         </div>
       </div>
     </section>

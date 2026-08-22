@@ -37,8 +37,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek | Od 7 990 Kč | SEO optimalizace",
-  description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. SEO optimalizace, redesign webu. Česká agentura.",
+  title: "Tvorba webových stránek | Od 8 000 Kč | SEO optimalizace",
+  description: "⚡ Profesionální tvorba webových stránek od 8 000 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. SEO optimalizace, redesign webu. Česká agentura.",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
@@ -50,16 +50,16 @@ export const metadata: Metadata = {
     "údržba webu"
   ],
   openGraph: {
-    title: "Tvorba webových stránek | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
+    title: "Tvorba webových stránek | Od 8 000 Kč | Weblyx",
+    description: "⚡ Profesionální tvorba webových stránek od 8 000 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
     url: "https://www.weblyx.cz/sluzby",
     type: "website",
     images: [{ url: "/images/og/og-sluzby.png", width: 1200, height: 630, alt: "Weblyx - Služby" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba webových stránek | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
+    title: "Tvorba webových stránek | Od 8 000 Kč | Weblyx",
+    description: "⚡ Profesionální tvorba webových stránek od 8 000 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/sluzby",

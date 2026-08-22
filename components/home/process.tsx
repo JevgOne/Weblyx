@@ -34,78 +34,52 @@ export async function Process() {
   }
 
   return (
-    <section className="relative py-20 md:py-32 px-4 overflow-hidden">
-      {/* Modern gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background -z-10"></div>
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)] opacity-10 -z-10"></div>
-
+    <section className="section px-4">
       <div className="container mx-auto max-w-7xl">
         {/* Header */}
-        <div className="text-center space-y-4 mb-16 md:mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <span>{t('badge')}</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            {section.heading}
-          </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            {section.subheading}
-          </p>
+        <div className="max-w-2xl">
+          <p className="eyebrow">{t('badge')}</p>
+          <h2 className="display display-lg mt-5">{section.heading}</h2>
+          <p className="lede mt-5">{section.subheading}</p>
         </div>
 
-        {/* Modern step cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {enabledSteps.map((step, index) => {
+        {/* Steps — the step number does the sequencing work, so the cards
+            themselves stay quiet: one hairline, no glow, no lift. */}
+        <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {enabledSteps.map((step) => {
             const IconComponent = getIcon(step.icon);
             return (
-              <div
-                key={step.id}
-                className="group relative"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Hover glow effect */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/50 rounded-2xl opacity-0 group-hover:opacity-20 blur transition duration-500"></div>
-
-                {/* Card */}
-                <div className="relative h-full p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                  {/* Number badge - modern minimal */}
-                  <div className="absolute top-6 right-6 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-lg font-bold text-primary">{step.number}</span>
-                  </div>
-
-                  {/* Icon - larger, more prominent */}
-                  <div className="mb-6 w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <IconComponent className="h-7 w-7 text-primary" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="space-y-3">
-                    <h3 className="text-xl md:text-2xl font-bold tracking-tight">
-                      {step.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-
-                  {/* Bottom accent line */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div key={step.id} className="card-flat card-flat-accent h-full p-7">
+                <div className="flex items-center justify-between">
+                  <span className="icon-mark">
+                    <IconComponent className="h-5 w-5" strokeWidth={1.75} />
+                  </span>
+                  <span className="numeral text-4xl font-bold text-[hsl(var(--hairline-strong))] leading-none">
+                    {step.number}
+                  </span>
                 </div>
+
+                <h3 className="mt-6 text-lg font-semibold tracking-tight text-foreground">
+                  {step.title}
+                </h3>
+                <p className="mt-2.5 text-[15px] leading-relaxed text-[hsl(var(--ink-soft))]">
+                  {step.description}
+                </p>
               </div>
             );
           })}
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-16 text-center space-y-4">
+        <div className="mt-12 flex flex-col sm:flex-row sm:items-center gap-4">
           <LeadButton
             href={locale === 'de' ? '/anfrage' : '/poptavka'}
             size="lg"
-            className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+            className="h-12 px-7 text-base font-semibold rounded-xl shrink-0"
           >
             {locale === 'de' ? 'Kostenlose Erstberatung' : 'Začít s nezávaznou konzultací'}
           </LeadButton>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[hsl(var(--ink-faint))]">
             {t('bottomHint')}
           </p>
         </div>

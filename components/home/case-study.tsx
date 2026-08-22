@@ -1,6 +1,6 @@
 import { getPublishedPortfolio } from "@/lib/turso/portfolio";
 import { getCaseStudyData } from "@/lib/turso/cms";
-import { ArrowDown, Clock, Gauge, TrendingUp, Zap } from "lucide-react";
+import { ArrowDown, Clock, Gauge, Zap } from "lucide-react";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { LeadButton } from "@/components/tracking/LeadButton";
@@ -93,55 +93,50 @@ export async function CaseStudy() {
   const ctaText = cmsTexts?.ctaText || (isDE ? 'Alle Projekte anzeigen →' : 'Zobrazit všechny projekty →');
 
   return (
-    <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-muted/40 to-background">
-      <div className="container mx-auto max-w-4xl">
+    <section className="section surface-raised hairline-top hairline-bottom px-4">
+      <div className="container mx-auto max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 text-teal-500 text-xs font-medium mb-4">
-            <TrendingUp className="w-3.5 h-3.5" />
-            {badgeText}
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            {titleText}
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+        <div className="max-w-2xl">
+          <p className="eyebrow">{badgeText}</p>
+          <h2 className="display display-lg mt-5">{titleText}</h2>
+          <p className="lede mt-5 [&_strong]:text-foreground [&_strong]:font-semibold">
             {subtitleContent}
           </p>
         </div>
 
-        {/* Metrics cards */}
-        <div className="grid gap-4 md:grid-cols-3 mb-10">
+        {/* Metrics — the number is the hero of each tile, so it gets the size
+            and full ink contrast; teal marks only the delta. */}
+        <div className="mt-14 grid gap-5 md:grid-cols-3">
           {metrics.map((metric, i) => (
-            <div
-              key={i}
-              className="bg-card border border-border/60 rounded-2xl p-6 text-center space-y-3"
-            >
-              <div className="mx-auto w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-500">
-                {metric.icon}
+            <div key={i} className="card-flat p-7">
+              <div className="flex items-center gap-3">
+                <span className="text-primary [&>svg]:h-[18px] [&>svg]:w-[18px]">
+                  {metric.icon}
+                </span>
+                <p className="text-[13px] font-medium text-[hsl(var(--ink-faint))]">
+                  {metric.label}
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground font-medium">
-                {metric.label}
-              </p>
 
               {metric.before ? (
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-lg text-red-400 line-through font-medium">
+                <div className="mt-5 flex items-baseline gap-2.5">
+                  <span className="numeral text-base text-[hsl(var(--ink-faint))] line-through">
                     {metric.before}
                   </span>
-                  <ArrowDown className="w-4 h-4 text-teal-500 rotate-[-90deg]" />
-                  <span className="text-2xl font-bold text-teal-500">
+                  <span className="numeral text-4xl font-bold text-foreground leading-none">
                     {metric.after}
                   </span>
                 </div>
               ) : (
-                <p className="text-3xl font-bold text-teal-500">
+                <p className="numeral mt-5 text-4xl font-bold text-foreground leading-none">
                   {metric.after}
                 </p>
               )}
 
               {metric.improvement && (
-                <p className="text-xs text-teal-500 font-medium">
-                  ↑ {metric.improvement}
+                <p className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-primary">
+                  <ArrowDown className="h-3.5 w-3.5 rotate-180" strokeWidth={2.5} />
+                  {metric.improvement}
                 </p>
               )}
             </div>
@@ -149,22 +144,20 @@ export async function CaseStudy() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-10 space-y-4">
+        <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-4">
           <LeadButton
             href={tHero('ctaPrimaryLink')}
             size="lg"
-            className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+            className="h-12 px-7 text-base font-semibold rounded-xl"
           >
             {isDE ? 'Ähnliche Ergebnisse für mein Projekt' : 'Chci podobné výsledky pro svůj projekt'}
           </LeadButton>
-          <div>
-            <Link
-              href="/portfolio"
-              className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-400 font-medium transition-colors"
-            >
-              {ctaText}
-            </Link>
-          </div>
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[hsl(var(--ink-soft))] underline underline-offset-4 decoration-[hsl(var(--hairline-strong))] hover:text-primary hover:decoration-primary transition-colors duration-200"
+          >
+            {ctaText}
+          </Link>
         </div>
       </div>
     </section>

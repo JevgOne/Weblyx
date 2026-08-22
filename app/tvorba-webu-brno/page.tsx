@@ -31,9 +31,9 @@ import { isSeitelyx } from "@/lib/brand";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek Brno | Weby od 7 990 Kč | Weblyx",
+  title: "Tvorba webových stránek Brno | Weby od 8 000 Kč | Weblyx",
   description:
-    "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js technologie, PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Pracujeme s klienty z celé ČR.",
+    "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js technologie, PageSpeed 90+, dodání za 5–7 dní. Od 8 000 Kč. Pracujeme s klienty z celé ČR.",
   keywords: [
     "tvorba webových stránek Brno",
     "tvorba webu Brno",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     "weby pro startupy Brno",
   ],
   openGraph: {
-    title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
+    title: "Tvorba webových stránek Brno | Od 8 000 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
+    title: "Tvorba webových stránek Brno | Od 8 000 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
   },
@@ -104,7 +104,7 @@ const FAQS = [
   {
     question: "Kolik stojí web pro firmu v Brně?",
     answer:
-      "Profesionální firemní web pořídíte od 7 990 Kč. V ceně je moderní responzivní design, SEO optimalizace, rychlé načítání (PageSpeed 90+) a 30 dní podpory. Pro e-shopy a složitější projekty připravíme individuální nabídku.",
+      "Profesionální firemní web pořídíte od 8 000 Kč. V ceně je moderní responzivní design, SEO optimalizace, rychlé načítání (PageSpeed 90+) a 30 dní podpory. Pro e-shopy a složitější projekty připravíme individuální nabídku.",
   },
   {
     question: "Jste z Brna, nebo pracujete vzdáleně?",
@@ -136,19 +136,19 @@ export default function TvorbaWebuBrnoPage() {
     name: "Weblyx – Tvorba webových stránek Brno",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
     description:
-      "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js weby od 7 990 Kč.",
+      "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js weby od 8 000 Kč.",
     addressLocality: "Praha",
     addressCountry: "CZ",
     streetAddress: "Revoluční 8, Praha 1",
     postalCode: "110 00",
-    priceRange: "7990 Kč - 50000 Kč",
+    priceRange: "8000 Kč - 50000 Kč",
     locale: "cs",
   });
 
   const webpageSchema = generateWebPageSchema({
     name: "Tvorba webových stránek Brno",
     description:
-      "Profesionální tvorba webových stránek pro firmy v Brně od 7 990 Kč.",
+      "Profesionální tvorba webových stránek pro firmy v Brně od 8 000 Kč.",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
     breadcrumbs,
   });
@@ -213,7 +213,7 @@ export default function TvorbaWebuBrnoPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
+                <Check className="h-4 w-4 text-primary" /> Od 8 000 Kč
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
@@ -349,7 +349,7 @@ export default function TvorbaWebuBrnoPage() {
                     <Badge variant="secondary">Férové ceny</Badge>
                     <h2 className="text-3xl md:text-4xl font-bold">
                       Profesionální web od{" "}
-                      <span className="text-primary">7 990 Kč</span>
+                      <span className="text-primary">8 000 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                       <strong>Pražská kvalita za férovou cenu.</strong> Bez měsíčních poplatků

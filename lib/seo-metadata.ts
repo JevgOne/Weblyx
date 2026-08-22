@@ -51,9 +51,9 @@ interface SEOContent {
 
 const seoContent: Record<Locale, SEOContent> = {
   cs: {
-    title: 'Tvorba webových stránek od 7 990 Kč | Web za týden | Weblyx',
+    title: 'Tvorba webových stránek od 8 000 Kč | Web za týden | Weblyx',
     titleTemplate: '%s | Weblyx',
-    description: 'Profesionální webové stránky od 7 990 Kč. Dodání za 5-7 dní, načítání pod 2s, SEO v ceně. Česká webová agentura s garancí kvality.',
+    description: 'Profesionální webové stránky od 8 000 Kč. Dodání za 5-7 dní, načítání pod 2s, SEO v ceně. Česká webová agentura s garancí kvality.',
     keywords: [
       // Core keywords
       'tvorba webových stránek',
@@ -113,10 +113,10 @@ const seoContent: Record<Locale, SEOContent> = {
     ],
     siteName: 'Weblyx',
     siteUrl: 'https://www.weblyx.cz',
-    ogTitle: 'Tvorba webových stránek od 7 990 Kč | Web za týden',
-    ogDescription: 'Profesionální web za 5-7 dní od 7 990 Kč. Načítání pod 2s, SEO v ceně.',
-    twitterTitle: 'Tvorba webových stránek od 7 990 Kč | Web za týden',
-    twitterDescription: 'Profesionální web za 5-7 dní od 7 990 Kč. Načítání pod 2s, SEO v ceně.',
+    ogTitle: 'Tvorba webových stránek od 8 000 Kč | Web za týden',
+    ogDescription: 'Profesionální web za 5-7 dní od 8 000 Kč. Načítání pod 2s, SEO v ceně.',
+    twitterTitle: 'Tvorba webových stránek od 8 000 Kč | Web za týden',
+    twitterDescription: 'Profesionální web za 5-7 dní od 8 000 Kč. Načítání pod 2s, SEO v ceně.',
     locale: 'cs_CZ',
     alternateLang: 'de',
     alternateUrl: 'https://seitelyx.de',

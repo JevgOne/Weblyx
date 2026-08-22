@@ -122,8 +122,8 @@ export default async function HomePage() {
   );
 
   const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
-    name: "AKCE: Profesionální web od 7 990 Kč",
-    text: "Tvorba webových stránek od 7 990 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
+    name: "AKCE: Profesionální web od 8 000 Kč",
+    text: "Tvorba webových stránek od 8 000 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
     datePosted: "2026-01-01",
     expires: "2026-12-31",
     spatialCoverage: "Czech Republic",

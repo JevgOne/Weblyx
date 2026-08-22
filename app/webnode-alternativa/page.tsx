@@ -28,7 +28,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Webnode alternativa 2026 | Vlastní web vs Webnode | Weblyx",
   description:
-    "⚡ Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší načítání, plná kontrola nad designem i SEO. Od 7 990 Kč.",
+    "⚡ Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší načítání, plná kontrola nad designem i SEO. Od 8 000 Kč.",
   keywords: [
     "webnode alternativa",
     "webnode vs vlastní web",
@@ -114,7 +114,7 @@ const FAQS = [
   {
     question: "Kolik stojí přechod z Webnode na vlastní web?",
     answer:
-      "Webové stránky na míru od Weblyx začínají na 7 990 Kč jednorázově. Na rozdíl od Webnode neplatíte žádné měsíční poplatky. Za 2 roky provozu tak ušetříte tisíce korun.",
+      "Webové stránky na míru od Weblyx začínají na 8 000 Kč jednorázově. Na rozdíl od Webnode neplatíte žádné měsíční poplatky. Za 2 roky provozu tak ušetříte tisíce korun.",
   },
   {
     question: "Jak dlouho trvá vytvoření webu na míru?",
@@ -171,7 +171,7 @@ export default function WebnodeAlternativaPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Webnode je fajn na první pokus, ale <strong>omezuje váš růst</strong>. Pomalé načítání,
-              slabé SEO, měsíční poplatky. Přejděte na <strong>web na míru od 7 990 Kč</strong> s{" "}
+              slabé SEO, měsíční poplatky. Přejděte na <strong>web na míru od 8 000 Kč</strong> s{" "}
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
               </Link>{" "}

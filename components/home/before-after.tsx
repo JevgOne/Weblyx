@@ -1,7 +1,6 @@
 "use client";
 
 import { X, Check } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import type { BeforeAfterData } from "@/types/cms";
@@ -54,83 +53,111 @@ export function BeforeAfter({ cmsData = null }: BeforeAfterProps) {
       ];
 
   return (
-    <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-muted/30 to-background">
+    <section className="section px-4">
       <div className="container mx-auto max-w-7xl">
         {/* Heading */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-muted-foreground">{sTitle}</span> {sTitleVs}{" "}
+        <div className="max-w-2xl">
+          <h2 className="display display-lg">
+            <span className="text-[hsl(var(--ink-faint))]">{sTitle}</span> {sTitleVs}{" "}
             <span className="text-primary">{sTitleHighlight}</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{sSubtitle}</p>
+          <p className="lede mt-5">{sSubtitle}</p>
         </div>
 
-        {/* Comparison Cards */}
-        <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 max-w-6xl mx-auto">
+        {/* Comparison — the "after" column is the only one that carries weight;
+            the "before" column is deliberately desaturated and recessed. */}
+        <div className="mt-14 grid lg:grid-cols-2 gap-5 items-start">
           {/* BEFORE */}
-          <Card className="relative overflow-hidden border-2 border-red-200 dark:border-red-900/30">
-            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-semibold">
-              {sBadgeBefore}
-            </div>
-            <CardContent className="p-5 sm:p-8 space-y-6">
+          <div className="rounded-2xl border border-[hsl(var(--hairline))] bg-[hsl(var(--surface-sunken))] p-6 sm:p-8">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-1">{sBeforeTitle}</h3>
-                <p className="text-sm text-muted-foreground">{sBeforeSubtitle}</p>
+                <h3 className="text-xl font-semibold tracking-tight text-[hsl(var(--ink-soft))]">
+                  {sBeforeTitle}
+                </h3>
+                <p className="mt-1 text-sm text-[hsl(var(--ink-faint))]">{sBeforeSubtitle}</p>
               </div>
-              <div className="space-y-3">
-                {beforeMetrics.map((metric, i) => {
-                  const IconComponent = metric.icon;
-                  return (
-                    <div key={i} className="flex items-center justify-between gap-2 py-2 border-b border-border/50">
-                      <span className="text-xs sm:text-sm font-medium shrink-0">{metric.label}</span>
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <span className="text-xs sm:text-sm font-semibold text-right">{metric.value}</span>
-                        <IconComponent className={`h-4 w-4 ${metric.color}`} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[hsl(var(--ink-faint))]">
+                {sBadgeBefore}
+              </span>
+            </div>
+
+            <dl className="mt-7 border-t border-[hsl(var(--hairline))]">
+              {beforeMetrics.map((metric, i) => {
+                const IconComponent = metric.icon;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 py-3.5 border-b border-[hsl(var(--hairline))]"
+                  >
+                    <dt className="text-sm text-[hsl(var(--ink-faint))] shrink-0">
+                      {metric.label}
+                    </dt>
+                    <dd className="flex items-center gap-2 min-w-0">
+                      <span className="text-sm font-medium text-right text-[hsl(var(--ink-soft))] truncate">
+                        {metric.value}
+                      </span>
+                      <IconComponent className="h-4 w-4 shrink-0 text-red-500/70" strokeWidth={2.5} />
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          </div>
 
           {/* AFTER */}
-          <Card className="relative overflow-hidden border-2 border-primary shadow-lg shadow-primary/10">
-            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-              {sBadgeAfter}
-            </div>
-            <CardContent className="p-5 sm:p-8 space-y-6">
+          <div className="rounded-2xl border border-primary/35 bg-card p-6 sm:p-8 shadow-[0_1px_2px_hsl(var(--ink)/0.04),0_18px_40px_-20px_hsl(var(--ink)/0.16)]">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-1">{sAfterTitle}</h3>
-                <p className="text-sm text-muted-foreground">{sAfterSubtitle}</p>
+                <h3 className="text-xl font-semibold tracking-tight text-foreground">
+                  {sAfterTitle}
+                </h3>
+                <p className="mt-1 text-sm text-[hsl(var(--ink-soft))]">{sAfterSubtitle}</p>
               </div>
-              <div className="space-y-3">
-                {afterMetrics.map((metric, i) => {
-                  const IconComponent = metric.icon;
-                  return (
-                    <div key={i} className="flex items-center justify-between gap-2 py-2 border-b border-border/50">
-                      <span className="text-xs sm:text-sm font-medium shrink-0">{metric.label}</span>
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <span className="text-xs sm:text-sm font-semibold text-right">{metric.value}</span>
-                        <IconComponent className={`h-4 w-4 ${metric.color}`} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-            <div className="absolute -z-10 inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
-          </Card>
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+                {sBadgeAfter}
+              </span>
+            </div>
+
+            <dl className="mt-7 border-t border-[hsl(var(--hairline))]">
+              {afterMetrics.map((metric, i) => {
+                const IconComponent = metric.icon;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 py-3.5 border-b border-[hsl(var(--hairline))]"
+                  >
+                    <dt className="text-sm text-[hsl(var(--ink-faint))] shrink-0">
+                      {metric.label}
+                    </dt>
+                    <dd className="flex items-center gap-2 min-w-0">
+                      <span className="text-sm font-semibold text-right text-foreground truncate">
+                        {metric.value}
+                      </span>
+                      <IconComponent className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.5} />
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          </div>
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-8 sm:mt-12 p-5 sm:p-8 rounded-2xl bg-primary/5 border border-primary/20">
-          <p className="text-lg font-semibold mb-1">
-            {sCtaTitle} <span className="text-primary">{sCtaHighlight}</span>
-          </p>
-          <p className="text-base font-bold mb-2">{sCtaStat}</p>
-          <p className="text-sm text-muted-foreground mb-5">{sCtaSubtitle}</p>
-          <LeadButton href={sCtaLink} size="lg">{sCtaText}</LeadButton>
+        <div className="mt-10 rounded-2xl border border-[hsl(var(--hairline))] bg-[hsl(var(--surface))] p-7 sm:p-9 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="max-w-xl">
+            <p className="text-lg font-semibold tracking-tight text-foreground">
+              {sCtaTitle} <span className="text-primary">{sCtaHighlight}</span>
+            </p>
+            <p className="numeral mt-1 text-base font-semibold text-foreground">{sCtaStat}</p>
+            <p className="mt-2 text-sm text-[hsl(var(--ink-faint))]">{sCtaSubtitle}</p>
+          </div>
+          <LeadButton
+            href={sCtaLink}
+            size="lg"
+            className="h-12 px-7 text-base font-semibold rounded-xl shrink-0"
+          >
+            {sCtaText}
+          </LeadButton>
         </div>
       </div>
     </section>

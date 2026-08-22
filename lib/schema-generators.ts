@@ -216,7 +216,7 @@ export interface ServiceSchemaData {
   offers?: {
     priceCurrency: string;
     price?: string;
-    priceRange?: string; // e.g., "7990-14990"
+    priceRange?: string; // e.g., "8000-14990"
   };
   aggregateRating?: {
     ratingValue: number;
@@ -508,7 +508,7 @@ const serviceSchema = generateServiceSchema({
   areaServed: "Česká republika",
   offers: {
     priceCurrency: "CZK",
-    priceRange: "7990-14990",
+    priceRange: "8000-14990",
   },
 });
 

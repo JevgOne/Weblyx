@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { Review } from "@/types/review";
 import { getPublishedReviews } from "@/lib/turso/reviews";
@@ -29,14 +28,15 @@ async function getReviews(): Promise<Review[]> {
 
 function StarRating({ rating }: { rating: number }) {
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-0.5" role="img" aria-label={`${rating} / 5`}>
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`h-5 w-5 ${
+          aria-hidden="true"
+          className={`h-4 w-4 ${
             star <= rating
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300 dark:text-gray-600"
+              ? "fill-amber-400 text-amber-400"
+              : "fill-transparent text-[hsl(var(--hairline-strong))]"
           }`}
         />
       ))}
@@ -55,91 +55,97 @@ export async function Reviews() {
   }
 
   return (
-    <section id="recenze" className="py-24 bg-muted/30">
+    <section id="recenze" className="section surface-sunken hairline-top px-4">
+      <div className="container mx-auto max-w-7xl">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <div className="max-w-2xl">
+            <p className="eyebrow">{locale === 'de' ? 'Bewertungen' : 'Recenze'}</p>
+            <h2 className="display display-lg mt-5">{t("title")}</h2>
+            <p className="lede mt-5">{t("subtitle")}</p>
+          </div>
 
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">{t("title")}</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {t("subtitle")}
-          </p>
+          {/* Google Reviews Badge */}
+          <div className="shrink-0">
+            <GoogleReviewsBadge
+              rating={5.0}
+              reviewCount={8}
+              placeUrl="https://share.google/cZIQkYTq2bVmkRAAP"
+            />
+          </div>
         </div>
 
-        {/* Google Reviews Badge */}
-        <GoogleReviewsBadge
-          rating={5.0}
-          reviewCount={8}
-          placeUrl="https://share.google/cZIQkYTq2bVmkRAAP"
-        />
-
         {/* Reviews Grid - Unified (Google + Manual from DB) */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto mt-12">
+        <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {reviews.map((review) => (
-            <Card
+            <figure
               key={review.id}
-              className={`hover:shadow-lg transition-shadow ${
-                review.featured ? "border-2 border-primary" : ""
+              className={`card-flat flex h-full flex-col p-7 ${
+                review.featured ? "border-primary/35" : ""
               }`}
             >
-              <CardContent className="p-6 space-y-4">
+              <div className="flex-1">
                 {/* Rating */}
                 <StarRating rating={review.rating} />
 
                 {/* Review text */}
-                <p className="text-muted-foreground leading-relaxed">
+                <blockquote className="mt-5 text-[15px] leading-relaxed text-[hsl(var(--ink-soft))]">
                   {"\u201C"}{review.text}{"\u201D"}
-                </p>
+                </blockquote>
+              </div>
 
-                {/* Author info */}
-                <div className="flex items-center gap-3 pt-4 border-t">
-                  {review.authorImage ? (
-                    <Image
-                      src={review.authorImage}
-                      alt={review.authorName}
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
-                      {review.authorName.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-semibold">{review.authorName}</p>
-                    {review.authorRole && (
-                      <p className="text-sm text-muted-foreground">
-                        {review.authorRole}
-                      </p>
-                    )}
-                    {review.source && review.source.toLowerCase() !== "manual" && review.source !== "Ověřený klient" && (
-                      <p className="text-xs text-primary">{review.source}</p>
-                    )}
+              {/* Author info */}
+              <figcaption className="mt-6 flex items-center gap-3 border-t border-[hsl(var(--hairline))] pt-5">
+                {review.authorImage ? (
+                  <Image
+                    src={review.authorImage}
+                    alt={review.authorName}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/[0.06] text-sm font-semibold text-primary">
+                    {review.authorName.charAt(0).toUpperCase()}
                   </div>
-                </div>
-
-                {/* Source link */}
-                {review.sourceUrl && (
-                  <a
-                    href={review.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline block"
-                  >
-                    {t("viewOriginal")}
-                  </a>
                 )}
-              </CardContent>
-            </Card>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {review.authorName}
+                  </p>
+                  {review.authorRole && (
+                    <p className="text-[13px] text-[hsl(var(--ink-faint))] truncate">
+                      {review.authorRole}
+                    </p>
+                  )}
+                  {review.source && review.source.toLowerCase() !== "manual" && review.source !== "Ověřený klient" && (
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[hsl(var(--ink-faint))]">
+                      {review.source}
+                    </p>
+                  )}
+                </div>
+              </figcaption>
+
+              {/* Source link */}
+              {review.sourceUrl && (
+                <a
+                  href={review.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-block text-xs font-medium text-[hsl(var(--ink-faint))] underline underline-offset-4 decoration-[hsl(var(--hairline-strong))] hover:text-primary hover:decoration-primary transition-colors duration-200"
+                >
+                  {t("viewOriginal")}
+                </a>
+              )}
+            </figure>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div className="mt-12">
           <LeadButton
             href={locale === 'de' ? '/anfrage' : '/poptavka'}
             size="lg"
-            className="text-base px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+            className="h-12 px-7 text-base font-semibold rounded-xl"
           >
             {locale === 'de' ? 'Werde unser nächster zufriedener Kunde' : 'Staňte se naším dalším spokojeným klientem'}
           </LeadButton>

@@ -26,9 +26,9 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Web pro právníky | Webové stránky pro advokáty od 9 990 Kč | Weblyx",
+  title: "Web pro právníky | Webové stránky pro advokáty od 10 000 Kč | Weblyx",
   description:
-    "⚡ Profesionální web pro právníky a advokátní kanceláře od 9 990 Kč. Klientský portál, online objednávky konzultací, GDPR soulad. Webové stránky pro advokáty za 2 týdny.",
+    "⚡ Profesionální web pro právníky a advokátní kanceláře od 10 000 Kč. Klientský portál, online objednávky konzultací, GDPR soulad. Webové stránky pro advokáty za 2 týdny.",
   keywords: [
     "web pro právníky",
     "webové stránky pro advokáty",
@@ -42,17 +42,17 @@ export const metadata: Metadata = {
     "web pro notáře",
   ],
   openGraph: {
-    title: "Web pro právníky | Od 9 990 Kč | Weblyx",
+    title: "Web pro právníky | Od 10 000 Kč | Weblyx",
     description:
-      "⚡ Profesionální web pro právníky a advokátní kanceláře od 9 990 Kč.",
+      "⚡ Profesionální web pro právníky a advokátní kanceláře od 10 000 Kč.",
     url: "https://www.weblyx.cz/web-pro-pravniky",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-pravniky.png", width: 1200, height: 630, alt: "Weblyx - Web pro právníky" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Web pro právníky | Od 9 990 Kč | Weblyx",
-    description: "⚡ Profesionální web pro právníky a advokátní kanceláře od 9 990 Kč.",
+    title: "Web pro právníky | Od 10 000 Kč | Weblyx",
+    description: "⚡ Profesionální web pro právníky a advokátní kanceláře od 10 000 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-pravniky",
@@ -107,7 +107,7 @@ const FAQS = [
   {
     question: "Kolik stojí web pro advokátní kancelář?",
     answer:
-      "Webové stránky pro advokáty začínají od 9 990 Kč. Profesionální web s klientským portálem a online objednávkami od 16 990 Kč. V ceně je vždy design na míru, SEO optimalizace, GDPR soulad a mobilní responzivita.",
+      "Webové stránky pro advokáty začínají od 10 000 Kč. Profesionální web s klientským portálem a online objednávkami od 16 990 Kč. V ceně je vždy design na míru, SEO optimalizace, GDPR soulad a mobilní responzivita.",
   },
   {
     question: "Je web v souladu s pravidly ČAK?",
@@ -134,7 +134,7 @@ export default function WebProPravnikyPage() {
 
   const webpageSchema = generateWebPageSchema({
     name: "Web pro právníky",
-    description: "Profesionální webové stránky pro advokáty a advokátní kanceláře od 9 990 Kč.",
+    description: "Profesionální webové stránky pro advokáty a advokátní kanceláře od 10 000 Kč.",
     url: "https://www.weblyx.cz/web-pro-pravniky",
     breadcrumbs,
   });
@@ -169,7 +169,7 @@ export default function WebProPravnikyPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Profesionální <strong>webové stránky pro advokáty</strong> a <strong>advokátní kanceláře</strong>.
-              Klientský portál, online objednávky, GDPR soulad. Od <strong>9 990 Kč</strong> s{" "}
+              Klientský portál, online objednávky, GDPR soulad. Od <strong>10 000 Kč</strong> s{" "}
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
               </Link>.
@@ -277,7 +277,7 @@ export default function WebProPravnikyPage() {
               <Card className="transition-all hover:shadow-lg">
                 <CardHeader className="space-y-2 text-center">
                   <h3 className="text-xl font-bold">Prezentační web</h3>
-                  <p className="text-3xl font-black text-primary">od 9 990 Kč</p>
+                  <p className="text-3xl font-black text-primary">od 10 000 Kč</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2 text-left">

@@ -31,9 +31,9 @@ import { isSeitelyx } from "@/lib/brand";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek Ostrava | Weby od 7 990 Kč | Weblyx",
+  title: "Tvorba webových stránek Ostrava | Weby od 8 000 Kč | Weblyx",
   description:
-    "Profesionální tvorba webových stránek v Ostravě. Moderní weby na Next.js s PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Pomáháme ostravským firmám růst online.",
+    "Profesionální tvorba webových stránek v Ostravě. Moderní weby na Next.js s PageSpeed 90+, dodání za 5–7 dní. Od 8 000 Kč. Pomáháme ostravským firmám růst online.",
   keywords: [
     "tvorba webových stránek Ostrava",
     "tvorba webu Ostrava",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     "weby Moravskoslezský kraj",
   ],
   openGraph: {
-    title: "Tvorba webových stránek Ostrava | Od 7 990 Kč | Weblyx",
+    title: "Tvorba webových stránek Ostrava | Od 8 000 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
     url: "https://www.weblyx.cz/tvorba-webu-ostrava",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba webových stránek Ostrava | Od 7 990 Kč | Weblyx",
+    title: "Tvorba webových stránek Ostrava | Od 8 000 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
   },
@@ -104,7 +104,7 @@ const FAQS = [
   {
     question: "Kolik stojí tvorba webových stránek v Ostravě?",
     answer:
-      "Profesionální web pro ostravskou firmu pořídíte od 7 990 Kč. Za tuto cenu dostanete moderní responzivní design, SEO optimalizaci, rychlé načítání a 30 dní podpory. Oproti ostravským agenturám nabízíme technologicky pokročilejší řešení za srovnatelnou nebo nižší cenu.",
+      "Profesionální web pro ostravskou firmu pořídíte od 8 000 Kč. Za tuto cenu dostanete moderní responzivní design, SEO optimalizaci, rychlé načítání a 30 dní podpory. Oproti ostravským agenturám nabízíme technologicky pokročilejší řešení za srovnatelnou nebo nižší cenu.",
   },
   {
     question:
@@ -137,19 +137,19 @@ export default function TvorbaWebuOstravaPage() {
     name: "Weblyx – Tvorba webových stránek Ostrava",
     url: "https://www.weblyx.cz/tvorba-webu-ostrava",
     description:
-      "Profesionální tvorba webových stránek pro firmy v Ostravě. Moderní Next.js weby od 7 990 Kč.",
+      "Profesionální tvorba webových stránek pro firmy v Ostravě. Moderní Next.js weby od 8 000 Kč.",
     addressLocality: "Praha",
     addressCountry: "CZ",
     streetAddress: "Revoluční 8, Praha 1",
     postalCode: "110 00",
-    priceRange: "7990 Kč - 50000 Kč",
+    priceRange: "8000 Kč - 50000 Kč",
     locale: "cs",
   });
 
   const webpageSchema = generateWebPageSchema({
     name: "Tvorba webových stránek Ostrava",
     description:
-      "Profesionální tvorba webových stránek pro firmy v Ostravě od 7 990 Kč.",
+      "Profesionální tvorba webových stránek pro firmy v Ostravě od 8 000 Kč.",
     url: "https://www.weblyx.cz/tvorba-webu-ostrava",
     breadcrumbs,
   });
@@ -215,7 +215,7 @@ export default function TvorbaWebuOstravaPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
+                <Check className="h-4 w-4 text-primary" /> Od 8 000 Kč
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
@@ -354,7 +354,7 @@ export default function TvorbaWebuOstravaPage() {
                     <Badge variant="secondary">Ceny bez překvapení</Badge>
                     <h2 className="text-3xl md:text-4xl font-bold">
                       Moderní web od{" "}
-                      <span className="text-primary">7 990 Kč</span>
+                      <span className="text-primary">8 000 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                       <strong>Pražská technologie a kvalita</strong> za ceny přístupné

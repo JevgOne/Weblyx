@@ -26,9 +26,9 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Web pro restaurace | Webové stránky pro restauraci od 7 990 Kč | Weblyx",
+  title: "Web pro restaurace | Webové stránky pro restauraci od 8 000 Kč | Weblyx",
   description:
-    "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek, rezervační systém, Google Mapy. Web pro restauraci dodaný za 5–7 dní.",
+    "⚡ Profesionální web pro restaurace a kavárny od 8 000 Kč. Online jídelní lístek, rezervační systém, Google Mapy. Web pro restauraci dodaný za 5–7 dní.",
   keywords: [
     "web pro restaurace",
     "webové stránky pro restauraci",
@@ -42,17 +42,17 @@ export const metadata: Metadata = {
     "gastro web",
   ],
   openGraph: {
-    title: "Web pro restaurace | Od 7 990 Kč | Weblyx",
+    title: "Web pro restaurace | Od 8 000 Kč | Weblyx",
     description:
-      "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek a rezervace.",
+      "⚡ Profesionální web pro restaurace a kavárny od 8 000 Kč. Online jídelní lístek a rezervace.",
     url: "https://www.weblyx.cz/web-pro-restaurace",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-restaurace.png", width: 1200, height: 630, alt: "Weblyx - Web pro restaurace" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Web pro restaurace | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč.",
+    title: "Web pro restaurace | Od 8 000 Kč | Weblyx",
+    description: "⚡ Profesionální web pro restaurace a kavárny od 8 000 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-restaurace",
@@ -107,7 +107,7 @@ const FAQS = [
   {
     question: "Kolik stojí web pro restauraci?",
     answer:
-      "Webové stránky pro restauraci začínají od 7 990 Kč. V ceně je profesionální design, online jídelní lístek, kontaktní formulář, Google Mapy a SEO optimalizace. Rezervační systém je dostupný od 12 990 Kč.",
+      "Webové stránky pro restauraci začínají od 8 000 Kč. V ceně je profesionální design, online jídelní lístek, kontaktní formulář, Google Mapy a SEO optimalizace. Rezervační systém je dostupný od 12 990 Kč.",
   },
   {
     question: "Můžu si sám aktualizovat jídelní lístek?",
@@ -134,7 +134,7 @@ export default function WebProRestauracePage() {
 
   const webpageSchema = generateWebPageSchema({
     name: "Web pro restaurace",
-    description: "Profesionální webové stránky pro restaurace a kavárny od 7 990 Kč.",
+    description: "Profesionální webové stránky pro restaurace a kavárny od 8 000 Kč.",
     url: "https://www.weblyx.cz/web-pro-restaurace",
     breadcrumbs,
   });
@@ -172,7 +172,7 @@ export default function WebProRestauracePage() {
               jídelním lístkem, rezervačním systémem a{" "}
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
-              </Link>. Od <strong>7 990 Kč</strong>.
+              </Link>. Od <strong>8 000 Kč</strong>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/poptavka" size="lg" showArrow>
@@ -275,7 +275,7 @@ export default function WebProRestauracePage() {
               <Card className="transition-all hover:shadow-lg">
                 <CardHeader className="space-y-2 text-center">
                   <h3 className="text-xl font-bold">Základní web</h3>
-                  <p className="text-3xl font-black text-primary">od 7 990 Kč</p>
+                  <p className="text-3xl font-black text-primary">od 8 000 Kč</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2 text-left">

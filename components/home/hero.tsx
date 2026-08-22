@@ -70,57 +70,47 @@ export async function Hero() {
   const t = await getTranslations('hero');
 
   return (
-    <section className="relative flex items-center py-16 md:py-20 lg:py-24 px-4 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 left-1/4 w-[350px] h-[350px] sm:w-[600px] sm:h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:2rem_2rem] sm:bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)] opacity-20"></div>
-      </div>
+    <section className="relative overflow-hidden px-4 pt-14 pb-16 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28">
+      {/* Single soft wash instead of two pulsing orbs — depth without the noise */}
+      <div
+        className="absolute inset-0 -z-10"
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            'radial-gradient(70% 55% at 78% 12%, hsl(var(--primary) / 0.08) 0%, transparent 60%)',
+        }}
+      />
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 xl:gap-24 items-center">
+        <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 xl:gap-24 items-center">
           {/* Left Column - Content */}
-          <div className="space-y-6 lg:space-y-8 max-w-2xl">
-            {/* Badge */}
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 mt-6 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-transparent text-primary text-sm font-medium border border-primary/20 shadow-lg shadow-primary/5 backdrop-blur-sm"
-              style={{ animation: 'fadeInUp 0.6s ease-out' }}
-            >
-              <Zap className="h-4 w-4" />
-              <span>{data.badge}</span>
-            </div>
+          <div className="max-w-2xl">
+            {/* Eyebrow — replaces the filled pill badge */}
+            <p className="eyebrow">{data.badge}</p>
 
-            {/* Heading */}
-            <div className="space-y-5">
-              <h1 className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-[3.25rem] lg:text-[3.5rem] xl:text-6xl font-bold tracking-tight">
-                <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-                  {data.title}
-                </span>
-                {data.titleHighlight && (
-                  <>
-                    {" "}
-                    <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
-                      {data.titleHighlight}
-                    </span>
-                  </>
-                )}
-              </h1>
+            {/* Heading — solid ink, no gradient clip (kept full contrast) */}
+            <h1 className="display display-xl mt-6">
+              {data.title}
+              {data.titleHighlight && (
+                <>
+                  {" "}
+                  <span className="text-primary">{data.titleHighlight}</span>
+                </>
+              )}
+            </h1>
 
-              <p
-                className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: data.subtitle }}
-              />
-            </div>
+            <p
+              className="lede mt-6 max-w-xl [&_strong]:text-foreground [&_strong]:font-semibold"
+              dangerouslySetInnerHTML={{ __html: data.subtitle }}
+            />
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-1">
+            <div className="mt-9 flex flex-col sm:flex-row flex-wrap gap-3">
               {/* Primary CTA with Facebook Pixel Lead tracking */}
               <LeadButton
                 href={data.ctaPrimary.href}
                 size="lg"
-                className="w-full sm:w-auto text-sm sm:text-base px-6 py-5 shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 bg-gradient-to-r from-primary to-primary/90"
+                className="w-full sm:w-auto h-12 px-7 text-base font-semibold rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
               >
                 {data.ctaPrimary.text}
               </LeadButton>
@@ -128,60 +118,61 @@ export async function Hero() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto text-sm sm:text-base px-6 py-5 border-2 hover:bg-muted hover:border-primary/50 transition-all duration-300"
+                className="w-full sm:w-auto h-12 px-7 text-base font-medium rounded-xl border-[hsl(var(--hairline-strong))] bg-background hover:bg-[hsl(var(--surface-sunken))] hover:text-foreground transition-colors duration-200"
               >
                 <Link href={data.ctaSecondary.href}>{data.ctaSecondary.text}</Link>
               </Button>
             </div>
 
             {/* Trust micro-signals row */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground pt-1">
-              <div className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-primary" />
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-sm text-[hsl(var(--ink-soft))]">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-primary shrink-0" strokeWidth={2.5} />
                 <span>{t('trustNoCommitment')}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-primary" />
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-primary shrink-0" strokeWidth={2.5} />
                 <span>{t('trustFastResponse')}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-primary" />
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-primary shrink-0" strokeWidth={2.5} />
                 <span>{t('trustSatisfaction')}</span>
               </div>
             </div>
 
-            {/* Stats - Compact Cards */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4">
+            {/* Stats — hairline-divided row, not three competing cards */}
+            <dl className="mt-10 grid grid-cols-3 border-t border-[hsl(var(--hairline))] pt-7">
               {data.stats.map((stat, index) => {
                 const IconComponent = iconMap[stat.icon] || Zap;
                 return (
                   <div
                     key={index}
-                    className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                    className={
+                      index > 0
+                        ? "pl-4 sm:pl-6 border-l border-[hsl(var(--hairline))]"
+                        : "pr-4 sm:pr-6"
+                    }
                   >
-                    <div className="flex flex-col items-center justify-center text-center space-y-1.5">
-                      <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                        <IconComponent className="h-4 w-4 text-primary" />
+                    <IconComponent className="h-4 w-4 text-primary mb-2.5" strokeWidth={2} />
+                    <dt className="sr-only">{stat.label}</dt>
+                    <dd>
+                      <div className="numeral text-2xl sm:text-3xl font-bold text-foreground leading-none">
+                        {stat.value}
                       </div>
-                      <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">{stat.value}</div>
-                      <div className="text-[11px] sm:text-xs text-foreground/70 leading-tight">
+                      <div className="mt-1.5 text-xs sm:text-sm text-[hsl(var(--ink-faint))] leading-snug">
                         {stat.label}
                       </div>
-                    </div>
+                    </dd>
                   </div>
                 );
               })}
-            </div>
+            </dl>
           </div>
 
           {/* Right Column - Visual/Image */}
-          <div className="relative lg:h-[560px] h-[360px] sm:h-[440px] flex items-center justify-center lg:justify-end">
-            <div className="relative w-full h-full max-w-md lg:max-w-none lg:ml-auto">
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
-              <div className="absolute -bottom-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
-
-              <div className="relative h-full w-full rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/10 bg-gradient-to-br from-background to-muted group">
+          <div className="relative lg:h-[580px] h-[380px] sm:h-[460px]">
+            <div className="relative h-full w-full max-w-md mx-auto lg:max-w-none">
+              <div className="relative h-full w-full rounded-2xl overflow-hidden border border-[hsl(var(--hairline))] bg-[hsl(var(--surface-sunken))] shadow-[0_24px_60px_-24px_hsl(var(--ink)/0.28)]">
                 <Image
                   src={heroSection?.backgroundImage || "/images/hero/hero-mascot.jpg"}
                   alt={t('heroImageAlt')}
@@ -189,9 +180,8 @@ export async function Hero() {
                   height={800}
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
               </div>
             </div>
           </div>

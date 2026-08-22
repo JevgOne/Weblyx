@@ -36,7 +36,7 @@
     "stat1Label": "Základní web",
     "stat2Value": "Pod 2s",
     "stat2Label": "Načítání webu",
-    "stat3Value": "od 7 990 Kč",
+    "stat3Value": "od 8 000 Kč",
     "stat3Label": "Jednorázově",
     "heroImageAlt": "Weblyx - Moderní webové stránky",
     "heroPlaceholder": "Hero Obrázek",
@@ -47,7 +47,7 @@
     "title": "Naše služby",
     "subtitle": "Konkrétní služby a transparentní ceny",
     "service1": {
-      "title": "Webové stránky (od 7 990 Kč)",
+      "title": "Webové stránky (od 8 000 Kč)",
       "description": "Responzivní web 3-10 stránek, kontaktní formulář, SEO optimalizace. Dodací doba: 5-7 pracovních dní. Vhodné pro živnostníky a malé firmy."
     },
     "service2": {
@@ -92,7 +92,7 @@
     }
   },
   "whatsIncluded": {
-    "title": "Co je v základní ceně 7 990 Kč",
+    "title": "Co je v základní ceně 8 000 Kč",
     "subtitle": "Přesný rozsah základního balíčku",
     "included": [
       "✅ Web 5-10 stránek (o nás, služby, reference, kontakt...)",
@@ -142,7 +142,7 @@
     "title": "Často kladené otázky",
     "subtitle": "Vše, co potřebujete vědět o tvorbě webových stránek",
     "q1": "Kolik stojí webové stránky?",
-    "a1": "Základní web začíná na 7 990 Kč jednorázově. Tato cena zahrnuje 3-5 stránek, responzivní design, kontaktní formulář a SEO optimalizaci. E-shopy začínají na 49 990 Kč. Vždy platíte jednorázově – žádné měsíční poplatky za web samotný.",
+    "a1": "Základní web začíná na 8 000 Kč jednorázově. Tato cena zahrnuje 3-5 stránek, responzivní design, kontaktní formulář a SEO optimalizaci. E-shopy začínají na 49 990 Kč. Vždy platíte jednorázově – žádné měsíční poplatky za web samotný.",
     "q2": "Jak dlouho trvá vytvoření webu?",
     "a2": "Základní web dodáváme za 5-7 pracovních dní od schválení designu. E-shopy trvají 4-6 týdnů podle rozsahu. Konkrétní termín dostanete při bezplatné konzultaci.",
     "q3": "Co všechno je v ceně?",
@@ -180,7 +180,7 @@
     "q19": "Jaké technologie používáte?",
     "a19": "Používáme Next.js (React framework), Tailwind CSS pro styling a Vercel pro hosting. Tyto technologie zajišťují rychlost, bezpečnost a snadnou údržbu.",
     "q20": "Proč si vybrat Weblyx?",
-    "a20": "Jsme česká agentura, která dodává rychle (5-7 dní), za férové ceny (od 7 990 Kč), s garancí kvality (PageSpeed 90+ nebo peníze zpět). Od února 2024 jsme dokončili 15+ projektů s hodnocením 5.0 na Google."
+    "a20": "Jsme česká agentura, která dodává rychle (5-7 dní), za férové ceny (od 8 000 Kč), s garancí kvality (PageSpeed 90+ nebo peníze zpět). Od února 2024 jsme dokončili 15+ projektů s hodnocením 5.0 na Google."
   },
   "contact": {
     "title": "Kontaktujte nás",
@@ -261,7 +261,7 @@
   },
   "usp": {
     "title": "Kolik stojí webové stránky?",
-    "titleHighlight": "Od 7 990 Kč",
+    "titleHighlight": "Od 8 000 Kč",
     "subtitle": "Tvoříme weby na moderních technologiích s důrazem na rychlost, bezpečnost a dlouhodobou udržitelnost. Každý projekt je na míru podle vašich potřeb a rozpočtu.",
     "badTitle": "Co u nás nezažijete:",
     "goodTitle": "Co děláme jinak:",
@@ -271,7 +271,7 @@
     "bad4": "Zmizelý dodavatel po spuštění webu",
     "good1": "⚡ Rychlá tvorba webu na míru – reálný termín 5–7 pracovních dní pro základní web",
     "good2": "🚀 Optimalizované weby – garantujeme načítání pod 2 sekundy a PageSpeed 90+",
-    "good3": "💰 Transparentní ceník – základní web od 7 990 Kč jednorázově",
+    "good3": "💰 Transparentní ceník – základní web od 8 000 Kč jednorázově",
     "good4": "✅ Dlouhodobá podpora – nejste odkázáni sami na sebe",
     "good5": "🎯 Moderní a bezpečné – používáme nejnovější technologie"
   },
@@ -300,7 +300,7 @@
     "afterPageSpeed": "90-100/100",
     "afterMaintenance": "Minimální",
     "afterSecurity": "Maximum zabezpečení",
-    "afterPrice": "7 990 - 14 990 Kč",
+    "afterPrice": "8 000 - 14 990 Kč",
     "ctaTitle": "💡",
     "ctaHighlight": "Rychlý web = více zákazníků",
     "ctaText": "Chci rychlý web",
@@ -368,7 +368,8 @@
       "emailRequired": "Email je povinný",
       "projectTypeRequired": "Vyberte typ projektu",
       "budgetRequired": "Vyberte rozpočet",
-      "submitError": "Došlo k chybě při odesílání. Zkuste to prosím znovu."
+      "submitError": "Došlo k chybě při odesílání. Zkuste to prosím znovu.",
+      "gdprRequired": "Bez souhlasu se zpracováním údajů nelze poptávku odeslat"
     },
     "messages": {
       "successTitle": "Děkujeme!",
@@ -392,9 +393,9 @@
       "budgetPlaceholder": "Vyberte váš rozpočet",
       "budgetHelp": "Pomůže nám připravit přesnou nabídku",
       "budgetOptions": {
-        "landing": "Landing Page - 7 990 Kč",
-        "basic": "Základní Web - 9 990 Kč",
-        "standard": "Standardní Web - 24 990 Kč",
+        "landing": "Landing Page - 8 000 Kč",
+        "basic": "Základní Web - 10 000 Kč",
+        "standard": "Standardní Web - 25 000 Kč",
         "premium": "Premium Web - 49 990 Kč",
         "custom": "Jiný rozpočet"
       },
@@ -410,7 +411,15 @@
       "descriptionPlaceholder": "Stačí pár slov – čím se zabýváte? Nemusíte psát román.",
       "submitButton": "Odeslat poptávku",
       "submitting": "Odesílání...",
-      "requiredFields": "* Povinná pole"
+      "requiredFields": "* Povinná pole",
+      "configurationTitle": "Vaše konfigurace z ceníku",
+      "configurationPackage": "Balíček",
+      "configurationAddons": "Doplňky",
+      "configurationPrice": "Cena",
+      "configurationHours": "Odhad práce",
+      "configurationDelivery": "Dodání (dny)",
+      "gdprConsent": "Souhlasím se zpracováním osobních údajů podle",
+      "gdprLink": "zásad ochrany osobních údajů"
     },
     "contact": {
       "title": "Kontakt",

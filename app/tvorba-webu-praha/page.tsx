@@ -31,9 +31,9 @@ import { isSeitelyx } from "@/lib/brand";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek Praha | Od 7 990 Kč",
+  title: "Tvorba webových stránek Praha | Od 8 000 Kč",
   description:
-    "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby s PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Sídlíme na Praze 1 — sejdeme se osobně.",
+    "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby s PageSpeed 90+, dodání za 5–7 dní. Od 8 000 Kč. Sídlíme na Praze 1 — sejdeme se osobně.",
   keywords: [
     "tvorba webových stránek Praha",
     "tvorba webu Praha",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     "moderní web Praha",
   ],
   openGraph: {
-    title: "Tvorba webových stránek Praha | Od 7 990 Kč | Weblyx",
+    title: "Tvorba webových stránek Praha | Od 8 000 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 5–7 dní. Sídlíme na Praze 1.",
     url: "https://www.weblyx.cz/tvorba-webu-praha",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba webových stránek Praha | Od 7 990 Kč | Weblyx",
+    title: "Tvorba webových stránek Praha | Od 8 000 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
   },
@@ -104,7 +104,7 @@ const FAQS = [
   {
     question: "Kolik stojí tvorba webových stránek v Praze?",
     answer:
-      "Ceny tvorby webu v Praze se na trhu pohybují od 10 000 Kč až po statisíce. U nás začínáte na 7 990 Kč za kompletní web s moderním designem, SEO optimalizací a PageSpeed 90+. Žádné skryté poplatky — finální cenu znáte předem.",
+      "Ceny tvorby webu v Praze se na trhu pohybují od 10 000 Kč až po statisíce. U nás začínáte na 8 000 Kč za kompletní web s moderním designem, SEO optimalizací a PageSpeed 90+. Žádné skryté poplatky — finální cenu znáte předem.",
   },
   {
     question: "Jak dlouho trvá vytvoření webu?",
@@ -136,19 +136,19 @@ export default function TvorbaWebuPrahaPage() {
     name: "Weblyx – Tvorba webových stránek Praha",
     url: "https://www.weblyx.cz/tvorba-webu-praha",
     description:
-      "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby od 7 990 Kč s garancí PageSpeed 90+.",
+      "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby od 8 000 Kč s garancí PageSpeed 90+.",
     addressLocality: "Praha",
     addressCountry: "CZ",
     streetAddress: "Revoluční 8, Praha 1",
     postalCode: "110 00",
-    priceRange: "7990 Kč - 50000 Kč",
+    priceRange: "8000 Kč - 50000 Kč",
     locale: "cs",
   });
 
   const webpageSchema = generateWebPageSchema({
     name: "Tvorba webových stránek Praha",
     description:
-      "Profesionální tvorba webových stránek v Praze od 7 990 Kč. Moderní technologie, rychlé dodání.",
+      "Profesionální tvorba webových stránek v Praze od 8 000 Kč. Moderní technologie, rychlé dodání.",
     url: "https://www.weblyx.cz/tvorba-webu-praha",
     breadcrumbs,
   });
@@ -213,7 +213,7 @@ export default function TvorbaWebuPrahaPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
+                <Check className="h-4 w-4 text-primary" /> Od 8 000 Kč
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
@@ -348,7 +348,7 @@ export default function TvorbaWebuPrahaPage() {
                     <Badge variant="secondary">Transparentní ceny</Badge>
                     <h2 className="text-3xl md:text-4xl font-bold">
                       Web od{" "}
-                      <span className="text-primary">7 990 Kč</span>
+                      <span className="text-primary">8 000 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                       Žádné skryté poplatky, <strong>žádné měsíční paušály za hosting</strong>.
