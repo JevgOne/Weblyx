@@ -20,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { canonicalLeadStatus, leadStatusMeta, nextLeadStatus } from "@/lib/leads/status";
+import { formatCzk } from "@/lib/pricing/types";
 
 interface LeadDetailDialogProps {
   open: boolean;
@@ -29,18 +31,9 @@ interface LeadDetailDialogProps {
   onLeadUpdate?: (updatedLead: any) => void;
 }
 
-const statusConfig = {
-  new: { label: "Nová", color: "bg-red-500" },
-  contacted: { label: "Kontaktován", color: "bg-blue-500" },
-  quoted: { label: "Nabídka odeslána", color: "bg-yellow-500" },
-  approved: { label: "Schváleno", color: "bg-cyan-500" },
-  converted: { label: "Převedeno na projekt", color: "bg-primary" },
-  rejected: { label: "Zamítnuto", color: "bg-gray-500" },
-  paused: { label: "Pozastaveno", color: "bg-orange-500" },
-};
-
 export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUpdate }: LeadDetailDialogProps) {
   const [currentLead, setCurrentLead] = useState(lead);
+  const [statusSaving, setStatusSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +68,38 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
     };
     loadSpecialists();
   }, []);
+
+  // Cycles new → v řešení → hotovo. Optimistic, rolled back if the PATCH fails
+  // (an expired session returns 401 and is a realistic case here).
+  const handleCycleStatus = async () => {
+    if (statusSaving) return;
+
+    const previous = currentLead.status;
+    const next = nextLeadStatus(previous);
+
+    setStatusSaving(true);
+    setError(null);
+    setCurrentLead((prev: any) => ({ ...prev, status: next }));
+    onLeadUpdate?.({ ...currentLead, status: next });
+
+    try {
+      const response = await fetch(`/api/leads/${currentLead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+
+      if (!response.ok) {
+        throw new Error(response.status === 401 ? "Přihlášení vypršelo." : "Změna stavu selhala.");
+      }
+    } catch (err: any) {
+      setCurrentLead((prev: any) => ({ ...prev, status: previous }));
+      onLeadUpdate?.({ ...currentLead, status: previous });
+      setError(err.message || "Změna stavu selhala.");
+    } finally {
+      setStatusSaving(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!confirmDelete) {
@@ -160,13 +185,13 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
       if (res.ok) {
         const data = await res.json();
 
-        // Update lead status to converted
+        // Mark as done ('converted' is the legacy value, still read but not written)
         await fetch(`/api/admin/leads`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             leadId: currentLead.id,
-            updates: { status: 'converted' },
+            updates: { status: 'done' },
           }),
         });
 
@@ -203,11 +228,17 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
               <DialogTitle className="text-2xl">{currentLead.name}</DialogTitle>
               <DialogDescription>Detail poptávky</DialogDescription>
             </div>
-            <Badge
-              className={`${statusConfig[currentLead.status as keyof typeof statusConfig].color} text-white`}
+            <button
+              type="button"
+              onClick={handleCycleStatus}
+              disabled={statusSaving}
+              title="Kliknutím posunete stav"
+              className="disabled:opacity-60"
             >
-              {statusConfig[currentLead.status as keyof typeof statusConfig].label}
-            </Badge>
+              <Badge className={`${leadStatusMeta(currentLead.status).badgeClass} text-white`}>
+                {leadStatusMeta(currentLead.status).label}
+              </Badge>
+            </button>
           </div>
         </DialogHeader>
 
@@ -283,7 +314,7 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
           </div>
 
           {/* CREATE TASK SECTION - Main workflow */}
-          {currentLead.status !== 'converted' && (
+          {canonicalLeadStatus(currentLead.status) !== 'done' && (
             <div className="space-y-4 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-purple-950/20 dark:to-violet-900/20 p-6 rounded-lg border-2 border-purple-200 dark:border-purple-800">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2 text-base font-semibold">
@@ -400,7 +431,7 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
           )}
 
           {/* Already converted notice */}
-          {currentLead.status === 'converted' && (
+          {canonicalLeadStatus(currentLead.status) === 'done' && (
             <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
                 <UserCheck className="h-5 w-5" />
@@ -447,6 +478,51 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
                     >
                       {currentLead.existingWebsite}
                     </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Configuration from the price configurator (older leads have none) */}
+          {currentLead.configuration?.tierName && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Konfigurace z ceníku</h4>
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                <div className="text-sm">
+                  <span className="font-medium">Balíček: </span>
+                  <span>{currentLead.configuration.tierName}</span>
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">Doplňky: </span>
+                  {Array.isArray(currentLead.configuration.addons) &&
+                  currentLead.configuration.addons.length > 0 ? (
+                    <span>
+                      {currentLead.configuration.addons
+                        .map((addon: any) => `${addon.name} (${addon.hours} h)`)
+                        .join(", ")}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">bez doplňků</span>
+                  )}
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">Cena: </span>
+                  <span>
+                    {formatCzk(Number(currentLead.configuration.totalPrice) || 0)} Kč
+                    {currentLead.configuration.hourlyRate
+                      ? ` (sazba ${currentLead.configuration.hourlyRate} Kč/h)`
+                      : ""}
+                  </span>
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">Odhad práce: </span>
+                  <span>{currentLead.configuration.totalHours} h</span>
+                </div>
+                {currentLead.configuration.deliveryDays && (
+                  <div className="text-sm">
+                    <span className="font-medium">Dodání: </span>
+                    <span>{currentLead.configuration.deliveryDays} dní</span>
                   </div>
                 )}
               </div>

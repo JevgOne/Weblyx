@@ -2,10 +2,10 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Nezávazná poptávka | Weblyx',
-  description: 'Vyplňte formulář a my se vám ozveme do 24 hodin. Transparentní ceny od 7 990 Kč. Rychlý web za 7 dní.',
+  description: 'Vyplňte formulář a my se vám ozveme do 24 hodin. Transparentní ceny od 8 000 Kč. Rychlý web za 7 dní.',
   openGraph: {
     title: 'Nezávazná poptávka | Weblyx',
-    description: 'Vyplňte formulář a my se vám ozveme do 24 hodin. Transparentní ceny od 7 990 Kč.',
+    description: 'Vyplňte formulář a my se vám ozveme do 24 hodin. Transparentní ceny od 8 000 Kč.',
     type: 'website',
     locale: 'cs_CZ',
     siteName: 'Weblyx',

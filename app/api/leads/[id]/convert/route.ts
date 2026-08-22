@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
+import { getAuthUser, unauthorizedResponse } from "@/lib/auth/require-auth";
 import { collection, getDocs, doc, getDoc, addDoc, updateDoc } from "firebase/firestore";
 
 // Format AI design suggestions for project notes
@@ -78,6 +79,9 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const params = await context.params;
     const leadId = params.id;
     const body = await request.json();

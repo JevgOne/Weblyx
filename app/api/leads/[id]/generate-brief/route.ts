@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { turso } from "@/lib/turso";
+import { getAuthUser, unauthorizedResponse } from "@/lib/auth/require-auth";
+import { isInternalRequest } from "@/lib/auth/internal-request";
 
 /**
  * Generate AI-ready project brief from lead data
@@ -246,6 +248,11 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!isInternalRequest(req)) {
+      const user = await getAuthUser();
+      if (!user) return unauthorizedResponse();
+    }
+
     const { id } = await context.params;
 
     if (!id) {

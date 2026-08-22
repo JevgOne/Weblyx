@@ -1,9 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { turso } from "@/lib/turso";
 import { sendEmail, EMAIL_CONFIG } from "@/lib/email/resend-client";
 import { generateAdminNotificationEmail, generateClientThankYouEmail } from "@/lib/email/lead-templates";
 import { sendPushNotificationToAdmins } from "@/lib/push-notifications/send-notification";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { validateHoneypot, validateSubmissionTime } from "@/lib/security/honeypot";
+import { getPricingData } from "@/lib/pricing/server";
+import { buildConfiguration, formatCzk, type LeadConfiguration } from "@/lib/pricing/types";
+import { internalRequestHeaders } from "@/lib/auth/internal-request";
 import { nanoid } from "nanoid";
 
 export async function POST(request: NextRequest) {
@@ -39,7 +43,25 @@ export async function POST(request: NextRequest) {
       howDidYouHear,
       preferredContact,
       preferredMeetingTime,
+      configuration,
+      gdprConsent,
+      __form_timestamp,
     } = body;
+
+    // 🤖 Bot detection — answer like a success so bots learn nothing
+    if (!validateHoneypot(body)) {
+      return NextResponse.json(
+        { success: true, message: "Děkujeme za vaši poptávku!" },
+        { status: 200 }
+      );
+    }
+
+    if (__form_timestamp && !validateSubmissionTime(__form_timestamp, 3)) {
+      return NextResponse.json(
+        { success: true, message: "Děkujeme za vaši poptávku!" },
+        { status: 200 }
+      );
+    }
 
     // Validation
     if (!name || !email) {
@@ -56,6 +78,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!gdprConsent) {
+      return NextResponse.json(
+        { error: "Bez souhlasu se zpracováním osobních údajů nelze poptávku odeslat." },
+        { status: 400 }
+      );
+    }
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -64,6 +93,33 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    /**
+     * The client sends IDs only. Hours and price are recomputed here from the
+     * price list, so a hand-edited URL cannot dictate what a project costs.
+     */
+    let leadConfiguration: LeadConfiguration | null = null;
+
+    if (configuration) {
+      const tierId = typeof configuration.tierId === "string" ? configuration.tierId : null;
+      const addonIds = Array.isArray(configuration.addonIds)
+        ? configuration.addonIds.filter((id: unknown): id is string => typeof id === "string")
+        : [];
+
+      if (!tierId) {
+        return NextResponse.json(
+          { error: "Neplatná konfigurace balíčku." },
+          { status: 400 }
+        );
+      }
+
+      const pricing = await getPricingData();
+      leadConfiguration = buildConfiguration(pricing, tierId, addonIds);
+    }
+
+    const budgetRange = leadConfiguration
+      ? `${formatCzk(leadConfiguration.totalPrice)} Kč`
+      : budget || null;
 
     // Generate unique ID
     const leadId = nanoid();
@@ -80,8 +136,8 @@ export async function POST(request: NextRequest) {
           project_details, features, design_preferences, marketing_tech,
           budget_range, timeline, additional_requirements,
           how_did_you_hear, preferred_contact, preferred_meeting_time,
-          status, source, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
+          configuration, status, source, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
       `,
       args: [
         leadId,
@@ -108,12 +164,13 @@ export async function POST(request: NextRequest) {
         JSON.stringify(features || []),
         JSON.stringify(designPreferences || {}),
         JSON.stringify(marketingTech || {}),
-        budget || null,
+        budgetRange,
         timeline || null,
         additionalRequirements || null,
         howDidYouHear || null,
         preferredContact || null,
         preferredMeetingTime || null,
+        leadConfiguration ? JSON.stringify(leadConfiguration) : null,
         "new",
         "questionnaire",
       ],
@@ -147,11 +204,12 @@ export async function POST(request: NextRequest) {
       phone,
       companyName,
       projectType,
-      budget,
+      budget: budgetRange || "",
       timeline,
       businessDescription,
       features,
       designPreferences,
+      configuration: leadConfiguration,
     });
 
     // Send email notification
@@ -170,9 +228,13 @@ export async function POST(request: NextRequest) {
     });
 
     // 🔔 Send push notification to admin(s)
+    const pushSummary = leadConfiguration
+      ? `${leadConfiguration.tierName} · ${formatCzk(leadConfiguration.totalPrice)} Kč`
+      : budgetRange || projectType;
+
     sendPushNotificationToAdmins({
       title: '🔔 Nová poptávka!',
-      body: `${companyName} - ${projectType} | ${budget}`,
+      body: `${companyName} - ${projectType} | ${pushSummary}`,
       url: `/admin/leads`,
       tag: `lead-${leadId}`,
       data: {
@@ -195,9 +257,10 @@ export async function POST(request: NextRequest) {
         phone,
         company: companyName,
         projectType,
-        budget,
+        budget: budgetRange || undefined,
         description: businessDescription,
         leadId,
+        configuration: leadConfiguration,
       });
 
       if (!telegramSent) {
@@ -208,34 +271,31 @@ export async function POST(request: NextRequest) {
       console.error("❌ [LEAD API] Stack:", err.stack);
     }
 
-    // 🤖 Trigger AI generation in background (don't await)
+    /**
+     * AI generation runs after the response. `after()` keeps the serverless
+     * function alive until it finishes — a bare fetch used to be cut off when
+     * the function froze, so the generation often never completed.
+     */
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
+    const internalHeaders = internalRequestHeaders();
 
-    // Generate AI Design
-    fetch(`${siteUrl}/api/leads/${leadId}/generate-design`, {
-      method: "POST",
-    })
-      .then((res) => {
-        if (!res.ok) {
-          console.warn("⚠️ AI design generation failed:", res.statusText);
+    after(async () => {
+      const trigger = async (endpoint: string) => {
+        try {
+          const res = await fetch(`${siteUrl}/api/leads/${leadId}/${endpoint}`, {
+            method: "POST",
+            headers: internalHeaders,
+          });
+          if (!res.ok) {
+            console.warn(`⚠️ ${endpoint} failed:`, res.status, res.statusText);
+          }
+        } catch (err) {
+          console.warn(`⚠️ ${endpoint} error:`, err);
         }
-      })
-      .catch((err) => {
-        console.warn("⚠️ AI design generation error:", err);
-      });
+      };
 
-    // Generate AI Brief
-    fetch(`${siteUrl}/api/leads/${leadId}/generate-brief`, {
-      method: "POST",
-    })
-      .then((res) => {
-        if (!res.ok) {
-          console.warn("⚠️ AI brief generation failed:", res.statusText);
-        }
-      })
-      .catch((err) => {
-        console.warn("⚠️ AI brief generation error:", err);
-      });
+      await Promise.all([trigger("generate-design"), trigger("generate-brief")]);
+    });
 
     return NextResponse.json(
       {

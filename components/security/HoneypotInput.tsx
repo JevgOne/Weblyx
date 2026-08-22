@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { HONEYPOT_FIELD_NAME, generateTimestamp } from '@/lib/security/honeypot';
+import { useEffect, useId, useState } from 'react';
+import { HONEYPOT_FIELD_PREFIX, generateTimestamp } from '@/lib/security/honeypot';
 
 /**
  * Honeypot Input Component
@@ -21,6 +21,9 @@ import { HONEYPOT_FIELD_NAME, generateTimestamp } from '@/lib/security/honeypot'
  */
 export function HoneypotInput() {
   const [timestamp, setTimestamp] = useState<number>(0);
+  // useId() is identical on the server and during hydration; strip its colons so
+  // the result is a valid form field name.
+  const fieldName = `${HONEYPOT_FIELD_PREFIX}${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
   useEffect(() => {
     setTimestamp(generateTimestamp());
@@ -31,7 +34,7 @@ export function HoneypotInput() {
       {/* Honeypot field - hidden from humans, visible to bots */}
       <input
         type="text"
-        name={HONEYPOT_FIELD_NAME}
+        name={fieldName}
         autoComplete="off"
         tabIndex={-1}
         style={{

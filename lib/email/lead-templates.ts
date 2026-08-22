@@ -1,4 +1,5 @@
 import type { AIDesignSuggestion } from "@/types/ai-design";
+import type { LeadConfiguration } from "@/lib/pricing/types";
 
 /**
  * Admin notification email when new lead is received
@@ -15,6 +16,7 @@ export function generateAdminNotificationEmail(leadData: {
   businessDescription: string;
   features?: string[];
   designPreferences?: any;
+  configuration?: LeadConfiguration | null;
 }) {
   const adminUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz';
   const leadDetailUrl = `${adminUrl}/admin/leads?leadId=${leadData.id}`;
@@ -100,6 +102,22 @@ export function generateAdminNotificationEmail(leadData: {
                   <td style="color: #6b7280;">Časový rámec:</td>
                   <td style="color: #111827;">${leadData.timeline}</td>
                 </tr>
+                ${leadData.configuration ? `
+                <tr>
+                  <td style="color: #6b7280;">Balíček:</td>
+                  <td style="color: #111827; font-weight: 600;">${leadData.configuration.tierName}</td>
+                </tr>
+                ${leadData.configuration.addons.length > 0 ? `
+                <tr>
+                  <td style="color: #6b7280;">Doplňky:</td>
+                  <td style="color: #111827;">${leadData.configuration.addons.map(a => a.name).join(', ')}</td>
+                </tr>
+                ` : ''}
+                <tr>
+                  <td style="color: #6b7280;">Cena z konfigurátoru:</td>
+                  <td style="color: #111827; font-weight: 600;">${leadData.configuration.totalPrice.toLocaleString('cs-CZ')} Kč · ${leadData.configuration.totalHours} h${leadData.configuration.deliveryDays ? ` · dodání ${leadData.configuration.deliveryDays} dní` : ''}</td>
+                </tr>
+                ` : ''}
               </table>
 
               <div style="margin-top: 20px;">

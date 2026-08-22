@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { QuoteForm } from "@/components/poptavka/QuoteForm";
 import { getLocale } from "next-intl/server";
+import { Suspense } from "react";
+import { getPricingData } from "@/lib/pricing/server";
 
 // ISR: revalidate every hour
 export const revalidate = 3600;
@@ -32,7 +34,7 @@ export const metadata: Metadata = isSeitelyx ? {
     languages: getAlternateLanguages('/anfrage'),
   },
 } : {
-  title: "Nezávazná poptávka – webové stránky od 7 990 Kč",
+  title: "Nezávazná poptávka – webové stránky od 8 000 Kč",
   description: "Vyplňte nezávaznou poptávku na tvorbu webových stránek. Nový web, redesign, e-shop nebo landing page. Odpovíme do 24 hodin s návrhem řešení a cenou.",
   keywords: [
     "poptávka web",
@@ -45,7 +47,7 @@ export const metadata: Metadata = isSeitelyx ? {
     "landing page",
   ],
   openGraph: {
-    title: "Nezávazná poptávka | Weblyx – webové stránky od 7 990 Kč",
+    title: "Nezávazná poptávka | Weblyx – webové stránky od 8 000 Kč",
     description: "Vyplňte formulář a do 24 hodin vám pošleme návrh řešení s orientační cenou. Bez závazků.",
     url: "https://www.weblyx.cz/poptavka",
     type: "website",
@@ -60,6 +62,7 @@ export const metadata: Metadata = isSeitelyx ? {
 export default async function QuotePage() {
   const locale = await getLocale();
   const isDE = locale === 'de';
+  const pricing = await getPricingData();
 
   return (
     <div className="min-h-screen py-16 px-4 bg-gradient-to-br from-background via-primary/5 to-background">
@@ -77,7 +80,10 @@ export default async function QuotePage() {
         </div>
 
         {/* Client-side interactive form */}
-        <QuoteForm />
+        {/* Suspense: the form reads the configurator's query params */}
+        <Suspense fallback={null}>
+          <QuoteForm pricing={pricing} />
+        </Suspense>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           {isDE ? (

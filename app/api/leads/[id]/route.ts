@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { turso } from "@/lib/turso";
+import { getAuthUser, unauthorizedResponse } from "@/lib/auth/require-auth";
+import { isWritableLeadStatus } from "@/lib/leads/status";
+import { logActivity } from "@/lib/activity-log";
 
 /**
  * GET /api/leads/[id]
- * Get lead by ID
+ * Get lead by ID (Admin only — the row carries personal data)
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { id } = await params;
 
     const result = await turso.execute({
@@ -46,6 +52,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { id } = await params;
 
     // Check if lead exists
@@ -82,20 +91,23 @@ export async function DELETE(
 
 /**
  * PATCH /api/leads/[id]
- * Update lead (status, assignedTo, etc.) - Admin only
+ * Update lead (status, assignedTo) - Admin only
  */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const { id } = await params;
     const body = await request.json();
     const { status, assignedTo } = body;
 
     // Check if lead exists
     const checkResult = await turso.execute({
-      sql: "SELECT id FROM leads WHERE id = ?",
+      sql: "SELECT id, status FROM leads WHERE id = ?",
       args: [id],
     });
 
@@ -111,6 +123,12 @@ export async function PATCH(
     const args: any[] = [];
 
     if (status !== undefined) {
+      if (!isWritableLeadStatus(status)) {
+        return NextResponse.json(
+          { error: "Neplatný stav poptávky" },
+          { status: 400 }
+        );
+      }
       updates.push("status = ?");
       args.push(status);
     }
@@ -127,6 +145,8 @@ export async function PATCH(
       );
     }
 
+    updates.push("updated_at = unixepoch()");
+
     // Add id to args (for WHERE clause)
     args.push(id);
 
@@ -135,6 +155,19 @@ export async function PATCH(
       sql: `UPDATE leads SET ${updates.join(", ")} WHERE id = ?`,
       args,
     });
+
+    if (status !== undefined) {
+      const previous = checkResult.rows[0].status;
+      await logActivity({
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.name,
+        action: "lead_updated",
+        entityType: "lead",
+        entityId: id,
+        details: `Stav poptávky: ${previous} → ${status}`,
+      });
+    }
 
     // Return updated lead
     const result = await turso.execute({
