@@ -1,17 +1,44 @@
 // Turso Database Client
-import { createClient } from '@libsql/client';
+import { createClient, type Client } from '@libsql/client';
 
-if (!process.env.TURSO_DATABASE_URL) {
-  throw new Error('TURSO_DATABASE_URL environment variable is not set');
+/**
+ * The client is created on first use, not on import.
+ *
+ * Throwing at module scope made the credentials a *build* requirement: Next
+ * evaluates every route module while collecting page data, so a deployment
+ * without them died with "Failed to collect page data" before a single request
+ * existed. That is what broke preview deployments, where Vercel only injects
+ * the variables an environment is explicitly scoped to.
+ *
+ * Failing on first query instead keeps the message just as loud at runtime,
+ * while letting a build — which needs no database — finish. Callers that
+ * already catch (the pricing configurator, the CMS readers) degrade to their
+ * fallbacks rather than taking the whole page down.
+ */
+let client: Client | null = null;
+
+function getClient(): Client {
+  if (client) return client;
+
+  const url = process.env.TURSO_DATABASE_URL?.trim();
+  const authToken = process.env.TURSO_AUTH_TOKEN?.trim();
+
+  if (!url) throw new Error('TURSO_DATABASE_URL environment variable is not set');
+  if (!authToken) throw new Error('TURSO_AUTH_TOKEN environment variable is not set');
+
+  client = createClient({ url, authToken });
+  return client;
 }
 
-if (!process.env.TURSO_AUTH_TOKEN) {
-  throw new Error('TURSO_AUTH_TOKEN environment variable is not set');
-}
-
-export const turso = createClient({
-  url: process.env.TURSO_DATABASE_URL.trim(),
-  authToken: process.env.TURSO_AUTH_TOKEN.trim(),
+/**
+ * Proxy so every existing `turso.execute(...)` / `turso.batch(...)` call site
+ * keeps working unchanged; the real client is built on the first property read.
+ */
+export const turso: Client = new Proxy({} as Client, {
+  get(_target, prop, receiver) {
+    const value = Reflect.get(getClient() as object, prop, receiver);
+    return typeof value === 'function' ? value.bind(getClient()) : value;
+  },
 });
 
 // Helper function to execute queries
