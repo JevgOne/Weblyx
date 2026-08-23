@@ -25,6 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getActiveServices, Service } from "@/lib/turso/services";
+import { safeRead } from '@/lib/safe-read';
 
 // Force dynamic rendering to avoid build timeout
 export const dynamic = 'force-dynamic';
@@ -197,7 +198,7 @@ const ADDITIONAL_SERVICES = [
 
 export default async function LeistungenPage() {
   // Fetch active services from database (German locale)
-  const dbServices = await getActiveServices('de');
+  const dbServices = await safeRead(() => getActiveServices("de"), [], "services (de)");
 
   // Transform database services to pricing packages
   const PRICING_PACKAGES = transformServicesToPricingPackages(dbServices);

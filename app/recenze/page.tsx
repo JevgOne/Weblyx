@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Star, ExternalLink, Quote } from "lucide-react";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getRequestLocale } from "@/lib/brand-server";
+import { safeRead } from '@/lib/safe-read';
 
 export const revalidate = 3600; // ISR: 1 hour
 
@@ -51,7 +52,7 @@ function formatDate(date: Date): string {
 }
 
 export default async function RecenzePage() {
-  const reviews = await getPublishedReviews("cs");
+  const reviews = await safeRead(() => getPublishedReviews("cs"), [], "CS reviews");
 
   const reviewCount = reviews.length;
   const avgRating =

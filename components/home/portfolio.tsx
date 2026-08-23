@@ -39,12 +39,17 @@ async function getPortfolioProjects(locale?: string): Promise<PortfolioProject[]
 }
 
 import { getTranslations, getLocale } from "next-intl/server";
+import { safeRead } from '@/lib/safe-read';
 
 export async function Portfolio() {
   const t = await getTranslations("portfolio");
   const locale = await getLocale();
   const projects = await getPortfolioProjects(locale);
-  const sectionContent = await getPageContent('homepage-portfolio');
+  const sectionContent = await safeRead(
+    () => getPageContent('homepage-portfolio'),
+    null,
+    'homepage-portfolio section'
+  );
 
   const heading = sectionContent?.content?.heading || t("fallbackHeading");
   const subheading = sectionContent?.content?.subheading || t("fallbackSubheading");

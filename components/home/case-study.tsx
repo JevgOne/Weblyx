@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import type { CaseStudyData } from "@/types/cms";
+import { safeRead } from '@/lib/safe-read';
 
 interface CaseMetric {
   label: string;
@@ -30,7 +31,7 @@ export async function CaseStudy() {
   } catch {}
 
   // Find portfolio item with best data (has loadTimeBefore + loadTimeAfter + pagespeed)
-  const portfolio = await getPublishedPortfolio(locale);
+  const portfolio = await safeRead(() => getPublishedPortfolio(locale), [], 'case study portfolio');
   const caseProject = portfolio.find(
     (p) => p.pagespeedMobile && p.pagespeedMobile >= 90 && p.loadTimeBefore && p.loadTimeAfter
   );

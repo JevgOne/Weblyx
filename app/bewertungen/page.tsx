@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Star, ExternalLink, Quote } from "lucide-react";
 import { getPublishedReviews } from "@/lib/turso/reviews";
+import { safeRead } from '@/lib/safe-read';
 
 export const revalidate = 3600;
 
@@ -38,11 +39,13 @@ function formatDate(date: Date): string {
 }
 
 export default async function BewertungenPage() {
-  const deReviews = await getPublishedReviews("de");
+  const deReviews = await safeRead(() => getPublishedReviews("de"), [], "DE reviews");
   // Fallback: if no DE reviews, show all reviews (Czech clients)
   const isFallback = deReviews.length === 0;
   const allReviews =
-    deReviews.length > 0 ? deReviews : await getPublishedReviews();
+    deReviews.length > 0
+      ? deReviews
+      : await safeRead(() => getPublishedReviews(), [], "all reviews");
 
   const reviewCount = allReviews.length;
   const avgRating =

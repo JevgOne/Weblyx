@@ -10,6 +10,7 @@ import { getPublishedBlogPostsByLanguage } from "@/lib/turso/blog";
 import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { safeRead } from '@/lib/safe-read';
 
 export const revalidate = 60;
 
@@ -114,7 +115,11 @@ export default async function BlogPage() {
   const t = blogPageContent[locale];
   const baseUrl = brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
-  const posts = await getPublishedBlogPostsByLanguage(locale);
+  const posts = await safeRead(
+    () => getPublishedBlogPostsByLanguage(locale),
+    [],
+    "blog posts"
+  );
 
   return (
     <>

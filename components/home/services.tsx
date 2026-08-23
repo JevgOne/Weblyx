@@ -10,6 +10,7 @@ import { getActiveServices } from "@/lib/turso/services";
 import { getPageContent } from "@/lib/firestore-pages";
 import { getTranslations, getLocale } from 'next-intl/server';
 import { LeadButton } from "@/components/tracking/LeadButton";
+import { safeRead } from '@/lib/safe-read';
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -36,7 +37,11 @@ export async function Services() {
   const t = await getTranslations('services');
   const locale = await getLocale();
   const servicesData = await getServices(locale);
-  const sectionContent = await getPageContent('homepage-services');
+  const sectionContent = await safeRead(
+    () => getPageContent('homepage-services'),
+    null,
+    'homepage-services section'
+  );
 
   // Fallback data if fetch fails
   const services = servicesData.length > 0 ? servicesData : [

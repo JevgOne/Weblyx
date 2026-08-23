@@ -12,6 +12,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import type { Metadata } from "next";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { FAQItem } from "@/types/cms";
+import { safeRead } from '@/lib/safe-read';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('faqPage');
@@ -46,8 +47,8 @@ export default async function FAQPage() {
   const locale = await getLocale();
 
   const [section, items] = await Promise.all([
-    getFAQSection(),
-    getAllFAQItems(locale),
+    safeRead(() => getFAQSection(), null, 'FAQ section'),
+    safeRead(() => getAllFAQItems(locale), [], 'FAQ items'),
   ]);
 
   // If DB returns no FAQs, use fallback from translations
