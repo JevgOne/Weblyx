@@ -1,44 +1,40 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getPublishedPortfolio } from "@/lib/turso/portfolio";
+import { getHomepagePortfolio } from "@/lib/turso/portfolio";
+import { safeRead } from "@/lib/safe-read";
 
 /**
- * The four featured projects and their copy are an editorial choice from the
- * design, so they are fixed here. Screenshots come from the portfolio CMS —
- * matched by name — so uploading an image in the admin updates this section
- * without a code change.
+ * Featured work, read from the portfolio CMS.
+ *
+ * Four projects and their taglines used to be written into this file and only
+ * their screenshots came from the CMS, so a project renamed or retired in the
+ * admin kept its old name here — and one listed project was not flagged for
+ * the homepage at all. Flagging a project in the admin is now the whole
+ * mechanism: name, tagline, image and link all travel together.
  */
-const FEATURED = [
-  { name: "NovaDom", category: "Reality · správa nemovitostí · investice" },
-  { name: "Resilient Mind", category: "Prémiový coaching · membership · booking" },
-  { name: "KAJO Studio 360", category: "360° video booth · eventy" },
-  { name: "AK Barbers", category: "Barber brand · pixel-perfect realizace" },
-];
+const MAX_SHOWN = 4;
 
-/** Loose match so "AK Barbers – web" in the CMS still resolves to "AK Barbers". */
-function normalise(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+/** "AK Barbers – web pro barber brand" -> name "AK Barbers", tagline the rest. */
+function splitTitle(title: string): { name: string; tagline: string } {
+  const [name, ...rest] = title.split(/\s+[\u2013-]\s+/);
+  return { name: name.trim(), tagline: rest.join(" – ").trim() };
 }
 
 export async function NovaPortfolio() {
-  let cmsItems: { title: string; imageUrl?: string; id: string }[] = [];
-  try {
-    cmsItems = await getPublishedPortfolio("cs");
-  } catch {
-    // Section still renders with placeholders if the CMS is unreachable.
-  }
+  const items = await safeRead(() => getHomepagePortfolio("cs"), [], "nova portfolio");
 
-  const projects = FEATURED.map((project) => {
-    const key = normalise(project.name);
-    const match = cmsItems.find((item) => {
-      const title = normalise(item.title);
-      return title.includes(key) || key.includes(title);
-    });
+  // The section is all cards; with none it would render as a bare heading.
+  if (items.length === 0) return null;
 
+  const projects = items.slice(0, MAX_SHOWN).map((item) => {
+    const { name, tagline } = splitTitle(item.title);
     return {
-      ...project,
-      imageUrl: match?.imageUrl,
-      href: match ? `/portfolio/${match.id}` : undefined,
+      id: item.id,
+      name: item.clientName || name,
+      // Prefer the editorial category; fall back to what the title says.
+      category: item.category || tagline,
+      imageUrl: item.imageUrl || undefined,
+      href: `/portfolio/${item.id}`,
     };
   });
 
@@ -96,12 +92,11 @@ export async function NovaPortfolio() {
             </>
           );
 
-          return project.href ? (
-            <Link key={project.name} href={project.href} className="block">
+          // Every project now comes from the CMS, so each one has a detail page.
+          return (
+            <Link key={project.id} href={project.href} className="block">
               {card}
             </Link>
-          ) : (
-            <article key={project.name}>{card}</article>
           );
         })}
       </div>

@@ -68,7 +68,7 @@ export default async function NovaPage() {
           fromPrice={`od ${formatCzk(lowestPrice)} Kč`}
           announcement={pickAnnouncement(new Date())}
         />
-        <NovaStatsBar />
+        <NovaStatsBar pricing={pricing} />
         <NovaClientLogos />
         <NovaPhilosophy />
         <NovaSpeedPledge />
