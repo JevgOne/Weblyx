@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getActiveServices } from "@/lib/turso/services";
 import { safeRead } from "@/lib/safe-read";
 
@@ -15,12 +16,12 @@ import { safeRead } from "@/lib/safe-read";
  * row without a price.
  */
 const FALLBACK = [
-  { title: "Webové stránky", description: "Moderní, responzivní weby na míru vašim potřebám i cílové skupině." },
-  { title: "SEO optimalizace", description: "Přední pozice ve vyhledávačích — kompletní on-page i off-page SEO." },
-  { title: "Redesign", description: "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze." },
-  { title: "Rychlost načítání", description: "Zrychlení webu pro lepší SEO i zážitek. Cíl: méně než 2 sekundy." },
-  { title: "Údržba a podpora", description: "Aktualizace, zálohy a technická podpora. Web vždy funkční a bezpečný." },
-  { title: "Landing page", description: "Jedna stránka s vysokou konverzí — levnější a rychlejší než WordPress." },
+  { title: "Webové stránky", description: "Moderní, responzivní weby na míru vašim potřebám i cílové skupině.", link: "/sluzby#web" },
+  { title: "SEO optimalizace", description: "Přední pozice ve vyhledávačích — kompletní on-page i off-page SEO.", link: "/seo-optimalizace" },
+  { title: "Redesign", description: "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze.", link: "/redesign-webu" },
+  { title: "Rychlost načítání", description: "Zrychlení webu pro lepší SEO i zážitek. Cíl: méně než 2 sekundy.", link: "/pagespeed-garance" },
+  { title: "Údržba a podpora", description: "Aktualizace, zálohy a technická podpora. Web vždy funkční a bezpečný.", link: "/sluzby#maintenance" },
+  { title: "Landing page", description: "Jedna stránka s vysokou konverzí — levnější a rychlejší než WordPress.", link: "/#cenik" },
 ];
 
 export async function NovaServices() {
@@ -29,7 +30,11 @@ export async function NovaServices() {
   const services = rows
     .filter((service) => service.priceFrom === null || service.priceFrom === undefined)
     .sort((a, b) => a.order - b.order)
-    .map((service) => ({ title: service.title, description: service.description }));
+    .map((service) => ({
+      title: service.title,
+      description: service.description,
+      link: service.link,
+    }));
 
   // A database blip must not delete a section the navigation links to.
   const shown = services.length > 0 ? services : FALLBACK;
@@ -47,19 +52,44 @@ export async function NovaServices() {
         className="nova-col3 grid grid-cols-3 gap-px overflow-hidden rounded-[20px] border"
         style={{ background: "var(--n-border)", borderColor: "var(--n-border)" }}
       >
-        {shown.map((service) => (
-          <article key={service.title} className="px-9 py-[42px]" style={{ background: "var(--n-bg-alt)" }}>
-            <h3 className="text-[22px] font-bold" style={{ letterSpacing: "-.02em" }}>
-              {service.title}
-            </h3>
-            <p
-              className="mt-3.5 text-[15px] font-medium"
-              style={{ lineHeight: 1.6, color: "var(--n-text-muted)" }}
+        {shown.map((service) => {
+          const body = (
+            <>
+              <h3 className="text-[22px] font-bold" style={{ letterSpacing: "-.02em" }}>
+                {service.title}
+              </h3>
+              <p
+                className="mt-3.5 text-[15px] font-medium"
+                style={{ lineHeight: 1.6, color: "var(--n-text-muted)" }}
+              >
+                {service.description}
+              </p>
+              {service.link && (
+                <span
+                  className="mt-4 inline-block text-[15px] font-semibold"
+                  style={{ color: "var(--n-brand-dark)" }}
+                >
+                  Zjistit více ›
+                </span>
+              )}
+            </>
+          );
+
+          return service.link ? (
+            <Link
+              key={service.title}
+              href={service.link}
+              className="block px-9 py-[42px] transition-colors hover:bg-white"
+              style={{ background: "var(--n-bg-alt)" }}
             >
-              {service.description}
-            </p>
-          </article>
-        ))}
+              {body}
+            </Link>
+          ) : (
+            <article key={service.title} className="px-9 py-[42px]" style={{ background: "var(--n-bg-alt)" }}>
+              {body}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

@@ -140,10 +140,9 @@ export default async function HomePage() {
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={localBusinessSchema} />
-      {/* FAQPage only where the answers are actually on the page. The Czech
-          homepage no longer carries an FAQ section; /faq emits this schema for
-          the same items, which is where Google expects to find it. */}
-      {!isCzech && faqSchema && <JsonLd data={faqSchema} />}
+      {/* Both homepages carry a visible FAQ section again, so the schema has
+          content behind it on either branch. */}
+      {faqSchema && <JsonLd data={faqSchema} />}
       {offersSchema && offersSchema.map((offer, index) => (
         <JsonLd key={index} data={offer} />
       ))}

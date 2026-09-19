@@ -13,6 +13,8 @@ export interface Service {
   id?: string;
   title: string;
   description: string;
+  /** Where the tile goes; the homepage links every service to its page. */
+  link?: string;
   icon: string;
   imageUrl?: string; // Optional image for service display
   features: string[];

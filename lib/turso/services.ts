@@ -6,6 +6,8 @@ export interface Service {
   id: string;
   title: string;
   description: string;
+  /** Where the tile goes; the homepage links every service to its page. */
+  link?: string;
   icon?: string;
   imageUrl?: string;
   features: string[];
@@ -33,6 +35,7 @@ interface ServiceRow {
   updated_at: number;
   title_de: string | null;
   description_de: string | null;
+  link: string | null;
 }
 
 function rowToService(row: ServiceRow, locale?: string): Service {
@@ -47,6 +50,7 @@ function rowToService(row: ServiceRow, locale?: string): Service {
     features: (useDE && row.features_de) ? JSON.parse(row.features_de) : (row.features ? JSON.parse(row.features) : []),
     priceFrom: row.price_from || undefined,
     priceTo: row.price_to || undefined,
+    link: row.link || undefined,
     order: row.order,
     active: Boolean(row.active),
     createdAt: unixToDate(row.created_at) || new Date(),
