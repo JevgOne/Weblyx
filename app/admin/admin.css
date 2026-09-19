@@ -21,6 +21,67 @@
   background: var(--a-bg);
 }
 
+/* --- The admin panel is light, always --------------------------------------
+   The tokens above are light-only, but the shadcn components the panel is
+   built from read `--background`, `--card`, `--border` and friends, which the
+   site-wide theme flips to dark for anyone whose OS is in dark mode. The two
+   systems then fight: a light sidebar and light cards on a near-black page,
+   with text that disappears into it.
+
+   The panel is a back-office tool with its own palette from the handoff, so it
+   opts out of the theme entirely and restates the light values. `color-scheme`
+   keeps native controls — scrollbars, selects, date pickers — light with it. */
+.wbx-admin,
+.dark .wbx-admin {
+  color-scheme: light;
+
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+
+  --primary: 172 78% 40%;
+  --primary-foreground: 0 0% 100%;
+  --primary-hover: 172 78% 32%;
+  --primary-light: 172 78% 50%;
+  --primary-dark: 172 78% 28%;
+
+  --secondary: 172 78% 40%;
+  --secondary-foreground: 0 0% 100%;
+
+  --accent: 172 78% 40%;
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 210 20% 98%;
+  --muted-foreground: 215 16% 47%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 215 20% 91%;
+  --input: 215 20% 91%;
+  --ring: 172 78% 40%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 15% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 15% 15%;
+
+  --surface: 210 20% 99%;
+  --surface-sunken: 213 24% 96%;
+
+  --ink: 222 47% 11%;
+  --ink-soft: 215 19% 35%;
+  --ink-faint: 215 16% 55%;
+
+  --hairline: 214 24% 89%;
+  --hairline-strong: 214 20% 82%;
+
+  background: var(--a-bg);
+  color: var(--a-ink);
+  min-height: 100vh;
+}
+
+
 /* --- Status pills ---------------------------------------------------------
    Three lead states, each a tinted pill of its own hue. */
 .wbx-status {
