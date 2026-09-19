@@ -54,8 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SEO optimalizace a služby | Od 5 000 Kč/měsíc | Weblyx",
-    description:
-      "⚡ Profesionální SEO optimalizace od 5 000 Kč/měsíc. Garance měřitelných výsledků.",
+    description: "Profesionální SEO optimalizace od 5 000 Kč/měsíc. Garance měřitelných výsledků.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/seo-optimalizace",

@@ -26,9 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Web pro živnostníky | Webové stránky pro OSVČ od 7 990 Kč | Weblyx",
-  description:
-    "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Levný web pro podnikatele s garancí PageSpeed 90+, SEO v ceně, dodání za 5–7 dní. Bez měsíčních poplatků.",
+  title: "Web pro živnostníky a OSVČ od 7 990 Kč",
+  description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Levný web pro podnikatele s garancí PageSpeed 90+, SEO v ceně, dodání za 5–7 dní. Bez měsíčních poplatků.",
   keywords: [
     "web pro živnostníky",
     "webové stránky pro OSVČ",
@@ -43,8 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Web pro živnostníky | Od 7 990 Kč | Weblyx",
-    description:
-      "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní, SEO v ceně.",
+    description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní, SEO v ceně.",
     url: "https://www.weblyx.cz/web-pro-zivnostniky",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-zivnostniky.png", width: 1200, height: 630, alt: "Weblyx - Web pro živnostníky" }],
@@ -52,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Web pro živnostníky | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní.",
+    description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-zivnostniky",

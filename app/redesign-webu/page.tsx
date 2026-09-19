@@ -26,9 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Redesign webu | Modernizace webových stránek | Od 15 000 Kč | Weblyx",
-  description:
-    "⚡ Profesionální redesign webu a modernizace webových stránek od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO. Předělání webových stránek za 2–3 týdny.",
+  title: "Redesign webu od 15 000 Kč | Modernizace stránek",
+  description: "Profesionální redesign webu a modernizace webových stránek od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO. Předělání webových stránek za 2–3 týdny.",
   keywords: [
     "redesign webu",
     "modernizace webu",
@@ -43,8 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Redesign webu | Modernizace webových stránek | Weblyx",
-    description:
-      "⚡ Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
+    description: "Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
     url: "https://www.weblyx.cz/redesign-webu",
     type: "website",
     images: [{ url: "/images/og/og-redesign-webu.png", width: 1200, height: 630, alt: "Weblyx - Redesign webu" }],
@@ -52,8 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Redesign webu | Modernizace webových stránek | Weblyx",
-    description:
-      "⚡ Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
+    description: "Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/redesign-webu",

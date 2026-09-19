@@ -28,9 +28,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Onlineshop erstellen lassen | Ab 320 € Festpreis | Seitelyx",
-  description:
-    "⚡ Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce, PageSpeed 90+, DSGVO-konform. E-Commerce ohne monatliche Kosten.",
+  title: "Onlineshop erstellen lassen | Ab 320 € Festpreis",
+  description: "Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce, PageSpeed 90+, DSGVO-konform. E-Commerce ohne monatliche Kosten.",
   keywords: [
     "onlineshop erstellen lassen",
     "onlineshop erstellen",
@@ -45,8 +44,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Onlineshop erstellen lassen | Ab 320 € | Seitelyx",
-    description:
-      "⚡ Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce.",
+    description: "Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce.",
     url: "https://seitelyx.de/onlineshop-erstellen",
     type: "website",
     images: [{ url: "/images/og/og-tvorba-eshopu.png", width: 1200, height: 630, alt: "Seitelyx - Onlineshop erstellen" }],
@@ -54,8 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Onlineshop erstellen lassen | Ab 320 € | Seitelyx",
-    description:
-      "⚡ Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce.",
+    description: "Professionellen Onlineshop erstellen lassen ab 320 €. 3× schneller als Shopify & WooCommerce.",
   },
   alternates: {
     canonical: "https://seitelyx.de/onlineshop-erstellen",

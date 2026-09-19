@@ -27,9 +27,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "WordPress alternativa 2026 | WordPress vs Next.js srovnání | Weblyx",
-  description:
-    "⚡ WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa WordPress od 7 990 Kč bez měsíčních poplatků.",
+  title: "WordPress alternativa | Next.js web bez poplatků",
+  description: "WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa WordPress od 7 990 Kč bez měsíčních poplatků.",
   keywords: [
     "wordpress alternativa",
     "wordpress vs next.js",
@@ -44,8 +43,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "WordPress alternativa 2026 | WordPress vs Next.js | Weblyx",
-    description:
-      "⚡ WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady.",
+    description: "WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady.",
     url: "https://www.weblyx.cz/wordpress-alternativa",
     type: "website",
     images: [{ url: "/images/og/og-wordpress-alternativa.png", width: 1200, height: 630, alt: "Weblyx - WordPress alternativa" }],
@@ -53,8 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "WordPress alternativa 2026 | WordPress vs Next.js | Weblyx",
-    description:
-      "⚡ WordPress je pomalý, zranitelný a předražený. Moderní alternativa od 7 990 Kč.",
+    description: "WordPress je pomalý, zranitelný a předražený. Moderní alternativa od 7 990 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/wordpress-alternativa",

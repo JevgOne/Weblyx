@@ -26,9 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Web pro restaurace | Webové stránky pro restauraci od 7 990 Kč | Weblyx",
-  description:
-    "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek, rezervační systém, Google Mapy. Web pro restauraci dodaný za 5–7 dní.",
+  title: "Web pro restauraci od 7 990 Kč | Rezervace online",
+  description: "Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek, rezervační systém, Google Mapy. Web pro restauraci dodaný za 5–7 dní.",
   keywords: [
     "web pro restaurace",
     "webové stránky pro restauraci",
@@ -43,8 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Web pro restaurace | Od 7 990 Kč | Weblyx",
-    description:
-      "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek a rezervace.",
+    description: "Profesionální web pro restaurace a kavárny od 7 990 Kč. Online jídelní lístek a rezervace.",
     url: "https://www.weblyx.cz/web-pro-restaurace",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-restaurace.png", width: 1200, height: 630, alt: "Weblyx - Web pro restaurace" }],
@@ -52,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Web pro restaurace | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální web pro restaurace a kavárny od 7 990 Kč.",
+    description: "Profesionální web pro restaurace a kavárny od 7 990 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-restaurace",

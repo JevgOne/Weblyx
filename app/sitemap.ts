@@ -7,6 +7,14 @@ import { getPublishedBlogPostsByLanguage } from '@/lib/turso/blog';
  * https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */
 
+/**
+ * Static routes change when we deploy, not when a crawler asks. Using
+ * `new Date()` meant the sitemap claimed all 27 of them changed today,
+ * every day — and a sitemap that cries wolf gets its lastmod ignored for
+ * the whole domain, including the blog, where the dates are real.
+ */
+const STATIC_LAST_MODIFIED = new Date('2026-09-19');
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
   const isGermanSite = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de';
@@ -15,31 +23,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/portfolio`,
-      lastModified: new Date(),
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: new Date(),
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/faq`,
-      lastModified: new Date(),
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/kontakt`,
-      lastModified: new Date(),
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
@@ -49,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       : [
           {
             url: `${baseUrl}/archiv`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'weekly' as const,
             priority: 0.5,
           },
@@ -61,19 +69,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ? [
         {
           url: `${baseUrl}/leistungen`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.9,
         },
         {
           url: `${baseUrl}/uber-uns`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.6,
         },
         {
           url: `${baseUrl}/anfrage`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.9,
         },
@@ -81,19 +89,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     : [
         {
           url: `${baseUrl}/sluzby`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.9,
         },
         {
           url: `${baseUrl}/o-nas`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.6,
         },
         {
           url: `${baseUrl}/poptavka`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.9,
         },
@@ -104,19 +112,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ? [
         {
           url: `${baseUrl}/preise`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.9, // High priority for SEO
         },
         {
           url: `${baseUrl}/impressum`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.3,
         },
         {
           url: `${baseUrl}/datenschutz`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.3,
         },
@@ -128,13 +136,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ? [
         {
           url: `${baseUrl}/website-erstellen-berlin`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/website-erstellen-muenchen`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
@@ -142,19 +150,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     : [
         {
           url: `${baseUrl}/tvorba-webu-praha`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/tvorba-webu-brno`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/tvorba-webu-ostrava`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
@@ -165,13 +173,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ? [
         {
           url: `${baseUrl}/wordpress-alternative`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/website-fuer-aerzte`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
@@ -179,61 +187,61 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     : [
         {
           url: `${baseUrl}/webnode-alternativa`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/wordpress-alternativa`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/seo-optimalizace`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.9,
         },
         {
           url: `${baseUrl}/geo-optimalizace`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/redesign-webu`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.8,
         },
         {
           url: `${baseUrl}/web-pro-restaurace`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.7,
         },
         {
           url: `${baseUrl}/web-pro-zivnostniky`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.7,
         },
         {
           url: `${baseUrl}/web-pro-pravniky`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.7,
         },
         {
           url: `${baseUrl}/audit`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',
           priority: 0.7,
         },
         {
           url: `${baseUrl}/recenze`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'weekly',
           priority: 0.6,
         },
@@ -243,32 +251,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const czechRoutes: MetadataRoute.Sitemap = !isGermanSite
     ? [
         {
-          url: `${baseUrl}/napiste-recenzi`,
-          lastModified: new Date(),
-          changeFrequency: 'monthly',
-          priority: 0.7,
-        },
-        {
           url: `${baseUrl}/pagespeed-garance`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.5,
         },
         {
           url: `${baseUrl}/cookies`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.3,
         },
         {
           url: `${baseUrl}/ochrana-udaju`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.3,
         },
         {
           url: `${baseUrl}/obchodni-podminky`,
-          lastModified: new Date(),
+          lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.3,
         },

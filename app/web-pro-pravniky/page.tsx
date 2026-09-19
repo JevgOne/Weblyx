@@ -26,9 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Web pro právníky | Webové stránky pro advokáty od 7 990 Kč | Weblyx",
-  description:
-    "⚡ Profesionální web pro právníky a advokátní kanceláře od 7 990 Kč. Klientský portál, online objednávky konzultací, GDPR soulad. Webové stránky pro advokáty za 2 týdny.",
+  title: "Web pro advokáty od 7 990 Kč | Klientský portál",
+  description: "Profesionální web pro právníky a advokátní kanceláře od 7 990 Kč. Klientský portál, online objednávky konzultací, GDPR soulad. Webové stránky pro advokáty za 2 týdny.",
   keywords: [
     "web pro právníky",
     "webové stránky pro advokáty",
@@ -43,8 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Web pro právníky | Od 7 990 Kč | Weblyx",
-    description:
-      "⚡ Profesionální web pro právníky a advokátní kanceláře od 7 990 Kč.",
+    description: "Profesionální web pro právníky a advokátní kanceláře od 7 990 Kč.",
     url: "https://www.weblyx.cz/web-pro-pravniky",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-pravniky.png", width: 1200, height: 630, alt: "Weblyx - Web pro právníky" }],
@@ -52,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Web pro právníky | Od 7 990 Kč | Weblyx",
-    description: "⚡ Profesionální web pro právníky a advokátní kanceláře od 7 990 Kč.",
+    description: "Profesionální web pro právníky a advokátní kanceláře od 7 990 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-pravniky",

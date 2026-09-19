@@ -34,7 +34,7 @@ import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Website erstellen lassen Berlin | Ab 320 € Festpreis | Seitelyx",
+  title: "Website erstellen lassen Berlin | Ab 320 € Festpreis",
   description:
     "Professionelle Website erstellen lassen in Berlin. Moderne Next.js Websites ab 320 € — 3× schneller als WordPress, DSGVO-konform, Lieferung in 5–7 Tagen. Ohne monatliche Kosten.",
   keywords: [

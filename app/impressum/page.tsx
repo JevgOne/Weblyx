@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Impressum | Seitelyx",
+  title: "Impressum",
   description: "Impressum und Angaben gemäß § 5 DDG für Seitelyx. Rechtliche Informationen und Kontaktdaten.",
   openGraph: {
     title: "Impressum | Seitelyx",

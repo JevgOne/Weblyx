@@ -11,6 +11,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.weblyx.cz/archiv" },
   title: "Archiv změn | Weblyx",
   description:
     "Chronologický přehled změn na webu Weblyx — nové projekty, recenze a úpravy obsahu.",

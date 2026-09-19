@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
 
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
   const brand = await getRequestBrandConfig();
@@ -9,14 +10,16 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: "Cookie-Richtlinien",
       description:
-        "Informationen zur Verwendung von Cookies auf der Seitelyx-Website. Erfahren Sie, welche Cookies wir verwenden und wie Sie Ihre Einstellungen verwalten können.",
+        "Welche Cookies Seitelyx verwendet, wozu sie dienen und wie Sie Ihre Einstellungen jederzeit ändern.",
+      alternates: { canonical: "https://www.seitelyx.de/cookies" },
     };
   }
 
   return {
     title: "Zásady cookies",
     description:
-      "Informace o používání cookies na webu Weblyx. Zjistěte, jaké cookies používáme a jak můžete spravovat své preference.",
+      "Jaké cookies Weblyx používá, k čemu slouží a jak si je můžete kdykoli nastavit.",
+    alternates: { canonical: "https://www.weblyx.cz/cookies" },
   };
 }
 

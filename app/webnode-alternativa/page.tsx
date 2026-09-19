@@ -26,9 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Webnode alternativa 2026 | Vlastní web vs Webnode | Weblyx",
-  description:
-    "⚡ Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší načítání, plná kontrola nad designem i SEO. Od 7 990 Kč.",
+  title: "Webnode alternativa 2026 | Vlastní web vs Webnode",
+  description: "Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší načítání, plná kontrola nad designem i SEO. Od 7 990 Kč.",
   keywords: [
     "webnode alternativa",
     "webnode vs vlastní web",
@@ -43,8 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Webnode alternativa 2026 | Vlastní web vs Webnode | Weblyx",
-    description:
-      "⚡ Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší.",
+    description: "Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků, 3× rychlejší.",
     url: "https://www.weblyx.cz/webnode-alternativa",
     type: "website",
     images: [{ url: "/images/og/og-webnode-alternativa.png", width: 1200, height: 630, alt: "Weblyx - Webnode alternativa" }],
@@ -52,8 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Webnode alternativa 2026 | Vlastní web vs Webnode | Weblyx",
-    description:
-      "⚡ Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků.",
+    description: "Hledáte alternativu k Webnode? Srovnání Webnode vs vlastní web na míru. Bez měsíčních poplatků.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/webnode-alternativa",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ochrana osobních údajů | Weblyx",
+  title: "Ochrana osobních údajů",
   description: "Zásady ochrany osobních údajů a GDPR compliance. Informace o zpracování osobních údajů dle nařízení GDPR.",
   openGraph: {
     title: "Ochrana osobních údajů | Weblyx",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://weblyx.cz/ochrana-udaju",
+    canonical: "https://www.weblyx.cz/ochrana-udaju",
   },
 };
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Datenschutzerklärung | Seitelyx",
+  title: "Datenschutzerklärung",
   description: "Datenschutzerklärung und DSGVO-Compliance für Seitelyx. Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.",
   openGraph: {
     title: "Datenschutzerklärung | Seitelyx",

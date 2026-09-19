@@ -26,9 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba e-shopu na míru | Rychlý internetový obchod | Weblyx",
-  description:
-    "⚡ Profesionální tvorba e-shopu na míru. Rychlý internetový obchod s garancí PageSpeed 90+, napojení na platební brány a dopravce. E-shop za 2–3 týdny. Cenu připravíme na poptávku.",
+  title: "Tvorba e-shopu na míru | Rychlý internetový obchod",
+  description: "Profesionální tvorba e-shopu na míru. Rychlý internetový obchod s garancí PageSpeed 90+, napojení na platební brány a dopravce. E-shop za 2–3 týdny. Cenu připravíme na poptávku.",
   keywords: [
     "tvorba e-shopu",
     "e-shop na míru",
@@ -43,8 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Tvorba e-shopu na míru | Weblyx",
-    description:
-      "⚡ Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
+    description: "Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
     url: "https://www.weblyx.cz/tvorba-eshopu",
     type: "website",
     images: [{ url: "/images/og/og-tvorba-eshopu.png", width: 1200, height: 630, alt: "Weblyx - Tvorba e-shopu" }],
@@ -52,8 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Tvorba e-shopu na míru | Weblyx",
-    description:
-      "⚡ Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
+    description: "Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-eshopu",

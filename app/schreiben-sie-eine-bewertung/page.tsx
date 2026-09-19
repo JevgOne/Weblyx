@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Schreiben Sie eine Bewertung | Seitelyx",
+  title: "Schreiben Sie eine Bewertung",
   description: "Teilen Sie Ihre Erfahrungen mit unseren Dienstleistungen. Ihr Feedback hilft uns, besser zu werden und anderen bei der Auswahl unserer Services.",
   robots: "noindex, nofollow", // Don't index review submission page
 };

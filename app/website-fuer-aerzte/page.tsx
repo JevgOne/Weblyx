@@ -28,9 +28,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Website für Ärzte | Homepage Arztpraxis ab 320 € | Seitelyx",
-  description:
-    "⚡ Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung, Patientenportal. Homepage für Ihre Arztpraxis in 2 Wochen.",
+  title: "Website für Ärzte | Homepage Arztpraxis ab 320 €",
+  description: "Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung, Patientenportal. Homepage für Ihre Arztpraxis in 2 Wochen.",
   keywords: [
     "website für ärzte",
     "homepage arztpraxis",
@@ -45,8 +44,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Website für Ärzte | Homepage Arztpraxis ab 320 € | Seitelyx",
-    description:
-      "⚡ Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung.",
+    description: "Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung.",
     url: "https://seitelyx.de/website-fuer-aerzte",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-pravniky.png", width: 1200, height: 630, alt: "Seitelyx - Website für Ärzte" }],
@@ -54,8 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Website für Ärzte | Ab 320 € | Seitelyx",
-    description:
-      "⚡ Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung.",
+    description: "Professionelle Website für Ärzte und Arztpraxen ab 320 €. DSGVO-konform, Online-Terminbuchung.",
   },
   alternates: {
     canonical: "https://seitelyx.de/website-fuer-aerzte",

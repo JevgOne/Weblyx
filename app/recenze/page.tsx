@@ -13,14 +13,17 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: "Kundenbewertungen",
       description:
-        "Lesen Sie Bewertungen unserer zufriedenen Kunden. Seitelyx – Webdesign mit 5.0 Google-Bewertung.",
+        "5,0 von 5 auf Google. Lesen Sie, wie die Zusammenarbeit mit Seitelyx wirklich ablief.",
+      alternates: { canonical: "https://www.seitelyx.de/bewertungen" },
     };
   }
 
   return {
     title: "Recenze klientů",
+    // The old description gave no reason to click. The rating is the reason.
     description:
-      "Přečtěte si recenze od našich spokojených klientů. Weblyx – tvorba webových stránek s hodnocením 5.0 na Google.",
+      "Hodnocení 5,0 na Google. Přečtěte si, jak spolupráce s Weblyx probíhala — vlastními slovy klientů.",
+    alternates: { canonical: "https://www.weblyx.cz/recenze" },
   };
 }
 

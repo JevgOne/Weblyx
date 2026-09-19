@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "AI Lead Generation | Automatické generování leadů s AI | Weblyx",
+  title: "AI Lead Generation | Generování leadů s AI",
   description: "🤖 Automatický AI systém pro generování leadů. Scraping z Google Maps, analýza webů, AI personalizované emaily. Získejte stovky kvalitních leadů za pár minut!",
   keywords: [
     "lead generation",

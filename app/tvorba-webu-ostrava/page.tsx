@@ -32,7 +32,7 @@ import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek Ostrava | Weby od 7 990 Kč | Weblyx",
+  title: "Tvorba webových stránek Ostrava | Weby od 7 990 Kč",
   description:
     "Profesionální tvorba webových stránek v Ostravě. Moderní weby na Next.js s PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Pomáháme ostravským firmám růst online.",
   keywords: [

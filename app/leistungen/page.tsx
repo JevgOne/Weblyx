@@ -35,8 +35,8 @@ export const revalidate = 60; // Revalidate every 60 seconds
 const CZK_TO_EUR = 25;
 
 export const metadata: Metadata = {
-  title: "Webseiten erstellen lassen | Ab 320 € | Online-Shops & SEO | Seitelyx",
-  description: "⚡ Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Maßgeschneiderte Online-Shops, SEO-Optimierung. Deutsche Agentur.",
+  title: "Webseiten erstellen lassen | Ab 320 € | Online-Shops & SEO",
+  description: "Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Maßgeschneiderte Online-Shops, SEO-Optimierung. Deutsche Agentur.",
   keywords: [
     "Webseiten erstellen lassen",
     "Website erstellen",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Webseiten erstellen lassen | Ab 320 € | Seitelyx",
-    description: "⚡ Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Deutsche Agentur.",
+    description: "Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Deutsche Agentur.",
     url: "https://www.seitelyx.de/leistungen",
     type: "website",
     images: [
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Webseiten erstellen lassen | Ab 320 € | Seitelyx",
-    description: "⚡ Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Deutsche Agentur.",
+    description: "Professionelle Webseiten ab 320 €. Website in 5–7 Tagen, garantierte Ladezeit unter 2 Sekunden. Deutsche Agentur.",
   },
   alternates: {
     canonical: "https://www.seitelyx.de/leistungen",

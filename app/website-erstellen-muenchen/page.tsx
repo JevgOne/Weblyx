@@ -35,7 +35,7 @@ import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Website erstellen lassen München | Ab 320 € Festpreis | Seitelyx",
+  title: "Website erstellen lassen München | Ab 320 € Festpreis",
   description:
     "Professionelle Website erstellen lassen in München. Moderne Next.js Websites ab 320 € — PageSpeed 90+, DSGVO-konform, Lieferung in 5–7 Tagen. Qualität, die Münchner Ansprüchen genügt.",
   keywords: [

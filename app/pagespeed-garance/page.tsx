@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.weblyx.cz/pagespeed-garance" },
   title: "PageSpeed Garance 90+",
   description: "Detailní podmínky naší garance rychlosti načítání PageSpeed 90+ nebo vrácení peněz.",
 };

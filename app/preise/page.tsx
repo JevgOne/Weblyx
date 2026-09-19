@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Webseite erstellen lassen - Transparente Preise ohne versteckte Kosten | Seitelyx",
+  title: "Webseite erstellen lassen - Transparente Preise ohne versteckte Kosten",
   description: "Website erstellen lassen ab 320 € Festpreis. Professionelle Webdesign Agentur mit transparenten Preisen. Alle Leistungen inklusive: Design, SEO, DSGVO. Keine monatlichen Kosten.",
   keywords: [
     "website erstellen lassen preise",

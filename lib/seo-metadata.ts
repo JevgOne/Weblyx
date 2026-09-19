@@ -234,10 +234,11 @@ export function getSEOMetadata(locale?: Locale, pageTitle?: string): Metadata {
         'max-snippet': -1,
       },
     },
-    alternates: {
-      canonical: content.siteUrl,
-      languages: getAlternateLanguages('/'),
-    },
+    // No `alternates` here. Next.js metadata is inherited, so a canonical set
+    // in the root layout became every page's canonical: /recenze,
+    // /pagespeed-garance, /archiv, /cookies and /napiste-recenzi all told
+    // Google they were really the homepage, and removed themselves from the
+    // index. Each route declares its own canonical instead.
   };
 }
 

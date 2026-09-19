@@ -29,9 +29,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "WordPress Alternative 2026 | Next.js vs WordPress Vergleich | Seitelyx",
-  description:
-    "⚡ WordPress ist langsam, unsicher und teuer. Datenbasierter Vergleich WordPress vs Next.js: Core Web Vitals, Sicherheit, Kosten. Moderne WordPress Alternative ab 320 €.",
+  title: "WordPress Alternative 2026 | Next.js vs WordPress Vergleich",
+  description: "WordPress ist langsam, unsicher und teuer. Datenbasierter Vergleich WordPress vs Next.js: Core Web Vitals, Sicherheit, Kosten. Moderne WordPress Alternative ab 320 €.",
   keywords: [
     "wordpress alternative",
     "wordpress alternative 2026",
@@ -46,8 +45,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "WordPress Alternative 2026 | Next.js vs WordPress | Seitelyx",
-    description:
-      "⚡ Datenbasierter Vergleich WordPress vs Next.js: Core Web Vitals, Sicherheit, Kosten. Ab 320 €.",
+    description: "Datenbasierter Vergleich WordPress vs Next.js: Core Web Vitals, Sicherheit, Kosten. Ab 320 €.",
     url: "https://seitelyx.de/wordpress-alternative",
     type: "website",
     images: [{ url: "/images/og/og-wordpress-alternativa.png", width: 1200, height: 630, alt: "Seitelyx - WordPress Alternative" }],
@@ -55,8 +53,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "WordPress Alternative 2026 | Next.js vs WordPress | Seitelyx",
-    description:
-      "⚡ WordPress ist langsam, unsicher und teuer. Moderne Alternative ab 320 €.",
+    description: "WordPress ist langsam, unsicher und teuer. Moderne Alternative ab 320 €.",
   },
   alternates: {
     canonical: "https://seitelyx.de/wordpress-alternative",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Obchodní podmínky | Weblyx",
+  title: "Obchodní podmínky",
   description: "Všeobecné obchodní podmínky poskytování služeb. Pravidla spolupráce, platební podmínky a reklamační řád.",
   openGraph: {
     title: "Obchodní podmínky | Weblyx",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://weblyx.cz/obchodni-podminky",
+    canonical: "https://www.weblyx.cz/obchodni-podminky",
   },
 };
 

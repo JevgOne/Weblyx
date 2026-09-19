@@ -5,7 +5,8 @@ import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Napište nám recenzi | Weblyx",
+  alternates: { canonical: "https://www.weblyx.cz/napiste-recenzi" },
+  title: "Napište nám recenzi",
   description: "Sdílejte svou zkušenost s našimi službami. Vaše zpětná vazba nám pomáhá se zlepšovat a pomáhá ostatním při výběru našich služeb.",
   robots: "noindex, nofollow", // Don't index review submission page
 };
