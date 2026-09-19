@@ -208,7 +208,7 @@ const nextConfig: NextConfig = {
               // every conversion ping — which is why all nine conversion actions
               // read "never fired" in Google Ads while the tag itself loaded fine.
               "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live https://*.google-analytics.com https://*.analytics.google.com https://www.facebook.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://*.googlesyndication.com https://www.google.com https://www.google.cz",
-              "frame-src 'self' https://vercel.live https://www.google.com https://maps.google.com",
+              "frame-src 'self' https://vercel.live https://www.google.com https://maps.google.com https://www.facebook.com",
               "object-src 'none'",
               "base-uri 'self'",
               // The Facebook pixel falls back to a form POST for part of its
