@@ -10,9 +10,16 @@ const WHITELISTED_BOTS = [
   'duckduckbot', 'baiduspider', 'yandexbot', 'facebot',
   'facebookexternalhit', 'twitterbot', 'linkedinbot', 'discordbot',
   'slackbot', 'telegrambot', 'whatsapp',
-  // AI crawlers — allowed per robots.txt for AI search visibility
-  'gptbot', 'chatgpt-user', 'ccbot', 'perplexitybot',
-  'anthropic-ai', 'claude-web', 'cohere-ai', 'google-extended',
+  // AI crawlers — allowed per robots.txt for AI search visibility.
+  // Eight of these used to pass only because their UA happens to contain
+  // "Mozilla" or "Safari", not because anything let them through: OAI-SearchBot
+  // (how ChatGPT Search collects citations) and ClaudeBot among them. One
+  // tightening of the browser-keyword rule would have dropped them silently.
+  'gptbot', 'chatgpt-user', 'oai-searchbot',
+  'ccbot', 'perplexitybot', 'perplexity-user',
+  'anthropic-ai', 'claude-web', 'claudebot', 'claude-user', 'claude-searchbot',
+  'cohere-ai', 'cohere', 'google-extended', 'applebot',
+  'amazonbot', 'duckassistbot', 'meta-externalagent', 'mistralai-user',
   // Performance & monitoring tools
   'lighthouse', 'pagespeed', 'chrome-lighthouse',
   'gtmetrix', 'pingdom', 'uptimerobot',
@@ -47,10 +54,17 @@ const BLOCKED_EXTENSIONS = [
 ];
 
 function isSuspiciousUserAgent(userAgent: string): boolean {
-  if (!userAgent || userAgent.length < 10) return true;
+  if (!userAgent) return true;
   const ua = userAgent.toLowerCase();
 
+  // The whitelist goes first, before every other rule. It used to sit below the
+  // length check, so `cohere-ai` — nine characters, and on the whitelist — was
+  // rejected before the whitelist was ever consulted. The substring rules have
+  // the same problem in the other direction: `Bytespider` matches the `spider`
+  // pattern, so a named crawler is blocked by a rule meant for scrapers.
   if (WHITELISTED_BOTS.some(bot => ua.includes(bot))) return false;
+
+  if (userAgent.length < 10) return true;
   if (BLOCKED_USER_AGENTS.some(pattern => ua.includes(pattern))) return true;
   if (!REQUIRED_BROWSER_KEYWORDS.some(keyword => ua.includes(keyword))) return true;
 
@@ -200,8 +214,13 @@ export async function middleware(request: NextRequest) {
   // 7. Build response
   let response: NextResponse = NextResponse.next();
 
-  // 8. Set CSRF token cookie if not present
-  if (!request.cookies.get('csrf-token')?.value) {
+  // 8. Set CSRF token cookie if not present.
+  //
+  // Not for crawlers: a Set-Cookie header makes the response per-visitor, so
+  // Vercel marks it `private, no-store` and the edge cache is never used. A
+  // crawler never submits a form, so it has no use for the token — and handing
+  // it one was costing us the cached response on every indexed page.
+  if (!isWhitelistedBot && !request.cookies.get('csrf-token')?.value) {
     const csrfToken = generateCsrfToken();
     response.cookies.set('csrf-token', csrfToken, {
       httpOnly: false, // JS needs to read it for the header
@@ -230,9 +249,13 @@ export async function middleware(request: NextRequest) {
 
   if (wrongLocale) {
     response.headers.set('X-Robots-Tag', 'noindex, noarchive');
-  } else {
-    response.headers.set('X-Robots-Tag', 'noarchive');
+  } else if (isAdminRoute || isApiRoute) {
+    response.headers.set('X-Robots-Tag', 'noindex, noarchive');
   }
+  // Public pages carry no X-Robots-Tag at all. `noarchive` used to go out on
+  // every one of them — the else branch of a rule meant for cross-locale pages
+  // — which tells Bing and the AI crawlers not to keep a copy of the very
+  // articles we want them to cite.
 
   // 11. Cache headers
   if (isAdminRoute || isApiRoute) {
