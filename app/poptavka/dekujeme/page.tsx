@@ -145,21 +145,21 @@ export default function ThankYouPage() {
         {/* Additional Info */}
         <div className="mt-8 text-center space-y-4">
           <p className="text-sm text-muted-foreground">
-            Odpovídáme obvykle do <strong>2-4 hodin</strong> během pracovních dnů
+            Ozveme se vám <strong>do 24 hodin</strong>
           </p>
 
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-primary" />
-              <span>150+ projektů</span>
+              <span>Hodnocení 5.0 na Google</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-primary" />
-              <span>98% spokojenost</span>
+              <span>Bez měsíčních poplatků</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-primary" />
-              <span>5 let zkušeností</span>
+              <span>Načítání pod 2 sekundy</span>
             </div>
           </div>
         </div>

@@ -29,8 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getActiveServices, Service } from "@/lib/turso/services";
-import { getLocale } from 'next-intl/server';
+import { getAllPricingTiers } from "@/lib/turso/cms";
+import type { PricingTier } from "@/types/cms";
 import { safeRead } from '@/lib/safe-read';
 
 // Force dynamic rendering to avoid build timeout
@@ -38,8 +38,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek | Od 8 000 Kč | SEO optimalizace",
-  description: "⚡ Profesionální tvorba webových stránek od 8 000 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. SEO optimalizace, redesign webu. Česká agentura.",
+  title: "Tvorba webových stránek | Od 7 990 Kč | SEO optimalizace",
+  description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. SEO optimalizace, redesign webu. Česká agentura.",
   keywords: [
     "tvorba webových stránek",
     "tvorba webu",
@@ -51,16 +51,16 @@ export const metadata: Metadata = {
     "údržba webu"
   ],
   openGraph: {
-    title: "Tvorba webových stránek | Od 8 000 Kč | Weblyx",
-    description: "⚡ Profesionální tvorba webových stránek od 8 000 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
+    title: "Tvorba webových stránek | Od 7 990 Kč | Weblyx",
+    description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
     url: "https://www.weblyx.cz/sluzby",
     type: "website",
     images: [{ url: "/images/og/og-sluzby.png", width: 1200, height: 630, alt: "Weblyx - Služby" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba webových stránek | Od 8 000 Kč | Weblyx",
-    description: "⚡ Profesionální tvorba webových stránek od 8 000 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
+    title: "Tvorba webových stránek | Od 7 990 Kč | Weblyx",
+    description: "⚡ Profesionální tvorba webových stránek od 7 990 Kč. Web za 5-7 dní, garantované načítání pod 2 sekundy. Česká agentura.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/sluzby",
@@ -92,36 +92,40 @@ function getIdealForText(title: string, fallback: string): string {
   return fallback;
 }
 
-// Helper function to transform database services to pricing packages
-function transformServicesToPricingPackages(services: Service[]): PricingPackage[] {
-  // Filter services that have pricing (priceFrom is not null)
-  const pricingServices = services
-    .filter(service => service.priceFrom !== null && service.priceFrom !== undefined)
+/**
+ * Packages come from `pricing_tiers`, the same table the configurator charges
+ * from.
+ *
+ * They used to be read out of the `services` table, which carried its own copy
+ * of the three packages — and that copy had gone stale: 9 990 and 24 990 Kc
+ * against the 14 900 and 29 900 the configurator actually bills. Worse, this
+ * page turns each one into a `Service` + `Offer` JSON-LD block, so the wrong
+ * figure was being handed to search engines as structured data. One table, one
+ * price.
+ */
+function transformTiersToPricingPackages(tiers: PricingTier[]): PricingPackage[] {
+  const active = tiers
+    .filter((tier) => tier.enabled && tier.price > 0)
     .sort((a, b) => a.order - b.order);
 
-  // Collect ALL unique features across all services for comparison table
+  // The comparison table lists every feature any package offers, then ticks
+  // the ones each package includes.
   const allFeatureNames = new Set<string>();
-  pricingServices.forEach(service => {
-    service.features.forEach(feature => allFeatureNames.add(feature));
-  });
+  active.forEach((tier) => tier.features.forEach((feature) => allFeatureNames.add(feature)));
 
-  // Transform each service to pricing package format
-  return pricingServices.map((service) => ({
-    id: service.id,
-    title: service.title,
-    description: service.description,
-    price: service.priceFrom!,
+  return active.map((tier) => ({
+    id: tier.id || tier.name,
+    title: tier.name,
+    description: tier.shortDesc || tier.description,
+    price: tier.price,
     priceNote: "jednorázově",
-    // Mark "Základní Web" as popular
-    popular: service.title.toLowerCase().includes("základní"),
-    // For cards: show only service's own features
-    // For table: show all features with true/false
-    features: Array.from(allFeatureNames).map(featureName => ({
+    popular: tier.highlighted || tier.name.toLowerCase().includes("základní"),
+    features: Array.from(allFeatureNames).map((featureName) => ({
       name: featureName,
-      included: service.features.includes(featureName),
+      included: tier.features.includes(featureName),
     })),
-    cta: `Objednat ${service.title}`,
-    ideal: getIdealForText(service.title, service.description),
+    cta: `Objednat ${tier.name}`,
+    ideal: getIdealForText(tier.name, tier.shortDesc || tier.description),
   }));
 }
 
@@ -161,7 +165,7 @@ const ADDITIONAL_SERVICES = [
     icon: Zap,
     title: "Optimalizace rychlosti",
     slug: "speed",
-    price: "od 8 000 Kč",
+    price: "od 7 990 Kč",
     description:
       "Zrychlení načítání webu pro lepší SEO a uživatelskou zkušenost. Cíl: < 2 sekundy.",
     includes: [
@@ -176,7 +180,7 @@ const ADDITIONAL_SERVICES = [
     icon: HeadphonesIcon,
     title: "Údržba a podpora",
     slug: "maintenance",
-    price: "od 2 000 Kč/měsíc",
+    price: "od 24 000 Kč/rok",
     description:
       "Pravidelné aktualizace, zálohy a technická podpora. Váš web bude vždy funkční a bezpečný.",
     includes: [
@@ -190,12 +194,9 @@ const ADDITIONAL_SERVICES = [
 ];
 
 export default async function ServicesPage() {
-  // Fetch active services from database (locale-aware)
-  const locale = await getLocale();
-  const dbServices = await safeRead(() => getActiveServices(locale), [], "services");
+  const tiers = await safeRead(() => getAllPricingTiers(), [], "pricing tiers (sluzby)");
 
-  // Transform database services to pricing packages
-  const PRICING_PACKAGES = transformServicesToPricingPackages(dbServices);
+  const PRICING_PACKAGES = transformTiersToPricingPackages(tiers);
 
   // Generate breadcrumb schema
   const breadcrumbs: BreadcrumbItem[] = [
@@ -267,7 +268,8 @@ export default async function ServicesPage() {
         </section>
 
         {/* PRICING CARDS - Premium Professional Design */}
-        <section className="py-16 md:py-24 px-4">
+        {/* id="web": the footer's "Webové stránky" link points here. */}
+        <section id="web" className="scroll-mt-24 py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-7xl">
             {/* Pricing cards - Responsive flex layout */}
             <div className="flex flex-wrap justify-center gap-6 lg:gap-8 mb-20">
@@ -491,7 +493,11 @@ export default async function ServicesPage() {
               {ADDITIONAL_SERVICES.map((service) => (
                 <Card
                   key={service.slug}
-                  className="transition-all duration-300 hover:shadow-lg hover:border-primary/20"
+                  // The footer links to /sluzby#seo, #redesign and #maintenance;
+                  // without these ids every one of them landed at the top of
+                  // the page instead of the service it names.
+                  id={service.slug}
+                  className="scroll-mt-24 transition-all duration-300 hover:shadow-lg hover:border-primary/20"
                 >
                   <CardHeader className="space-y-4">
                     <div className="flex items-start justify-between gap-4">

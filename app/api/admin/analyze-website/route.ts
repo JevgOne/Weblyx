@@ -142,7 +142,7 @@ function generateGeneralEmail(analysis: any): string {
     offer += `• Opravy přístupnosti\n`;
     offer += `• Úpravy designu\n`;
     offer += `• Integrace analytics\n\n`;
-    offer += `💰 Cena: Od 8 000 Kč\n`;
+    offer += `💰 Cena: Od 7 990 Kč\n`;
     offer += `⏱️ Termín: 3-5 pracovních dní\n`;
   } else {
     offer += `Váš web je v dobré kondici! Můžeme nabídnout:\n\n`;
@@ -250,7 +250,7 @@ function generateBadSEOEmail(analysis: any): string {
   email += `✓ Core Web Vitals optimalizace\n`;
   email += `✓ Měsíční monitoring a reporty\n\n`;
 
-  email += `💰 Cena: Od 8 000 Kč\n`;
+  email += `💰 Cena: Od 7 990 Kč\n`;
   email += `⏱️ Termín: 3-5 pracovních dní\n`;
   email += `📈 Výsledky viditelné za 14-30 dní\n\n`;
 

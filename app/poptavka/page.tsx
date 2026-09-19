@@ -34,7 +34,7 @@ export const metadata: Metadata = isSeitelyx ? {
     languages: getAlternateLanguages('/anfrage'),
   },
 } : {
-  title: "Nezávazná poptávka – webové stránky od 8 000 Kč",
+  title: "Nezávazná poptávka – webové stránky od 7 990 Kč",
   description: "Vyplňte nezávaznou poptávku na tvorbu webových stránek. Nový web, redesign, e-shop nebo landing page. Odpovíme do 24 hodin s návrhem řešení a cenou.",
   keywords: [
     "poptávka web",
@@ -47,7 +47,7 @@ export const metadata: Metadata = isSeitelyx ? {
     "landing page",
   ],
   openGraph: {
-    title: "Nezávazná poptávka | Weblyx – webové stránky od 8 000 Kč",
+    title: "Nezávazná poptávka | Weblyx – webové stránky od 7 990 Kč",
     description: "Vyplňte formulář a do 24 hodin vám pošleme návrh řešení s orientační cenou. Bez závazků.",
     url: "https://www.weblyx.cz/poptavka",
     type: "website",

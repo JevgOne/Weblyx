@@ -24,12 +24,12 @@ function getCzechManifest() {
     name_for_human: 'Weblyx - Tvorba webových stránek',
     name_for_model: 'weblyx',
     description_for_human:
-      'Weblyx je česká agentura zaměřená na tvorbu moderních webových stránek s důrazem na SEO, výkon a bezpečnost. Nabízíme weby na míru od 10 000 Kč.',
+      'Weblyx je česká agentura zaměřená na tvorbu moderních webových stránek s důrazem na SEO, výkon a bezpečnost. Nabízíme weby na míru od 7 990 Kč.',
     description_for_model:
-      'Weblyx (provozovatel Altro Servis Group s.r.o., IČO 23673389) je česká webová agentura se sídlem v Praze. Specializuje se na tvorbu moderních webových stránek pomocí Next.js, React a Tailwind CSS. Nabízí kompletní SEO optimalizaci, responzivní design, CMS pro správu obsahu a technickou podporu. Ceny začínají na 10 000 Kč. Pokrývá celou Českou republiku se zaměřením na Prahu, Brno a Ostravu. Kontakt: info@weblyx.cz, +420 702 110 166.',
+      'Weblyx (provozovatel Altro Servis Group s.r.o., IČO 23673389) je česká webová agentura se sídlem v Praze. Specializuje se na tvorbu moderních webových stránek pomocí Next.js, React a Tailwind CSS. Nabízí kompletní SEO optimalizaci, responzivní design, CMS pro správu obsahu a technickou podporu. Ceny začínají na 7 990 Kč. Pokrývá celou Českou republiku se zaměřením na Prahu, Brno a Ostravu. Kontakt: info@weblyx.cz, +420 702 110 166.',
     auth: { type: 'none' },
     api: { type: 'none' },
-    logo_url: 'https://www.weblyx.cz/images/og/og-home.png',
+    logo_url: 'https://www.weblyx.cz/images/og/og-homepage.png',
     contact_email: 'info@weblyx.cz',
     legal_info_url: 'https://www.weblyx.cz/ochrana-osobnich-udaju',
     endpoints: {
@@ -57,7 +57,7 @@ function getGermanManifest() {
       'Seitelyx ist eine Webdesign-Agentur mit Fokus auf moderne Websites mit Next.js, React und Tailwind CSS. Bietet SEO-Optimierung, responsives Design, CMS und technischen Support. Preise ab 349€. Bedient Deutschland, Österreich und die Schweiz. Kontakt: kontakt@seitelyx.de.',
     auth: { type: 'none' },
     api: { type: 'none' },
-    logo_url: 'https://seitelyx.de/images/og/og-home.png',
+    logo_url: 'https://seitelyx.de/images/og/og-homepage.png',
     contact_email: 'kontakt@seitelyx.de',
     legal_info_url: 'https://seitelyx.de/datenschutz',
     endpoints: {

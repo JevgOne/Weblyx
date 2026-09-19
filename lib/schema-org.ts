@@ -35,7 +35,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     cs: {
       name: 'Weblyx',
       url: 'https://www.weblyx.cz',
-      logo: 'https://www.weblyx.cz/logo.png',
+      logo: 'https://www.weblyx.cz/logo.svg',
       description: 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
       email: 'info@weblyx.cz',
       phone: '+420702110166',
@@ -49,7 +49,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     de: {
       name: 'Seitelyx',
       url: 'https://seitelyx.de',
-      logo: 'https://seitelyx.de/logo.png',
+      logo: 'https://seitelyx.de/logo-de.svg',
       description: 'Moderne Webagentur für professionelle Websites ohne WordPress. Next.js Entwicklung für maximale Performance und Sicherheit.',
       email: 'kontakt@seitelyx.de',
       phone: '+420702110166',
@@ -163,7 +163,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       addressCountry: 'CZ',
       streetAddress: 'Revoluční 8, Praha 1',
       postalCode: '110 00',
-      priceRange: '10000 Kč - 50000 Kč',
+      priceRange: '7990 Kč - 29900 Kč',
       openingHours: ['Mo-Fr 08:00-18:00'],
       areaServedName: 'Czech Republic',
     },
@@ -348,7 +348,7 @@ export function generateOfferSchema(pricing: PricingTier) {
     price: pricing.price.toString(),
     priceCurrency: 'CZK',
     availability: 'https://schema.org/InStock',
-    url: `${BASE_URL}/#pricing`,
+    url: `${BASE_URL}/#cenik`,
     itemOffered: {
       '@type': 'Service',
       name: pricing.name,

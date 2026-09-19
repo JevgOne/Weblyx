@@ -29,6 +29,7 @@ import {
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { isSeitelyx } from "@/lib/brand";
+import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
@@ -125,7 +126,9 @@ const FAQS = [
   },
 ];
 
-export default function WebsiteErstellenBerlinPage() {
+export default async function WebsiteErstellenBerlinPage() {
+  // Counted, never typed — see lib/site-stats.ts.
+  const projects = projectsLabel(await countPublishedProjects("de"));
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Startseite", url: "https://seitelyx.de" },
     {
@@ -393,7 +396,7 @@ export default function WebsiteErstellenBerlinPage() {
           <div className="container mx-auto max-w-5xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {[
-                { value: "15+", label: "Abgeschlossene Projekte" },
+                { value: projects, label: "Abgeschlossene Projekte" },
                 { value: "90+", label: "PageSpeed Score" },
                 { value: "5–7", label: "Tage bis zur Lieferung" },
                 { value: "0 €", label: "Monatliche Hosting-Kosten" },

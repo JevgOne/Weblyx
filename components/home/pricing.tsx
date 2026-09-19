@@ -308,10 +308,10 @@ export function Pricing({ serverTiers }: PricingProps) {
                 <Wallet className="h-5 w-5 text-primary" />
               </div>
               <h4 className="font-semibold text-sm tracking-tight text-foreground">
-                {locale === 'de' ? 'Bezahlung nach Lieferung' : 'Platba až po předání'}
+                {locale === 'de' ? 'Faire Zahlungsbedingungen' : 'Férové platební podmínky'}
               </h4>
               <p className="text-[13px] text-[hsl(var(--ink-soft))] leading-relaxed">
-                {locale === 'de' ? 'Kein Vorschuss, Sie zahlen erst, wenn Sie zufrieden sind.' : 'Žádná záloha předem, platíte až jste spokojeni.'}
+                {locale === 'de' ? '50 % Anzahlung, 50 % nach Go-Live. Keine monatlichen Gebühren.' : '50 % záloha, doplatek po předání. Žádné měsíční poplatky.'}
               </p>
             </div>
 
@@ -332,10 +332,10 @@ export function Pricing({ serverTiers }: PricingProps) {
                 <RefreshCcw className="h-5 w-5 text-primary" />
               </div>
               <h4 className="font-semibold text-sm tracking-tight text-foreground">
-                {locale === 'de' ? 'Unbegrenzte Korrekturen' : 'Neomezené revize'}
+                {locale === 'de' ? '2 Korrekturrunden inklusive' : '2 kola revizí v ceně'}
               </h4>
               <p className="text-[13px] text-[hsl(var(--ink-soft))] leading-relaxed">
-                {locale === 'de' ? 'Wir ändern alles, bis es perfekt passt.' : 'Upravujeme dokud nebudete 100% spokojeni.'}
+                {locale === 'de' ? 'Zwei Runden Design-Korrekturen sind im Preis enthalten.' : 'Dvě kola úprav designu máte v ceně.'}
               </p>
             </div>
 

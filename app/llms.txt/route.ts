@@ -36,7 +36,7 @@ function getCzechContent(): string {
 
 ## Ceník
 
-- [Ceník služeb](https://www.weblyx.cz/cenik): Transparentní ceny od 10 000 Kč. Balíčky Start, Business a Premium. Bez skrytých poplatků.
+- [Ceník služeb](https://www.weblyx.cz/sluzby): Transparentní ceny od 7 990 Kč jednorázově. Balíčky Landing Page (7 990 Kč), Základní Web (14 900 Kč) a Standardní Web (29 900 Kč). Bez měsíčních poplatků a skrytých položek.
 
 ## Portfolio
 
@@ -48,7 +48,7 @@ function getCzechContent(): string {
 
 ## O nás
 
-- [O Weblyx](https://www.weblyx.cz/o-nas): Informace o firmě Altro Servis Group s.r.o., IČO 23673389. Sídlo: Školská 660/3, 110 00 Praha, Česká republika.
+- [O Weblyx](https://www.weblyx.cz/o-nas): Informace o firmě Altro Servis Group s.r.o., IČO 23673389. Sídlo: Revoluční 8, Praha 1, 110 00, Česká republika.
 
 ## Kontakt
 

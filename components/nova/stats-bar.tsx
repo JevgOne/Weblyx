@@ -3,6 +3,7 @@ import { getPublishedReviews } from "@/lib/turso/reviews";
 import { safeRead } from "@/lib/safe-read";
 import { DEFAULT_TIER_ID } from "@/lib/nova/pricing";
 import type { PricingData } from "@/lib/pricing/types";
+import { projectsLabel } from "@/lib/site-stats";
 
 /**
  * Numbers are counted, not typed.
@@ -22,12 +23,6 @@ const BADGES = [
   "Dodání v termínu",
   "Bez skrytých poplatků",
 ];
-
-/** Counts read better rounded down to a round number the claim can outlive. */
-function projectsLabel(count: number): string {
-  if (count >= 10) return `${Math.floor(count / 5) * 5}+`;
-  return String(count);
-}
 
 export async function NovaStatsBar({ pricing }: { pricing: PricingData }) {
   const [projects, reviews] = await Promise.all([

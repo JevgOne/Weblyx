@@ -61,6 +61,10 @@ describe('pickAnnouncement', () => {
   });
 
   it('carries the right year across a year boundary', () => {
-    expect(pickAnnouncement(new Date(2027, 0, 15))).toMatch(/2027|5–7|zálohy/);
+    // Whichever template that week lands on, it must either name the correct
+    // year or say nothing about time at all — never last year.
+    const text = pickAnnouncement(new Date(2027, 0, 15));
+    expect(text).not.toMatch(/202[0-6]/);
+    if (/\d{4}/.test(text)) expect(text).toMatch(/2027/);
   });
 });

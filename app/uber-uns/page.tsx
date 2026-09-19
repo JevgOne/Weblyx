@@ -5,11 +5,12 @@ import Link from "next/link";
 import { Target, Heart, Zap, Shield, TrendingUp } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
+import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 
 export const metadata: Metadata = {
   title: "Über uns | Seitelyx – Deutsche Webagentur | Websites ab 320 €",
   description:
-    "Seitelyx ist eine moderne Webagentur. Seit 2024 haben wir 15+ Projekte abgeschlossen. Website in 5–7 Tagen, Ladezeit unter 2s. Faire Preise, keine versteckten Kosten.",
+    "Seitelyx ist eine moderne Webagentur. Seit 2024 bauen wir schnelle Websites nach Maß. Website in 5–7 Tagen, Ladezeit unter 2s. Faire Preise, keine versteckten Kosten.",
   keywords: [
     "über uns Webagentur",
     "Webagentur Deutschland",
@@ -43,7 +44,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function UberUnsPage() {
+export default async function UberUnsPage() {
+  // Gezählt, nicht getippt — siehe lib/site-stats.ts.
+  const projects = projectsLabel(await countPublishedProjects("de"));
   const values = [
     {
       icon: Zap,
@@ -72,8 +75,8 @@ export default function UberUnsPage() {
   ];
 
   const stats = [
-    { value: "Februar 2024", label: "Gründungsjahr" },
-    { value: "15+", label: "Abgeschlossene Projekte" },
+    { value: "Februar 2024", label: "Gegründet" },
+    { value: projects, label: "Abgeschlossene Projekte" },
     { value: "5.0 ★", label: "Google-Bewertung" },
     { value: "< 2s", label: "Durchschnittliche Ladezeit" },
   ];
@@ -89,7 +92,7 @@ export default function UberUnsPage() {
   const webpageSchema = generateWebPageSchema({
     name: "Über uns – Seitelyx",
     description:
-      "Moderne Webagentur. Seit Februar 2024 haben wir 15+ Projekte abgeschlossen. Website in 5–7 Tagen, faire Preise.",
+      "Moderne Webagentur. Seit Februar 2024 bauen wir schnelle Websites nach Maß. Website in 5–7 Tagen, faire Preise.",
     url: "https://www.seitelyx.de/uber-uns",
     breadcrumbs,
   });

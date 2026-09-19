@@ -11,7 +11,7 @@
  *    the server; anything non-deterministic would render one string on the
  *    server and another on the client and trip a hydration mismatch.
  * 2. Every line only restates a promise the site already makes elsewhere
- *    (48h start, 2h reply, payment on delivery, 5–7 days, no monthly fees).
+ *    (48h start, 24h reply, 50% deposit, 5–7 days, no monthly fees).
  *    An announcement bar is not the place to invent a new commitment.
  */
 
@@ -43,8 +43,8 @@ type Template = (month: string, monthLower: string, year: number) => string;
 
 const TEMPLATES: Template[] = [
   (month, _lower, year) => `${month} ${year}: kapacita omezená — start do 48 hodin`,
-  (_month, lower, year) => `Volné termíny na ${lower} ${year} — odpovídáme do 2 hodin`,
-  () => `Platba až po předání webu — žádné zálohy předem`,
+  (_month, lower, year) => `Volné termíny na ${lower} ${year} — odpovídáme do 24 hodin`,
+  () => `Pevná cena předem — 50 % záloha, doplatek po předání`,
   () => `Základní web hotový za 5–7 pracovních dní`,
   (month, _lower, year) => `${month} ${year}: web bez měsíčních poplatků — platíte jednou`,
 ];

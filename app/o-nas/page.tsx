@@ -6,10 +6,11 @@ import Link from "next/link";
 import { Target, Heart, Zap, Shield, Users, TrendingUp } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
+import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 
 export const metadata: Metadata = {
-  title: "O nás | Česká webová agentura od 8 000 Kč",
-  description: "Weblyx je česká webová agentura. Od 2024 jsme dokončili 15+ projektů. Web za 5–7 dní, načítání pod 2s. Férové ceny, žádné skryté poplatky.",
+  title: "O nás | Česká webová agentura od 7 990 Kč",
+  description: "Weblyx je česká webová agentura. Od roku 2024 stavíme rychlé weby na míru. Web za 5–7 dní, načítání pod 2s. Férové ceny, žádné skryté poplatky.",
   keywords: [
     "o nás webová agentura",
     "webová agentura Praha",
@@ -42,7 +43,9 @@ export const metadata: Metadata = {
   }
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Counted, never typed — see lib/site-stats.ts.
+  const projects = projectsLabel(await countPublishedProjects("cs"));
   const values = [
     {
       icon: Zap,
@@ -67,8 +70,8 @@ export default function AboutPage() {
   ];
 
   const stats = [
-    { value: "Únor 2024", label: "Rok založení" },
-    { value: "15+", label: "Projektů dokončeno" },
+    { value: "Únor 2024", label: "Založeno" },
+    { value: projects, label: "Projektů dokončeno" },
     { value: "5.0 ★", label: "Google hodnocení" },
     { value: "< 2s", label: "Průměrná rychlost" },
   ];
@@ -84,7 +87,7 @@ export default function AboutPage() {
 
   const webpageSchema = generateWebPageSchema({
     name: 'O nás – Weblyx',
-    description: 'Česká webová agentura. Od února 2024 jsme dokončili 15+ projektů. Web za 5-7 dní, férové ceny.',
+    description: 'Česká webová agentura. Od února 2024 stavíme rychlé weby na míru. Web za 5-7 dní, férové ceny.',
     url: 'https://www.weblyx.cz/o-nas',
     breadcrumbs,
   });

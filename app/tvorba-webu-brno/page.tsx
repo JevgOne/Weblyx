@@ -27,13 +27,14 @@ import {
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { isSeitelyx } from "@/lib/brand";
+import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba webových stránek Brno | Weby od 8 000 Kč | Weblyx",
+  title: "Tvorba webových stránek Brno | Weby od 7 990 Kč | Weblyx",
   description:
-    "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js technologie, PageSpeed 90+, dodání za 5–7 dní. Od 8 000 Kč. Pracujeme s klienty z celé ČR.",
+    "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js technologie, PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Pracujeme s klienty z celé ČR.",
   keywords: [
     "tvorba webových stránek Brno",
     "tvorba webu Brno",
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
     "weby pro startupy Brno",
   ],
   openGraph: {
-    title: "Tvorba webových stránek Brno | Od 8 000 Kč | Weblyx",
+    title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba webových stránek Brno | Od 8 000 Kč | Weblyx",
+    title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
     description:
       "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
   },
@@ -104,7 +105,7 @@ const FAQS = [
   {
     question: "Kolik stojí web pro firmu v Brně?",
     answer:
-      "Profesionální firemní web pořídíte od 8 000 Kč. V ceně je moderní responzivní design, SEO optimalizace, rychlé načítání (PageSpeed 90+) a 30 dní podpory. Pro e-shopy a složitější projekty připravíme individuální nabídku.",
+      "Profesionální firemní web pořídíte od 7 990 Kč. V ceně je moderní responzivní design, SEO optimalizace, rychlé načítání (PageSpeed 90+) a podporu po spuštění (1–3 měsíce podle balíčku). Pro e-shopy a složitější projekty připravíme individuální nabídku.",
   },
   {
     question: "Jste z Brna, nebo pracujete vzdáleně?",
@@ -123,7 +124,9 @@ const FAQS = [
   },
 ];
 
-export default function TvorbaWebuBrnoPage() {
+export default async function TvorbaWebuBrnoPage() {
+  // Counted, never typed — see lib/site-stats.ts.
+  const projects = projectsLabel(await countPublishedProjects("cs"));
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Domů", url: "https://www.weblyx.cz" },
     {
@@ -136,19 +139,19 @@ export default function TvorbaWebuBrnoPage() {
     name: "Weblyx – Tvorba webových stránek Brno",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
     description:
-      "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js weby od 8 000 Kč.",
+      "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js weby od 7 990 Kč.",
     addressLocality: "Praha",
     addressCountry: "CZ",
     streetAddress: "Revoluční 8, Praha 1",
     postalCode: "110 00",
-    priceRange: "8000 Kč - 50000 Kč",
+    priceRange: "7990 Kč - 29900 Kč",
     locale: "cs",
   });
 
   const webpageSchema = generateWebPageSchema({
     name: "Tvorba webových stránek Brno",
     description:
-      "Profesionální tvorba webových stránek pro firmy v Brně od 8 000 Kč.",
+      "Profesionální tvorba webových stránek pro firmy v Brně od 7 990 Kč.",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
     breadcrumbs,
   });
@@ -213,7 +216,7 @@ export default function TvorbaWebuBrnoPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-primary" /> Od 8 000 Kč
+                <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
@@ -349,7 +352,7 @@ export default function TvorbaWebuBrnoPage() {
                     <Badge variant="secondary">Férové ceny</Badge>
                     <h2 className="text-3xl md:text-4xl font-bold">
                       Profesionální web od{" "}
-                      <span className="text-primary">8 000 Kč</span>
+                      <span className="text-primary">7 990 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                       <strong>Pražská kvalita za férovou cenu.</strong> Bez měsíčních poplatků
@@ -370,7 +373,7 @@ export default function TvorbaWebuBrnoPage() {
                       "SEO optimalizace pro lokální vyhledávání",
                       "PageSpeed 90+ garantováno",
                       "SSL certifikát zdarma",
-                      "30 dní podpory po spuštění",
+                      "Podpora po spuštění zdarma (1–3 měsíce podle balíčku)",
                     ].map((feature) => (
                       <div key={feature} className="flex items-start gap-2">
                         <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -389,7 +392,7 @@ export default function TvorbaWebuBrnoPage() {
           <div className="container mx-auto max-w-5xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {[
-                { value: "15+", label: "Realizovaných projektů" },
+                { value: projects, label: "Realizovaných projektů" },
                 { value: "90+", label: "Průměrné PageSpeed skóre" },
                 { value: "5–7", label: "Dní do spuštění" },
                 { value: "3×", label: "Rychlejší než WordPress" },

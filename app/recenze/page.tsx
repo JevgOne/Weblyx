@@ -80,7 +80,11 @@ export default async function RecenzePage() {
               {[1, 2, 3, 4, 5].map((i) => (
                 <Star
                   key={i}
-                  className="w-6 h-6 text-yellow-400 fill-yellow-400"
+                  className={
+                    i <= Math.round(Number(avgRating))
+                      ? "w-6 h-6 text-yellow-400 fill-yellow-400"
+                      : "w-6 h-6 text-muted-foreground/30"
+                  }
                 />
               ))}
             </div>

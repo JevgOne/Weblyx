@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
 import { getHomepagePortfolio } from "@/lib/turso/portfolio";
+import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 import Image from "next/image";
 import { TrendingUp, Users, Zap, Award, Shield, Clock, Ban } from "lucide-react";
 import type { SocialProofData, TrustBadgesData } from "@/types/cms";
@@ -26,18 +27,21 @@ export async function TrustBar({ socialProofData = null, trustBadgesData = null 
     }));
   } catch {}
 
+  // Counted, never typed — see lib/site-stats.ts.
+  const projects = projectsLabel(await countPublishedProjects(isDE ? "de" : "cs"));
+
   // Stats from CMS or defaults
   const stats = socialProofData?.stats && socialProofData.stats.length > 0
     ? socialProofData.stats.map((s, i) => ({ value: s.value, label: s.label }))
     : isDE
       ? [
-          { value: "15+", label: "Abgeschlossene Projekte" },
+          { value: projects, label: "Abgeschlossene Projekte" },
           { value: "5.0", label: "Google Bewertung" },
           { value: "< 2s", label: "Ladezeit" },
           { value: "5-7 Tage", label: "Lieferzeit" },
         ]
       : [
-          { value: "15+", label: "Dokončených projektů" },
+          { value: projects, label: "Dokončených projektů" },
           { value: "5.0", label: "Google hodnocení" },
           { value: "< 2s", label: "Průměrná rychlost" },
           { value: "5-7 dní", label: "Průměrná doba dodání" },

@@ -31,7 +31,7 @@
     "ctaSecondary": "Preise ansehen",
     "ctaSecondaryLink": "#pricing",
     "trustNoCommitment": "Unverbindlich",
-    "trustFastResponse": "Antwort in 2 Std.",
+    "trustFastResponse": "Antwort in 24 Stunden",
     "trustSatisfaction": "Zufriedenheitsgarantie",
     "stat1Value": "3–7 Tage",
     "stat1Label": "Lieferzeit garantiert",
@@ -181,7 +181,7 @@
     "q19": "Welche Technologien verwenden Sie?",
     "a19": "Wir verwenden Next.js (React-Framework), Tailwind CSS für das Styling und Vercel für das Hosting. Diese Technologien gewährleisten Geschwindigkeit, Sicherheit und einfache Wartung.",
     "q20": "Warum Seitelyx wählen?",
-    "a20": "Wir sind eine europäische Agentur, die schnell liefert (3-7 Tage), zu fairen Preisen (ab 320 €), mit Qualitätsgarantie (PageSpeed 90+ oder Geld zurück). Seit Februar 2024 haben wir 15+ Projekte mit einer 5.0-Bewertung auf Google abgeschlossen."
+    "a20": "Wir sind eine europäische Agentur, die schnell liefert (3-7 Tage), zu fairen Preisen (ab 320 €), mit Qualitätsgarantie (PageSpeed 90+ oder Geld zurück). Seit Februar 2024 haben wir über zehn Projekte mit einer 5.0-Bewertung auf Google abgeschlossen."
   },
   "contact": {
     "title": "Sprich mit uns über dein Projekt",
@@ -314,7 +314,7 @@
     "title": "Vertrauen von",
     "titleHighlight": "Dutzenden Kunden",
     "subtitle": "Unsere Zahlen sprechen für sich – Geschwindigkeit, Qualität und Zufriedenheit",
-    "stat1Value": "15+",
+    "stat1Value": "10+",
     "stat1Label": "Abgeschlossene Projekte",
     "stat1Desc": "Von Freelancern bis Unternehmen",
     "stat2Value": "98%",

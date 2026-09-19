@@ -26,9 +26,9 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba e-shopu na míru | Od 14 990 Kč | Rychlý internetový obchod | Weblyx",
+  title: "Tvorba e-shopu na míru | Rychlý internetový obchod | Weblyx",
   description:
-    "⚡ Profesionální tvorba e-shopu na míru od 14 990 Kč. Rychlý internetový obchod s garancí PageSpeed 90+, napojení na platební brány a dopravce. E-shop za 2–3 týdny.",
+    "⚡ Profesionální tvorba e-shopu na míru. Rychlý internetový obchod s garancí PageSpeed 90+, napojení na platební brány a dopravce. E-shop za 2–3 týdny. Cenu připravíme na poptávku.",
   keywords: [
     "tvorba e-shopu",
     "e-shop na míru",
@@ -42,18 +42,18 @@ export const metadata: Metadata = {
     "rychlý e-shop",
   ],
   openGraph: {
-    title: "Tvorba e-shopu na míru | Od 14 990 Kč | Weblyx",
+    title: "Tvorba e-shopu na míru | Weblyx",
     description:
-      "⚡ Profesionální tvorba e-shopu na míru od 14 990 Kč. Rychlý internetový obchod s garancí PageSpeed 90+.",
+      "⚡ Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
     url: "https://www.weblyx.cz/tvorba-eshopu",
     type: "website",
     images: [{ url: "/images/og/og-tvorba-eshopu.png", width: 1200, height: 630, alt: "Weblyx - Tvorba e-shopu" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba e-shopu na míru | Od 14 990 Kč | Weblyx",
+    title: "Tvorba e-shopu na míru | Weblyx",
     description:
-      "⚡ Profesionální tvorba e-shopu na míru od 14 990 Kč. Rychlý internetový obchod s garancí PageSpeed 90+.",
+      "⚡ Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-eshopu",
@@ -108,7 +108,7 @@ const FAQS = [
   {
     question: "Kolik stojí tvorba e-shopu na míru?",
     answer:
-      "Cena e-shopu na míru začíná od 14 990 Kč. Finální cena závisí na počtu produktů, požadovaných integrací (platební brány, dopravci) a dalších funkcích. Připravíme vám nezávaznou kalkulaci zdarma.",
+      "E-shopy děláme na míru, takže je nabízíme na poptávku — cena závisí na počtu produktů, požadovaných integracích (platební brány, dopravci) a dalších funkcích. Připravíme vám nezávaznou kalkulaci zdarma.",
   },
   {
     question: "Jak dlouho trvá vytvoření e-shopu?",
@@ -137,7 +137,7 @@ export default function TvorbaEshopuPage() {
   const webpageSchema = generateWebPageSchema({
     name: "Tvorba e-shopu na míru",
     description:
-      "Profesionální tvorba e-shopu na míru od 14 990 Kč. Rychlý internetový obchod s garancí PageSpeed 90+.",
+      "Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
     url: "https://www.weblyx.cz/tvorba-eshopu",
     breadcrumbs,
   });
@@ -175,8 +175,8 @@ export default function TvorbaEshopuPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Vytvoříme vám <strong>rychlý e-shop</strong> postavený na moderních technologiích.
-              Žádné šablony, žádné měsíční poplatky za platformu. Ceny od{" "}
-              <strong>14 990 Kč</strong> s{" "}
+              Žádné šablony, žádné měsíční poplatky za platformu. Cenu připravíme{" "}
+              <strong>na míru</strong> — s{" "}
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
               </Link>.
@@ -295,7 +295,7 @@ export default function TvorbaEshopuPage() {
                 Kolik stojí <span className="text-primary">tvorba e-shopu</span>?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Transparentní ceny bez skrytých poplatků. <strong>E-shop na míru od 14 990 Kč</strong>.
+                Transparentní nabídka bez skrytých poplatků. <strong>E-shop stavíme na míru, cenu připravíme na poptávku.</strong>
               </p>
             </div>
 
@@ -304,7 +304,7 @@ export default function TvorbaEshopuPage() {
                 <CardHeader className="space-y-2">
                   <Package className="h-8 w-8 text-primary" />
                   <h3 className="text-xl font-bold">Základní e-shop</h3>
-                  <p className="text-3xl font-black text-primary">14 990 Kč</p>
+                  <p className="text-3xl font-black text-primary">Na míru</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2">
@@ -325,7 +325,7 @@ export default function TvorbaEshopuPage() {
                   <Badge className="w-fit">Nejoblíbenější</Badge>
                   <ShoppingCart className="h-8 w-8 text-primary" />
                   <h3 className="text-xl font-bold">Profesionální e-shop</h3>
-                  <p className="text-3xl font-black text-primary">24 990 Kč</p>
+                  <p className="text-3xl font-black text-primary">Na míru</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2">
