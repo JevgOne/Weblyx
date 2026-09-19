@@ -266,7 +266,7 @@ export default function WebProZivnostnikyPage() {
                     "Google Mapy",
                     "SEO optimalizace",
                     "SSL certifikát",
-                    "PageSpeed 90+ garance",
+                    "PageSpeed 90+ garance (od 14 900 Kč)",
                     "3 měsíce podpora zdarma",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm">

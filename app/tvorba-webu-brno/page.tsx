@@ -371,7 +371,7 @@ export default async function TvorbaWebuBrnoPage() {
                       "Moderní Next.js technologie",
                       "Responzivní design (mobil, tablet, desktop)",
                       "SEO optimalizace pro lokální vyhledávání",
-                      "PageSpeed 90+ garantováno",
+                      "PageSpeed 90+ garantováno (od 14 900 Kč)",
                       "SSL certifikát zdarma",
                       "Podpora po spuštění zdarma (1–3 měsíce podle balíčku)",
                     ].map((feature) => (

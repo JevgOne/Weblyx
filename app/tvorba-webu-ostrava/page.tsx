@@ -376,7 +376,7 @@ export default async function TvorbaWebuOstravaPage() {
                       "Next.js — 3× rychlejší než WordPress",
                       "Responzivní design pro všechna zařízení",
                       "Lokální SEO pro Ostravu a MSK",
-                      "PageSpeed 90+ garantováno",
+                      "PageSpeed 90+ garantováno (od 14 900 Kč)",
                       "Bez měsíčních poplatků za hosting",
                       "Podpora po spuštění zdarma (1–3 měsíce podle balíčku)",
                     ].map((feature) => (

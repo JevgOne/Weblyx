@@ -228,3 +228,38 @@ describe('the response time is the same everywhere', () => {
     });
   }
 });
+
+/**
+ * The GEO page's top tier bundles "Kompletní SEO optimalizace" on top of GEO,
+ * so it contains everything Premium SEO sells. At 7 990 against Premium SEO's
+ * 12 000 it undercut the very product it contains, and nobody wanting SEO had
+ * a reason to buy the SEO package. A bundle costs more than either part and
+ * less than both bought separately.
+ */
+describe('the GEO bundle does not undercut Premium SEO', () => {
+  const priceOf = (file: string, name: string): number => {
+    const src = readFileSync(join(ROOT, file), 'utf8');
+    const re = new RegExp(
+      `<h3 className="text-xl font-bold">${name}</h3>\\s*<p className="text-3xl font-black text-primary">od ([\\d\\s]+) Kč</p>`
+    );
+    const m = src.match(re);
+    if (!m) throw new Error(`cena pro "${name}" nenalezena v ${file}`);
+    return Number(m[1].replace(/\s/g, ''));
+  };
+
+  const monthlySeo = () => priceOf('app/seo-optimalizace/page.tsx', 'Měsíční SEO');
+  const premiumSeo = () => priceOf('app/seo-optimalizace/page.tsx', 'Premium SEO');
+  const bundle = () => priceOf('app/geo-optimalizace/page.tsx', 'Premium GEO \\+ SEO');
+
+  it('costs more than Premium SEO alone', () => {
+    expect(bundle()).toBeGreaterThan(premiumSeo());
+  });
+
+  it('costs less than buying Premium SEO and monthly GEO separately', () => {
+    expect(bundle()).toBeLessThan(premiumSeo() + monthlySeo());
+  });
+
+  it('does not reuse a one-off website price as a monthly figure', () => {
+    expect([7990, 14900, 29900]).not.toContain(bundle());
+  });
+});

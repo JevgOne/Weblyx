@@ -220,3 +220,12 @@
     display: none;
   }
 }
+
+/* --- Process steps --------------------------------------------------------
+   The rail reads as a progression only while the steps sit side by side. On a
+   single column it would be six stray dashes, so it goes away. */
+@media (max-width: 1080px) {
+  .nova-step-rail {
+    display: none;
+  }
+}

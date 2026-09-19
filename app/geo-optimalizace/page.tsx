@@ -310,8 +310,8 @@ export default function GeoOptimalizacePage() {
                 <CardHeader className="space-y-2">
                   <BarChart3 className="h-8 w-8 text-primary" />
                   <h3 className="text-xl font-bold">Premium GEO + SEO</h3>
-                  <p className="text-3xl font-black text-primary">od 7 990 Kč</p>
-                  <p className="text-sm text-muted-foreground">měsíčně</p>
+                  <p className="text-3xl font-black text-primary">od 15 000 Kč</p>
+                  <p className="text-sm text-muted-foreground">měsíčně · samostatně 17 000 Kč</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2">

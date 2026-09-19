@@ -59,7 +59,7 @@ export async function TrustBar({ socialProofData = null, trustBadgesData = null 
         ]
       : [
           { title: "Zabezpečený HTTPS", icon: Shield },
-          { title: "PageSpeed 90+ garance", icon: Award },
+          { title: "PageSpeed 90+ garance (od 14 900 Kč)", icon: Award },
           { title: "Dodání v termínu", icon: Clock },
           { title: "Bez skrytých poplatků", icon: Ban },
         ];

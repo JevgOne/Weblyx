@@ -180,7 +180,7 @@
     "q19": "Jaké technologie používáte?",
     "a19": "Používáme Next.js (React framework), Tailwind CSS pro styling a Vercel pro hosting. Tyto technologie zajišťují rychlost, bezpečnost a snadnou údržbu.",
     "q20": "Proč si vybrat Weblyx?",
-    "a20": "Jsme česká agentura, která dodává rychle (5-7 dní), za férové ceny (od 7 990 Kč), s garancí kvality (PageSpeed 90+ nebo peníze zpět). Od února 2024 jsme dokončili přes deset projektů s hodnocením 5.0 na Google."
+    "a20": "Jsme česká agentura, která dodává rychle (5-7 dní), za férové ceny (od 7 990 Kč), s garancí kvality (PageSpeed 90+ nebo peníze zpět, od balíčku Základní Web za 14 900 Kč). Od února 2024 jsme dokončili přes deset projektů s hodnocením 5.0 na Google."
   },
   "contact": {
     "title": "Kontaktujte nás",
@@ -320,7 +320,7 @@
     "stat2Desc": "Reálné recenze od klientů",
     "stat3Value": "< 2s",
     "stat3Label": "Průměrná rychlost",
-    "stat3Desc": "PageSpeed 90+ garantováno",
+    "stat3Desc": "PageSpeed 90+ garantováno (od 14 900 Kč)",
     "stat4Value": "5-7 dní",
     "stat4Label": "Průměrná doba dodání",
     "stat4Desc": "Pro základní web"
@@ -339,7 +339,7 @@
     "badge1Title": "SSL & Bezpečnost",
     "badge1Desc": "Vždy zabezpečený HTTPS",
     "badge2Title": "Garance kvality",
-    "badge2Desc": "PageSpeed 90+ nebo vrácení peněz",
+    "badge2Desc": "PageSpeed 90+ nebo vrácení peněz (od 14 900 Kč)",
     "badge3Title": "Dodání v termínu",
     "badge3Desc": "5-7 dní pro základní web",
     "badge4Title": "Bez skrytých poplatků",

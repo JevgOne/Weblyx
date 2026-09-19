@@ -369,7 +369,7 @@ export default async function TvorbaWebuPrahaPage() {
                     {[
                       "Responzivní design pro všechna zařízení",
                       "SEO optimalizace v ceně",
-                      "PageSpeed 90+ garantováno",
+                      "PageSpeed 90+ garantováno (od 14 900 Kč)",
                       "Dodání za 5–7 pracovních dní",
                       "30 dní podpora po spuštění zdarma",
                       "Bez měsíčních poplatků za hosting",

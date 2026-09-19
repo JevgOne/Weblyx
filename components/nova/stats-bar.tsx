@@ -19,7 +19,7 @@ import { projectsLabel } from "@/lib/site-stats";
  */
 const BADGES = [
   "Zabezpečený HTTPS",
-  "PageSpeed 90+ garance",
+  "PageSpeed 90+ garance (od 14 900 Kč)",
   "Dodání v termínu",
   "Bez skrytých poplatků",
 ];
