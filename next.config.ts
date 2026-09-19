@@ -199,11 +199,15 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // Next.js dev bundles (webpack eval source maps) need 'unsafe-eval',
               // production builds do not — never ship it.
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://connect.facebook.net`,
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://connect.facebook.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live https://*.google-analytics.com https://www.facebook.com",
+              // Google Ads conversion beacons post to pagead2.googlesyndication.com and
+              // google.com/pagead. They were missing here, so the browser refused
+              // every conversion ping — which is why all nine conversion actions
+              // read "never fired" in Google Ads while the tag itself loaded fine.
+              "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live https://*.google-analytics.com https://*.analytics.google.com https://www.facebook.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.googleadservices.com https://www.google.com https://*.g.doubleclick.net",
               "frame-src 'self' https://vercel.live https://www.google.com https://maps.google.com",
               "object-src 'none'",
               "base-uri 'self'",
