@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllPricingTiers, createPricingTier, updatePricingTier, deletePricingTier } from '@/lib/turso/cms';
+import { getAllPricingTiers, getPricingTier, createPricingTier, updatePricingTier, deletePricingTier } from '@/lib/turso/cms';
 import { revalidatePath } from 'next/cache';
 import { PricingTier } from '@/types/cms';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { describeDiff, recordChange } from '@/lib/changelog/server';
 
 export const runtime = 'nodejs';
+
+/** "9 990 Kč" — the same formatting the configurator shows a visitor. */
+const czk = (value: unknown) => `${Number(value).toLocaleString('cs-CZ')} Kč`;
 
 function revalidatePricing() {
   revalidatePath('/');
@@ -101,6 +105,13 @@ export async function POST(request: NextRequest) {
 
     const id = await createPricingTier(tierData);
 
+    await recordChange({
+      type: 'pricing',
+      title: `Přidán balíček ${tierData.name}`,
+      detail: `${czk(tierData.price)} · ${tierData.hours} h`,
+      author: user.name || user.email,
+    });
+
     revalidatePricing();
 
     return NextResponse.json({
@@ -174,7 +185,27 @@ export async function PUT(request: NextRequest) {
     if (body.order !== undefined) updates.order = Number(body.order);
     if (body.enabled !== undefined) updates.enabled = Boolean(body.enabled);
 
+    // Read first: the whole value of a pricing line in the archive is the
+    // old number next to the new one.
+    const before = await getPricingTier(body.id);
+
     await updatePricingTier(body.id, updates);
+
+    const name = before?.name || updates.name || body.id;
+    const diffs = [
+      updates.price !== undefined ? describeDiff('Cena', before?.price, updates.price, czk) : null,
+      updates.hours !== undefined ? describeDiff('Hodiny', before?.hours, updates.hours, (v) => `${v} h`) : null,
+      updates.deliveryDays !== undefined
+        ? describeDiff('Dodání', before?.deliveryDays, updates.deliveryDays, (v) => `${v} dní`)
+        : null,
+    ].filter(Boolean);
+
+    await recordChange({
+      type: 'pricing',
+      title: `Upraven balíček ${name}`,
+      detail: diffs.length ? diffs.join(' · ') : null,
+      author: user.name || user.email,
+    });
 
     revalidatePricing();
 
@@ -207,7 +238,14 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const before = await getPricingTier(id);
     await deletePricingTier(id);
+
+    await recordChange({
+      type: 'pricing',
+      title: `Smazán balíček ${before?.name || id}`,
+      author: user.name || user.email,
+    });
 
     revalidatePricing();
 

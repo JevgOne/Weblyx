@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getHomepageSections, updateHeroSection } from '@/lib/turso/cms';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { recordChange } from '@/lib/changelog/server';
 
 export const runtime = 'nodejs';
 
@@ -41,6 +42,12 @@ export async function PUT(request: NextRequest) {
       ctaLink: body.ctaLink || '',
       backgroundImage: body.backgroundImage || '',
       enabled: body.enabled !== undefined ? body.enabled : true,
+    });
+
+    await recordChange({
+      type: 'content',
+      title: 'Upravena úvodní sekce webu',
+      author: user.name || user.email,
     });
 
     // Revalidate homepage to show changes immediately

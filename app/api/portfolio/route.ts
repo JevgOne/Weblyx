@@ -7,6 +7,7 @@ import {
   deletePortfolio,
 } from '@/lib/turso/portfolio';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { recordChange } from '@/lib/changelog/server';
 
 export const runtime = 'nodejs';
 
@@ -84,6 +85,16 @@ export async function POST(request: NextRequest) {
       clientLogoUrl: body.clientLogoUrl || undefined,
     });
 
+    await recordChange({
+      type: 'project',
+      title: `Přidán nový projekt ${item.title}`,
+      detail: item.category || null,
+      author: user.name || user.email,
+      // An unpublished item is not on the site yet, so announcing it there
+      // would advertise something a visitor cannot open.
+      isPublic: Boolean(item.published),
+    });
+
     return NextResponse.json({ success: true, data: item });
   } catch (error: any) {
     console.error('Error creating portfolio item:', error);
@@ -125,6 +136,13 @@ export async function PUT(request: NextRequest) {
       order: body.order,
     });
 
+    await recordChange({
+      type: 'project',
+      title: `Upraven projekt ${item.title}`,
+      author: user.name || user.email,
+      isPublic: Boolean(item.published),
+    });
+
     return NextResponse.json({ success: true, data: item });
   } catch (error: any) {
     console.error('Error updating portfolio item:', error);
@@ -151,7 +169,16 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const existing = await getPortfolioById(id);
     await deletePortfolio(id);
+
+    await recordChange({
+      type: 'project',
+      title: existing ? `Smazán projekt ${existing.title}` : 'Smazán projekt',
+      author: user.name || user.email,
+      // Removing work from the portfolio is not something to advertise.
+      isPublic: false,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

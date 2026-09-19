@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getContactInfo, updateContactInfo } from '@/lib/turso/cms';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { recordChange } from '@/lib/changelog/server';
 
 export const runtime = 'nodejs';
 
@@ -42,6 +43,12 @@ export async function PUT(request: NextRequest) {
     }
 
     await updateContactInfo(body);
+
+    await recordChange({
+      type: 'content',
+      title: 'Upraveny kontaktní údaje',
+      author: user.name || user.email,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

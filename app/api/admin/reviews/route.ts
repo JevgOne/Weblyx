@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllReviews, updateReview, deleteReview, reorderReviews } from '@/lib/turso/reviews';
+import { getAllReviews, getReviewById, updateReview, deleteReview, reorderReviews } from '@/lib/turso/reviews';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { recordChange } from '@/lib/changelog/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -46,6 +47,12 @@ export async function PATCH(request: NextRequest) {
 
     const updated = await updateReview(id, data);
 
+    await recordChange({
+      type: 'review',
+      title: `Upravena recenze od ${updated.authorName}`,
+      author: user.name || user.email,
+    });
+
     return NextResponse.json({
       success: true,
       data: updated,
@@ -77,7 +84,16 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    // Read the name before the row is gone; "Smazána recenze" with no author
+    // is a line nobody can act on later.
+    const review = await getReviewById(id);
     await deleteReview(id);
+
+    await recordChange({
+      type: 'review',
+      title: review ? `Smazána recenze od ${review.authorName}` : 'Smazána recenze',
+      author: user.name || user.email,
+    });
 
     return NextResponse.json({
       success: true,

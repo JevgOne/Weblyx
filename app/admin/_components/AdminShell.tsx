@@ -73,6 +73,9 @@ const NAV: NavGroup[] = [
       { label: "Nastavení", href: "/admin/settings", permission: "settings", subtitle: "Konfigurace panelu" },
       { label: "Uživatelé", href: "/admin/users", permission: "users", subtitle: "Účty a role" },
       { label: "Logy", href: "/admin/activity-logs", permission: "users", subtitle: "Historie změn v panelu" },
+      // Last in the sidebar, as the handoff asks. Distinct from "Logy": that is
+      // the forensic audit trail, this is the client-readable history of the site.
+      { label: "Archiv změn", href: "/admin/archiv", permission: "content", subtitle: "Historie změn na webu" },
     ],
   },
 ];

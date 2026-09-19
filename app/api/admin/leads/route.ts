@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
-import { isWritableLeadStatus } from '@/lib/leads/status';
+import { isWritableLeadStatus, leadStatusMeta } from '@/lib/leads/status';
+import { recordChange } from '@/lib/changelog/server';
 
 // GET - Retrieve all leads
 export async function GET(request: NextRequest) {
@@ -153,10 +154,32 @@ export async function PATCH(request: NextRequest) {
     // Always update updated_at
     setClauses.push('updated_at = unixepoch()');
 
+    // The status line in the archive needs the values from before the write.
+    // Only status is logged: the archive is a history of the site, and editing
+    // a phone number on an enquiry is not part of that.
+    const statusKey = Object.keys(updates || {}).find((key) => UPDATABLE_COLUMNS[key] === 'status');
+    const previous = statusKey
+      ? (await turso.execute({ sql: 'SELECT name, status FROM leads WHERE id = ?', args: [leadId] }))
+          .rows[0] as any
+      : null;
+
     const sql = `UPDATE leads SET ${setClauses.join(', ')} WHERE id = ?`;
     args.push(leadId);
 
     await turso.execute({ sql, args });
+
+    if (statusKey && previous) {
+      const from = leadStatusMeta(previous.status).label;
+      const to = leadStatusMeta((updates as any)[statusKey]).label;
+
+      if (from !== to) {
+        await recordChange({
+          type: 'lead',
+          title: `Poptávka ${previous.name || leadId}: ${from} → ${to}`,
+          author: user.name || user.email,
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,

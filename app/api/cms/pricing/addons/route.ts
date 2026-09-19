@@ -7,8 +7,24 @@ import {
   deletePricingAddon,
 } from '@/lib/turso/cms';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { describeDiff, recordChange } from '@/lib/changelog/server';
 
 export const runtime = 'nodejs';
+
+const czk = (value: unknown) => `${Number(value).toLocaleString('cs-CZ')} Kč`;
+
+/**
+ * There is no getPricingAddon(id), and adding one to the CMS layer for a log
+ * line is not worth it — the list is a handful of rows.
+ */
+async function findAddon(id: string) {
+  try {
+    const all = await getAllPricingAddons();
+    return all.find((addon) => String(addon.id) === String(id)) || null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Tier ids are stored as a comma-separated list. An add-on offered nowhere is a
@@ -85,6 +101,13 @@ export async function POST(request: NextRequest) {
       enabled: body.enabled !== undefined ? Boolean(body.enabled) : true,
     });
 
+    await recordChange({
+      type: 'pricing',
+      title: `Přidán doplněk ${body.name}`,
+      detail: `${czk(price)} · ${hours} h`,
+      author: user.name || user.email,
+    });
+
     revalidatePricing();
 
     return NextResponse.json({ success: true, data: { id } });
@@ -150,7 +173,21 @@ export async function PUT(request: NextRequest) {
       updates.availableTiers = availableTiers;
     }
 
+    const before = await findAddon(body.id);
+
     await updatePricingAddon(body.id, updates);
+
+    const diffs = [
+      updates.price !== undefined ? describeDiff('Cena', before?.price, updates.price, czk) : null,
+      updates.hours !== undefined ? describeDiff('Hodiny', before?.hours, updates.hours, (v) => `${v} h`) : null,
+    ].filter(Boolean);
+
+    await recordChange({
+      type: 'pricing',
+      title: `Upraven doplněk ${before?.name || updates.name || body.id}`,
+      detail: diffs.length ? diffs.join(' · ') : null,
+      author: user.name || user.email,
+    });
 
     revalidatePricing();
 
@@ -178,7 +215,14 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const before = await findAddon(id);
     await deletePricingAddon(id);
+
+    await recordChange({
+      type: 'pricing',
+      title: `Smazán doplněk ${before?.name || id}`,
+      author: user.name || user.email,
+    });
 
     revalidatePricing();
 

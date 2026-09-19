@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getCaseStudyData, updateCaseStudyData } from '@/lib/turso/cms';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { recordChange } from '@/lib/changelog/server';
 
 export const runtime = 'nodejs';
 
@@ -29,6 +30,12 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     await updateCaseStudyData(body);
+    await recordChange({
+      type: 'content',
+      title: 'Upravena sekce Případová studie',
+      author: user.name || user.email,
+    });
+
     revalidatePath('/');
     return NextResponse.json({ success: true });
   } catch (error: any) {

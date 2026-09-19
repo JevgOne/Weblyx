@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut } from "lucide-react";
 import { LanguageSelector } from "@/lib/admin-i18n";
 import { canonicalLeadStatus, leadStatusMeta, nextLeadStatus } from "@/lib/leads/status";
+import { RecentChanges } from "@/components/admin/RecentChanges";
 
 interface Stats {
   portfolio: { total: number; published: number };
@@ -346,6 +347,8 @@ export default function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      <RecentChanges />
     </div>
   );
 }
