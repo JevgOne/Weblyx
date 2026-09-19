@@ -239,21 +239,6 @@ export async function middleware(request: NextRequest) {
     response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate, max-age=0');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
-  } else if (request.method === 'GET') {
-    // Public pages render dynamically — `getLocale()` reads the host to decide
-    // whether this request is weblyx.cz or seitelyx.de — so Next marks them
-    // `no-store` and every visitor waited on a cold server render: 0.75-0.95s
-    // to first byte against 0.15-0.32s for the agencies we compete with, on a
-    // site whose whole pitch is loading under two seconds.
-    //
-    // The pages hold no per-visitor content, and Vercel's edge cache keys on
-    // host as well as path, so the two domains cannot bleed into each other.
-    // 60s matches the `revalidate` the routes already declare; the stale
-    // window keeps a CMS edit from ever costing a visitor a cold render.
-    response.headers.set(
-      'Cache-Control',
-      'public, s-maxage=60, stale-while-revalidate=600'
-    );
   }
 
   response.headers.set('X-Content-Type-Options', 'nosniff');
