@@ -18,9 +18,11 @@ const pricing: PricingData = {
   ],
   addons: [
     // Blog ships inside tier-2 and tier-3, so only the landing page may buy it.
-    { id: 'addon-blog', name: 'Blog s CMS editorem', hours: 6, price: 3000, availableTiers: ['tier-1'] },
-    { id: 'addon-booking', name: 'Rezervační systém', hours: 20, price: 9900, availableTiers: ['tier-1', 'tier-2'] },
-    { id: 'addon-copy', name: 'Copywriting textů', hours: 5, price: 2500, availableTiers: ['tier-1', 'tier-2', 'tier-3'] },
+    { id: 'addon-blog', name: 'Blog s CMS editorem', hours: 6, price: 3000, kind: 'build', supportMonths: 0, availableTiers: ['tier-1'] },
+    { id: 'addon-booking', name: 'Rezervační systém', hours: 20, price: 9900, kind: 'build', supportMonths: 0, availableTiers: ['tier-1', 'tier-2'] },
+    { id: 'addon-copy', name: 'Copywriting textů', hours: 5, price: 2500, kind: 'build', supportMonths: 0, availableTiers: ['tier-1', 'tier-2', 'tier-3'] },
+    // Bought for after launch: adds a year of support, no build hours.
+    { id: 'addon-care', name: 'Roční údržba a podpora', hours: 48, price: 24000, kind: 'support', supportMonths: 12, availableTiers: ['tier-1', 'tier-2', 'tier-3'] },
   ],
 };
 
@@ -30,10 +32,16 @@ describe('addonsForTier', () => {
       'addon-blog',
       'addon-booking',
       'addon-copy',
+      'addon-care',
     ]);
-    // tier-2 includes the blog, tier-3 includes blog and booking.
-    expect(addonsForTier(pricing, 'tier-2').map((a) => a.id)).toEqual(['addon-booking', 'addon-copy']);
-    expect(addonsForTier(pricing, 'tier-3').map((a) => a.id)).toEqual(['addon-copy']);
+    // tier-2 includes the blog, tier-3 includes blog and booking. Care is sold
+    // with every package — nothing includes post-launch maintenance for a year.
+    expect(addonsForTier(pricing, 'tier-2').map((a) => a.id)).toEqual([
+      'addon-booking',
+      'addon-copy',
+      'addon-care',
+    ]);
+    expect(addonsForTier(pricing, 'tier-3').map((a) => a.id)).toEqual(['addon-copy', 'addon-care']);
   });
 
   it('offers nothing for an unknown tier rather than everything', () => {
@@ -195,5 +203,35 @@ describe('fallback price list (lib/nova/pricing.ts)', () => {
 
   it('the default tier ID exists in the fallback list', () => {
     expect(FALLBACK_PRICING.tiers.some((t) => t.id === DEFAULT_TIER_ID)).toBe(true);
+  });
+});
+
+describe('support add-ons do not delay the build', () => {
+  it('leaves delivery untouched', () => {
+    const plain = buildConfiguration(pricing, 'tier-2', [])!;
+    const withCare = buildConfiguration(pricing, 'tier-2', ['addon-care'])!;
+    expect(withCare.deliveryDays).toBe(plain.deliveryDays);
+  });
+
+  it('leaves the work estimate untouched', () => {
+    const withCare = buildConfiguration(pricing, 'tier-2', ['addon-care'])!;
+    expect(withCare.totalHours).toBe(30);
+  });
+
+  it('still charges for it', () => {
+    const withCare = buildConfiguration(pricing, 'tier-2', ['addon-care'])!;
+    expect(withCare.totalPrice).toBe(14900 + 24000);
+  });
+
+  it('extends the support window instead', () => {
+    const withCare = buildConfiguration(pricing, 'tier-2', ['addon-care'])!;
+    expect(withCare.supportMonths).toBe(2 + 12);
+  });
+
+  it('a build add-on alongside it still moves delivery', () => {
+    const both = buildConfiguration(pricing, 'tier-2', ['addon-care', 'addon-booking'])!;
+    // 20 build hours -> +3 days; the 48 support hours must not count.
+    expect(both.deliveryDays).toBe('8–10');
+    expect(both.totalHours).toBe(50);
   });
 });

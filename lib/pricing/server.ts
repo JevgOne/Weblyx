@@ -18,7 +18,7 @@ export async function getPricingData(): Promise<PricingData> {
     );
 
     const addonRows = await executeQuery<any>(
-      `SELECT id, name, hours, price, available_tiers
+      `SELECT id, name, hours, price, kind, support_months, available_tiers
          FROM pricing_addons
         WHERE active = 1
         ORDER BY "order" ASC`
@@ -46,6 +46,8 @@ export async function getPricingData(): Promise<PricingData> {
         name: String(row.name),
         hours: Number(row.hours),
         price: Number(row.price),
+        kind: row.kind === 'support' ? ('support' as const) : ('build' as const),
+        supportMonths: Number(row.support_months) || 0,
         availableTiers: String(row.available_tiers)
           .split(',')
           .map((id: string) => id.trim())

@@ -19,11 +19,22 @@ export interface PricingPackage {
   price: number;
 }
 
+/**
+ * `build` add-ons enlarge the job: their hours join the work estimate and push
+ * the delivery range out. `support` add-ons are bought for after launch — they
+ * cost money and extend the support window, but the website is not delivered
+ * any later because someone also bought a year of maintenance.
+ */
+export type AddonKind = 'build' | 'support';
+
 export interface PricingAddon {
   id: string;
   name: string;
   hours: number;
   price: number;
+  kind: AddonKind;
+  /** Months of post-launch support this add-on adds; 0 for build add-ons. */
+  supportMonths: number;
   /** Tier ids that may offer this add-on; a tier that includes it is absent. */
   availableTiers: string[];
 }
@@ -41,6 +52,7 @@ export interface LeadConfiguration {
   deliveryDays: string;
   supportMonths: number;
   addons: Array<{ id: string; name: string; hours: number; price: number }>;
+  /** Build hours only — support hours are spread over the months after launch. */
   totalHours: number;
   totalPrice: number;
 }
@@ -93,16 +105,23 @@ export function buildConfiguration(
     .map((id) => offered.find((a) => a.id === id))
     .filter((a): a is PricingAddon => Boolean(a));
 
-  const addonHours = addons.reduce((sum, a) => sum + a.hours, 0);
+  // Only build work moves the delivery date and the work estimate. A year of
+  // maintenance is 48 hours, but they are spent after launch — counting them
+  // here would delay the site by six days for buying support.
+  const buildHours = addons
+    .filter((a) => a.kind !== 'support')
+    .reduce((sum, a) => sum + a.hours, 0);
+
+  const extraSupportMonths = addons.reduce((sum, a) => sum + (a.supportMonths || 0), 0);
 
   return {
     tierId: tier.id,
     tierName: tier.name,
     tierHours: tier.hours,
-    deliveryDays: deliveryWithAddons(tier.deliveryDays, addonHours),
-    supportMonths: tier.supportMonths,
+    deliveryDays: deliveryWithAddons(tier.deliveryDays, buildHours),
+    supportMonths: tier.supportMonths + extraSupportMonths,
     addons: addons.map((a) => ({ id: a.id, name: a.name, hours: a.hours, price: a.price })),
-    totalHours: tier.hours + addonHours,
+    totalHours: tier.hours + buildHours,
     totalPrice: tier.price + addons.reduce((sum, a) => sum + a.price, 0),
   };
 }

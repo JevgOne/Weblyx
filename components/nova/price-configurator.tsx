@@ -35,6 +35,13 @@ export function NovaPriceConfigurator({ pricing }: { pricing: PricingData }) {
    */
   const offeredAddons = useMemo(() => addonsForTier(pricing, tierId), [pricing, tierId]);
 
+  // A prepaid year of support sits in the same total as the build, so the line
+  // under it cannot just say "jednorázově" — it is one payment covering both.
+  const hasAnnualSupport = useMemo(
+    () => offeredAddons.some((a) => a.kind === "support" && addonIds.includes(a.id)),
+    [offeredAddons, addonIds]
+  );
+
   const toggleAddon = (id: string) =>
     setAddonIds((current) =>
       current.includes(id) ? current.filter((a) => a !== id) : [...current, id]
@@ -253,7 +260,7 @@ export function NovaPriceConfigurator({ pricing }: { pricing: PricingData }) {
               className="mt-4 text-center text-[13px] font-medium"
               style={{ color: "var(--n-text-dim)" }}
             >
-              Platba až po předání · neomezené revize
+              50 % záloha předem · 2 kola revizí v ceně
             </p>
           </div>
         </div>

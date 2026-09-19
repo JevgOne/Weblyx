@@ -20,6 +20,10 @@ const NEW_MIGRATIONS = [
   '006_pricing_hours.sql',
   '007_lead_configuration.sql',
   '008_pricing_realignment.sql',
+  '009_changelog.sql',
+  // 010 alters pricing_addons, which 006 creates — it has to run through the
+  // runner, not the "applied by hand" path, or the table is not there yet.
+  '010_addon_kind.sql',
 ];
 
 function statements(file: string): string[] {
