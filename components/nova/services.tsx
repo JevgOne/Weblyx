@@ -1,31 +1,39 @@
-const SERVICES = [
-  {
-    title: "Webové stránky",
-    desc: "Moderní, responzivní weby na míru vašim potřebám i cílové skupině.",
-  },
-  {
-    title: "SEO optimalizace",
-    desc: "Přední pozice ve vyhledávačích — kompletní on-page i off-page SEO.",
-  },
-  {
-    title: "Redesign",
-    desc: "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze.",
-  },
-  {
-    title: "Rychlost načítání",
-    desc: "Zrychlení webu pro lepší SEO i zážitek. Cíl: méně než 2 sekundy.",
-  },
-  {
-    title: "Údržba a podpora",
-    desc: "Aktualizace, zálohy a technická podpora. Web vždy funkční a bezpečný.",
-  },
-  {
-    title: "Landing page",
-    desc: "Jedna stránka s vysokou konverzí — levnější a rychlejší než WordPress.",
-  },
+import { getActiveServices } from "@/lib/turso/services";
+import { safeRead } from "@/lib/safe-read";
+
+/**
+ * Services, read from the CMS.
+ *
+ * The six tiles used to be a constant in this file while the same six rows
+ * already sat in the `services` table — so renaming a service in the admin
+ * changed /sluzby and the old homepage but left this section saying the old
+ * thing. The copy now lives in one place and this file only lays it out.
+ *
+ * The filter: rows that carry a price are the legacy package duplicates
+ * (Landing Page / Základní Web / Standardní Web), whose prices belong to
+ * `pricing_tiers` and whose cards belong to the configurator. A service is a
+ * row without a price.
+ */
+const FALLBACK = [
+  { title: "Webové stránky", description: "Moderní, responzivní weby na míru vašim potřebám i cílové skupině." },
+  { title: "SEO optimalizace", description: "Přední pozice ve vyhledávačích — kompletní on-page i off-page SEO." },
+  { title: "Redesign", description: "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze." },
+  { title: "Rychlost načítání", description: "Zrychlení webu pro lepší SEO i zážitek. Cíl: méně než 2 sekundy." },
+  { title: "Údržba a podpora", description: "Aktualizace, zálohy a technická podpora. Web vždy funkční a bezpečný." },
+  { title: "Landing page", description: "Jedna stránka s vysokou konverzí — levnější a rychlejší než WordPress." },
 ];
 
-export function NovaServices() {
+export async function NovaServices() {
+  const rows = await safeRead(() => getActiveServices("cs"), [], "nova services");
+
+  const services = rows
+    .filter((service) => service.priceFrom === null || service.priceFrom === undefined)
+    .sort((a, b) => a.order - b.order)
+    .map((service) => ({ title: service.title, description: service.description }));
+
+  // A database blip must not delete a section the navigation links to.
+  const shown = services.length > 0 ? services : FALLBACK;
+
   return (
     <section id="sluzby" className="nova-container nova-section scroll-mt-20">
       <div className="mb-[72px] text-center">
@@ -39,7 +47,7 @@ export function NovaServices() {
         className="nova-col3 grid grid-cols-3 gap-px overflow-hidden rounded-[20px] border"
         style={{ background: "var(--n-border)", borderColor: "var(--n-border)" }}
       >
-        {SERVICES.map((service) => (
+        {shown.map((service) => (
           <article key={service.title} className="px-9 py-[42px]" style={{ background: "var(--n-bg-alt)" }}>
             <h3 className="text-[22px] font-bold" style={{ letterSpacing: "-.02em" }}>
               {service.title}
@@ -48,7 +56,7 @@ export function NovaServices() {
               className="mt-3.5 text-[15px] font-medium"
               style={{ lineHeight: 1.6, color: "var(--n-text-muted)" }}
             >
-              {service.desc}
+              {service.description}
             </p>
           </article>
         ))}

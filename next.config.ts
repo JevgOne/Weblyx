@@ -103,6 +103,39 @@ const nextConfig: NextConfig = {
         destination: '/#cenik',
         statusCode: 301,
       },
+      // URLs are never deleted, only redirected. These three were linked from
+      // the AI manifests, robots and the hreflang map but never existed as
+      // routes, so anything that followed them got a 404.
+      {
+        source: '/cenik',
+        destination: '/#cenik',
+        permanent: true,
+      },
+      {
+        source: '/ochrana-osobnich-udaju',
+        destination: '/ochrana-udaju',
+        permanent: true,
+      },
+      {
+        source: '/preise-uebersicht',
+        destination: '/preise',
+        permanent: true,
+      },
+      // Linked from six landing pages but never written. Redirected to the
+      // comparison article that does exist rather than left as a 404.
+      {
+        source: '/blog/wordpress-vs-nextjs-srovnani-2026',
+        destination: '/blog/wordpress-vs-wix-vs-web-na-miru-2026',
+        permanent: true,
+      },
+      // The redesign was previewed at /nova and is now the Czech homepage.
+      // Left as a 301 so the preview URL does not become a second, competing
+      // copy of the same page once it is indexable.
+      {
+        source: '/nova',
+        destination: '/',
+        permanent: true,
+      },
       // German route aliases: /referenzen → /portfolio (nav says "Referenzen" but page is /portfolio)
       {
         source: '/referenzen',

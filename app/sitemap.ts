@@ -43,6 +43,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    // Public changelog. Czech-only: the German site has no archive page.
+    ...(isGermanSite
+      ? []
+      : [
+          {
+            url: `${baseUrl}/archiv`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.5,
+          },
+        ]),
   ];
 
   // Language-specific routes for Services, About, Quote
@@ -164,12 +175,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'weekly',
           priority: 0.8,
         },
-        {
-          url: `${baseUrl}/onlineshop-erstellen`,
-          lastModified: new Date(),
-          changeFrequency: 'weekly',
-          priority: 0.8,
-        },
       ]
     : [
         {
@@ -198,12 +203,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         {
           url: `${baseUrl}/redesign-webu`,
-          lastModified: new Date(),
-          changeFrequency: 'weekly',
-          priority: 0.8,
-        },
-        {
-          url: `${baseUrl}/tvorba-eshopu`,
           lastModified: new Date(),
           changeFrequency: 'weekly',
           priority: 0.8,

@@ -1,4 +1,8 @@
 export function NovaFooter() {
+  // Never a literal year: a footer that still says 2026 in January is the
+  // cheapest possible signal that nobody maintains the site.
+  const year = new Date().getFullYear();
+
   return (
     <footer
       className="border-t"
@@ -11,7 +15,7 @@ export function NovaFooter() {
       {/* No admin link here — the panel is not linked from the public site. */}
       <div className="nova-container flex flex-wrap items-center justify-between gap-4 py-9 text-[13px] font-medium">
         <span className="text-[17px] font-bold text-white">Weblyx</span>
-        <span>© 2026 Weblyx · Altro Servis Group s.r.o. · IČO 23673389</span>
+        <span>© {year} Weblyx · Altro Servis Group s.r.o. · IČO 23673389</span>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
           <a href="/ochrana-udaju" className="hover:text-white">
             Ochrana údajů

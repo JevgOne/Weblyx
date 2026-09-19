@@ -206,3 +206,17 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- Changelog timeline ---------------------------------------------------
+   Date | rail | entry on desktop. Below 640px the rail is dropped and the
+   date sits above the entry, because a 120px date column plus a rail leaves
+   a badge and a title fighting over what is left of a phone screen. */
+@media (max-width: 640px) {
+  .nova-change-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .nova-change-rail {
+    display: none;
+  }
+}

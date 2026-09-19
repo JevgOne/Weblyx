@@ -35,6 +35,8 @@ import {
 import { PricingTier, FAQItem } from "@/types/cms";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getLocale } from "next-intl/server";
+import { NovaHome } from "@/components/nova/home";
+import { getPricingData } from "@/lib/pricing/server";
 
 async function getPricingTiers(): Promise<PricingTier[]> {
   try {
@@ -60,13 +62,16 @@ export default async function HomePage() {
   const locale = await getLocale() as "cs" | "de";
 
   // Fetch all data server-side in parallel (1 round trip)
-  const [faqItems, pricingTiers, reviews, socialProofData, beforeAfterData, trustBadgesData] = await Promise.all([
+  const isCzech = locale === "cs";
+
+  const [faqItems, pricingTiers, reviews, socialProofData, beforeAfterData, trustBadgesData, configuratorPricing] = await Promise.all([
     getFAQItems(),
     getPricingTiers(),
     getPublishedReviews(locale).catch(() => []),
     getSocialProofData().catch(() => null),
     getBeforeAfterData().catch(() => null),
     getTrustBadgesData().catch(() => null),
+    getPricingData(),
   ]);
 
   // Resolve locale-specific CMS data
@@ -85,8 +90,8 @@ export default async function HomePage() {
     : null;
 
   const localBusinessSchema = generateLocalBusinessSchema({
-    priceRange: "10000 Kč - 85000 Kč",
-    openingHours: ["Mo-Fr 09:00-18:00"],
+    priceRange: "7990 Kč - 29900 Kč",
+    openingHours: ["Mo-Fr 08:00-18:00"],
     ...(avgRating && reviewCount >= 1 ? {
       aggregateRating: {
         ratingValue: avgRating,
@@ -106,7 +111,7 @@ export default async function HomePage() {
     areaServed: "Česká republika",
     offers: {
       priceCurrency: "CZK",
-      priceRange: "10000-85000",
+      priceRange: "7990-29900",
     },
   });
 
@@ -122,8 +127,8 @@ export default async function HomePage() {
   );
 
   const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
-    name: "AKCE: Profesionální web od 8 000 Kč",
-    text: "Tvorba webových stránek od 8 000 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
+    name: "AKCE: Profesionální web od 7 990 Kč",
+    text: "Tvorba webových stránek od 7 990 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
     datePosted: "2026-01-01",
     expires: "2026-12-31",
     spatialCoverage: "Czech Republic",
@@ -135,7 +140,10 @@ export default async function HomePage() {
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={localBusinessSchema} />
-      {faqSchema && <JsonLd data={faqSchema} />}
+      {/* FAQPage only where the answers are actually on the page. The Czech
+          homepage no longer carries an FAQ section; /faq emits this schema for
+          the same items, which is where Google expects to find it. */}
+      {!isCzech && faqSchema && <JsonLd data={faqSchema} />}
       {offersSchema && offersSchema.map((offer, index) => (
         <JsonLd key={index} data={offer} />
       ))}
@@ -145,36 +153,44 @@ export default async function HomePage() {
         <JsonLd key={`review-${index}`} data={schema} />
       ))}
 
-      <main className="min-h-screen">
-        {/* 1. Hero — value proposition + CTA */}
-        <Hero />
+      {isCzech ? (
+        /* weblyx.cz — the redesign. It ships its own header, footer and font;
+           SiteChrome keeps the shared ones off this route. */
+        <NovaHome pricing={configuratorPricing} now={new Date()} />
+      ) : (
+        /* seitelyx.de — unchanged. The redesign is Czech-only copy, so putting
+           it here would serve German visitors a Czech homepage. */
+        <main className="min-h-screen">
+          {/* 1. Hero — value proposition + CTA */}
+          <Hero />
 
-        {/* 2. Trust Bar — stats + badges + client logos (merged) */}
-        <TrustBar socialProofData={socialProof} trustBadgesData={trustBadges} />
+          {/* 2. Trust Bar — stats + badges + client logos (merged) */}
+          <TrustBar socialProofData={socialProof} trustBadgesData={trustBadges} />
 
-        {/* 3. Problem → Solution — before/after comparison + case study metrics */}
-        <BeforeAfter cmsData={beforeAfter} />
-        <CaseStudy />
+          {/* 3. Problem → Solution — before/after comparison + case study metrics */}
+          <BeforeAfter cmsData={beforeAfter} />
+          <CaseStudy />
 
-        {/* 4. Services */}
-        <Services />
+          {/* 4. Services */}
+          <Services />
 
-        {/* 5. Process */}
-        <Process />
+          {/* 5. Process */}
+          <Process />
 
-        {/* 6. Portfolio + Reviews */}
-        <Portfolio />
-        <Reviews />
+          {/* 6. Portfolio + Reviews */}
+          <Portfolio />
+          <Reviews />
 
-        {/* 7. Pricing */}
-        <Pricing serverTiers={pricingTiers} />
+          {/* 7. Pricing */}
+          <Pricing serverTiers={pricingTiers} />
 
-        {/* 8. FAQ */}
-        <FAQ />
+          {/* 8. FAQ */}
+          <FAQ />
 
-        {/* 9. Contact */}
-        <ContactWow />
-      </main>
+          {/* 9. Contact */}
+          <ContactWow />
+        </main>
+      )}
     </>
   );
 }

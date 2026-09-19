@@ -1,16 +1,24 @@
 import Image from "next/image";
 
-const TRUST = ["Bez závazku", "Odpověď do 2 h", "Záruka spokojenosti"];
+// "do 24 hodin" is what the contact section, /kontakt, /poptavka and both
+// enquiry endpoints promise. The hero used to say 2 h, contradicting the same
+// page four sections further down.
+const TRUST = ["Bez závazku", "Odpověď do 24 hodin", "Záruka spokojenosti"];
 
 export function NovaHero({
   fromPrice,
+  deliveryDays,
   announcement,
 }: {
   fromPrice: string;
+  /** Delivery range of the default package, read from the price list. */
+  deliveryDays: string;
   announcement: string;
 }) {
   const CARDS = [
-    { value: "5–7 dní", label: "Základní web" },
+    // Not typed: the stats bar below already reads this from `pricing_tiers`,
+    // so a change in the admin has to move both or the page contradicts itself.
+    { value: `${deliveryDays} dní`, label: "Základní web" },
     { value: "Pod 2s", label: "Načítání webu" },
     { value: fromPrice, label: "Jednorázově" },
   ];
