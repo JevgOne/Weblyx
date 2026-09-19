@@ -207,11 +207,13 @@ const nextConfig: NextConfig = {
               // google.com/pagead. They were missing here, so the browser refused
               // every conversion ping — which is why all nine conversion actions
               // read "never fired" in Google Ads while the tag itself loaded fine.
-              "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live https://*.google-analytics.com https://*.analytics.google.com https://www.facebook.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.googleadservices.com https://www.google.com https://*.g.doubleclick.net",
+              "connect-src 'self' https://*.firebasestorage.app https://*.appspot.com https://*.turso.io wss://*.turso.io https://vercel.live https://*.google-analytics.com https://*.analytics.google.com https://www.facebook.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://*.googlesyndication.com https://www.google.com https://www.google.cz",
               "frame-src 'self' https://vercel.live https://www.google.com https://maps.google.com",
               "object-src 'none'",
               "base-uri 'self'",
-              "form-action 'self'",
+              // The Facebook pixel falls back to a form POST for part of its
+              // measurement; 'self' alone blocked it.
+              "form-action 'self' https://www.facebook.com",
               "frame-ancestors 'none'",
               // Rewrites every http:// subresource to https://. On localhost
               // that points every stylesheet, script and image at a TLS port
