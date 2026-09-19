@@ -1,3 +1,4 @@
+import { cache } from 'react';
 // Turso Portfolio Data Access Layer
 import { turso, dateToUnix, unixToDate, parseJSON, stringifyJSON } from '../turso';
 import type { PortfolioItem } from '@/types/portfolio';
@@ -71,7 +72,7 @@ export async function getPortfolioById(id: string, locale?: string): Promise<Por
   return rowToPortfolio(result.rows[0] as unknown as PortfolioRow, locale);
 }
 
-export async function getPublishedPortfolio(locale?: string): Promise<PortfolioItem[]> {
+async function _getPublishedPortfolio(locale?: string): Promise<PortfolioItem[]> {
   const result = await turso.execute(
     'SELECT * FROM portfolio WHERE published = 1 ORDER BY "order" ASC'
   );
@@ -219,7 +220,7 @@ export async function updatePortfolio(
   return updated;
 }
 
-export async function getHomepagePortfolio(locale?: string): Promise<PortfolioItem[]> {
+async function _getHomepagePortfolio(locale?: string): Promise<PortfolioItem[]> {
   const result = await turso.execute(
     'SELECT * FROM portfolio WHERE published = 1 AND show_on_homepage = 1 ORDER BY "order" ASC'
   );
@@ -243,3 +244,9 @@ export async function reorderPortfolio(items: { id: string; order: number }[]): 
     }))
   );
 }
+
+/** Memoised per request: the homepage asks for this from several sections. */
+export const getHomepagePortfolio = cache(_getHomepagePortfolio);
+
+/** Memoised per request: the homepage asks for this from several sections. */
+export const getPublishedPortfolio = cache(_getPublishedPortfolio);

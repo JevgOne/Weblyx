@@ -1,3 +1,4 @@
+import { cache } from 'react';
 // Turso Reviews Data Access Layer
 import { turso, dateToUnix, unixToDate } from '../turso';
 import type { Review } from '@/types/review';
@@ -66,7 +67,7 @@ export async function getReviewById(id: string): Promise<Review | null> {
   return rowToReview(result.rows[0] as unknown as ReviewRow);
 }
 
-export async function getPublishedReviews(locale?: 'cs' | 'de'): Promise<Review[]> {
+async function _getPublishedReviews(locale?: 'cs' | 'de'): Promise<Review[]> {
   let sql = 'SELECT r.*, p.title as portfolio_title FROM reviews r LEFT JOIN portfolio p ON r.portfolio_id = p.id WHERE r.published = 1';
   const args: any[] = [];
 
@@ -243,3 +244,6 @@ export async function reorderReviews(items: { id: string; order: number }[]): Pr
     }))
   );
 }
+
+/** Memoised per request: the homepage asks for this from several sections. */
+export const getPublishedReviews = cache(_getPublishedReviews);

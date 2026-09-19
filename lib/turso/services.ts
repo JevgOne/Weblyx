@@ -1,3 +1,4 @@
+import { cache } from 'react';
 // Turso Services Data Access Layer
 import { turso, dateToUnix, unixToDate } from '../turso';
 import { nanoid } from 'nanoid';
@@ -75,7 +76,7 @@ export async function getServiceById(id: string): Promise<Service | null> {
   return rowToService(result.rows[0] as unknown as ServiceRow);
 }
 
-export async function getActiveServices(locale?: string): Promise<Service[]> {
+async function _getActiveServices(locale?: string): Promise<Service[]> {
   const result = await turso.execute(
     'SELECT * FROM services WHERE active = 1 ORDER BY "order" ASC'
   );
@@ -212,3 +213,6 @@ export async function reorderServices(items: { id: string; order: number }[]): P
     });
   }
 }
+
+/** Memoised per request: the homepage asks for this from several sections. */
+export const getActiveServices = cache(_getActiveServices);
