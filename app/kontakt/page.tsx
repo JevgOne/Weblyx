@@ -146,7 +146,7 @@ export default async function ContactPage() {
                 <div>
                   <h2 className="font-semibold mb-1">{isDE ? 'Adresse' : 'Adresa'}</h2>
                   <p className="text-muted-foreground">
-                    Revoluční 8,<br />{isDE ? 'Prag 1, 110 00' : 'Praha 1, 110 00'}
+                    Školská 660/3,<br />{isDE ? 'Prag 1, 110 00' : 'Praha 1, 110 00'}
                   </p>
                 </div>
               </div>
@@ -175,7 +175,7 @@ export default async function ContactPage() {
                 {isDE ? 'So finden Sie uns' : 'Kde nás najdete'}
               </h2>
               <p className="text-muted-foreground">
-                Revoluční 8, {isDE ? 'Prag 1' : 'Praha 1'}, 110 00
+                Školská 660/3, {isDE ? 'Prag 1' : 'Praha 1'}, 110 00
               </p>
             </div>
 
@@ -188,14 +188,14 @@ export default async function ContactPage() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title={`${brandName} - Revoluční 8, ${isDE ? 'Prag 1' : 'Praha 1'}`}
+                title={`${brandName} - Školská 660/3, ${isDE ? 'Prag 1' : 'Praha 1'}`}
                 className="w-full h-[300px] md:h-[400px]"
               />
             </div>
 
             <div className="flex justify-center mt-6">
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Revoluční+8,+Praha+1,+110+00,+Czech+Republic"
+                href="https://www.google.com/maps/dir/?api=1&destination=Školská+660/3,+Praha+1,+110+00,+Czech+Republic"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-md"

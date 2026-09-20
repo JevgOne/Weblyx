@@ -209,11 +209,11 @@
     "email": "Email",
     "phone": "Telefon",
     "address": "Adresa",
-    "location": "Revoluční 8, Praha 1, 110 00",
+    "location": "Školská 660/3, Praha 1, 110 00",
     "hours": "Otevírací doba",
     "weekdays": "Po - Pá: 8:00 - 18:00",
     "weekend": "So - Ne: po domluvě",
-    "companyInfo": "Provozovatel: Altro Servis Group s.r.o. | IČO: 23673389 | Revoluční 8, Praha 1, 110 00",
+    "companyInfo": "Provozovatel: Altro Servis Group s.r.o. | IČO: 23673389 | Školská 660/3, Praha 1, 110 00",
     "mapsTooltip": "Najděte nás na Google Maps",
     "tagline": "Vytvořeno s ❤️ a ☕️ v Česku",
     "webDevelopment": "Webové stránky",
@@ -423,13 +423,13 @@
     },
     "contact": {
       "title": "Kontakt",
-      "address": "Revoluční 8, Praha 1, 110 00",
+      "address": "Školská 660/3, Praha 1, 110 00",
       "hours": "Otevírací doba",
       "weekdays": "Po - Pá: 8:00 - 18:00",
       "weekend": "So - Ne: po domluvě",
       "mapTitle": "Kde nás najdete",
       "getDirections": "Navigovat",
-      "mapAddress": "Revoluční 8, Praha 1, 110 00"
+      "mapAddress": "Školská 660/3, Praha 1, 110 00"
     },
     "contactWow": {
       "title": "Napište nám",
@@ -487,7 +487,7 @@
         "email": "Email",
         "phone": "Telefon",
         "address": "Adresa",
-        "addressValue": "Revoluční 8, Praha 1, 110 00",
+        "addressValue": "Školská 660/3, Praha 1, 110 00",
         "hours": "Otevírací doba",
         "weekdays": "Po - Pá: 8:00 - 18:00",
         "weekend": "So - Ne: po domluvě"

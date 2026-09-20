@@ -110,7 +110,7 @@ const FAQS = [
   {
     question: "Jste z Brna, nebo pracujete vzdáleně?",
     answer:
-      "Sídlíme v Praze na Revoluční 8, ale s brněnskými klienty spolupracujeme běžně online. Komunikujeme přes video hovory, sdílené nástroje a jsme k dispozici na telefonu. Na osobní schůzku do Brna rádi dojedeme. Pracujeme s klienty z celé ČR.",
+      "Sídlíme v Praze na Školské 660/3, ale s brněnskými klienty spolupracujeme běžně online. Komunikujeme přes video hovory, sdílené nástroje a jsme k dispozici na telefonu. Na osobní schůzku do Brna rádi dojedeme. Pracujeme s klienty z celé ČR.",
   },
   {
     question: "Proč Next.js a ne WordPress?",
@@ -142,7 +142,7 @@ export default async function TvorbaWebuBrnoPage() {
       "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js weby od 7 990 Kč.",
     addressLocality: "Praha",
     addressCountry: "CZ",
-    streetAddress: "Revoluční 8, Praha 1",
+    streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
     priceRange: "7990 Kč - 29900 Kč",
     locale: "cs",
@@ -285,7 +285,7 @@ export default async function TvorbaWebuBrnoPage() {
             <div className="text-center mt-8">
               <p className="text-muted-foreground">
                 <MapPin className="h-4 w-4 inline mr-1" />
-                Sídlíme na adrese Revoluční 8, Praha 1 —{" "}
+                Sídlíme na adrese Školská 660/3, Praha 1 —{" "}
                 <strong>pracujeme s klienty z celé ČR</strong>. Zjistěte více{" "}
                 <Link href="/o-nas" className="text-primary hover:underline">
                   o naší agentuře a týmu

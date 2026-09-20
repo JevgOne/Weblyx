@@ -263,3 +263,29 @@ describe('the GEO bundle does not undercut Premium SEO', () => {
     expect([7990, 14900, 29900]).not.toContain(bundle());
   });
 });
+
+/**
+ * The registered office in the commercial register (ARES, ICO 23673389) is
+ * Školská 660/3. The site quoted Revoluční 8 everywhere — so an AI engine or a
+ * customer checking the register found a different address than the one on the
+ * website, for a company that sells "entity building" as a service.
+ */
+describe('the address matches the commercial register', () => {
+  it('no page still quotes the old address', () => {
+    const hits: string[] = [];
+    for (const path of FILES) {
+      const rel = relative(ROOT, path);
+      readFileSync(path, 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          if (/Revoluční/.test(line)) hits.push(`${rel}:${i + 1}`);
+        });
+    }
+    expect(hits, `stará adresa zůstala:\n${hits.join('\n')}`).toEqual([]);
+  });
+
+  it('schema.org carries the registered office', () => {
+    const src = readFileSync(join(ROOT, 'lib/schema-org.ts'), 'utf8');
+    expect(src).toContain('Školská 660/3');
+  });
+});

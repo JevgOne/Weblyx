@@ -143,7 +143,7 @@ export default async function TvorbaWebuOstravaPage() {
       "Profesionální tvorba webových stránek pro firmy v Ostravě. Moderní Next.js weby od 7 990 Kč.",
     addressLocality: "Praha",
     addressCountry: "CZ",
-    streetAddress: "Revoluční 8, Praha 1",
+    streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
     priceRange: "7990 Kč - 29900 Kč",
     locale: "cs",
@@ -291,7 +291,7 @@ export default async function TvorbaWebuOstravaPage() {
             <div className="text-center mt-8">
               <p className="text-muted-foreground">
                 <MapPin className="h-4 w-4 inline mr-1" />
-                Sídlíme na adrese Revoluční 8, Praha 1 —{" "}
+                Sídlíme na adrese Školská 660/3, Praha 1 —{" "}
                 <strong>pracujeme s klienty z celé ČR</strong>. Poznejte{" "}
                 <Link href="/o-nas" className="text-primary hover:underline">
                   náš tým a příběh agentury Weblyx

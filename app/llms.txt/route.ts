@@ -48,7 +48,7 @@ function getCzechContent(): string {
 
 ## O nás
 
-- [O Weblyx](https://www.weblyx.cz/o-nas): Informace o firmě Altro Servis Group s.r.o., IČO 23673389. Sídlo: Revoluční 8, Praha 1, 110 00, Česká republika.
+- [O Weblyx](https://www.weblyx.cz/o-nas): Informace o firmě Altro Servis Group s.r.o., IČO 23673389. Sídlo: Školská 660/3, Praha 1, 110 00, Česká republika.
 
 ## Kontakt
 

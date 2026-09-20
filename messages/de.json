@@ -211,11 +211,11 @@
     "email": "E-Mail",
     "phone": "Telefon",
     "address": "Anschrift",
-    "location": "Revoluční 8, Prag 1",
+    "location": "Školská 660/3, Prag 1",
     "hours": "Erreichbarkeit",
     "weekdays": "Mo - Fr: 8:00 - 18:00 Uhr",
     "weekend": "Sa - So: nach Vereinbarung",
-    "companyInfo": "Betreiber: Altro Servis Group s.r.o. | Steuernummer: 23673389 | Revoluční 8, Prag 1, 110 00",
+    "companyInfo": "Betreiber: Altro Servis Group s.r.o. | Steuernummer: 23673389 | Školská 660/3, Prag 1, 110 00",
     "mapsTooltip": "Finden Sie uns auf Google Maps",
     "tagline": "Mit Leidenschaft entwickelt in Prag, EU",
     "webDevelopment": "Website erstellen lassen",
@@ -431,7 +431,7 @@
       "weekend": "Sa - So: nach Vereinbarung",
       "mapTitle": "So finden Sie uns",
       "getDirections": "Route planen",
-      "mapAddress": "Revoluční 8, Prag 1, 110 00"
+      "mapAddress": "Školská 660/3, Prag 1, 110 00"
     },
     "contactWow": {
       "title": "Schreib uns",

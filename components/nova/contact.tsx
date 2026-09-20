@@ -4,7 +4,7 @@ import { useState } from "react";
 import { HoneypotInput } from "@/components/security/HoneypotInput";
 
 const DETAILS = [
-  { label: "Adresa", value: "Revoluční 8, Praha 1" },
+  { label: "Adresa", value: "Školská 660/3, Praha 1" },
   { label: "Otevírací doba", value: "Po–Pá 8:00–18:00" },
   { label: "Odpověď", value: "do 24 hodin" },
 ];

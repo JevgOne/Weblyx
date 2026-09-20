@@ -219,7 +219,7 @@ function buildEmailHtml(result: AuditResult): string {
       <div style="text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid #f1f5f9;">
         <p style="color:#94a3b8;font-size:12px;margin:0;">
           Weblyx | Tvorba webových stránek<br>
-          Revoluční 8, Praha 1 | <a href="https://www.weblyx.cz" style="color:#14b8a6;">weblyx.cz</a>
+          Školská 660/3, Praha 1 | <a href="https://www.weblyx.cz" style="color:#14b8a6;">weblyx.cz</a>
         </p>
       </div>
     </div>

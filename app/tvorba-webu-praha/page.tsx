@@ -142,7 +142,7 @@ export default async function TvorbaWebuPrahaPage() {
       "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby od 7 990 Kč s garancí PageSpeed 90+.",
     addressLocality: "Praha",
     addressCountry: "CZ",
-    streetAddress: "Revoluční 8, Praha 1",
+    streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
     priceRange: "7990 Kč - 29900 Kč",
     locale: "cs",
@@ -191,7 +191,7 @@ export default async function TvorbaWebuPrahaPage() {
           <div className="container mx-auto max-w-5xl text-center space-y-6">
             <Badge variant="secondary" className="mb-2">
               <MapPin className="h-3 w-3 mr-1" />
-              Praha 1, Revoluční 8
+              Praha 1, Školská 660/3
             </Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
               Tvorba webových stránek{" "}
@@ -284,7 +284,7 @@ export default async function TvorbaWebuPrahaPage() {
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Na rozdíl od vzdálených agentur sídlíme přímo na{" "}
-                    <strong>Revoluční 8, Praha 1</strong>. Rádi se s vámi
+                    <strong>Školská 660/3, Praha 1</strong>. Rádi se s vámi
                     sejdeme osobně, probereme vaše potřeby a navrhneme řešení
                     přesně pro váš byznys. Dávejte si pozor na{" "}
                     <Link href="/blog/predrazene-sablony-webovych-agentur-jak-je-poznat" className="text-primary hover:underline">
@@ -507,7 +507,7 @@ export default async function TvorbaWebuPrahaPage() {
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Vyplňte krátký dotazník a do 24 hodin vám pošleme{" "}
                   <strong>cenovou nabídku na míru</strong>. Nebo se zastavte
-                  osobně — sídlíme na Revoluční 8, Praha 1.
+                  osobně — sídlíme na Školská 660/3, Praha 1.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <LeadButton href="/poptavka" size="lg" showArrow>

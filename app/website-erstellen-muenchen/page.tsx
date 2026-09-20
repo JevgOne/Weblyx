@@ -145,7 +145,7 @@ export default async function WebsiteErstellenMuenchenPage() {
       "Professionelle Websites für Münchner Unternehmen. Moderne Next.js Entwicklung ab 320 €.",
     addressLocality: "Prag",
     addressCountry: "DE",
-    streetAddress: "Revoluční 8, Prag 1",
+    streetAddress: "Školská 660/3, Prag 1",
     postalCode: "110 00",
     priceRange: "320€ - 1299€",
     locale: "de",
