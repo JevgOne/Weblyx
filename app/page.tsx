@@ -24,7 +24,7 @@ import {
   generateOffersSchema,
   generateLocalBusinessSchema,
 } from "@/lib/schema-org";
-import { generateServiceSchema, generateSpecialAnnouncementSchema, generateReviewsSchema } from "@/lib/schema-generators";
+import { generateServiceSchema } from "@/lib/schema-generators";
 import {
   getAllFAQItems,
   getAllPricingTiers,
@@ -84,22 +84,18 @@ export default async function HomePage() {
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
-  const reviewCount = reviews.length;
-  const avgRating = reviewCount > 0
-    ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10) / 10
-    : null;
-
+  // No aggregateRating and no Review blocks here.
+  //
+  // Google has not shown stars for self-serving reviews — a business rating
+  // itself on its own site — since 2019, so this earned nothing. It did carry
+  // risk: the markup declared five reviews while three were visible on the
+  // page, which is exactly the mismatch the spam policy names. The real
+  // reviews are on the Google Business Profile, which `sameAs` now points at
+  // by place id, and the review markup lives on /recenze where the text of
+  // every review is actually on the page.
   const localBusinessSchema = generateLocalBusinessSchema({
     priceRange: "7990 Kč - 29900 Kč",
     openingHours: ["Mo-Fr 08:00-18:00"],
-    ...(avgRating && reviewCount >= 1 ? {
-      aggregateRating: {
-        ratingValue: avgRating,
-        reviewCount,
-        bestRating: 5,
-        worstRating: 1,
-      },
-    } : {}),
   });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;
@@ -115,24 +111,6 @@ export default async function HomePage() {
     },
   });
 
-  const reviewSchemas = generateReviewsSchema(
-    reviews.map(r => ({
-      authorName: r.authorName,
-      authorImage: r.authorImage,
-      rating: r.rating,
-      text: r.text,
-      date: r.date,
-      locale: r.locale,
-    }))
-  );
-
-  const specialAnnouncementSchema = generateSpecialAnnouncementSchema({
-    name: "AKCE: Profesionální web od 7 990 Kč",
-    text: "Tvorba webových stránek od 7 990 Kč. Moderní web s garantovaným načítáním pod 2 sekundy a SEO optimalizací v ceně. Česká agentura.",
-    datePosted: "2026-01-01",
-    expires: "2026-12-31",
-    spatialCoverage: "Czech Republic",
-  });
 
   return (
     <>
@@ -147,11 +125,6 @@ export default async function HomePage() {
         <JsonLd key={index} data={offer} />
       ))}
       <JsonLd data={serviceSchema} />
-      <JsonLd data={specialAnnouncementSchema} />
-      {reviewSchemas.map((schema, index) => (
-        <JsonLd key={`review-${index}`} data={schema} />
-      ))}
-
       {isCzech ? (
         /* weblyx.cz — the redesign. It ships its own header, footer and font;
            SiteChrome keeps the shared ones off this route. */

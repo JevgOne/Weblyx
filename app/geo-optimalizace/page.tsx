@@ -25,6 +25,7 @@ import {
   Activity,
 } from "lucide-react";
 import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
+import { generatePricedServiceSchema } from "@/lib/schema-generators";
 
 export const revalidate = 3600;
 
@@ -121,6 +122,18 @@ const FAQS = [
 ];
 
 export default function GeoOptimalizacePage() {
+  const geoServiceSchema = generatePricedServiceSchema({
+    serviceName: "GEO optimalizace pro AI vyhledávače",
+    description: "Optimalizace webu pro citace v ChatGPT, Perplexity, Google AI Overviews a dalších AI vyhledávačích. Schema.org audit, strukturovaná data, AI-ready obsah.",
+    serviceType: "Generative Engine Optimization",
+    url: "https://www.weblyx.cz/geo-optimalizace",
+    packages: [
+      { name: "GEO audit", description: "Jednorázová analýza připravenosti webu na AI vyhledávání.", price: 3000 },
+      { name: "Měsíční GEO", description: "Průběžná optimalizace obsahu a strukturovaných dat pro AI vyhledávače.", price: 5000, billing: "MONTH" },
+      { name: "Premium GEO + SEO", description: "GEO i kompletní SEO optimalizace s dedikovaným specialistou.", price: 15000, billing: "MONTH" },
+    ],
+  });
+
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Domů", url: "https://www.weblyx.cz" },
     { name: "Služby", url: "https://www.weblyx.cz/sluzby" },
@@ -146,6 +159,7 @@ export default function GeoOptimalizacePage() {
 
   return (
     <>
+      <JsonLd data={geoServiceSchema} />
       <JsonLd data={webpageSchema} />
       <JsonLd data={faqSchema} />
 

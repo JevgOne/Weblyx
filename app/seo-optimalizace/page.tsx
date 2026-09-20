@@ -22,6 +22,7 @@ import {
   Settings,
 } from "lucide-react";
 import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
+import { generatePricedServiceSchema } from "@/lib/schema-generators";
 
 export const revalidate = 3600;
 
@@ -119,6 +120,18 @@ const FAQS = [
 ];
 
 export default function SeoOptimalizacePage() {
+  const seoServiceSchema = generatePricedServiceSchema({
+    serviceName: "SEO optimalizace",
+    description: "Keyword research, technické SEO, on-page optimalizace a linkbuilding pro vyšší pozice ve vyhledávačích.",
+    serviceType: "Search Engine Optimization",
+    url: "https://www.weblyx.cz/seo-optimalizace",
+    packages: [
+      { name: "SEO audit", description: "Jednorázová analýza technického stavu a obsahu webu.", price: 3000 },
+      { name: "Měsíční SEO", description: "Průběžná on-page optimalizace, obsah a sledování pozic.", price: 5000, billing: "MONTH" },
+      { name: "Premium SEO", description: "SEO s linkbuildingem, content marketingem a dedikovaným specialistou.", price: 12000, billing: "MONTH" },
+    ],
+  });
+
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Domů", url: "https://www.weblyx.cz" },
     { name: "Služby", url: "https://www.weblyx.cz/sluzby" },
@@ -144,6 +157,7 @@ export default function SeoOptimalizacePage() {
 
   return (
     <>
+      <JsonLd data={seoServiceSchema} />
       <JsonLd data={webpageSchema} />
       <JsonLd data={faqSchema} />
 

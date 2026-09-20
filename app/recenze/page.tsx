@@ -3,6 +3,8 @@ import { Star, ExternalLink, Quote } from "lucide-react";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getRequestLocale } from "@/lib/brand-server";
 import { safeRead } from '@/lib/safe-read';
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateReviewsSchema } from "@/lib/schema-generators";
 
 export const revalidate = 3600; // ISR: 1 hour
 
@@ -65,8 +67,26 @@ export default async function RecenzePage() {
         ) / 10
       : 5;
 
+  // The review markup belongs here, not on the homepage: every review's text,
+  // author and rating is on this page, which is the rule the spam policy
+  // enforces. It carries no aggregateRating — a business rating itself earns
+  // no stars from Google and the real rating lives on the Business Profile.
+  const reviewSchemas = generateReviewsSchema(
+    reviews.map((r) => ({
+      authorName: r.authorName,
+      authorImage: r.authorImage,
+      rating: r.rating,
+      text: r.text,
+      date: r.date,
+      locale: r.locale,
+    }))
+  );
+
   return (
     <main className="min-h-screen">
+      {reviewSchemas.map((schema, index) => (
+        <JsonLd key={`review-${index}`} data={schema} />
+      ))}
       {/* Hero */}
       <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-background to-muted/30">
         <div className="container mx-auto max-w-3xl text-center space-y-4">

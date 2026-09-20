@@ -31,11 +31,11 @@ function getCzechManifest() {
     api: { type: 'none' },
     logo_url: 'https://www.weblyx.cz/images/og/og-homepage.png',
     contact_email: 'info@weblyx.cz',
-    legal_info_url: 'https://www.weblyx.cz/ochrana-osobnich-udaju',
+    legal_info_url: 'https://www.weblyx.cz/ochrana-udaju',
     endpoints: {
       homepage: 'https://www.weblyx.cz',
       services: 'https://www.weblyx.cz/sluzby',
-      pricing: 'https://www.weblyx.cz/cenik',
+      pricing: 'https://www.weblyx.cz/sluzby',
       portfolio: 'https://www.weblyx.cz/portfolio',
       blog: 'https://www.weblyx.cz/blog',
       faq: 'https://www.weblyx.cz/faq',

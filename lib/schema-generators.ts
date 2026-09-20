@@ -529,3 +529,65 @@ const serviceSchema = generateServiceSchema({
 //
 // See QUICK_START_GUIDE.md for complete implementation examples.
 */
+
+export interface PricedPackage {
+  name: string;
+  description: string;
+  price: number;
+  /** Omit for a one-off price; 'MONTH' for a retainer. */
+  billing?: 'MONTH' | 'YEAR';
+}
+
+/**
+ * A Service with its packages priced in an OfferCatalog.
+ *
+ * Written for /geo-optimalizace and /seo-optimalizace, which list three priced
+ * packages in their copy and carried no Service or Offer markup at all — on a
+ * site whose own bullet points sell "implementace JSON-LD schémat" as a
+ * service. An AI engine reading those pages had the prices only as prose.
+ */
+export function generatePricedServiceSchema(data: {
+  serviceName: string;
+  description: string;
+  serviceType: string;
+  url: string;
+  packages: PricedPackage[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: data.serviceName,
+    description: data.description,
+    serviceType: data.serviceType,
+    url: data.url,
+    provider: {
+      '@type': 'Organization',
+      name: 'Weblyx',
+      url: 'https://www.weblyx.cz',
+    },
+    areaServed: { '@type': 'Country', name: 'Česká republika' },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: data.serviceName,
+      itemListElement: data.packages.map((p) => ({
+        '@type': 'Offer',
+        name: p.name,
+        description: p.description,
+        priceCurrency: 'CZK',
+        ...(p.billing
+          ? {
+              priceSpecification: {
+                '@type': 'UnitPriceSpecification',
+                price: p.price,
+                priceCurrency: 'CZK',
+                billingDuration: 1,
+                billingIncrement: 1,
+                unitCode: p.billing === 'MONTH' ? 'MON' : 'ANN',
+              },
+            }
+          : { price: p.price }),
+        itemOffered: { '@type': 'Service', name: p.name, description: p.description },
+      })),
+    },
+  };
+}

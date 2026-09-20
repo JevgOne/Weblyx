@@ -21,13 +21,33 @@ export default function robots(): MetadataRoute.Robots {
           '/poptavka/dekujeme', // Block thank you page (no indexing needed)
         ],
       },
-      // ALLOW AI crawlers to access public content for AI search visibility
-      // Research shows: ChatGPT = 87.4% of AI referrals, 25.11% of Google searches have AI Overview
+      // AI crawlers, named explicitly.
+      //
+      // The previous list named `anthropic-ai` and `Claude-Web`, both retired —
+      // Anthropic crawls as ClaudeBot and Claude-User now — and was missing
+      // OAI-SearchBot entirely, which is how ChatGPT Search collects citations.
+      // The paths it allowed included /cenik and /tvorba-eshopu, neither of
+      // which is a page: both redirect.
       {
-        userAgent: ['GPTBot', 'ChatGPT-User', 'CCBot', 'PerplexityBot', 'anthropic-ai', 'Claude-Web'],
-        allow: isGerman
-          ? ['/blog/*', '/leistungen/*', '/portfolio/*', '/uber-uns*', '/preise*', '/kontakt*', '/']
-          : ['/blog/*', '/sluzby/*', '/portfolio/*', '/o-nas*', '/cenik*', '/kontakt*', '/seo-optimalizace*', '/geo-optimalizace*', '/redesign-webu*', '/tvorba-eshopu*', '/recenze*', '/'],
+        userAgent: [
+          'GPTBot',
+          'OAI-SearchBot',
+          'ChatGPT-User',
+          'ClaudeBot',
+          'Claude-User',
+          'Claude-SearchBot',
+          'PerplexityBot',
+          'Perplexity-User',
+          'Google-Extended',
+          'Applebot-Extended',
+          'CCBot',
+          'Amazonbot',
+          'DuckAssistBot',
+          'Meta-ExternalAgent',
+          'MistralAI-User',
+          'cohere-ai',
+        ],
+        allow: '/',
         disallow: ['/admin/*', '/api/*', '/t/*', '/poptavka/dekujeme'],
       },
     ],

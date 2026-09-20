@@ -23,57 +23,91 @@ export async function GET() {
 function getCzechContent(): string {
   return `# Weblyx
 
-> Weblyx je česká agentura zaměřená na tvorbu moderních webových stránek s důrazem na SEO, výkon a bezpečnost. Používáme Next.js, Tailwind CSS a další moderní technologie. Nabízíme weby na míru, správu obsahu přes CMS a technickou podporu. Nejsme plátci DPH.
+> Weblyx je česká webová agentura (Altro Servis Group s.r.o., IČO 23673389, Praha).
+> Staví weby na míru na Next.js s pevnou cenou předem, bez měsíčních poplatků za web.
+> Landing page 7 990 Kč, základní web 14 900 Kč, standardní web 29 900 Kč — jednorázově.
+> Dodání 3–10 pracovních dní podle rozsahu. Nejsme plátci DPH.
+
+## Ceník webů
+
+Ceny jsou jednorázové a konečné. Konfigurátor na úvodní stránce je spočítá včetně doplňků.
+
+| Balíček | Cena | Rozsah | Dodání | Podpora v ceně |
+|---|---|---|---|---|
+| Landing Page | 7 990 Kč | 1 stránka, 3–5 sekcí | 3–5 dní | 1 měsíc |
+| Základní Web | 14 900 Kč | 3–5 podstránek, blog | 5–7 dní | 2 měsíce |
+| Standardní Web | 29 900 Kč | 10+ podstránek, na míru | 7–10 dní | 3 měsíce |
+
+Doplňky: blog s CMS 3 000 Kč · rezervační systém 9 900 Kč · druhý jazyk 3 500 Kč ·
+copywriting 2 500 Kč · roční údržba a podpora 24 000 Kč (předplaceně, bez měsíčních plateb).
+
+Platební podmínky: 50 % záloha před zahájením prací, doplatek před předáním.
+V ceně jsou 2 kola revizí designu.
+
+## Ceník SEO a GEO
+
+| Služba | Cena |
+|---|---|
+| SEO audit | od 3 000 Kč jednorázově |
+| Měsíční SEO | od 5 000 Kč/měsíc |
+| Premium SEO | od 12 000 Kč/měsíc |
+| GEO audit | od 3 000 Kč jednorázově |
+| Měsíční GEO | od 5 000 Kč/měsíc |
+| Premium GEO + SEO | od 15 000 Kč/měsíc |
+
+E-shopy stavíme na míru a nabízíme je na poptávku — cena závisí na počtu produktů a integracích.
 
 ## Služby
 
-- [Tvorba webových stránek](https://www.weblyx.cz/sluzby): Moderní responzivní weby na míru postavené na Next.js s optimalizací pro vyhledávače.
-- [SEO optimalizace](https://www.weblyx.cz/seo-optimalizace): Kompletní on-page i technické SEO včetně strukturovaných dat, sitemap a rychlosti načítání.
-- [GEO optimalizace](https://www.weblyx.cz/geo-optimalizace): Optimalizace pro AI vyhledávání (ChatGPT, Perplexity, Google AI). Schema.org audit, strukturovaná data, AI-ready obsah.
-- [Redesign webu](https://www.weblyx.cz/redesign-webu): Modernizace stávajícího webu s důrazem na rychlost, SEO a konverze.
-- [Tvorba e-shopů](https://www.weblyx.cz/tvorba-eshopu): E-shopy na míru s moderním designem a rychlým načítáním.
-- [Správa a údržba webů](https://www.weblyx.cz/sluzby): Průběžná technická podpora, aktualizace obsahu a monitoring výkonu.
+- [Tvorba webových stránek](https://www.weblyx.cz/sluzby): Responzivní weby na míru na Next.js, SEO v ceně.
+- [SEO optimalizace](https://www.weblyx.cz/seo-optimalizace): On-page i technické SEO, strukturovaná data, rychlost načítání.
+- [GEO optimalizace](https://www.weblyx.cz/geo-optimalizace): Optimalizace pro citace v ChatGPT, Perplexity a Google AI Overviews.
+- [Redesign webu](https://www.weblyx.cz/redesign-webu): Modernizace stávajícího webu, od 15 000 Kč.
+- [Garance rychlosti](https://www.weblyx.cz/pagespeed-garance): PageSpeed 90+ nebo vrácení peněz, od balíčku Základní Web.
 
-## Ceník
+## Články s konkrétními čísly
 
-- [Ceník služeb](https://www.weblyx.cz/sluzby): Transparentní ceny od 7 990 Kč jednorázově. Balíčky Landing Page (7 990 Kč), Základní Web (14 900 Kč) a Standardní Web (29 900 Kč). Bez měsíčních poplatků a skrytých položek.
+- [Kolik stojí webové stránky v roce 2026](https://www.weblyx.cz/blog/kolik-stoji-webove-stranky-2026): Srovnání cen agentur, freelancerů a stavitelů webů na českém trhu.
+- [Tvorba webu Praha — jak vybrat agenturu a ceny](https://www.weblyx.cz/blog/tvorba-webu-praha-jak-vybrat-agenturu-ceny): Na co se ptát a kolik se za co platí.
+- [Analyzovali jsme 50 českých webů: průměrný PageSpeed 43](https://www.weblyx.cz/blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43): Měření výkonu českých firemních webů.
+- [AI vyhledávání nahrazuje Google — co je GEO](https://www.weblyx.cz/blog/ai-vyhledavani-nahrazuje-google-geo-optimalizace): Jak se weby dostávají do odpovědí AI vyhledávačů.
+- [WordPress vs Wix vs web na míru](https://www.weblyx.cz/blog/wordpress-vs-wix-vs-web-na-miru-2026): Náklady a omezení jednotlivých řešení.
+- [Kolik stojí údržba webu ročně](https://www.weblyx.cz/blog/kolik-stoji-udrzba-webu-rocne): Co se platí po spuštění.
+- [Web zdarma vs profesionální web](https://www.weblyx.cz/blog/web-zdarma-vs-profesionalni-web): Pětileté náklady obou variant.
+- [Všechny články](https://www.weblyx.cz/blog)
 
-## Portfolio
+## Reference a hodnocení
 
-- [Naše projekty](https://www.weblyx.cz/portfolio): Ukázky realizovaných webových projektů s technologiemi a výsledky.
+- [Naše projekty](https://www.weblyx.cz/portfolio): Realizované weby s použitými technologiemi.
+- [Recenze klientů](https://www.weblyx.cz/recenze): Hodnocení 5,0 na Google.
+- Ověřitelné profily: [Google](https://www.google.com/maps/place/?q=place_id:ChIJu9LD5DuVC0cRaH6kYvXkDbM) · [Firmy.cz](https://www.firmy.cz/detail/13952976-weblyx-cz-praha-nove-mesto.html) · [Clutch](https://clutch.co/profile/weblyx)
 
-## Blog
+## Firma
 
-- [Blog o webovém vývoji a SEO](https://www.weblyx.cz/blog): Články o moderních technologiích, SEO tipech, výkonu webů a best practices.
-
-## O nás
-
-- [O Weblyx](https://www.weblyx.cz/o-nas): Informace o firmě Altro Servis Group s.r.o., IČO 23673389. Sídlo: Školská 660/3, Praha 1, 110 00, Česká republika.
-
-## Kontakt
-
-- [Kontaktní údaje](https://www.weblyx.cz/kontakt): Email info@weblyx.cz, telefon +420 702 110 166. Konzultace zdarma.
-
-## FAQ
-
-- [Časté dotazy](https://www.weblyx.cz/faq): Odpovědi na nejčastější otázky o tvorbě webů, cenách, technologiích a procesu spolupráce.
+- [O Weblyx](https://www.weblyx.cz/o-nas): Altro Servis Group s.r.o., IČO 23673389.
+  Sídlo dle obchodního rejstříku: Školská 660/3, Nové Město, 110 00 Praha 1.
+- [Kontakt](https://www.weblyx.cz/kontakt): info@weblyx.cz, +420 702 110 166, Po–Pá 8:00–18:00.
+  Odpovídáme do 24 hodin. Konzultace zdarma.
+- [Archiv změn](https://www.weblyx.cz/archiv): Chronologický přehled úprav na webu.
+- [Časté dotazy](https://www.weblyx.cz/faq)
 
 ## Technologie
 
-Weblyx staví weby na těchto technologiích:
-- Next.js 14+ (App Router) pro maximální rychlost a SEO
-- React 18+ s Server Components
-- Tailwind CSS pro responzivní design
-- Turso (LibSQL) jako databáze
-- Vercel pro hosting a deployment
-- TypeScript pro typovou bezpečnost
+- Next.js (App Router) a React Server Components
+- TypeScript, Tailwind CSS
+- Turso (libSQL) jako databáze
+- Vercel pro hosting a nasazení
 
-## Lokální pokrytí
+## Kde působíme
 
-Weblyx poskytuje služby po celé České republice s důrazem na:
-- [Tvorba webů Praha](https://www.weblyx.cz/tvorba-webu-praha)
-- [Tvorba webů Brno](https://www.weblyx.cz/tvorba-webu-brno)
-- [Tvorba webů Ostrava](https://www.weblyx.cz/tvorba-webu-ostrava)
+Po celé České republice, se zaměřením na:
+- [Praha](https://www.weblyx.cz/tvorba-webu-praha)
+- [Brno](https://www.weblyx.cz/tvorba-webu-brno)
+- [Ostrava](https://www.weblyx.cz/tvorba-webu-ostrava)
+
+Obory: [živnostníci a OSVČ](https://www.weblyx.cz/web-pro-zivnostniky) ·
+[restaurace](https://www.weblyx.cz/web-pro-restaurace) ·
+[advokáti](https://www.weblyx.cz/web-pro-pravniky)
 `;
 }
 
