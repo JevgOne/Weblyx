@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/resend-client";
+import { recordAudit } from "@/lib/audits/server";
 
 // Google PageSpeed Insights API (free, no key required for basic use)
 const PSI_API = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed";
@@ -246,8 +247,36 @@ export async function POST(request: NextRequest) {
       normalizedUrl = `https://${normalizedUrl}`;
     }
 
-    // Run audit
-    const result = await runAudit(normalizedUrl);
+    const ipAddress =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
+
+    let result;
+    try {
+      result = await runAudit(normalizedUrl);
+    } catch (err: any) {
+      // Someone handing over their site and their address is the strongest
+      // signal this business gets. Keep it even when the analysis failed —
+      // the lead is real either way.
+      await recordAudit({
+        url: normalizedUrl,
+        email,
+        status: "failed",
+        error: err?.message ? String(err.message).slice(0, 300) : "unknown",
+        ipAddress,
+      });
+      throw err;
+    }
+
+    // Recorded before the e-mail: the report is a courtesy, the lead is the
+    // point, and this used to be thrown away entirely.
+    await recordAudit({
+      url: normalizedUrl,
+      email,
+      score: result.score,
+      metrics: result.metrics,
+      issueCount: result.issueCount,
+      ipAddress,
+    });
 
     // Send full report via email (fire-and-forget)
     sendEmail({

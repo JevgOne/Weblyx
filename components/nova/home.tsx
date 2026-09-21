@@ -1,6 +1,5 @@
 import { Manrope } from "next/font/google";
 
-import { NovaHeader } from "@/components/nova/header";
 import { NovaHero } from "@/components/nova/hero";
 import { NovaStatsBar } from "@/components/nova/stats-bar";
 import { NovaClientLogos } from "@/components/nova/client-logos";
@@ -14,7 +13,6 @@ import { NovaReviews } from "@/components/nova/reviews";
 import { NovaChangelog } from "@/components/nova/changelog";
 import { NovaFaq } from "@/components/nova/faq";
 import { NovaContact } from "@/components/nova/contact";
-import { NovaFooter } from "@/components/nova/footer";
 
 import { pickAnnouncement } from "@/lib/nova/announcements";
 import { DEFAULT_TIER_ID } from "@/lib/nova/pricing";
@@ -49,7 +47,6 @@ export function NovaHome({ pricing, now }: { pricing: PricingData; now: Date }) 
 
   return (
     <div className={`nova ${manrope.variable}`}>
-      <NovaHeader />
       <main>
         <NovaHero
           fromPrice={`od ${formatCzk(lowestPrice)} Kč`}
@@ -69,7 +66,6 @@ export function NovaHome({ pricing, now }: { pricing: PricingData; now: Date }) 
         <NovaChangelog />
         <NovaContact />
       </main>
-      <NovaFooter />
     </div>
   );
 }

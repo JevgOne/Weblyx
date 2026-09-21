@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { NovaHeader } from "@/components/nova/header";
-import { NovaFooter } from "@/components/nova/footer";
 import { ChangelogTimeline } from "@/components/nova/changelog";
 import { listChanges, PAGE_SIZE } from "@/lib/changelog/server";
 import { safeRead } from "@/lib/safe-read";
@@ -37,7 +35,6 @@ export default async function ArchivPage({
 
   return (
     <>
-      <NovaHeader anchorBase="/" />
       <main className="nova-container nova-section">
         <div className="mb-14 max-w-[720px]">
           <p className="nova-label">Archiv změn</p>
@@ -99,7 +96,6 @@ export default async function ArchivPage({
           ‹ Zpět na web
         </Link>
       </main>
-      <NovaFooter />
     </>
   );
 }

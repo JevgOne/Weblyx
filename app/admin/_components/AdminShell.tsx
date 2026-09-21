@@ -33,6 +33,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Přehled", href: "/admin/dashboard", permission: "dashboard", subtitle: "Souhrn aktivity vašeho studia" },
       { label: "Poptávky", href: "/admin/leads", permission: "leads", subtitle: "Příchozí poptávky z webu", badge: "newLeads" },
+      { label: "Audity z webu", href: "/admin/audity", permission: "leads", subtitle: "Kdo si nechal proklepnout svůj web" },
       { label: "Projekty", href: "/admin/projects", permission: "projects", subtitle: "Rozpracované a hotové weby" },
     ],
   },
@@ -63,7 +64,6 @@ const NAV: NavGroup[] = [
       { label: "AI asistent", href: "/admin/ai-assistant", subtitle: "Generování textů a návrhů" },
       { label: "Web leady", href: "/admin/web-leads", permission: "web_analyzer", subtitle: "Firmy se zastaralým webem" },
       { label: "Lead generation", href: "/admin/lead-generation", permission: "lead_generation", subtitle: "Vyhledávání nových kontaktů" },
-      { label: "Eroweb analýza", href: "/admin/eroweb-analyza", permission: "eroweb", subtitle: "Analýza konkurence" },
     ],
   },
   {

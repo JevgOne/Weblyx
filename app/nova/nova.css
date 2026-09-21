@@ -229,3 +229,59 @@
     display: none;
   }
 }
+
+/* --- The redesigned site is light ------------------------------------------
+   `.nova` now sits on <body> for the whole Czech site, not just the pages
+   built from components/nova. The older pages below it are made of shadcn
+   components that read --background, --card and --border, which the site-wide
+   theme flips to dark for anyone whose OS is in dark mode — the redesign has
+   no dark palette, so the two fight: a light header over a near-black page
+   with grey text nobody can read.
+
+   The Czech site opts out of the theme and restates the light values.
+   `color-scheme` keeps native controls light with it. */
+.nova,
+.dark .nova {
+  color-scheme: light;
+
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+
+  --primary: 172 78% 40%;
+  --primary-foreground: 0 0% 100%;
+  --primary-hover: 172 78% 32%;
+  --primary-light: 172 78% 50%;
+  --primary-dark: 172 78% 28%;
+
+  --secondary: 172 78% 40%;
+  --secondary-foreground: 0 0% 100%;
+
+  --accent: 172 78% 40%;
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 210 20% 98%;
+  --muted-foreground: 215 16% 47%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 215 20% 91%;
+  --input: 215 20% 91%;
+  --ring: 172 78% 40%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 15% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 15% 15%;
+
+  --surface: 210 20% 99%;
+  --surface-sunken: 213 24% 96%;
+
+  --ink: 222 47% 11%;
+  --ink-soft: 215 19% 35%;
+  --ink-faint: 215 16% 55%;
+
+  --hairline: 214 24% 89%;
+  --hairline-strong: 214 20% 82%;
+}

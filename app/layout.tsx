@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+import "./nova/nova.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { SiteChrome, CookieChrome } from "@/components/layout/site-chrome";
+import { CookieChrome } from "@/components/layout/site-chrome";
+import { NovaHeader } from "@/components/nova/header";
+import { NovaFooter } from "@/components/nova/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { OrderPauseModal } from "@/components/order-pause-modal";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
@@ -14,6 +17,14 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getSEOMetadata } from '@/lib/seo-metadata';
 import { getBrandConfig } from '@/lib/brand';
+
+const manrope = Manrope({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -63,6 +74,7 @@ export default async function RootLayout({
   // Brand and locale come from the build, not the request — see i18n/request.ts.
   const brand = getBrandConfig();
   const locale = brand.locale;
+  const isCzech = locale === "cs";
 
   // Imported directly rather than through `getMessages()`, which reads the
   // request locale header and would put this layout — and therefore every
@@ -84,19 +96,26 @@ export default async function RootLayout({
         {/* Analytics - placed in head for optimal tracking */}
         <GoogleAnalytics />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${manrope.variable} font-sans antialiased${isCzech ? " nova" : ""}`}>
         <NextIntlClientProvider locale={locale} timeZone="Europe/Prague" messages={messages}>
           <ThemeProvider>
             <PWAProvider>
-              <SiteChrome>
-                <Header />
-              </SiteChrome>
+              {/* The chrome is chosen here, on the server, because the locale
+                  is a build-time constant and the route is not: a client
+                  component deciding this from usePathname() renders the wrong
+                  answer into prerendered HTML, which is how the Czech homepage
+                  ended up with two headers and two footers. */}
+              {isCzech ? <NovaHeader /> : <Header />}
               {children}
-              <SiteChrome>
-                <Footer />
-                <OrderPauseModal />
-                <WhatsAppChat />
-              </SiteChrome>
+              {isCzech ? (
+                <NovaFooter />
+              ) : (
+                <>
+                  <Footer />
+                  <OrderPauseModal />
+                  <WhatsAppChat />
+                </>
+              )}
               <CookieChrome>
                 <CookieConsent />
               </CookieChrome>
