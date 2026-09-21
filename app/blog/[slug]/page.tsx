@@ -6,7 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getBlogPostBySlug, getPublishedBlogPostsByLanguage, getPostTranslations } from "@/lib/turso/blog";
-import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
+import { getDomainLocale, getBrandConfig } from "@/lib/brand";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
@@ -100,8 +100,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params;
-  const locale = await getRequestLocale();
-  const brand = await getRequestBrandConfig();
+  const locale = getDomainLocale();
+  const brand = getBrandConfig();
   const t = blogDetailContent[locale];
   const baseUrl = brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 
@@ -191,8 +191,8 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
 
-  const locale = await getRequestLocale();
-  const brand = await getRequestBrandConfig();
+  const locale = getDomainLocale();
+  const brand = getBrandConfig();
   const t = blogDetailContent[locale];
   const baseUrl = brand.domain === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
 

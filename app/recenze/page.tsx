@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Star, ExternalLink, Quote } from "lucide-react";
 import { getPublishedReviews } from "@/lib/turso/reviews";
-import { getRequestLocale } from "@/lib/brand-server";
+import { getDomainLocale } from "@/lib/brand";
 import { safeRead } from '@/lib/safe-read';
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateReviewsSchema } from "@/lib/schema-generators";
@@ -9,7 +9,7 @@ import { generateReviewsSchema } from "@/lib/schema-generators";
 export const revalidate = 3600; // ISR: 1 hour
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getRequestLocale();
+  const locale = getDomainLocale();
 
   if (locale === "de") {
     return {

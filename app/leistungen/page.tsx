@@ -27,8 +27,6 @@ import {
 import { getActiveServices, Service } from "@/lib/turso/services";
 import { safeRead } from '@/lib/safe-read';
 
-// Force dynamic rendering to avoid build timeout
-export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 // CZK to EUR conversion rate

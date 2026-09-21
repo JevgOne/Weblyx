@@ -33,8 +33,6 @@ import { getAllPricingTiers } from "@/lib/turso/cms";
 import type { PricingTier } from "@/types/cms";
 import { safeRead } from '@/lib/safe-read';
 
-// Force dynamic rendering to avoid build timeout
-export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {

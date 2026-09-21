@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { getRequestLocale, getRequestBrandConfig } from "@/lib/brand-server";
+import { getDomainLocale, getBrandConfig } from "@/lib/brand";
 
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getRequestLocale();
-  const brand = await getRequestBrandConfig();
+  const locale = getDomainLocale();
+  const brand = getBrandConfig();
 
   if (locale === "de") {
     return {

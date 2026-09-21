@@ -12,7 +12,6 @@ import { WhatsAppChat } from "@/components/whatsapp-chat";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
 import { getSEOMetadata } from '@/lib/seo-metadata';
 import { getBrandConfig } from '@/lib/brand';
 
@@ -61,12 +60,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Get messages for i18n
-  const messages = await getMessages();
-
-  // Detect locale and brand from domain
+  // Brand and locale come from the build, not the request — see i18n/request.ts.
   const brand = getBrandConfig();
   const locale = brand.locale;
+
+  // Imported directly rather than through `getMessages()`, which reads the
+  // request locale header and would put this layout — and therefore every
+  // route under it — back into dynamic rendering.
+  const messages = (await import(`../messages/${locale}.json`)).default;
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -84,7 +85,7 @@ export default async function RootLayout({
         <GoogleAnalytics />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} timeZone="Europe/Prague" messages={messages}>
           <ThemeProvider>
             <PWAProvider>
               <SiteChrome>
