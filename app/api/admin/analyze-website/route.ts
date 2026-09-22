@@ -3,6 +3,7 @@ import { analyzeWebsite } from '@/lib/web-analyzer';
 import { adminDbInstance } from '@/lib/firebase-admin';
 import { captureMultipleScreenshots } from '@/lib/screenshot';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
+import { recordAdminAnalysis } from '@/lib/audits/server';
 
 // Email template types
 type EmailTemplate = 'general' | 'slow-web' | 'bad-seo' | 'mobile-issues' | 'outdated-design' | 'follow-up';
@@ -477,26 +478,30 @@ export async function POST(request: NextRequest) {
     const proposalEmail = generateProposalEmail(analysis);
     const proposalSubject = generateEmailSubject(analysis, primaryIssue);
 
-    // Save to database
-    let analysisId: string | undefined;
+    // Keep it. This used to be a TODO and a closed tab threw away a crawl that
+    // takes half a minute — which is exactly what someone needs in front of
+    // them when they pick up the phone.
+    const analysisId =
+      (await recordAdminAnalysis({
+        url: analysis.url,
+        email: contactEmail || null,
+        companyName: businessName || null,
+        contactName: contactName || null,
+        phone: null,
+        score: analysis.categoryScores
+          ? Math.round(
+              Object.values(analysis.categoryScores as Record<string, number>).reduce(
+                (a, b) => a + b,
+                0
+              ) / Object.keys(analysis.categoryScores).length
+            )
+          : null,
+        issueCount:
+          typeof analysis.issues?.length === 'number' ? analysis.issues.length : null,
+        analysis,
+        outreach: proposalSubject ? `${proposalSubject}\n\n${proposalEmail}` : proposalEmail,
+      })) ?? undefined;
 
-    // TODO: Migrate web_analyses to Turso if needed
-    // For now, web analysis results are not saved to database
-    // if (adminDbInstance) {
-    //   const dataToSave = sanitizeForFirestore({
-    //     ...analysis,
-    //     primaryIssue,
-    //     proposalEmail,
-    //     proposalSubject,
-    //     emailTemplates,
-    //     emailSubjects,
-    //     analyzedAt: new Date(),
-    //     createdAt: new Date(),
-    //     updatedAt: new Date(),
-    //   });
-    //   const result = await adminDbInstance.collection('web_analyses').add(dataToSave);
-    //   analysisId = result.id;
-    // }
 
     return NextResponse.json({
       success: true,

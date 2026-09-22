@@ -317,3 +317,13 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* The admin panel is not part of the public site.
+   The chrome lives in the root layout, above `children`, so an admin page
+   would otherwise sit under the public header and above the public footer.
+   Rather than decide this from a client-side hook — which is what put two
+   headers on the homepage once the pages were prerendered — the panel simply
+   declares itself and the chrome steps aside. */
+body:has(.wbx-admin) .site-chrome {
+  display: none;
+}

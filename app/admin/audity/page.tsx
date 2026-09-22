@@ -4,9 +4,30 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, Loader2, Phone } from "lucide-react";
-import type { AuditRecord } from "@/lib/audits/server";
+import type { AuditRecord, AuditSource, CallStatus } from "@/lib/audits/server";
 
 const PAGE_SIZE = 25;
+
+type Filter = AuditSource | "all";
+
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: "all", label: "Vše" },
+  { value: "web", label: "Z webu" },
+  { value: "admin", label: "Naše analýzy" },
+];
+
+/** Where the call stands. Clicking the pill moves it along. */
+const CALL_STATES: { value: CallStatus; label: string; fg: string; bg: string }[] = [
+  { value: "new", label: "Nevoláno", fg: "#0B7F76", bg: "rgba(11,127,118,.13)" },
+  { value: "called", label: "Voláno", fg: "#2563EB", bg: "rgba(37,99,235,.13)" },
+  { value: "interested", label: "Má zájem", fg: "#0F9268", bg: "rgba(15,146,104,.13)" },
+  { value: "rejected", label: "Nemá zájem", fg: "#6E7C80", bg: "rgba(110,124,128,.13)" },
+];
+
+const nextCallStatus = (s: CallStatus): CallStatus => {
+  const i = CALL_STATES.findIndex((x) => x.value === s);
+  return CALL_STATES[(i + 1) % CALL_STATES.length].value;
+};
 
 /** Lighthouse bands: red under 50, amber to 89, green above. */
 function scoreColor(score: number | null) {
@@ -48,12 +69,16 @@ export default function AdminAuditsPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [savingId, setSavingId] = useState<string | null>(null);
 
-  const load = useCallback(async (offset: number) => {
+  const load = useCallback(async (offset: number, source: Filter = "all") => {
     offset === 0 ? setLoading(true) : setLoadingMore(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/audits?limit=${PAGE_SIZE}&offset=${offset}`);
+      const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
+      if (source !== "all") params.set("source", source);
+      const res = await fetch(`/api/admin/audits?${params}`);
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Načtení auditů selhalo");
       setTotal(json.data.total);
@@ -67,8 +92,28 @@ export default function AdminAuditsPage() {
   }, []);
 
   useEffect(() => {
-    load(0);
-  }, [load]);
+    load(0, filter);
+  }, [load, filter]);
+
+  /** Optimistic: a pill that waits for a round trip reads as broken. */
+  async function cycleCall(a: AuditRecord) {
+    const next = nextCallStatus(a.callStatus);
+    setSavingId(a.id);
+    setAudits((cur) => cur.map((x) => (x.id === a.id ? { ...x, callStatus: next } : x)));
+    try {
+      const res = await fetch("/api/admin/audits", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: a.id, callStatus: next }),
+      });
+      if (!(await res.json()).success) throw new Error();
+    } catch {
+      setAudits((cur) => cur.map((x) => (x.id === a.id ? { ...x, callStatus: a.callStatus } : x)));
+      setError("Stav hovoru se nepodařilo uložit");
+    } finally {
+      setSavingId(null);
+    }
+  }
 
   return (
     <div className="wbx-card p-[26px]">
@@ -80,6 +125,21 @@ export default function AdminAuditsPage() {
           Kdo si na webu nechal proklepnout svůj web. Každý z nich vám dal adresu
           svého webu i e-mail — je to hotový podklad na zavolání.
         </p>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {FILTERS.map((f) => (
+          <button
+            key={f.value}
+            type="button"
+            onClick={() => setFilter(f.value)}
+            data-active={filter === f.value}
+            aria-pressed={filter === f.value}
+            className="wbx-filter"
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       {error && (
@@ -137,6 +197,9 @@ export default function AdminAuditsPage() {
                 </div>
 
                 <div className="min-w-[200px]">
+                  {a.companyName && (
+                    <p className="text-[14px] font-semibold">{a.companyName}</p>
+                  )}
                   <a
                     href={`mailto:${a.email}`}
                     className="text-[14px] font-semibold hover:underline"
@@ -149,16 +212,33 @@ export default function AdminAuditsPage() {
                   </p>
                 </div>
 
-                {a.leadId && (
-                  <Link
-                    href="/admin/leads"
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-bold"
-                    style={{ color: "var(--a-brand-soft)", borderColor: "var(--a-brand-soft)" }}
-                  >
-                    <Phone className="h-3.5 w-3.5" />
-                    Poptávka
-                  </Link>
-                )}
+                <div className="flex shrink-0 items-center gap-2">
+                  {(() => {
+                    const cs = CALL_STATES.find((x) => x.value === a.callStatus)!;
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => cycleCall(a)}
+                        disabled={savingId === a.id}
+                        title="Kliknutím posunete stav hovoru"
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold disabled:opacity-60"
+                        style={{ color: cs.fg, background: cs.bg }}
+                      >
+                        <Phone className="h-3.5 w-3.5" />
+                        {cs.label}
+                      </button>
+                    );
+                  })()}
+                  {a.leadId && (
+                    <Link
+                      href="/admin/leads"
+                      className="rounded-full border px-3 py-1 text-[12px] font-bold"
+                      style={{ color: "var(--a-brand-soft)", borderColor: "var(--a-brand-soft)" }}
+                    >
+                      Poptávka
+                    </Link>
+                  )}
+                </div>
               </li>
             );
           })}
@@ -169,7 +249,7 @@ export default function AdminAuditsPage() {
         <div className="pt-5 text-center">
           <button
             type="button"
-            onClick={() => load(audits.length)}
+            onClick={() => load(audits.length, filter)}
             disabled={loadingMore}
             className="wbx-filter inline-flex items-center gap-1.5"
           >

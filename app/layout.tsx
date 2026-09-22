@@ -105,17 +105,19 @@ export default async function RootLayout({
                   component deciding this from usePathname() renders the wrong
                   answer into prerendered HTML, which is how the Czech homepage
                   ended up with two headers and two footers. */}
-              {isCzech ? <NovaHeader /> : <Header />}
+              <div className="site-chrome">{isCzech ? <NovaHeader /> : <Header />}</div>
               {children}
-              {isCzech ? (
-                <NovaFooter />
-              ) : (
-                <>
-                  <Footer />
-                  <OrderPauseModal />
-                  <WhatsAppChat />
-                </>
-              )}
+              <div className="site-chrome">
+                {isCzech ? (
+                  <NovaFooter />
+                ) : (
+                  <>
+                    <Footer />
+                    <OrderPauseModal />
+                    <WhatsAppChat />
+                  </>
+                )}
+              </div>
               <CookieChrome>
                 <CookieConsent />
               </CookieChrome>
