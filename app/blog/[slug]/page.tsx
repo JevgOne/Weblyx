@@ -239,8 +239,14 @@ export default async function BlogPostPage({
       ? new Date(post.publishedAt).toISOString().split("T")[0]
       : new Date(post.createdAt).toISOString().split("T")[0];
 
-    // Process content (sanitize to prevent XSS from stored HTML)
-    let htmlContent = await marked.parse(post.content, { gfm: true, breaks: true });
+    // Process content (sanitize to prevent XSS from stored HTML).
+    //
+    // The leading `# Heading` is dropped first: the template already renders
+    // the post title as the page's h1, so a post whose markdown opens with one
+    // gave the page two — and on three of them the two headings did not even
+    // match, handing Google a pair of competing titles for the same article.
+    const body = post.content.replace(/^\s*#\s+[^\n]*\n+/, '');
+    let htmlContent = await marked.parse(body, { gfm: true, breaks: true });
     htmlContent = sanitizeHtml(htmlContent, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figure', 'figcaption', 'picture', 'source', 'video', 'details', 'summary']),
       allowedAttributes: {

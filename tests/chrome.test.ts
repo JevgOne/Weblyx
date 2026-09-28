@@ -59,3 +59,15 @@ describe('the chrome is chosen on the server', () => {
     expect(src).not.toContain('<NovaFooter');
   });
 });
+
+/**
+ * Three articles rendered two h1 elements: the template writes the post title,
+ * and the markdown body opened with its own `# Heading`. On those three the two
+ * did not match, so Google was handed competing titles for one article.
+ */
+describe('blog articles have one h1', () => {
+  it('the renderer strips a leading markdown heading', () => {
+    const src = readFileSync(join(ROOT, 'app/blog/[slug]/page.tsx'), 'utf8');
+    expect(src).toMatch(/post\.content\.replace\(\/\^\\s\*#/);
+  });
+});
