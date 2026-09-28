@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/resend-client";
 import { recordAudit } from "@/lib/audits/server";
+import { analyzeWebsite } from "@/lib/web-analyzer";
 
-// Google PageSpeed Insights API (free, no key required for basic use)
+/**
+ * PageSpeed Insights first, our own analyzer as the floor.
+ *
+ * The anonymous PSI quota is shared per IP and is routinely exhausted — a
+ * direct call returns 429 with no key at all, which meant the public audit
+ * answered "Nepodařilo se analyzovat web. Zkontrolujte URL." and blamed the
+ * visitor for our quota. Setting PAGESPEED_API_KEY (the PageSpeed Insights
+ * API, free, no billing) restores the real measurement; without it the
+ * in-house analyzer still produces a score, so the page is never dead.
+ */
 const PSI_API = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed";
+const PSI_KEY = process.env.PAGESPEED_API_KEY?.trim();
 
 interface AuditMetric {
   label: string;
@@ -50,11 +61,55 @@ function formatMs(ms: number): string {
   return `${Math.round(ms)} ms`;
 }
 
-async function runAudit(url: string): Promise<AuditResult> {
-  const apiUrl = `${PSI_API}?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&category=seo&category=best-practices`;
+/** Our own analysis, shaped like a PSI result so the caller cannot tell. */
+async function runLocalAudit(url: string): Promise<AuditResult> {
+  const a = await analyzeWebsite(url);
+  const cat = a.categoryScores;
 
-  const res = await fetch(apiUrl, { signal: AbortSignal.timeout(60000) });
+  const metrics: AuditMetric[] = cat
+    ? [
+        { label: "SEO", value: `${Math.round(cat.seo)}/100`, score: cat.seo / 100 },
+        { label: "Rychlost", value: `${Math.round(cat.performance)}/100`, score: cat.performance / 100 },
+        { label: "Bezpečnost", value: `${Math.round(cat.security)}/100`, score: cat.security / 100 },
+      ]
+    : [];
+
+  const issues: AuditIssue[] = a.issues
+    .filter((i) => i.category !== "info")
+    .slice(0, 10)
+    .map((i) => ({ title: i.title, description: i.recommendation || i.description }));
+
+  return {
+    url,
+    score: Math.round(a.overallScore),
+    metrics,
+    issueCount: a.issueCount.critical + a.issueCount.warning,
+    issues,
+    opportunities: [],
+  };
+}
+
+async function runAudit(url: string): Promise<AuditResult> {
+  const apiUrl =
+    `${PSI_API}?url=${encodeURIComponent(url)}` +
+    `&strategy=mobile&category=performance&category=seo&category=best-practices` +
+    (PSI_KEY ? `&key=${encodeURIComponent(PSI_KEY)}` : "");
+
+  let res: Response;
+  try {
+    res = await fetch(apiUrl, { signal: AbortSignal.timeout(60000) });
+  } catch (err) {
+    // Timed out or could not reach Google at all — same story as a 429.
+    console.warn("PageSpeed unreachable; using the in-house analyzer.", err);
+    return runLocalAudit(url);
+  }
   if (!res.ok) {
+    // 429 is our exhausted quota and 403 is a key without the API enabled.
+    // Neither is the visitor's problem, so fall back rather than fail.
+    if (res.status === 429 || res.status === 403 || res.status >= 500) {
+      console.warn(`PageSpeed unavailable (${res.status}); using the in-house analyzer.`);
+      return runLocalAudit(url);
+    }
     throw new Error(`PageSpeed API error: ${res.status}`);
   }
 
@@ -232,7 +287,7 @@ function buildEmailHtml(result: AuditResult): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, email } = body;
+    const { url, email, name } = body;
 
     if (!url || typeof url !== "string") {
       return NextResponse.json({ error: "URL je povinná" }, { status: 400 });
@@ -260,6 +315,7 @@ export async function POST(request: NextRequest) {
       await recordAudit({
         url: normalizedUrl,
         email,
+        name,
         status: "failed",
         error: err?.message ? String(err.message).slice(0, 300) : "unknown",
         ipAddress,
@@ -272,6 +328,7 @@ export async function POST(request: NextRequest) {
     await recordAudit({
       url: normalizedUrl,
       email,
+      name,
       score: result.score,
       metrics: result.metrics,
       issueCount: result.issueCount,

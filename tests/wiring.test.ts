@@ -225,3 +225,51 @@ describe('the homepage declares a canonical URL', () => {
     expect(page).toMatch(/languages:\s*getAlternateLanguages\("\/"\)/);
   });
 });
+
+/**
+ * The public audit runs the audit.
+ *
+ * The form posted to /api/contact — the generic enquiry endpoint — and told
+ * the visitor to wait 48 hours for an e-mail, while /api/audit already scored
+ * the site synchronously, mailed the report and recorded the lead. Nothing
+ * called it, so no visitor ever saw a number and the admin's audit list never
+ * received a single web lead.
+ */
+describe('the free audit is wired to the audit endpoint', () => {
+  const form = readFileSync(join(__dirname, '..', 'components/audit/AuditForm.tsx'), 'utf8');
+  const route = readFileSync(join(__dirname, '..', 'app/api/audit/route.ts'), 'utf8');
+
+  it('posts to /api/audit, not the contact endpoint', () => {
+    expect(form).toContain('fetch("/api/audit"');
+    expect(form).not.toContain('fetch("/api/contact"');
+  });
+
+  it('renders the score it gets back', () => {
+    expect(form).toMatch(/result\.score/);
+    expect(form).toMatch(/result\.metrics/);
+  });
+
+  it('falls back to the in-house analyzer when PageSpeed is unavailable', () => {
+    expect(route).toContain('runLocalAudit');
+    // 429 is the exhausted anonymous quota, 403 a key without the API enabled.
+    expect(route).toMatch(/res\.status === 429/);
+    expect(route).toMatch(/res\.status === 403/);
+  });
+
+  it('no longer promises a 48-hour turnaround anywhere on the audit', () => {
+    const page = readFileSync(join(__dirname, '..', 'app/audit/page.tsx'), 'utf8');
+    expect(page).not.toContain('48 hodin');
+    expect(form).not.toContain('48 hodin');
+  });
+});
+
+/**
+ * The audit is linked from the site. It sat in the sitemap with no inbound
+ * link from any page — a lead magnet reachable only by typing the URL.
+ */
+describe('the free audit is reachable', () => {
+  it('appears in the header and the footer', () => {
+    expect(readFileSync(join(__dirname, '..', 'components/nova/header.tsx'), 'utf8')).toContain('"/audit"');
+    expect(readFileSync(join(__dirname, '..', 'components/nova/footer.tsx'), 'utf8')).toContain('"/audit"');
+  });
+});

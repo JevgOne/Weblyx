@@ -80,6 +80,9 @@ function toRecord(row: any): AuditRecord {
 export async function recordAudit(params: {
   url: string;
   email: string;
+  /** Optional — the audit form asks for it, and a person's name beats a
+   *  hostname on a list someone has to phone through. */
+  name?: string | null;
   score?: number | null;
   metrics?: AuditMetric[];
   issueCount?: number | null;
@@ -114,7 +117,7 @@ export async function recordAudit(params: {
               ) VALUES (?, ?, ?, ?, ?, ?, ?, 'new', 'audit', unixepoch(), unixepoch())`,
         args: [
           leadId,
-          host,
+          params.name?.trim() || host,
           params.email,
           host,
           'audit',

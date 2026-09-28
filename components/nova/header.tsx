@@ -1,11 +1,16 @@
 import Link from "next/link";
 
-const NAV = [
+/**
+ * `hash` points at a section of the homepage; `href` is a page of its own.
+ * The free audit is a page, and it was reachable only by typing the URL —
+ * nothing on the site linked to it, which is a strange fate for a lead magnet.
+ */
+const NAV: Array<{ label: string; hash?: string; href?: string }> = [
   { label: "Služby", hash: "#sluzby" },
   { label: "Práce", hash: "#prace" },
   { label: "Ceník", hash: "#cenik" },
   { label: "Postup", hash: "#postup" },
-  { label: "Archiv", hash: "#archiv" },
+  { label: "Audit zdarma", href: "/audit" },
   { label: "Kontakt", hash: "#kontakt" },
 ];
 
@@ -42,15 +47,25 @@ export function NovaHeader({ anchorBase = "" }: { anchorBase?: string } = {}) {
           className="hidden lg:flex gap-[34px] text-sm font-medium"
           style={{ color: "var(--n-text-body)" }}
         >
-          {NAV.map((item) => (
-            <a
-              key={item.hash}
-              href={`${anchorBase}${item.hash}`}
-              className="hover:opacity-70 transition-opacity"
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV.map((item) =>
+            item.href ? (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="hover:opacity-70 transition-opacity"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <a
+                key={item.hash}
+                href={`${anchorBase}${item.hash}`}
+                className="hover:opacity-70 transition-opacity"
+              >
+                {item.label}
+              </a>
+            )
+          )}
         </nav>
 
         <a

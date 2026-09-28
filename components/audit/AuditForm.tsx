@@ -5,13 +5,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Send, Loader2, CheckCircle2, Gauge, Zap, Search, ShieldCheck } from "lucide-react";
+import { Send, Loader2, Gauge, Zap, Search, ShieldCheck } from "lucide-react";
 import confetti from "canvas-confetti";
+
+/**
+ * The audit a visitor can actually run.
+ *
+ * This form used to POST to /api/contact — the generic enquiry endpoint — and
+ * answer "we will e-mail you within 48 hours". Meanwhile /api/audit already
+ * ran PageSpeed Insights, returned a score and metrics synchronously, mailed
+ * the full report and recorded the lead in `audits`. It was simply never
+ * called, so no visitor ever saw a number and no web audit ever reached the
+ * admin list. It is called now, and the score is shown on the page.
+ */
+interface AuditMetric {
+  label: string;
+  value: string;
+  score: number;
+}
+
+interface AuditResult {
+  url: string;
+  score: number;
+  metrics: AuditMetric[];
+  issueCount: number;
+}
+
+function scoreTone(score: number): { color: string; label: string } {
+  if (score >= 90) return { color: "#16a34a", label: "Výborně" };
+  if (score >= 50) return { color: "#d97706", label: "Průměr" };
+  return { color: "#dc2626", label: "Potřebuje zlepšit" };
+}
 
 export function AuditForm() {
   const [formData, setFormData] = useState({ url: "", email: "", name: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [result, setResult] = useState<AuditResult | null>(null);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,42 +53,95 @@ export function AuditForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name || "Audit request",
+          url: formData.url,
           email: formData.email,
-          phone: "",
-          subject: "🔍 Zdarma audit webu",
-          message: `URL k auditu: ${formData.url}\nJméno: ${formData.name || "neuvedeno"}\nEmail: ${formData.email}`,
-          type: "audit",
+          name: formData.name || undefined,
         }),
       });
 
-      if (!response.ok) throw new Error("Odeslání selhalo");
+      const data = await response.json();
+      if (!response.ok || !data?.success) {
+        // The endpoint says what went wrong — a bad URL reads differently
+        // from a service outage, and the visitor can act on the difference.
+        throw new Error(data?.error || "Analýza se nezdařila");
+      }
 
-      setIsSubmitted(true);
+      setResult(data as AuditResult);
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ["#14B8A6", "#06B6D4", "#fff"] });
     } catch (err) {
-      setError("Něco se pokazilo. Zkuste to znovu nebo nám napište na info@weblyx.cz");
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Něco se pokazilo. Zkuste to znovu nebo nám napište na info@weblyx.cz"
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (isSubmitted) {
+  if (result) {
+    const tone = scoreTone(result.score);
     return (
       <Card className="border-primary/20">
-        <CardContent className="p-8 text-center space-y-4">
-          <CheckCircle2 className="h-16 w-16 text-primary mx-auto" />
-          <h3 className="text-2xl font-bold">Děkujeme! 🎉</h3>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Váš web <strong>{formData.url}</strong> zanalyzujeme a kompletní audit pošleme na <strong>{formData.email}</strong> do 48 hodin.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Report bude obsahovat PageSpeed skóre, SEO analýzu, bezpečnostní kontrolu a konkrétní doporučení ke zlepšení.
-          </p>
+        <CardContent className="p-8 space-y-8">
+          <div className="text-center space-y-2">
+            <p className="text-sm text-muted-foreground">Výsledek pro</p>
+            <p className="font-semibold break-all">{result.url}</p>
+          </div>
+
+          <div className="text-center">
+            <p className="text-7xl font-extrabold leading-none" style={{ color: tone.color }}>
+              {result.score}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">ze 100 · {tone.label}</p>
+          </div>
+
+          {result.metrics.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {result.metrics.map((m) => (
+                <div key={m.label} className="rounded-xl border border-border/60 bg-muted/50 p-4 text-center">
+                  <p className="text-xs text-muted-foreground">{m.label}</p>
+                  <p
+                    className="mt-1 text-lg font-bold"
+                    style={{ color: scoreTone(Math.round(m.score * 100)).color }}
+                  >
+                    {m.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="rounded-xl border border-border/60 p-5 text-center space-y-2">
+            <p className="font-semibold">
+              {result.issueCount > 0
+                ? `Našli jsme ${result.issueCount} ${
+                    result.issueCount === 1 ? "věc" : result.issueCount < 5 ? "věci" : "věcí"
+                  } ke zlepšení`
+                : "Nenašli jsme nic zásadního ke zlepšení"}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Detailní rozpis včetně konkrétních doporučení jsme poslali na{" "}
+              <strong>{formData.email}</strong>.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button asChild size="lg">
+              <a href="/poptavka">Chci to spravit</a>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => { setResult(null); setFormData({ url: "", email: formData.email, name: formData.name }); }}
+            >
+              Zkontrolovat další web
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -126,13 +208,13 @@ export function AuditForm() {
             {error && <p className="text-sm text-red-500">{error}</p>}
             <Button type="submit" size="lg" className="w-full group" disabled={isSubmitting}>
               {isSubmitting ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Odesílám...</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzuji web…</>
               ) : (
-                <><Send className="mr-2 h-4 w-4" />Chci zdarma audit</>
+                <><Send className="mr-2 h-4 w-4" />Spustit audit zdarma</>
               )}
             </Button>
             <p className="text-xs text-center text-muted-foreground">
-              Žádný spam. Audit pošleme do 48 hodin na váš email.
+              Žádný spam. Skóre uvidíte hned, detailní rozpis přijde na e-mail.
             </p>
           </form>
         </CardContent>

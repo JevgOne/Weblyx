@@ -3,6 +3,7 @@ const FOOTER_COLUMNS = [
     title: "Služby",
     links: [
       { label: "Tvorba webových stránek", href: "/sluzby#web" },
+      { label: "Audit webu zdarma", href: "/audit" },
       { label: "SEO optimalizace", href: "/seo-optimalizace" },
       { label: "Redesign webu", href: "/redesign-webu" },
       { label: "Rychlost načítání", href: "/pagespeed-garance" },

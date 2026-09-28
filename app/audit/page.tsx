@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "Audit webu zdarma | PageSpeed, SEO, bezpečnost",
-  description: "Získejte zdarma profesionální audit vašeho webu. Zanalyzujeme rychlost, SEO, bezpečnost a UX. Výsledky do 48 hodin na email. Zjistěte, co zlepšit pro více návštěvníků.",
+  description: "Zdarma zanalyzujeme rychlost, SEO a bezpečnost vašeho webu. Skóre uvidíte hned na stránce, detailní rozpis s doporučeními přijde na e-mail.",
   keywords: [
     "audit webu zdarma",
     "analýza webu",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Zdarma audit vašeho webu | Weblyx",
-    description: "Profesionální audit rychlosti, SEO a bezpečnosti vašeho webu. Zdarma, do 48 hodin.",
+    description: "Profesionální audit rychlosti, SEO a bezpečnosti. Zdarma a s výsledkem hned.",
     url: "https://www.weblyx.cz/audit",
     type: "website",
     images: [{ url: "/images/og/og-audit.png", width: 1200, height: 630, alt: "Weblyx - Audit webu zdarma" }],
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Zdarma audit vašeho webu | Weblyx",
-    description: "Profesionální audit rychlosti, SEO a bezpečnosti vašeho webu. Zdarma, do 48 hodin.",
+    description: "Profesionální audit rychlosti, SEO a bezpečnosti. Zdarma a s výsledkem hned.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/audit",
@@ -49,10 +49,10 @@ export default function AuditPage() {
       },
       {
         "@type": "Question",
-        "name": "Jak dlouho trvá audit?",
+        "name": "Jak dlouho audit trvá?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Výsledky auditu vám pošleme na email do 48 hodin od odeslání formuláře."
+          "text": "Celkové skóre a hlavní metriky se zobrazí přímo na stránce během několika sekund. Detailní rozpis s konkrétními doporučeními dostanete na e-mail."
         }
       },
       {
@@ -82,8 +82,8 @@ export default function AuditPage() {
               Audit vašeho webu <span className="text-primary">zdarma</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Zjistěte jak si váš web vede v rychlosti, SEO a bezpečnosti.
-              Pošleme vám detailní report na email do 48 hodin.
+              Zjistěte, jak si váš web vede v rychlosti, SEO a bezpečnosti.
+              Skóre uvidíte hned, detailní rozpis s doporučeními vám pošleme na e-mail.
             </p>
           </div>
         </section>
