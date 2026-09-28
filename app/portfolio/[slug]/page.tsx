@@ -17,6 +17,45 @@ export const revalidate = 60;
 export const dynamicParams = true;
 
 /**
+ * Meta description is a snippet, not the project write-up.
+ *
+ * `project.description` is the full multi-paragraph case study, and it was
+ * going into the tag verbatim — the longest ran 1 024 characters against the
+ * ~160 a search result shows. Trimming at a sentence boundary where there is
+ * one, and at a word boundary otherwise, keeps the snippet readable instead of
+ * cut mid-word.
+ */
+const META_DESC_MAX = 155;
+
+function metaDescription(text: string, fallback: string): string {
+  const clean = text?.replace(/\s+/g, " ").trim();
+  if (!clean) return fallback;
+  if (clean.length <= META_DESC_MAX) return clean;
+
+  const sentence = clean.slice(0, META_DESC_MAX + 1).match(/^[\s\S]*[.!?](?=\s)/);
+  if (sentence && sentence[0].length >= 80) return sentence[0].trim();
+
+  const cut = clean.slice(0, META_DESC_MAX);
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:–-]$/, "").trim() + "…";
+}
+
+/**
+ * Project titles already carry a dash and a description of the work, so
+ * appending "| Weblyx Portfolio" pushed several past 90 characters. The part
+ * before the dash is the project name, which is what a search result needs.
+ */
+const TITLE_MAX = 60;
+
+function metaTitle(title: string, brand: string): string {
+  const full = `${title} | ${brand}`;
+  if (full.length <= TITLE_MAX) return full;
+
+  const name = title.split(/\s+[–—-]\s+/)[0].trim();
+  const short = `${name} | ${brand}`;
+  return short.length <= TITLE_MAX ? short : name.slice(0, TITLE_MAX);
+}
+
+/**
  * Prerender the published projects. Same reason as the blog: without it every
  * visit re-rendered the page and re-read Turso, and nothing was ever cached.
  */
@@ -47,8 +86,11 @@ export async function generateMetadata({
     const brandName = isDE ? 'Seitelyx' : 'Weblyx';
 
     return {
-      title: `${project.title} | ${brandName} Portfolio`,
-      description: project.description || (isDE ? `Projektbeispiel: ${project.title}` : `Ukázka projektu: ${project.title}`),
+      title: metaTitle(project.title, brandName),
+      description: metaDescription(
+        project.description || "",
+        isDE ? `Projektbeispiel: ${project.title}` : `Ukázka projektu: ${project.title}`
+      ),
       keywords: project.technologies || [],
       openGraph: {
         title: project.title,

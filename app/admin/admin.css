@@ -204,3 +204,30 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- Page shells inside the scrolling <main> --------------------------------
+   Most admin pages were written as standalone documents: each opens with
+   `min-h-screen` and its own `sticky top-0` header, from before the shell
+   provided one. Now that <main> is the scroll container, both misbehave.
+
+   `min-h-screen` is a full viewport height inside a box that is already a
+   viewport minus the shell header, so every page — even a short one — was
+   always one header taller than its container and carried a scrollbar with
+   nothing to scroll.
+
+   The page headers stick at `top: 0` of that same container, which is exactly
+   where the shell's own header sits, so the two would overlap. The shell
+   header already shows the page title; the page's own header scrolls away. */
+.wbx-admin main .min-h-screen {
+  min-height: 0;
+}
+
+.wbx-admin main .sticky.top-0 {
+  position: static;
+}
+
+/* The leads table sets its own min-width so it scrolls instead of squeezing;
+   that must survive the rule above. */
+.wbx-admin main table.sticky {
+  position: relative;
+}

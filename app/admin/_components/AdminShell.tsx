@@ -202,9 +202,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen">
+    /*
+     * The shell owns the scrolling, the document does not.
+     *
+     * The sidebar used `sticky top-0 h-screen` and still scrolled away with the
+     * table, because globals.css sets `overflow-x: hidden` on both html and
+     * body. That makes body a scroll container, and a sticky element inside one
+     * sticks to that container's box — which is as tall as the whole page — so
+     * it behaves as if it were not sticky at all.
+     *
+     * Rather than fight the global rule, the shell is pinned to the viewport
+     * and only <main> scrolls. The sidebar cannot move because nothing around
+     * it scrolls, and the page headers inside main get working sticky for free.
+     */
+    <div className="flex h-screen overflow-hidden">
       {/* Desktop sidebar */}
-      <div className="sticky top-0 hidden h-screen lg:block">{sidebar}</div>
+      <div className="hidden h-full lg:block">{sidebar}</div>
 
       {/* Mobile drawer */}
       {mobileOpen && (
@@ -218,7 +231,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <div
           className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b px-5 py-[22px] md:px-9"
           style={{
