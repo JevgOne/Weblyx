@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
 import { TrustBar } from "@/components/home/trust-bar";
@@ -12,10 +13,32 @@ import { FAQ } from "@/components/home/faq";
 // Revalidate every 60 seconds
 export const revalidate = 60;
 
+/**
+ * The homepage was the only route on the site without a canonical URL.
+ *
+ * Every other page declares one; this one inherited the root layout's
+ * metadata, which sets `metadataBase` but no `alternates`. That left the page
+ * carrying most of the site's impressions with nothing to tell Google which of
+ * http://, https://, weblyx.cz and www.weblyx.cz is the real address — while
+ * the redirects funnel all four to the same place, the duplicates keep their
+ * own ranking history until something declares a winner.
+ *
+ * Both domains are built separately (NEXT_PUBLIC_DOMAIN), so the brand config
+ * resolves at build time and each build gets its own canonical.
+ */
+export const metadata: Metadata = {
+  alternates: {
+    canonical: isSeitelyx ? "https://seitelyx.de/" : "https://www.weblyx.cz/",
+    languages: getAlternateLanguages("/"),
+  },
+};
+
 // Dynamic imports for heavy below-the-fold client components (code splitting)
 const loadingSpinner = <div className="py-24 bg-muted/30"><div className="container mx-auto px-4 text-center"><div className="h-6 w-6 mx-auto border-2 border-primary/30 border-t-primary rounded-full animate-spin" /></div></div>;
 const Pricing = dynamic(() => import("@/components/home/pricing").then(mod => ({ default: mod.Pricing })), { loading: () => loadingSpinner });
 const ContactWow = dynamic(() => import("@/components/home/contact-wow").then(mod => ({ default: mod.ContactWow })), { loading: () => loadingSpinner });
+import { isSeitelyx } from "@/lib/brand";
+import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   generateOrganizationSchema,

@@ -201,3 +201,27 @@ describe('lead status rendering goes through the shared helper', () => {
     expect(src).not.toMatch(/status:\s*["']converted["']/);
   });
 });
+
+/**
+ * Every indexable route declares a canonical URL.
+ *
+ * The homepage did not — it inherited the root layout's metadata, which sets
+ * metadataBase but no `alternates`, so the page carrying most of the site's
+ * impressions had nothing resolving http:// against https:// or the bare
+ * domain against www. Every other page already declared one; this keeps the
+ * homepage from silently losing it again.
+ */
+describe('the homepage declares a canonical URL', () => {
+  const page = readFileSync(join(__dirname, '..', 'app/page.tsx'), 'utf8');
+
+  it('exports metadata with alternates', () => {
+    expect(page).toMatch(/export const metadata: Metadata/);
+    expect(page).toMatch(/alternates:\s*\{/);
+  });
+
+  it('points at the canonical host for each build', () => {
+    expect(page).toContain('https://www.weblyx.cz/');
+    expect(page).toContain('https://seitelyx.de/');
+    expect(page).toMatch(/languages:\s*getAlternateLanguages\("\/"\)/);
+  });
+});
