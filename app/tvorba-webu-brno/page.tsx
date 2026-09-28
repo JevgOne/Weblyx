@@ -34,7 +34,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Tvorba webových stránek Brno | Weby od 7 990 Kč",
   description:
-    "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js technologie, PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Pracujeme s klienty z celé ČR.",
+    "Profesionální tvorba webových stránek pro firmy v Brně. Moderní Next.js technologie, PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč. Pracujeme s klienty z celé ČR.",
   keywords: [
     "tvorba webových stránek Brno",
     "tvorba webu Brno",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
+      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
     type: "website",
     images: [
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
+      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-webu-brno",
@@ -219,7 +219,7 @@ export default async function TvorbaWebuBrnoPage() {
                 <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
+                <Clock className="h-4 w-4 text-primary" /> Dodání za 3–5 dní
               </span>
               <span className="flex items-center gap-1">
                 <Zap className="h-4 w-4 text-primary" />{" "}
@@ -277,7 +277,7 @@ export default async function TvorbaWebuBrnoPage() {
                   <p className="text-muted-foreground leading-relaxed text-sm">
                     JIC, CzechInvest a lokální inkubátory pomáhají stovkám
                     startupů ročně. <strong>Kvalitní web je vstupenka k prvním
-                    zákazníkům</strong> a investorům — a my ho dodáme za 5–7 dní.
+                    zákazníkům</strong> a investorům — a my ho dodáme za 3–10 dní.
                   </p>
                 </CardContent>
               </Card>
@@ -394,7 +394,7 @@ export default async function TvorbaWebuBrnoPage() {
               {[
                 { value: projects, label: "Realizovaných projektů" },
                 { value: "90+", label: "Průměrné PageSpeed skóre" },
-                { value: "5–7", label: "Dní do spuštění" },
+                { value: "3–10", label: "Dní do spuštění" },
                 { value: "3×", label: "Rychlejší než WordPress" },
               ].map((stat) => (
                 <div key={stat.label} className="space-y-2">

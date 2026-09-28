@@ -34,7 +34,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Tvorba webových stránek Ostrava | Weby od 7 990 Kč",
   description:
-    "Profesionální tvorba webových stránek v Ostravě. Moderní weby na Next.js s PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Pomáháme ostravským firmám růst online.",
+    "Profesionální tvorba webových stránek v Ostravě. Moderní weby na Next.js s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč. Pomáháme ostravským firmám růst online.",
   keywords: [
     "tvorba webových stránek Ostrava",
     "tvorba webu Ostrava",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek Ostrava | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
+      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
     url: "https://www.weblyx.cz/tvorba-webu-ostrava",
     type: "website",
     images: [
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tvorba webových stránek Ostrava | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
+      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-webu-ostrava",
@@ -116,7 +116,7 @@ const FAQS = [
   {
     question: "Proč by si ostravská firma měla vybrat Weblyx?",
     answer:
-      "Ostrava prochází ekonomickou transformací a firmy zde potřebují moderní online prezentaci. Nabízíme Next.js technologii, která je 3× rychlejší než WordPress, garantujeme PageSpeed 90+ a dodáme web za 5–7 dní. Kvalita pražské agentury za férovou cenu.",
+      "Ostrava prochází ekonomickou transformací a firmy zde potřebují moderní online prezentaci. Nabízíme Next.js technologii, která je 3× rychlejší než WordPress, garantujeme PageSpeed 90+ a dodáme web za 3–10 dní. Kvalita pražské agentury za férovou cenu.",
   },
   {
     question: "Děláte i redesign starých webů?",
@@ -221,7 +221,7 @@ export default async function TvorbaWebuOstravaPage() {
                 <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
+                <Clock className="h-4 w-4 text-primary" /> Dodání za 3–5 dní
               </span>
               <span className="flex items-center gap-1">
                 <Zap className="h-4 w-4 text-primary" />{" "}
@@ -399,7 +399,7 @@ export default async function TvorbaWebuOstravaPage() {
               {[
                 { value: projects, label: "Dokončených projektů" },
                 { value: "90+", label: "PageSpeed skóre" },
-                { value: "5–7", label: "Dní do spuštění" },
+                { value: "3–10", label: "Dní do spuštění" },
                 { value: "0 Kč", label: "Měsíčně za hosting" },
               ].map((stat) => (
                 <div key={stat.label} className="space-y-2">

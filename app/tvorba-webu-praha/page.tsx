@@ -27,14 +27,14 @@ import {
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { isSeitelyx } from "@/lib/brand";
-import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
+import { countPublishedProjects, getRatingStat, projectsLabel } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Tvorba webových stránek Praha | Od 7 990 Kč",
   description:
-    "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby s PageSpeed 90+, dodání za 5–7 dní. Od 7 990 Kč. Sídlíme na Praze 1 — sejdeme se osobně.",
+    "Profesionální tvorba webových stránek v Praze. Moderní Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč. Sídlíme na Praze 1 — sejdeme se osobně.",
   keywords: [
     "tvorba webových stránek Praha",
     "tvorba webu Praha",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek Praha | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 5–7 dní. Sídlíme na Praze 1.",
+      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 3–10 dní. Sídlíme na Praze 1.",
     url: "https://www.weblyx.cz/tvorba-webu-praha",
     type: "website",
     images: [
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tvorba webových stránek Praha | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 5–7 dní.",
+      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-webu-praha",
@@ -110,7 +110,7 @@ const FAQS = [
   {
     question: "Jak dlouho trvá vytvoření webu?",
     answer:
-      "Standardní firemní web dodáváme za 5–7 pracovních dní. Složitější projekty s e-shopem nebo vlastními funkcemi obvykle 2–3 týdny. Díky sídlu na Praze 1 se můžeme osobně potkat a upřesnit detaily.",
+      "Landing Page dodáme za 3–5 pracovních dní, Základní Web za 5–7 a Standardní Web za 7–10. Složitější zakázky s e-shopem nebo vlastními funkcemi obvykle 2–3 týdny. Díky sídlu na Praze 1 se můžeme osobně potkat a upřesnit detaily.",
   },
   {
     question: "Proč si vybrat Weblyx a ne jinou pražskou agenturu?",
@@ -127,6 +127,8 @@ const FAQS = [
 export default async function TvorbaWebuPrahaPage() {
   // Counted, never typed — see lib/site-stats.ts.
   const projects = projectsLabel(await countPublishedProjects("cs"));
+  // Counted too — an unverifiable "100 %" used to sit here.
+  const rating = await getRatingStat("cs");
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Domů", url: "https://www.weblyx.cz" },
     {
@@ -219,7 +221,7 @@ export default async function TvorbaWebuPrahaPage() {
                 <Check className="h-4 w-4 text-primary" /> Od 7 990 Kč
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="h-4 w-4 text-primary" /> Dodání za 5–7 dní
+                <Clock className="h-4 w-4 text-primary" /> Dodání za 3–5 dní
               </span>
               <span className="flex items-center gap-1">
                 <Zap className="h-4 w-4 text-primary" />{" "}
@@ -370,7 +372,7 @@ export default async function TvorbaWebuPrahaPage() {
                       "Responzivní design pro všechna zařízení",
                       "SEO optimalizace v ceně",
                       "PageSpeed 90+ garantováno (od 14 900 Kč)",
-                      "Dodání za 5–7 pracovních dní",
+                      "Dodání za 3–10 pracovních dní podle balíčku",
                       "30 dní podpora po spuštění zdarma",
                       "Bez měsíčních poplatků za hosting",
                     ].map((feature) => (
@@ -393,8 +395,10 @@ export default async function TvorbaWebuPrahaPage() {
               {[
                 { value: projects, label: "Dokončených projektů" },
                 { value: "90+", label: "PageSpeed skóre" },
-                { value: "5–7", label: "Dní do dodání" },
-                { value: "100%", label: "Spokojených klientů" },
+                { value: "3–10", label: "Dní do dodání" },
+                rating
+                  ? { value: rating.value, label: rating.label }
+                  : { value: "0 Kč", label: "Měsíční poplatky" },
               ].map((stat) => (
                 <div key={stat.label} className="space-y-2">
                   <p className="text-4xl md:text-5xl font-bold text-primary">
