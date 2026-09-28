@@ -78,6 +78,18 @@ function isAllowed(file: string, line: string): boolean {
   return ALLOWED.some(([f, needle]) => file === f && line.includes(needle));
 }
 
+/**
+ * A competitor's published price is not our retired price.
+ *
+ * The Prague page quotes other Prague suppliers so a reader can place us in the
+ * market; those rows carry `who:` and are sourced from the supplier's own
+ * pricing page. They must not trip the retired-price guard — but only those
+ * rows, so a stale Weblyx price cannot hide behind the exemption.
+ */
+function isCompetitorQuote(line: string): boolean {
+  return /^\s*\{\s*who:\s*"/.test(line);
+}
+
 describe('no retired package price survives in public copy', () => {
   for (const price of RETIRED) {
     it(`"${price}" appears nowhere unexplained`, () => {
@@ -88,7 +100,7 @@ describe('no retired package price survives in public copy', () => {
         readFileSync(path, 'utf8')
           .split('\n')
           .forEach((line, i) => {
-            if (line.includes(price) && !isAllowed(rel, line)) {
+            if (line.includes(price) && !isAllowed(rel, line) && !isCompetitorQuote(line)) {
               hits.push(`${rel}:${i + 1}  ${line.trim().slice(0, 120)}`);
             }
           });
@@ -289,5 +301,80 @@ describe('the address matches the commercial register', () => {
   it('schema.org carries the registered office', () => {
     const src = readFileSync(join(ROOT, 'lib/schema-org.ts'), 'utf8');
     expect(src).toContain('Školská 660/3');
+  });
+});
+
+/**
+ * The deadline guarantee has to survive contact with the contract.
+ *
+ * The FAQ said "garantujeme dodání v dohodnutém termínu" while nothing — not
+ * the terms, not any page — said what happens when the deadline slips. A
+ * guarantee with no remedy is not a guarantee. The remedy is now 50% of the
+ * price, and the clock starts only once BOTH the deposit is paid and every
+ * piece of material has arrived; a promise that skips either half is a promise
+ * the contract does not back.
+ */
+describe('the delivery guarantee matches the terms', () => {
+  const terms = readFileSync(join(ROOT, 'app/obchodni-podminky/page.tsx'), 'utf8');
+
+  it('the terms state the 50% remedy for a missed deadline', () => {
+    expect(terms).toMatch(/nedodá dílo ve[\s\S]{0,80}termínu/i);
+    expect(terms).toMatch(/50\s*%\s*původně\s*sjednané ceny/i);
+  });
+
+  it('the terms start the clock at the deposit AND the materials, not first contact', () => {
+    expect(terms).toMatch(/uhradil zálohu a současně dodal všechny podklady/i);
+    expect(terms).toMatch(/od té\s*pozdější/i);
+    expect(terms).toMatch(/neběží od prvního kontaktu/i);
+  });
+
+  it('no page promises the deadline without naming both starting conditions', () => {
+    const hits: string[] = [];
+    for (const path of FILES) {
+      const rel = relative(ROOT, path);
+      if (rel.startsWith('app/obchodni-podminky/')) continue;
+      readFileSync(path, 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          // Any line that promises to hold a deadline must, on that same line,
+          // say the clock needs the deposit and the materials.
+          if (!/garantujeme\s+dodání|dodržíme\s+termín|termín\s+dodání\s+běží/i.test(line)) return;
+          const named = /zálo/i.test(line) && /podklad/i.test(line);
+          if (!named) hits.push(`${rel}:${i + 1}  ${line.trim().slice(0, 130)}`);
+        });
+    }
+    expect(hits, `slib termínu bez podmínek zahájení:\n${hits.join('\n')}`).toEqual([]);
+  });
+});
+
+/**
+ * The Prague page carries the full price list, not just the entry figure.
+ *
+ * It advertised "od 7 990 Kč" and never named the 29 900 Kč package at all,
+ * which is the one most visitors actually need. All three have to appear, with
+ * the delivery window each tier really has.
+ */
+describe('the Prague page lists every package', () => {
+  const page = readFileSync(join(ROOT, 'app/tvorba-webu-praha/page.tsx'), 'utf8');
+
+  const TIERS: Array<[string, string, string]> = [
+    ['Landing Page', '7 990 Kč', '3–5 pracovních dní'],
+    ['Základní Web', '14 900 Kč', '5–7 pracovních dní'],
+    ['Standardní Web', '29 900 Kč', '7–10 pracovních dní'],
+  ];
+
+  for (const [name, price, delivery] of TIERS) {
+    it(`names ${name} with ${price} and ${delivery}`, () => {
+      expect(page).toContain(name);
+      expect(page).toContain(price);
+      expect(page).toContain(delivery);
+    });
+  }
+
+  it('does not pair the entry price with another tier’s delivery window', () => {
+    // "Od 7 990 Kč ... dodání za 5–7 dní" was live for months; 7 990 ships in 3–5.
+    const meta = page.slice(0, page.indexOf('const SERVICES'));
+    expect(meta).not.toMatch(/dodání za 5–7 dní[\s\S]{0,40}7 990/);
+    expect(meta).not.toMatch(/7 990[\s\S]{0,40}dodání za 5–7 dní/);
   });
 });

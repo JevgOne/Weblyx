@@ -86,6 +86,25 @@ export default function TermsPage() {
           <li>Informovat klienta o průběhu projektu</li>
         </ul>
 
+        <h3>Nedodržení termínu dodání:</h3>
+        <p>
+          Termín dodání začíná běžet dnem, kdy jsou splněny obě tyto podmínky
+          zároveň: klient uhradil zálohu a současně dodal všechny podklady
+          potřebné pro vytvoření webu (texty, loga, fotografie, potřebné
+          přístupy). Nastanou-li tyto skutečnosti v různé dny, běží lhůta od té
+          pozdější. Termín neběží od prvního kontaktu ani od odeslání poptávky.
+        </p>
+        <p>
+          Pokud poskytovatel nedodá dílo ve sjednaném termínu, snižuje se
+          celková cena zakázky na 50 % původně sjednané ceny. Uhrazená záloha se
+          v takovém případě považuje za úhradu celé zakázky a doplatek klient
+          neplatí.
+        </p>
+        <p>
+          Lhůta se staví po dobu, kdy poskytovatel čeká na doplnění podkladů
+          nebo na vyjádření klienta podle bodu „Povinnosti klienta“.
+        </p>
+
         <h3>Povinnosti klienta:</h3>
         <ul>
           <li>Poskytnout všechny potřebné podklady (texty, loga, fotky)</li>

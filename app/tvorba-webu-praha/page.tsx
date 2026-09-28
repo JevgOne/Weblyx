@@ -105,23 +105,159 @@ const FAQS = [
   {
     question: "Kolik stojí tvorba webových stránek v Praze?",
     answer:
-      "Ceny tvorby webu v Praze se na trhu pohybují od 10 000 Kč až po statisíce. U nás začínáte na 7 990 Kč za landing page a na 14 900 Kč za kompletní web s moderním designem, SEO optimalizací a PageSpeed 90+. Žádné skryté poplatky — finální cenu znáte předem.",
+      "Na pražském trhu zaplatíte za firemní web od 9 900 Kč u nejlevnějších dodavatelů po 120 000 až 400 000 Kč u velkých studií. U nás začínáte na 7 990 Kč za jednostránkovou vizitku, 14 900 Kč za web o 3–5 podstránkách s blogem a 29 900 Kč za web o 10+ podstránkách s plným CMS. Cenu znáte před podpisem a po spuštění neplatíte žádný měsíční paušál.",
   },
   {
     question: "Jak dlouho trvá vytvoření webu?",
     answer:
-      "Landing Page dodáme za 3–5 pracovních dní, Základní Web za 5–7 a Standardní Web za 7–10. Složitější zakázky s e-shopem nebo vlastními funkcemi obvykle 2–3 týdny. Díky sídlu na Praze 1 se můžeme osobně potkat a upřesnit detaily.",
+      "Landing Page dodáme za 3–5 pracovních dní, Základní Web za 5–7 a Standardní Web za 7–10. Lhůta začíná běžet, až je uhrazená záloha a zároveň máme všechny podklady — texty, loga, fotky a potřebné přístupy. Ne od prvního e-mailu. Pokud pak termín nedodržíme, platíte jen 50 % ceny. Pro srovnání: pražské agentury běžně uvádějí 2–3 týdny až 2–4 měsíce.",
+  },
+  {
+    question: "Co přesně dostanu za 7 990 Kč?",
+    answer:
+      "Jednu stránku o 3–5 sekcích — vizitku, nic víc. Je v tom responzivní design, kontaktní formulář, základní SEO, napojení na Google Analytics a měsíc podpory po spuštění. Není to šablona s vyměněným logem: stavíme na Next.js a stránka se staví pro vás. Pokud potřebujete podstránky, blog nebo CMS, začíná to na 14 900 Kč — tu hranici vám řekneme dopředu, ne až u faktury.",
+  },
+  {
+    question: "Můžeme se sejít osobně v Praze?",
+    answer:
+      "Ano. Sídlíme na adrese Školská 660/3, Praha 1, kousek od Národní třídy, a schůzku si můžete domluvit u nás nebo přijedeme za vámi. Stojí za to si ověřit, kde dodavatel skutečně sídlí — řada agentur, které na dotaz „tvorba webových stránek Praha“ vychází nahoře, má zapsané sídlo ve Zlíně, v Libáni nebo v Neratovicích a schůzku v Praze řeší půjčenou zasedačkou.",
+  },
+  {
+    question: "Kdo dodá texty a fotky?",
+    answer:
+      "Texty a obrazový materiál dodáváte vy — je to nejrychlejší cesta, protože svému oboru rozumíte líp než my. Struktuře stránek a tomu, co kam patří, pomůžeme. Pokud texty nemáte, řekneme to na začátku a domluvíme se na copywritingu zvlášť, ať vám lhůta neuteče čekáním na podklady.",
+  },
+  {
+    question: "Dokážete udělat web ve více jazycích?",
+    answer:
+      "Ano. V Praze to řeší hodně firem, které cílí na expaty a turisty — restaurace, kliniky, služby v centru. Vícejazyčnou verzi stavíme tak, aby každá jazyková mutace měla vlastní URL a vlastní SEO, ne jen přepínač, který překlopí texty. Rozsah se domlouvá individuálně, protože záleží na počtu jazyků a na tom, kdo dodá překlady.",
+  },
+  {
+    question: "Uděláte redesign webu, který už mám?",
+    answer:
+      "Ano, a často to dává větší smysl než stavět od nuly — obsah, odkazy a pozice ve vyhledávání už máte. Při redesignu držíme původní URL a kde to nejde, nastavíme přesměrování, aby se nezahodilo to, co web za roky nasbíral. Zrychlení bývá u starých WordPress webů nejvíc vidět.",
   },
   {
     question: "Proč si vybrat Weblyx a ne jinou pražskou agenturu?",
     answer:
-      "Používáme Next.js místo zastaralého WordPressu — vaše stránky jsou 3× rychlejší, bezpečnější a nepotřebují drahý hosting. Navíc garantujeme PageSpeed 90+ a dodání v dohodnutém termínu, jinak vracíme peníze.",
+      "Stavíme na Next.js místo WordPressu, takže weby jsou rychlejší a nepotřebují drahý hosting ani měsíční správu. Garantujeme PageSpeed 90+ nebo vracíme peníze (od balíčku Základní Web) a termín dodání kryjeme slevou 50 % z ceny, když ho nedodržíme. A skutečně sídlíme v Praze 1, ne jen v nadpisu stránky.",
   },
   {
     question: "Nabízíte i správu webu po dokončení?",
     answer:
-      "Ano, nabízíme roční údržbu a podporu za 24 000 Kč předplaceně. Zahrnuje bezpečnostní aktualizace, zálohy, drobné úpravy obsahu a technickou podporu. Podpora po spuštění je v ceně každého balíčku — 1 až 3 měsíce podle rozsahu.",
+      "Podpora po spuštění je v ceně každého balíčku — 1 až 3 měsíce podle rozsahu. Dál nabízíme roční údržbu za 24 000 Kč předplaceně: bezpečnostní aktualizace, zálohy, drobné úpravy obsahu a technickou podporu. Povinná není. Pražská konkurence si za správu běžně účtuje 500 až 1 200 Kč měsíčně a SEO od 2 000 Kč měsíčně, což za tři roky udělá 18 až 43 tisíc navíc.",
   },
+];
+
+/**
+ * The three packages, written out so the page carries the whole price list.
+ *
+ * It used to show only "od 7 990 Kč", which is the figure a visitor is least
+ * able to act on: it says what the cheapest thing costs without saying what it
+ * is. The rows below mirror pricing_tiers — price, delivery and contents — so
+ * the entry price can be defended rather than just advertised.
+ */
+const PACKAGES = [
+  {
+    name: "Landing Page",
+    price: "7 990 Kč",
+    delivery: "3–5 pracovních dní",
+    summary: "Jedna stránka. Vizitka, nic víc.",
+    features: [
+      "1 stránka, 3–5 sekcí",
+      "Responzivní design",
+      "Kontaktní formulář",
+      "SEO základy",
+      "Google Analytics",
+      "1 měsíc podpory",
+    ],
+  },
+  {
+    name: "Základní Web",
+    price: "14 900 Kč",
+    delivery: "5–7 pracovních dní",
+    summary: "Web o několika podstránkách, který si sami plníte.",
+    features: [
+      "3–5 podstránek",
+      "Moderní design",
+      "Pokročilé SEO",
+      "Blog s CMS editorem",
+      "Napojení na sociální sítě",
+      "2 měsíce podpory",
+      "Garance PageSpeed 90+",
+    ],
+  },
+  {
+    name: "Standardní Web",
+    price: "29 900 Kč",
+    delivery: "7–10 pracovních dní",
+    summary: "Plnohodnotný firemní web se správou obsahu.",
+    features: [
+      "10+ podstránek",
+      "Premium design na míru",
+      "Full CMS pro správu obsahu",
+      "Rezervační systém",
+      "Newsletter integrace",
+      "3 měsíce podpory",
+      "Bezplatné drobné úpravy (2 h)",
+    ],
+  },
+];
+
+/**
+ * Prague market prices, each taken from the supplier's own published pricing
+ * page in září 2026. Only figures a reader can go and check are listed — the
+ * "od 200 000 Kč" bracket that circulates in agency blog posts is not sourced
+ * anywhere a visitor could verify, so it is left out.
+ */
+const MARKET = [
+  { who: "weby-praha.cz", what: "Web do 48 h na oborové šabloně", price: "9 900 Kč bez DPH", time: "48 hodin" },
+  { who: "dejtonaweb.cz", what: "Základní web", price: "od 9 900 Kč", time: "2–3 týdny" },
+  { who: "Weblyx", what: "Landing Page / Základní / Standardní", price: "7 990 – 29 900 Kč", time: "3–10 dní", us: true },
+  { who: "create201.cz", what: "Firemní web, cca 5 stránek", price: "od 25 000 Kč", time: "3–6 týdnů" },
+  { who: "wpdistro.cz", what: "Firemní web", price: "od 49 000 Kč", time: "5–10 dní" },
+  { who: "pixelfield.cz", what: "Firemní web", price: "120 000 – 400 000 Kč", time: "4–6 týdnů" },
+];
+
+/** Five checks a layman can run on a quote without understanding the code. */
+const RED_FLAGS = [
+  {
+    title: "Nabídka nemluví o nákladech na první rok",
+    body: "Hosting, doména, SSL certifikát a údržba bývají zvlášť. Nechte si od každého dodavatele rozepsat, co zaplatíte za dvanáct měsíců, ne jen za dodání. U některých nabídek je první rok dvojnásobek ceny, kterou máte v e-mailu.",
+  },
+  {
+    title: "Cena je hodinová sazba, ne pevná částka za popsaný rozsah",
+    body: "Hodinovka bez stropu znamená, že odhad neplatí. Chtějte pevnou cenu za jasně vyjmenovaný rozsah a vedle toho sazbu za práci navíc. U nás je cena balíčku pevná a hodiny jsou v ní jen orientační údaj.",
+  },
+  {
+    title: "Nikdo neřekne, kdo bude zapsaný jako držitel domény",
+    body: "Nezáleží na tom, kdo doménu platí ani kdo ji spravuje — záleží, kdo je zapsaný jako držitel v registru CZ.NIC. Když je tam dodavatel a rozejdete se, doména odchází s ním. Ověřit si to jde zdarma na nic.cz. Držitelem má být vaše firma.",
+  },
+  {
+    title: "O údržbě se mluví až po podpisu",
+    body: "Roční údržba se běžně pohybuje kolem 15 až 25 % ceny vývoje. Kdo ji v nabídce nezmíní, počítá s tím, že ji doplatíte později. Naše weby měsíční paušál nemají; roční údržba je volitelná a stojí 24 000 Kč.",
+  },
+  {
+    title: "Padne věta „to neřešte“ nebo „SEO doděláme potom“",
+    body: "Obojí znamená, že se rozsah domluví, až budete zaplaceni. Technické SEO — struktura nadpisů, sitemap, rychlost, titulky — se dělá při stavbě, ne po ní. Dodělávat ho zpětně stojí víc než ho udělat rovnou.",
+  },
+];
+
+/** What actually happens, including the two things nobody else writes down. */
+const PROCESS = [
+  { n: "01", title: "Konzultace", body: "Projdeme, co má web přinést a komu. Zdarma a nezávazně, osobně u nás na Školské nebo online." },
+  { n: "02", title: "Nabídka s pevnou cenou", body: "Dostanete rozsah a cenu písemně. Cena platí pro ten rozsah — změny se domlouvají, nepřipisují." },
+  { n: "03", title: "Záloha 50 % a podklady", body: "Termín začíná běžet, až je záloha uhrazená a zároveň máme od vás všechny podklady — ne od prvního e-mailu. Záloha je na trhu běžná; nestandardní je, že vám u toho řekneme, co se stane, když termín nedodržíme: platíte jen polovinu." },
+  { n: "04", title: "Návrh a 2 kola revizí", body: "Dvě kola úprav designu jsou v ceně. Pokud ani po nich nejste spokojeni, vracíme zálohu." },
+  { n: "05", title: "Vývoj a testování", body: "Stavíme na Next.js, testujeme na mobilech i desktopu a měříme PageSpeed dřív, než web pustíme ven." },
+  { n: "06", title: "Spuštění a podpora", body: "Doplatek je splatný před předáním. Podpora 1–3 měsíce podle balíčku běží od spuštění. Žádný měsíční paušál." },
+];
+
+/** Prague clients, named only where the client's own site confirms it. */
+const PRAGUE_REFS = [
+  { name: "AK Barbers", note: "Barbershop se čtyřmi pražskými pobočkami — Praha 1, 3, 5 a 6. Web jsme realizovali podle dodané designové předlohy.", url: "https://www.akbarber.com" },
+  { name: "AK Barbers Academy", note: "Samostatný web barberské akademie a kurzů, s přihlašováním na termíny.", url: "https://www.barber-kurzy.com" },
+  { name: "KAJO Studio 360", note: "360° video booth pro svatby, firemní akce a gala večery; působí v Praze, Brně a Ostravě.", url: "http://www.kajostudio360.cz" },
 ];
 
 export default async function TvorbaWebuPrahaPage() {
@@ -385,6 +521,230 @@ export default async function TvorbaWebuPrahaPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </section>
+
+        {/* BALÍČKY */}
+        <section className="py-16 md:py-24 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-12 space-y-3">
+              <Badge variant="outline">Celý ceník, ne jen „od“</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Co dostanete za{" "}
+                <span className="text-primary">7 990, 14 900 a 29 900 Kč</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Tři balíčky, pevná cena za vyjmenovaný rozsah. Žádný měsíční paušál
+                za hosting ani povinná správa.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {PACKAGES.map((pkg) => (
+                <Card key={pkg.name} className="border-border/60 flex flex-col">
+                  <CardHeader className="space-y-2">
+                    <h3 className="text-xl font-bold">{pkg.name}</h3>
+                    <p className="text-3xl font-bold text-primary">{pkg.price}</p>
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-4 w-4" /> {pkg.delivery}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{pkg.summary}</p>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <ul className="space-y-2">
+                      {pkg.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm">
+                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm max-w-3xl mx-auto">
+              Potřebujete e-shop nebo vlastní funkce? Podívejte se na{" "}
+              <Link href="/tvorba-eshopu" className="text-primary hover:underline">
+                tvorbu e-shopu
+              </Link>{" "}
+              nebo na{" "}
+              <Link href="/sluzby" className="text-primary hover:underline">
+                doplňkové služby v ceníku
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* CENY NA PRAŽSKÉM TRHU */}
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-12 space-y-3">
+              <Badge variant="outline">Srovnání</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Kolik stojí web{" "}
+                <span className="text-primary">v Praze</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Ceny níž jsou z veřejných ceníků pražských dodavatelů, stav září 2026.
+                Uvádíme jen čísla, která si můžete otevřít a ověřit.
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 pr-4 font-semibold">Dodavatel</th>
+                    <th className="text-left py-3 pr-4 font-semibold">Co za to je</th>
+                    <th className="text-left py-3 pr-4 font-semibold">Cena</th>
+                    <th className="text-left py-3 font-semibold">Dodání</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {MARKET.map((row) => (
+                    <tr
+                      key={row.who}
+                      className={`border-b border-border/50 ${row.us ? "bg-primary/5 font-medium" : ""}`}
+                    >
+                      <td className="py-3 pr-4">{row.who}</td>
+                      <td className="py-3 pr-4 text-muted-foreground">{row.what}</td>
+                      <td className="py-3 pr-4">{row.price}</td>
+                      <td className="py-3 text-muted-foreground">{row.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-muted-foreground mt-8 leading-relaxed max-w-3xl">
+              Z té tabulky plyne jedna věc, kterou je fér říct rovnou:{" "}
+              <strong>nejsme nejlevnější ani nejrychlejší</strong>. Za 9 900 Kč bez DPH
+              dostanete jinde web do osmačtyřiceti hodin — ale na připravené oborové
+              šabloně. Rozdíl mezi tím a stavbou na míru je přesně ten, kvůli kterému
+              tahle stránka existuje. Pokud vám šablona stačí, je to rozumná volba a
+              nemá smysl platit víc.
+            </p>
+            <p className="text-muted-foreground mt-4 leading-relaxed max-w-3xl">
+              Za zvážení stojí i to, že web nemusíte kupovat vůbec. Stavebnice jako
+              Webnode nebo Wix vyjdou zhruba na 2 000 až 5 000 Kč ročně, takže
+              Landing Page za 7 990 Kč se proti nim zaplatí přibližně za rok a půl —
+              a to bez započtení času, který nad tím strávíte. Vlastní WordPress
+              stojí za pět let při započtení hostingu, šablony a pluginů zhruba
+              25 000 až 65 000 Kč a údržbu si děláte sami.
+            </p>
+          </div>
+        </section>
+
+        {/* PŘEDRAŽENÁ NABÍDKA */}
+        <section className="py-16 md:py-24 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-12 space-y-3">
+              <Badge variant="outline">Než někomu pošlete zálohu</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Jak poznáte{" "}
+                <span className="text-primary">předraženou nabídku</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Pět věcí, které si na nabídce ověříte bez znalosti kódu. Platí i na nás —
+                projděte si podle nich i naši nabídku.
+              </p>
+            </div>
+            <div className="space-y-4">
+              {RED_FLAGS.map((flag, i) => (
+                <Card key={flag.title} className="border-border/60">
+                  <CardContent className="p-6 flex gap-4">
+                    <span className="shrink-0 h-8 w-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-sm">
+                      {i + 1}
+                    </span>
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-bold">{flag.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{flag.body}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* PROCES */}
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-12 space-y-3">
+              <Badge variant="outline">Postup</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Jak to{" "}
+                <span className="text-primary">probíhá</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Včetně dvou věcí, které jinde v nabídce nenajdete — zálohy a toho,
+                co se stane, když termín nedodržíme.
+              </p>
+            </div>
+            <ol className="grid md:grid-cols-3 gap-6">
+              {PROCESS.map((step) => (
+                <li key={step.n}>
+                  <Card className="border-border/60 h-full">
+                    <CardContent className="p-6 space-y-3">
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+                        {step.n}
+                      </span>
+                      <h3 className="text-lg font-bold">{step.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        {step.body}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </ol>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Závazné znění najdete v{" "}
+              <Link href="/obchodni-podminky" className="text-primary hover:underline">
+                obchodních podmínkách
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* PRAŽSKÉ REFERENCE */}
+        <section className="py-16 md:py-24 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-12 space-y-3">
+              <Badge variant="outline">Reference</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Weby, které běží{" "}
+                <span className="text-primary">v Praze</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Otevřete si je a zkontrolujte. Rychlost si můžete sami změřit
+                v PageSpeed Insights — u nás i u kohokoliv jiného, koho zvažujete.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {PRAGUE_REFS.map((ref) => (
+                <Card key={ref.name} className="border-border/60">
+                  <CardContent className="p-6 space-y-3">
+                    <h3 className="text-lg font-bold">{ref.name}</h3>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      {ref.note}
+                    </p>
+                    <a
+                      href={ref.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline text-sm inline-flex items-center gap-1"
+                    >
+                      Otevřít web →
+                    </a>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <p className="text-center text-muted-foreground mt-8 text-sm">
+              Všechny realizace najdete v{" "}
+              <Link href="/portfolio" className="text-primary hover:underline">
+                portfoliu
+              </Link>.
+            </p>
           </div>
         </section>
 
