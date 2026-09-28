@@ -231,7 +231,7 @@ export default function AdminLeadsPage() {
                   {newLeadsCount > 0 && (
                     <Badge
                       variant="destructive"
-                      className="animate-pulse text-lg px-4 py-2 font-bold shadow-lg shadow-red-500/50 border-2 border-red-600"
+                      className="text-sm px-3 py-1 font-semibold"
                     >
                       🚨 {newLeadsCount} NOVÝCH!
                     </Badge>
@@ -300,18 +300,25 @@ export default function AdminLeadsPage() {
         </div>
 
         {/* Leads Table - Hidden on mobile */}
+        {/*
+          Eight columns with no widths let the browser size them from content:
+          a long company name pushed the row three lines tall and shoved the
+          action column past the right edge, so "Vzít poptávku" was unreachable.
+          The widths below are the fix; overflow-x-auto is the safety net on a
+          narrow window.
+        */}
         <Card className="hidden md:block">
-          <Table>
+          <Table className="min-w-[1080px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Jméno / Firma</TableHead>
-                <TableHead>Kontakt</TableHead>
-                <TableHead>Typ projektu</TableHead>
-                <TableHead>Rozpočet</TableHead>
-                <TableHead>Stav</TableHead>
-                <TableHead>Přiřazeno</TableHead>
-                <TableHead>Datum</TableHead>
-                <TableHead className="text-right">Akce</TableHead>
+                <TableHead className="w-[210px]">Jméno / Firma</TableHead>
+                <TableHead className="w-[230px]">Kontakt</TableHead>
+                <TableHead className="w-[130px]">Typ projektu</TableHead>
+                <TableHead className="w-[120px]">Rozpočet</TableHead>
+                <TableHead className="w-[110px]">Stav</TableHead>
+                <TableHead className="w-[120px]">Přiřazeno</TableHead>
+                <TableHead className="w-[110px]">Datum</TableHead>
+                <TableHead className="w-[190px] text-right">Akce</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -357,9 +364,9 @@ export default function AdminLeadsPage() {
                 filteredLeads.map((lead) => (
                   <TableRow
                     key={lead.id}
-                    className={`cursor-pointer hover:bg-muted/50 transition-all ${
+                    className={`cursor-pointer transition-colors hover:bg-muted/50 ${
                       lead.status === 'new'
-                        ? 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-950/20 border-l-8 border-l-red-600 shadow-md shadow-red-200/50 dark:shadow-red-900/30 animate-pulse'
+                        ? 'bg-red-50/70 dark:bg-red-950/20 border-l-4 border-l-red-500'
                         : ''
                     }`}
                   >
@@ -367,7 +374,10 @@ export default function AdminLeadsPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           {lead.status === 'new' && (
-                            <span className="text-red-600 font-bold text-lg">🚨</span>
+                            <span
+                              aria-label="Nová poptávka"
+                              className="h-2 w-2 shrink-0 rounded-full bg-red-500"
+                            />
                           )}
                           <span className="font-medium">{lead.name}</span>
                           {lead.aiDesignSuggestion && (
@@ -377,9 +387,12 @@ export default function AdminLeadsPage() {
                           )}
                         </div>
                         {lead.company && (
-                          <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                            <Building2 className="h-3 w-3" />
-                            {lead.company}
+                          <div
+                            title={lead.company}
+                            className="text-sm text-muted-foreground flex items-center gap-1 mt-1"
+                          >
+                            <Building2 className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{lead.company}</span>
                           </div>
                         )}
                       </div>
@@ -387,8 +400,12 @@ export default function AdminLeadsPage() {
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-1 text-sm">
-                          <Mail className="h-3 w-3 text-muted-foreground" />
-                          <a href={`mailto:${lead.email}`} className="hover:text-primary">
+                          <Mail className="h-3 w-3 shrink-0 text-muted-foreground" />
+                          <a
+                            href={`mailto:${lead.email}`}
+                            title={lead.email}
+                            className="truncate hover:text-primary"
+                          >
                             {lead.email}
                           </a>
                         </div>
@@ -403,9 +420,15 @@ export default function AdminLeadsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{lead.projectType}</Badge>
+                      <Badge variant="outline" className="whitespace-nowrap">
+                        {lead.projectType}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-sm">{lead.budgetRange || lead.budget || '-'}</TableCell>
+                    <TableCell className="text-sm">
+                      <span className="line-clamp-2">
+                        {lead.budgetRange || lead.budget || '-'}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <button
                         type="button"
@@ -429,8 +452,8 @@ export default function AdminLeadsPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                      <div className="flex items-center gap-1 whitespace-nowrap">
+                        <Calendar className="h-3 w-3 shrink-0 text-muted-foreground" />
                         {new Date(lead.created).toLocaleDateString('cs-CZ')}
                       </div>
                     </TableCell>
@@ -441,15 +464,15 @@ export default function AdminLeadsPage() {
                         </Button>
                         {lead.status === 'new' ? (
                           <Button
-                            size="default"
+                            size="sm"
                             variant="destructive"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleTakeLead(lead);
                             }}
-                            className="gap-2 animate-pulse font-bold shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-600/60 transition-all"
+                            className="gap-1.5 whitespace-nowrap font-semibold"
                           >
-                            <UserCheck className="h-4 w-4" />
+                            <UserCheck className="h-3.5 w-3.5" />
                             Vzít poptávku
                           </Button>
                         ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
@@ -498,7 +521,7 @@ export default function AdminLeadsPage() {
                 key={lead.id}
                 className={`p-4 transition-all ${
                   lead.status === 'new'
-                    ? 'border-4 border-red-600 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-950/20 shadow-lg shadow-red-300/50 dark:shadow-red-900/30 animate-pulse'
+                    ? 'border-l-4 border-l-red-500 bg-red-50/70 dark:bg-red-950/20'
                     : ''
                 }`}
               >
@@ -584,7 +607,7 @@ export default function AdminLeadsPage() {
                       <Button
                         size="default"
                         variant="destructive"
-                        className="flex-1 gap-2 animate-pulse font-bold shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-600/60 transition-all"
+                        className="flex-1 gap-1.5 font-semibold"
                         onClick={() => handleTakeLead(lead)}
                       >
                         <UserCheck className="h-4 w-4" />
