@@ -5,7 +5,8 @@ import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getBlogPostBySlug, getPublishedBlogPostsByLanguage, getPostTranslations } from "@/lib/turso/blog";
+import { safeRead } from '@/lib/safe-read';
+import { getBlogPostBySlug, getPublishedBlogPosts, getPublishedBlogPostsByLanguage, getPostTranslations } from "@/lib/turso/blog";
 import { getDomainLocale, getBrandConfig } from "@/lib/brand";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { marked } from "marked";
@@ -54,6 +55,19 @@ const blogDetailContent = {
 
 export const revalidate = 60;
 export const dynamicParams = true;
+
+/**
+ * Prerender the published posts at build time.
+ *
+ * Without this the detail route stayed dynamic: every visit — and every
+ * Googlebot fetch — re-rendered the article and re-read Turso, and the edge
+ * cache never held one. `dynamicParams` stays on, so a post published after
+ * the build still renders on first request and is cached from then on.
+ */
+export async function generateStaticParams() {
+  const posts = await safeRead(() => getPublishedBlogPosts(), [], 'blog static params');
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 /**
  * Build hreflang alternates for a blog post using the parent_post_id

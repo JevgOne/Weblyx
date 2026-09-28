@@ -7,13 +7,23 @@ import { ArrowLeft, ExternalLink, Gauge, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
-import { getPortfolioById, getAllPortfolio } from "@/lib/turso/portfolio";
+import { getPortfolioById, getAllPortfolio, getPublishedPortfolio } from "@/lib/turso/portfolio";
+import { safeRead } from "@/lib/safe-read";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateCreativeWorkSchema } from "@/lib/schema-org";
 import { getLocale } from "next-intl/server";
 
 export const revalidate = 60;
 export const dynamicParams = true;
+
+/**
+ * Prerender the published projects. Same reason as the blog: without it every
+ * visit re-rendered the page and re-read Turso, and nothing was ever cached.
+ */
+export async function generateStaticParams() {
+  const items = await safeRead(() => getPublishedPortfolio('cs'), [], 'portfolio static params');
+  return items.map((item) => ({ slug: item.id }));
+}
 
 export async function generateMetadata({
   params
