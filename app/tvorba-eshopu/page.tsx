@@ -369,7 +369,7 @@ export default function TvorbaEshopuPage() {
             </div>
 
             <p className="text-center text-sm text-muted-foreground mt-6">
-              Nevíte, který balíček je pro vás? Podívejte se na{" "}
+              Nejste si jistí rozsahem? Podívejte se na{" "}
               <Link href="/faq" className="text-primary hover:underline">
                 často kladené otázky
               </Link>{" "}
@@ -379,6 +379,117 @@ export default function TvorbaEshopuPage() {
         </section>
 
         {/* RELATED PAGES */}
+
+        {/* The one question this market refuses to answer.
+            Shoptet prices a custom e-shop "from 1 000 000 Kč", Expert Dev says
+            outright that no starting figure can be given, NetDirect's page does
+            not contain the string "Kč" at all. Answering it with a number, and
+            showing the arithmetic honestly enough to admit where renting wins,
+            is the whole argument of this page. */}
+        <section className="py-16 md:py-24 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-10 space-y-3">
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Pronájem, nebo <span className="text-primary">vlastní e-shop</span>?
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Krabicové řešení se platí každý měsíc, e-shop na míru jednou. Kde je
+                zlom, záleží na tarifu — tady je počítání na tři roky.
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-border">
+                    <th className="text-left py-3 pr-4 font-semibold">Řešení</th>
+                    <th className="text-right py-3 px-4 font-semibold">Měsíčně</th>
+                    <th className="text-right py-3 px-4 font-semibold">Za 3 roky</th>
+                    <th className="text-left py-3 pl-4 font-semibold">Co za to</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Shoptet Basic", "440 Kč", "15 840 Kč", "Šablona, základní funkce"],
+                    ["Shoptet Business", "1 490 Kč", "53 640 Kč", "Šablona, víc funkcí"],
+                    ["Shoptet Profi", "2 490 Kč", "89 640 Kč", "Šablona, pokročilé funkce"],
+                    ["Shoptet Premium", "od 12 000 Kč", "od 432 000 Kč", "Úpravy na jejich platformě"],
+                    ["E-shop na míru u Shoptetu", "—", "od 1 000 000 Kč", "Vlastní řešení"],
+                  ].map(([a, b, c, d]) => (
+                    <tr key={a} className="border-b border-border/60">
+                      <td className="py-3 pr-4">{a}</td>
+                      <td className="py-3 px-4 text-right tabular-nums">{b}</td>
+                      <td className="py-3 px-4 text-right tabular-nums">{c}</td>
+                      <td className="py-3 pl-4 text-muted-foreground">{d}</td>
+                    </tr>
+                  ))}
+                  <tr className="border-b-2 border-primary/60 bg-primary/5">
+                    <td className="py-3 pr-4 font-semibold">E-shop na míru od nás</td>
+                    <td className="py-3 px-4 text-right font-semibold tabular-nums">0 Kč</td>
+                    <td className="py-3 px-4 text-right font-semibold tabular-nums">34 900 Kč</td>
+                    <td className="py-3 pl-4">Vlastní řešení, e-shop je váš</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="mt-4 text-xs text-muted-foreground">
+              Ceny Shoptetu podle jejich veřejného ceníku, bez DPH, k září 2026. K
+              našemu e-shopu si připočtěte hosting, zhruba 100–300 Kč měsíčně.
+            </p>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader className="space-y-2">
+                  <h3 className="text-xl font-bold">Kdy je pronájem lepší</h3>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm text-muted-foreground">
+                  <p>
+                    Nebudeme předstírat, že vlastní e-shop vyhraje vždycky. Na nejlevnějším
+                    tarifu vás Shoptet za tři roky vyjde na 15 840 Kč — levněji než naše
+                    jednorázová cena.
+                  </p>
+                  <p>
+                    Když teprve zkoušíte, jestli se vám prodej online vyplatí, když máte pár
+                    produktů a vystačíte si se šablonou, začněte pronájmem. Je to poctivější
+                    rada než vám hned prodat web.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-primary/60">
+                <CardHeader className="space-y-2">
+                  <h3 className="text-xl font-bold">Kdy se vyplatí vlastní</h3>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm text-muted-foreground">
+                  <p>
+                    Od tarifu Business výš se počty obracejí: 53 640 Kč za tři roky
+                    pronájmu proti 34 900 Kč jednorázově. A za pět let je rozdíl
+                    dvojnásobný.
+                  </p>
+                  <p>
+                    Druhý důvod není o penězích. Pronajatý e-shop běží na cizí platformě,
+                    v cizí šabloně a odchod z něj znamená postavit ho znovu. Vlastní
+                    e-shop je váš — včetně dat, designu i možnosti kdykoli změnit dodavatele.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              Podrobné srovnání i s WooCommerce najdete v článku{" "}
+              <Link href="/blog/jak-zalozit-eshop-2026" className="text-primary hover:underline">
+                Jak založit e-shop v roce 2026
+              </Link>
+              , náklady po spuštění rozebíráme v{" "}
+              <Link href="/blog/kolik-stoji-udrzba-webu-rocne" className="text-primary hover:underline">
+                Kolik stojí údržba webu ročně
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
         <section className="py-12 px-4 bg-muted/20">
           <div className="container mx-auto max-w-5xl">
             <h2 className="text-2xl font-bold mb-6 text-center">
