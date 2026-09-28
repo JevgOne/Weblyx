@@ -109,9 +109,11 @@ describe('the budget dropdown quotes the real packages', () => {
     expect(options.standard).toContain('29 900');
   });
 
-  it('e-shops are offered on request, without a figure', () => {
-    expect(options.premium).toMatch(/poptávku/i);
-    expect(options.premium).not.toMatch(/\d/);
+  it('the e-shop option carries its orientational price', () => {
+    // 34 900 Kč is deliberately "orientačně": the shop is handed over with an
+    // admin and the customer fills the catalogue, so product count does not
+    // drive the work — integrations do, and those are scoped per enquiry.
+    expect(options.premium).toContain('34 900');
   });
 });
 

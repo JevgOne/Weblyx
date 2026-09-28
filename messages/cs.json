@@ -55,7 +55,7 @@
       "description": "Keyword research, on-page optimalizace, technické SEO. První výsledky obvykle za 2-3 měsíce. Měsíční reporty s konkrétními daty."
     },
     "service3": {
-      "title": "E-shopy (na poptávku)",
+      "title": "E-shopy (orientačně od 34 900 Kč)",
       "description": "Katalog produktů, košík, platební brána (GoPay/Stripe), propojení s dopravci. Dodací doba: 4-6 týdnů podle rozsahu."
     },
     "ctaText": "Poptat služby",
@@ -142,7 +142,7 @@
     "title": "Často kladené otázky",
     "subtitle": "Vše, co potřebujete vědět o tvorbě webových stránek",
     "q1": "Kolik stojí webové stránky?",
-    "a1": "Landing page začíná na 7 990 Kč, základní web s 3–5 podstránkami na 14 900 Kč a standardní web na 29 900 Kč – vždy jednorázově. V ceně je responzivní design, kontaktní formulář a SEO optimalizace. E-shopy řešíme individuálně na poptávku. Za web samotný neplatíte žádné měsíční poplatky.",
+    "a1": "Landing page začíná na 7 990 Kč, základní web s 3–5 podstránkami na 14 900 Kč a standardní web na 29 900 Kč – vždy jednorázově. V ceně je responzivní design, kontaktní formulář a SEO optimalizace. E-shopy začínají na 34 900 Kč. Za web samotný neplatíte žádné měsíční poplatky.",
     "q2": "Jak dlouho trvá vytvoření webu?",
     "a2": "Základní web dodáváme za 5-7 pracovních dní od schválení designu. E-shopy trvají 4-6 týdnů podle rozsahu. Konkrétní termín dostanete při bezplatné konzultaci.",
     "q3": "Co všechno je v ceně?",
@@ -154,7 +154,7 @@
     "q6": "Mohu si web spravovat sám?",
     "a6": "Ano. Naučíme vás upravovat texty a obrázky přes jednoduchý administrační panel. Pro složitější úpravy nabízíme podporu od 500 Kč/hodina nebo měsíční paušál od 2 000 Kč.",
     "q7": "Děláte i e-shopy?",
-    "a7": "Ano, e-shopy děláme. Rozsah se případ od případu hodně liší, proto je nabízíme na poptávku – ozvěte se a připravíme nabídku na míru. Zahrnují platební bránu, správu objednávek a napojení na dopravce.",
+    "a7": "Ano. E-shop na míru vychází orientačně na 34 900 Kč jednorázově, bez měsíčních poplatků za platformu. Počet produktů cenu neurčuje – katalog si naplníte sami v administraci. Zahrnují platební bránu, správu objednávek a napojení na dopravce.",
     "q8": "Jak probíhá spolupráce?",
     "a8": "1) Bezplatná konzultace (30-60 min online). 2) Návrh designu s 2 koly revizí. 3) Vývoj webu s průběžným náhledem. 4) Testování a opravy. 5) Spuštění a zaškolení. 6) Měsíc podpory zdarma.",
     "q9": "Potřebuji doménu a hosting?",
@@ -396,7 +396,7 @@
         "landing": "Landing Page - 7 990 Kč",
         "basic": "Základní Web - 14 900 Kč",
         "standard": "Standardní Web - 29 900 Kč",
-        "premium": "E-shop – na poptávku",
+        "premium": "E-shop – od 34 900 Kč",
         "custom": "Jiný rozpočet"
       },
       "companyNameLabel": "Název firmy/projektu",

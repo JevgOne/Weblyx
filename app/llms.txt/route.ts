@@ -55,7 +55,9 @@ V ceně jsou 2 kola revizí designu.
 | Měsíční GEO | od 5 000 Kč/měsíc |
 | Premium GEO + SEO | od 15 000 Kč/měsíc |
 
-E-shopy stavíme na míru a nabízíme je na poptávku — cena závisí na počtu produktů a integracích.
+E-shop na míru: orientačně od 34 900 Kč jednorázově, bez měsíčních poplatků za platformu.
+Počet produktů cenu neurčuje — e-shop se předává s administrací a katalog si klient naplní sám.
+Cenu mění integrace: další platební brány a dopravci, napojení na sklad nebo účetnictví, druhý jazyk.
 
 ## Služby
 

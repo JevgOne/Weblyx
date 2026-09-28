@@ -108,13 +108,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
-  // E-shop pages temporarily disabled - redirect to services
-  if (pathname === '/tvorba-eshopu') {
-    return NextResponse.redirect(new URL('/sluzby', request.url), 302);
-  }
-  if (pathname === '/onlineshop-erstellen') {
-    return NextResponse.redirect(new URL('/leistungen', request.url), 302);
-  }
+  // The e-shop pages are live again.
+  //
+  // They were redirected to /sluzby in February with "temporarily disabled".
+  // Seven months later the URL still ranked fourth for "tvorba e-shopu" —
+  // over a thousand impressions a month — and every one of them landed on a
+  // page whose title says "Tvorba webových stránek" and never says e-shop. So
+  // the ranking was kept and the clicks were not: zero, against the fifty a
+  // fourth-place listing should see.
 
   const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
 

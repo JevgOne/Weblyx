@@ -26,8 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Tvorba e-shopu na míru | Rychlý internetový obchod",
-  description: "Profesionální tvorba e-shopu na míru. Rychlý internetový obchod s garancí PageSpeed 90+, napojení na platební brány a dopravce. E-shop za 2–3 týdny. Cenu připravíme na poptávku.",
+  title: "Tvorba e-shopu od 34 900 Kč | Internetový obchod",
+  description: "E-shop na míru od 34 900 Kč jednorázově — žádný měsíční paušál jako u Shoptetu. Platební brány, dopravci, PageSpeed 90+. Hotovo za 2–3 týdny.",
   keywords: [
     "tvorba e-shopu",
     "e-shop na míru",
@@ -41,16 +41,16 @@ export const metadata: Metadata = {
     "rychlý e-shop",
   ],
   openGraph: {
-    title: "Tvorba e-shopu na míru | Weblyx",
-    description: "Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
+    title: "Tvorba e-shopu od 34 900 Kč | Weblyx",
+    description: "E-shop na míru od 34 900 Kč jednorázově, bez měsíčních poplatků za platformu.",
     url: "https://www.weblyx.cz/tvorba-eshopu",
     type: "website",
     images: [{ url: "/images/og/og-tvorba-eshopu.png", width: 1200, height: 630, alt: "Weblyx - Tvorba e-shopu" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tvorba e-shopu na míru | Weblyx",
-    description: "Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
+    title: "Tvorba e-shopu od 34 900 Kč | Weblyx",
+    description: "E-shop na míru od 34 900 Kč jednorázově, bez měsíčních poplatků za platformu.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-eshopu",
@@ -105,7 +105,7 @@ const FAQS = [
   {
     question: "Kolik stojí tvorba e-shopu na míru?",
     answer:
-      "E-shopy děláme na míru, takže je nabízíme na poptávku — cena závisí na počtu produktů, požadovaných integracích (platební brány, dopravci) a dalších funkcích. Připravíme vám nezávaznou kalkulaci zdarma.",
+      "E-shop na míru vychází orientačně na 34 900 Kč jednorázově, bez měsíčních poplatků za platformu. Počet produktů cenu neurčuje — e-shop předáváme s administrací a katalog si naplníte sami. Konečnou cenu ovlivní hlavně integrace: další platební brány a dopravci, napojení na sklad nebo účetnictví, druhý jazyk nebo import katalogu z feedu. Po konzultaci dostanete pevnou cenu.",
   },
   {
     question: "Jak dlouho trvá vytvoření e-shopu?",
@@ -134,7 +134,7 @@ export default function TvorbaEshopuPage() {
   const webpageSchema = generateWebPageSchema({
     name: "Tvorba e-shopu na míru",
     description:
-      "Profesionální tvorba e-shopu na míru s garancí PageSpeed 90+. Cena na poptávku.",
+      "E-shop na míru od 34 900 Kč jednorázově, bez měsíčních poplatků za platformu.",
     url: "https://www.weblyx.cz/tvorba-eshopu",
     breadcrumbs,
   });
@@ -172,8 +172,8 @@ export default function TvorbaEshopuPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Vytvoříme vám <strong>rychlý e-shop</strong> postavený na moderních technologiích.
-              Žádné šablony, žádné měsíční poplatky za platformu. Cenu připravíme{" "}
-              <strong>na míru</strong> — s{" "}
+              Žádné šablony, žádné měsíční poplatky za platformu. Ceny od{" "}
+              <strong>34 900 Kč</strong> — s{" "}
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
               </Link>.
@@ -292,46 +292,46 @@ export default function TvorbaEshopuPage() {
                 Kolik stojí <span className="text-primary">tvorba e-shopu</span>?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Transparentní nabídka bez skrytých poplatků. <strong>E-shop stavíme na míru, cenu připravíme na poptávku.</strong>
+                Orientačně <strong>od 34 900 Kč</strong> jednorázově, bez měsíčních poplatků za platformu. Konečnou cenu určí rozsah.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card className="transition-all hover:shadow-lg">
+            {/* One orientational figure, not tiers by product count.
+                The shop is handed over with an admin and the customer fills it
+                themselves, so the catalogue size does not drive the work —
+                importing a feed of five thousand items is the same job as
+                fifty. What moves the price is integrations, not inventory. */}
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="border-2 border-primary/60 shadow-xl">
                 <CardHeader className="space-y-2">
-                  <Package className="h-8 w-8 text-primary" />
-                  <h3 className="text-xl font-bold">Základní e-shop</h3>
-                  <p className="text-3xl font-black text-primary">Na míru</p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <ul className="space-y-2">
-                    {["Do 50 produktů", "1 platební brána", "2 dopravci", "Responzivní design", "SEO optimalizace"].map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <LeadButton href="/poptavka" variant="outline" className="w-full">
-                    Nezávazná poptávka
-                  </LeadButton>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-primary/60 shadow-xl transition-all hover:shadow-2xl">
-                <CardHeader className="space-y-2">
-                  <Badge className="w-fit">Nejoblíbenější</Badge>
                   <ShoppingCart className="h-8 w-8 text-primary" />
-                  <h3 className="text-xl font-bold">Profesionální e-shop</h3>
-                  <p className="text-3xl font-black text-primary">Na míru</p>
+                  <h3 className="text-xl font-bold">E-shop na míru</h3>
+                  <p className="text-3xl font-black text-primary">od 34 900 Kč</p>
+                  <p className="text-sm text-muted-foreground">
+                    orientačně, jednorázově — konečná cena podle zadání
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  <p className="text-sm font-semibold">V ceně máte:</p>
                   <ul className="space-y-2">
-                    {["Do 500 produktů", "Více platebních bran", "Všichni dopravci", "Admin panel", "Analytika", "Pokročilé SEO"].map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary" /> {f}
+                    {[
+                      "Design na míru, ne šablona",
+                      "Administrace, kde si produkty spravujete sami",
+                      "Platební brána (GoPay, Stripe nebo PayPal)",
+                      "Napojení na dopravce",
+                      "Správa objednávek a skladu",
+                      "SEO optimalizace a PageSpeed 90+",
+                      "Zaškolení, jak e-shop plnit",
+                    ].map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {f}
                       </li>
                     ))}
                   </ul>
+                  <p className="pt-2 text-sm text-muted-foreground">
+                    Počet produktů cenu neovlivňuje — e-shop předáváme prázdný
+                    a katalog si naplníte sami, kdykoli a bez nás.
+                  </p>
                   <LeadButton href="/poptavka" className="w-full">
                     Nezávazná poptávka
                   </LeadButton>
@@ -341,20 +341,29 @@ export default function TvorbaEshopuPage() {
               <Card className="transition-all hover:shadow-lg">
                 <CardHeader className="space-y-2">
                   <BarChart3 className="h-8 w-8 text-primary" />
-                  <h3 className="text-xl font-bold">Enterprise e-shop</h3>
-                  <p className="text-3xl font-black text-primary">Na míru</p>
+                  <h3 className="text-xl font-bold">Co cenu mění</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Proto je 34 900 Kč orientační číslo, ne pevná sazba.
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <ul className="space-y-2">
-                    {["Neomezený počet produktů", "Vlastní integrace", "ERP/CRM napojení", "Multijazyčnost", "Dedikovaná podpora"].map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary" /> {f}
+                  <ul className="space-y-3">
+                    {[
+                      ["Import katalogu", "Jednorázové nahrání produktů z XML feedu nebo Excelu, pokud si je nechcete zadávat sami."],
+                      ["Víc platebních bran a dopravců", "Každá další integrace je práce navíc."],
+                      ["Napojení na sklad nebo účetnictví", "Pohoda, Money, ABRA a podobně."],
+                      ["Druhý jazyk e-shopu", "Překlad rozhraní i produktových polí."],
+                      ["Nestandardní funkce", "Konfigurátory, velkoobchodní ceny, B2B účty."],
+                    ].map(([t, d]) => (
+                      <li key={t}>
+                        <p className="text-sm font-semibold">{t}</p>
+                        <p className="text-sm text-muted-foreground">{d}</p>
                       </li>
                     ))}
                   </ul>
-                  <LeadButton href="/poptavka" variant="outline" className="w-full">
-                    Nezávazná poptávka
-                  </LeadButton>
+                  <p className="pt-2 text-sm text-muted-foreground">
+                    Po krátké konzultaci dostanete pevnou cenu, která se už nemění.
+                  </p>
                 </CardContent>
               </Card>
             </div>

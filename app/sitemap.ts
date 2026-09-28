@@ -216,6 +216,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority: 0.8,
         },
         {
+          url: `${baseUrl}/tvorba-eshopu`,
+          lastModified: STATIC_LAST_MODIFIED,
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        },
+        {
           url: `${baseUrl}/web-pro-restaurace`,
           lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',

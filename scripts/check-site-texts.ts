@@ -30,7 +30,7 @@ interface Rule {
 const RULES: Rule[] = [
   {
     name: 'retired price',
-    forbidden: /\b(8 000|9 990|10 000|24 990|25 000|85 000|49 990|89 990|14 990|12 990|16 990)\s*Kč/,
+    forbidden: /\b(8 000|9 990|10 000|24 990|25 000|85 000|49 990|89 990|14 990|12 990|16 990|54 900)\s*Kč/,
     why: 'balíčky stojí 7 990 / 14 900 / 29 900 Kč',
     // WordPress hosting costs and the monthly SEO retainer are not our prices.
     except: /wordpress-alternativa|seo-optimalizace|geo-optimalizace/,
@@ -66,11 +66,6 @@ const RULES: Rule[] = [
     why: 'telefon je +420 702 110 166',
     // The enquiry forms use a placeholder number in their inputs.
     except: /poptavka|kontakt|anfrage/,
-  },
-  {
-    name: 'e-shop with a fixed price',
-    forbidden: /e-?shop[^.]{0,60}(od|za)\s*\d[\d\s]*\s*Kč/i,
-    why: 'e-shopy se nabízejí na poptávku',
   },
 ];
 
