@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles, User, UserCheck } from "lucide-react";
+import { Search, Filter, Mail, Phone, Building2, Calendar, ArrowRight, Sparkles, User, UserCheck } from "lucide-react";
 import { ConvertLeadDialog } from "@/components/admin/ConvertLeadDialog";
 import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
 import { NotificationPermission } from "@/components/admin/NotificationPermission";
@@ -212,40 +212,25 @@ export default function AdminLeadsPage() {
     <>
       <style dangerouslySetInnerHTML={{ __html: pulseAnimation }} />
       <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 md:py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/admin/dashboard")}
-                className="shrink-0"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-bold">Poptávky</h1>
-                  {newLeadsCount > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="text-sm px-3 py-1 font-semibold"
-                    >
-                      🚨 {newLeadsCount} NOVÝCH!
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  {leads.length} celkem · {newLeadsCount} čeká na převzetí
-                </p>
-              </div>
-            </div>
-            <NotificationPermission />
-          </div>
-        </div>
-      </header>
+      {/*
+        The shell already renders the page title, a subtitle and the sidebar
+        with its own unread count, so this screen used to show "Poptávky"
+        twice — plus a back arrow to the dashboard, which is what the sidebar
+        is for. What is left is the part the shell cannot know: the counts and
+        the push-notification switch.
+      */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 md:py-4">
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{leads.length}</span> celkem
+          {newLeadsCount > 0 && (
+            <>
+              {" · "}
+              <span className="font-semibold text-red-600">{newLeadsCount}</span> čeká na převzetí
+            </>
+          )}
+        </p>
+        <NotificationPermission />
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         {/* Filters */}
@@ -308,17 +293,21 @@ export default function AdminLeadsPage() {
           narrow window.
         */}
         <Card className="hidden md:block">
-          <Table className="min-w-[1080px]">
+          <Table className="w-full table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[210px]">Jméno / Firma</TableHead>
-                <TableHead className="w-[230px]">Kontakt</TableHead>
-                <TableHead className="w-[130px]">Typ projektu</TableHead>
-                <TableHead className="w-[120px]">Rozpočet</TableHead>
-                <TableHead className="w-[110px]">Stav</TableHead>
-                <TableHead className="w-[120px]">Přiřazeno</TableHead>
-                <TableHead className="w-[110px]">Datum</TableHead>
-                <TableHead className="w-[190px] text-right">Akce</TableHead>
+                <TableHead className="w-[180px]">Jméno / Firma</TableHead>
+                <TableHead className="w-[178px]">Kontakt</TableHead>
+                <TableHead className="w-[110px]">Typ</TableHead>
+                <TableHead className="w-[110px]">Rozpočet</TableHead>
+                <TableHead className="w-[95px]">Stav</TableHead>
+                <TableHead className="w-[95px]">Přiřazeno</TableHead>
+                <TableHead className="w-[100px]">Datum</TableHead>
+                {/* Pinned: the action must stay reachable when the table
+                    scrolls sideways — it is the whole point of the screen. */}
+                <TableHead className="sticky right-0 z-20 w-[130px] bg-card text-right shadow-[-8px_0_8px_-8px_rgba(15,23,42,.15)]">
+                  Akce
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -452,13 +441,16 @@ export default function AdminLeadsPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="flex items-center gap-1 whitespace-nowrap">
-                        <Calendar className="h-3 w-3 shrink-0 text-muted-foreground" />
+                      <span className="whitespace-nowrap">
                         {new Date(lead.created).toLocaleDateString('cs-CZ')}
-                      </div>
+                      </span>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                    <TableCell
+                      className={`sticky right-0 z-10 text-right shadow-[-8px_0_8px_-8px_rgba(15,23,42,.12)] ${
+                        lead.status === 'new' ? 'bg-[#fef4f4]' : 'bg-card'
+                      }`}
+                    >
+                      <div className="flex justify-end gap-1">
                         <Button size="sm" variant="ghost" onClick={() => handleViewDetail(lead)}>
                           Detail
                         </Button>
@@ -473,7 +465,7 @@ export default function AdminLeadsPage() {
                             className="gap-1.5 whitespace-nowrap font-semibold"
                           >
                             <UserCheck className="h-3.5 w-3.5" />
-                            Vzít poptávku
+                            Vzít
                           </Button>
                         ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
                           <Button
@@ -482,7 +474,7 @@ export default function AdminLeadsPage() {
                             className="gap-1"
                           >
                             <ArrowRight className="h-3 w-3" />
-                            Převést na projekt
+                            Převést
                           </Button>
                         )}
                       </div>
