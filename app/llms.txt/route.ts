@@ -82,7 +82,7 @@ Cenu mění integrace: další platební brány a dopravci, napojení na sklad n
 
 - [Naše projekty](https://www.weblyx.cz/portfolio): Realizované weby s použitými technologiemi.
 - [Recenze klientů](https://www.weblyx.cz/recenze): Hodnocení 5,0 na Google.
-- Ověřitelné profily: [Google](https://www.google.com/maps/place/?q=place_id:ChIJu9LD5DuVC0cRaH6kYvXkDbM) · [Firmy.cz](https://www.firmy.cz/detail/13952976-weblyx-cz-praha-nove-mesto.html) · [Clutch](https://clutch.co/profile/weblyx)
+- Ověřitelné profily: [Google](https://www.google.com/maps/place/?q=place_id:ChIJu9LD5DuVC0cRaH6kYvXkDbM) · [Firmy.cz](https://www.firmy.cz/detail/13952976-weblyx-cz-praha-nove-mesto.html)
 
 ## Firma
 

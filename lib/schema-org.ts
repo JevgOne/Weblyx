@@ -110,10 +110,15 @@ export function generateOrganizationSchema(data?: OrganizationData) {
     // knows from elsewhere — and `share.google/...` is a shortener it cannot
     // resolve to a canonical identity, so the Google Business Profile is given
     // by its place id instead.
+    //
+    // Clutch is deliberately absent. The profile exists but shows 0.0 from
+    // zero reviews, and pointing crawlers at it would confirm the entity with
+    // a worse rating than the Google profile two lines above. Reviews there
+    // cannot be moved across either: Clutch verifies each one by interviewing
+    // the client. It belongs here only once it has something on it.
     sameAs: locale === 'cs' ? [
       'https://www.google.com/maps/place/?q=place_id:ChIJu9LD5DuVC0cRaH6kYvXkDbM',
       'https://www.firmy.cz/detail/13952976-weblyx-cz-praha-nove-mesto.html',
-      'https://clutch.co/profile/weblyx',
       'https://techbehemoths.com/company/weblyx',
       'https://www.instagram.com/weblyx.cz/',
       'https://www.facebook.com/profile.php?id=61583944536147',
