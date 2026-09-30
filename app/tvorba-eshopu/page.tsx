@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -292,7 +293,7 @@ export default function TvorbaEshopuPage() {
                 Kolik stojí <span className="text-primary">tvorba e-shopu</span>?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Orientačně <strong>od 34 900 Kč</strong> jednorázově, bez měsíčních poplatků za platformu. Konečnou cenu určí rozsah.
+                Orientačně <strong>od 34 900 Kč</strong> jednorázově, bez měsíčních poplatků za platformu. Konečnou cenu určí rozsah. {DEPOSIT_SHORT}
               </p>
             </div>
 

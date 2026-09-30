@@ -1,4 +1,5 @@
 "use client";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
 
 import { useMemo, useState } from "react";
 import {
@@ -260,7 +261,7 @@ export function NovaPriceConfigurator({ pricing }: { pricing: PricingData }) {
               className="mt-4 text-center text-[13px] font-medium"
               style={{ color: "var(--n-text-dim)" }}
             >
-              50 % záloha předem · 2 kola revizí v ceně
+              {DEPOSIT_SHORT} 2 kola revizí v ceně.
             </p>
           </div>
         </div>

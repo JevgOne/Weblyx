@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
+      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč.",
     url: "https://www.weblyx.cz/tvorba-webu-brno",
     type: "website",
     images: [
@@ -66,7 +67,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tvorba webových stránek Brno | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
+      "Profesionální tvorba webových stránek v Brně. Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-webu-brno",
@@ -355,7 +356,7 @@ export default async function TvorbaWebuBrnoPage() {
                       <span className="text-primary">7 990 Kč</span>
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
-                      <strong>Pražská kvalita za férovou cenu.</strong> Bez měsíčních poplatků
+                      <strong>Pražská kvalita za férovou cenu.</strong> {DEPOSIT_SHORT} Bez měsíčních poplatků
                       za hosting, bez skrytých nákladů. Dejte si pozor na{" "}
                       <Link href="/blog/predrazene-sablony-webovych-agentur-jak-je-poznat" className="text-primary hover:underline">
                         předražené šablony webových agentur

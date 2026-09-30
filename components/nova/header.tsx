@@ -15,10 +15,15 @@ const NAV: Array<{ label: string; hash?: string; href?: string }> = [
 ];
 
 /**
- * `anchorBase` exists for the pages that reuse this header but do not carry the
- * sections it points at (/archiv). A bare "#cenik" there scrolls nowhere.
+ * Anchors are absolute, because the header is rendered by the root layout on
+ * every page.
+ *
+ * `anchorBase` defaulted to "" — a bare "#cenik". The sections it points at
+ * live on the homepage, so on all seventy other pages every nav item scrolled
+ * nowhere and the menu was dead. "/#cenik" navigates home and scrolls; on the
+ * homepage itself it is still just a scroll, so one form works everywhere.
  */
-export function NovaHeader({ anchorBase = "" }: { anchorBase?: string } = {}) {
+export function NovaHeader({ anchorBase = "/" }: { anchorBase?: string } = {}) {
   return (
     <header
       className="sticky top-0 z-50 border-b"

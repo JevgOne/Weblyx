@@ -63,7 +63,7 @@ export default function TermsPage() {
         <h2>4. Cena a platební podmínky</h2>
         <ul>
           <li>Ceny jsou uvedeny včetně DPH (pokud je poskytovatel plátcem)</li>
-          <li>Standardně vyžadujeme zálohu 50% před zahájením prací</li>
+          <li>Po schválení cenové nabídky klient hradí zálohu 50 %; prací začínáme až po jejím uhrazení</li>
           <li>Zbývající část je splatná před předáním hotového projektu</li>
           <li>Splatnost faktur je 14 dní od vystavení</li>
         </ul>

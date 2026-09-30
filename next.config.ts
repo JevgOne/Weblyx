@@ -107,6 +107,13 @@ const nextConfig: NextConfig = {
       // the AI manifests, robots and the hreflang map but never existed as
       // routes, so anything that followed them got a 404.
       {
+        // Retired page. The URL stays alive as a redirect — it is indexed and
+        // linked, and dropping it would throw that away.
+        source: '/archiv',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/cenik',
         destination: '/#cenik',
         permanent: true,

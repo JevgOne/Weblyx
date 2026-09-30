@@ -32,7 +32,7 @@ const FALLBACK = [
   {
     question: "Jak probíhá platba?",
     answer:
-      "Standardně vyžadujeme zálohu 50 % před zahájením prací a doplatek před předáním hotového webu. Platit můžete fakturou s QR kódem nebo bankovním převodem.",
+      "Po schválení návrhu hradíte zálohu 50 %, doplatek před předáním hotového webu. Termín dodání běží od zálohy a od chvíle, kdy máme všechny podklady. Platit můžete fakturou s QR kódem nebo bankovním převodem.",
   },
   {
     question: "Nabízíte následnou podporu?",

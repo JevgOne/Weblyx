@@ -51,17 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
-    // Public changelog. Czech-only: the German site has no archive page.
-    ...(isGermanSite
-      ? []
-      : [
-          {
-            url: `${baseUrl}/archiv`,
-            lastModified: STATIC_LAST_MODIFIED,
-            changeFrequency: 'weekly' as const,
-            priority: 0.5,
-          },
-        ]),
+    // The public changelog was retired; /archiv now 308s to the homepage.
   ];
 
   // Language-specific routes for Services, About, Quote

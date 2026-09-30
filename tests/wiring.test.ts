@@ -246,14 +246,19 @@ describe('the free audit is wired to the audit endpoint', () => {
 
   it('renders the score it gets back', () => {
     expect(form).toMatch(/result\.score/);
-    expect(form).toMatch(/result\.metrics/);
+    // Six scored dimensions and the findings, not just a bare number.
+    expect(form).toMatch(/result\.categories/);
+    expect(form).toMatch(/result\.findings/);
   });
 
-  it('falls back to the in-house analyzer when PageSpeed is unavailable', () => {
+  it('scores every audit with the in-house analyzer', () => {
+    // The in-house analyzer is the audit; PageSpeed only refines the speed
+    // figure when a key is configured, so an exhausted quota or a missing key
+    // can never leave the visitor without a result.
     expect(route).toContain('runLocalAudit');
-    // 429 is the exhausted anonymous quota, 403 a key without the API enabled.
-    expect(route).toMatch(/res\.status === 429/);
-    expect(route).toMatch(/res\.status === 403/);
+    expect(route).toMatch(/const \[result, psi\] = await Promise\.all/);
+    expect(route).toMatch(/if \(psi === null\) return result;/);
+    expect(route).toMatch(/PAGESPEED_API_KEY/);
   });
 
   it('no longer promises a 48-hour turnaround anywhere on the audit', () => {

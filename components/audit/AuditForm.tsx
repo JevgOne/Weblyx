@@ -24,10 +24,24 @@ interface AuditMetric {
   score: number;
 }
 
+interface AuditCategory {
+  key: string;
+  label: string;
+  score: number;
+}
+
+interface AuditFinding {
+  severity: "critical" | "warning";
+  title: string;
+  recommendation: string;
+}
+
 interface AuditResult {
   url: string;
   score: number;
   metrics: AuditMetric[];
+  categories: AuditCategory[];
+  findings: AuditFinding[];
   issueCount: number;
 }
 
@@ -100,35 +114,70 @@ export function AuditForm() {
             <p className="mt-1 text-sm text-muted-foreground">ze 100 · {tone.label}</p>
           </div>
 
-          {result.metrics.length > 0 && (
-            <div className="grid gap-3 sm:grid-cols-3">
-              {result.metrics.map((m) => (
-                <div key={m.label} className="rounded-xl border border-border/60 bg-muted/50 p-4 text-center">
-                  <p className="text-xs text-muted-foreground">{m.label}</p>
-                  <p
-                    className="mt-1 text-lg font-bold"
-                    style={{ color: scoreTone(Math.round(m.score * 100)).color }}
-                  >
-                    {m.value}
-                  </p>
-                </div>
-              ))}
+          {result.categories.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-sm font-semibold">Podle kategorií</p>
+              {result.categories.map((c) => {
+                const t = scoreTone(c.score);
+                return (
+                  <div key={c.key} className="flex items-center gap-3">
+                    <span className="w-32 shrink-0 text-sm text-muted-foreground">{c.label}</span>
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{ width: `${Math.max(c.score, 2)}%`, background: t.color }}
+                      />
+                    </div>
+                    <span className="w-12 shrink-0 text-right text-sm font-semibold" style={{ color: t.color }}>
+                      {c.score}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           )}
 
-          <div className="rounded-xl border border-border/60 p-5 text-center space-y-2">
-            <p className="font-semibold">
-              {result.issueCount > 0
-                ? `Našli jsme ${result.issueCount} ${
-                    result.issueCount === 1 ? "věc" : result.issueCount < 5 ? "věci" : "věcí"
-                  } ke zlepšení`
-                : "Nenašli jsme nic zásadního ke zlepšení"}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Detailní rozpis včetně konkrétních doporučení jsme poslali na{" "}
-              <strong>{formData.email}</strong>.
-            </p>
-          </div>
+          {result.findings.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-sm font-semibold">
+                Co konkrétně zlepšit{" "}
+                <span className="font-normal text-muted-foreground">
+                  ({result.issueCount} {result.issueCount === 1 ? "nález" : result.issueCount < 5 ? "nálezy" : "nálezů"})
+                </span>
+              </p>
+              <ul className="space-y-2">
+                {result.findings.map((f, i) => (
+                  <li
+                    key={`${f.title}-${i}`}
+                    className="rounded-xl border border-border/60 p-4"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span
+                        aria-hidden="true"
+                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                        style={{ background: f.severity === "critical" ? "#dc2626" : "#d97706" }}
+                      />
+                      <div className="min-w-0 space-y-1">
+                        <p className="font-medium text-sm">{f.title}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {f.recommendation}
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted-foreground">
+                Stejný rozpis jsme poslali i na <strong>{formData.email}</strong>.
+              </p>
+            </div>
+          )}
+
+          {result.findings.length === 0 && (
+            <div className="rounded-xl border border-border/60 p-5 text-center">
+              <p className="font-semibold">Nenašli jsme nic zásadního ke zlepšení</p>
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg">

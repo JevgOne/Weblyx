@@ -28,15 +28,40 @@ interface AuditIssue {
   savings?: string;
 }
 
+interface AuditCategory {
+  key: string;
+  label: string;
+  score: number; // 0-100
+}
+
+interface AuditFinding {
+  severity: "critical" | "warning";
+  title: string;
+  recommendation: string;
+}
+
 interface AuditResult {
   url: string;
   score: number;
   metrics: AuditMetric[];
   issueCount: number;
+  /** The six dimensions the in-house analyzer scores. */
+  categories?: AuditCategory[];
+  /** What is actually wrong, in words the visitor can act on. */
+  findings?: AuditFinding[];
   // Only in email, not returned to client
   issues?: AuditIssue[];
   opportunities?: AuditIssue[];
 }
+
+const CATEGORY_LABELS: Array<[string, string]> = [
+  ["seo", "SEO"],
+  ["performance", "Rychlost"],
+  ["security", "Bezpečnost"],
+  ["accessibility", "Přístupnost"],
+  ["social", "Sociální sítě"],
+  ["geo", "AI vyhledávání"],
+];
 
 function getScoreColor(score: number): string {
   if (score >= 0.9) return "#22c55e"; // green
@@ -66,122 +91,103 @@ async function runLocalAudit(url: string): Promise<AuditResult> {
   const a = await analyzeWebsite(url);
   const cat = a.categoryScores;
 
-  const metrics: AuditMetric[] = cat
-    ? [
-        { label: "SEO", value: `${Math.round(cat.seo)}/100`, score: cat.seo / 100 },
-        { label: "Rychlost", value: `${Math.round(cat.performance)}/100`, score: cat.performance / 100 },
-        { label: "Bezpečnost", value: `${Math.round(cat.security)}/100`, score: cat.security / 100 },
-      ]
+  const categories: AuditCategory[] = cat
+    ? CATEGORY_LABELS.map(([key, label]) => ({
+        key,
+        label,
+        score: Math.round((cat as Record<string, number>)[key] ?? 0),
+      }))
     : [];
 
-  const issues: AuditIssue[] = a.issues
-    .filter((i) => i.category !== "info")
-    .slice(0, 10)
+  // The three headline metrics stay for the compact view; the full six sit
+  // alongside them.
+  const metrics: AuditMetric[] = categories
+    .slice(0, 3)
+    .map((c) => ({ label: c.label, value: `${c.score}/100`, score: c.score / 100 }));
+
+  const actionable = a.issues.filter((i) => i.category !== "info");
+
+  const findings: AuditFinding[] = actionable
+    .slice(0, 12)
+    .map((i) => ({
+      severity: i.category === "critical" ? "critical" : "warning",
+      title: i.title,
+      recommendation: i.recommendation || i.description,
+    }));
+
+  const issues: AuditIssue[] = actionable
+    .slice(0, 12)
     .map((i) => ({ title: i.title, description: i.recommendation || i.description }));
 
   return {
     url,
     score: Math.round(a.overallScore),
     metrics,
+    categories,
+    findings,
     issueCount: a.issueCount.critical + a.issueCount.warning,
     issues,
     opportunities: [],
   };
 }
 
-async function runAudit(url: string): Promise<AuditResult> {
-  const apiUrl =
-    `${PSI_API}?url=${encodeURIComponent(url)}` +
-    `&strategy=mobile&category=performance&category=seo&category=best-practices` +
-    (PSI_KEY ? `&key=${encodeURIComponent(PSI_KEY)}` : "");
-
-  let res: Response;
+/**
+ * One analyzer, one experience.
+ *
+ * The public audit used to run PageSpeed and show three numbers, while the
+ * admin ran the in-house analyzer and got six scored dimensions plus the
+ * actual findings. Two tools answering the same question differently is how
+ * the two screens drifted apart. The in-house analyzer is now the audit —
+ * publicly and internally — so a visitor sees what we see.
+ *
+ * PageSpeed is kept as an optional refinement: with PAGESPEED_API_KEY set it
+ * replaces our estimated speed score with the real Lighthouse measurement.
+ * Without a key — the anonymous quota is exhausted and answers 429 — the audit
+ * is unaffected.
+ */
+async function pagespeedScore(url: string): Promise<number | null> {
+  if (!PSI_KEY) return null;
   try {
-    res = await fetch(apiUrl, { signal: AbortSignal.timeout(60000) });
+    const res = await fetch(
+      `${PSI_API}?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&key=${encodeURIComponent(PSI_KEY)}`,
+      { signal: AbortSignal.timeout(45000) }
+    );
+    if (!res.ok) {
+      console.warn(`PageSpeed unavailable (${res.status}); keeping the in-house speed score.`);
+      return null;
+    }
+    const data = await res.json();
+    const raw = data?.lighthouseResult?.categories?.performance?.score;
+    return typeof raw === "number" ? Math.round(raw * 100) : null;
   } catch (err) {
-    // Timed out or could not reach Google at all — same story as a 429.
-    console.warn("PageSpeed unreachable; using the in-house analyzer.", err);
-    return runLocalAudit(url);
+    console.warn("PageSpeed unreachable; keeping the in-house speed score.", err);
+    return null;
   }
-  if (!res.ok) {
-    // 429 is our exhausted quota and 403 is a key without the API enabled.
-    // Neither is the visitor's problem, so fall back rather than fail.
-    if (res.status === 429 || res.status === 403 || res.status >= 500) {
-      console.warn(`PageSpeed unavailable (${res.status}); using the in-house analyzer.`);
-      return runLocalAudit(url);
-    }
-    throw new Error(`PageSpeed API error: ${res.status}`);
-  }
+}
 
-  const data = await res.json();
-  const lhr = data.lighthouseResult;
-  const perfScore = lhr.categories?.performance?.score ?? 0;
-  const seoScore = lhr.categories?.seo?.score ?? 0;
-  const bpScore = lhr.categories?.["best-practices"]?.score ?? 0;
+async function runAudit(url: string): Promise<AuditResult> {
+  const [result, psi] = await Promise.all([runLocalAudit(url), pagespeedScore(url)]);
 
-  const audits = lhr.audits || {};
+  if (psi === null) return result;
 
-  // Key metrics
-  const metrics: AuditMetric[] = [
-    {
-      label: "Výkon (Performance)",
-      value: `${Math.round(perfScore * 100)}/100`,
-      score: perfScore,
-    },
-    {
-      label: "SEO",
-      value: `${Math.round(seoScore * 100)}/100`,
-      score: seoScore,
-    },
-    {
-      label: "Best Practices",
-      value: `${Math.round(bpScore * 100)}/100`,
-      score: bpScore,
-    },
-    {
-      label: "First Contentful Paint",
-      value: audits["first-contentful-paint"]?.displayValue || "N/A",
-      score: audits["first-contentful-paint"]?.score ?? 0,
-    },
-    {
-      label: "Largest Contentful Paint",
-      value: audits["largest-contentful-paint"]?.displayValue || "N/A",
-      score: audits["largest-contentful-paint"]?.score ?? 0,
-    },
-    {
-      label: "Cumulative Layout Shift",
-      value: audits["cumulative-layout-shift"]?.displayValue || "N/A",
-      score: audits["cumulative-layout-shift"]?.score ?? 0,
-    },
-  ];
-
-  // Collect issues (failed audits)
-  const issues: AuditIssue[] = [];
-  const opportunities: AuditIssue[] = [];
-
-  for (const [, audit] of Object.entries(audits) as [string, any][]) {
-    if (!audit || audit.score === null || audit.score === undefined) continue;
-    if (audit.score < 0.5 && audit.title) {
-      const item: AuditIssue = {
-        title: audit.title,
-        description: audit.description?.replace(/<[^>]*>/g, "").slice(0, 200) || "",
-        savings: audit.displayValue || undefined,
-      };
-      if (audit.details?.type === "opportunity") {
-        opportunities.push(item);
-      } else {
-        issues.push(item);
-      }
-    }
-  }
+  // Real Lighthouse beats our estimate, so it replaces the speed figure and
+  // the overall score is recomputed from the six dimensions it belongs to.
+  const categories = (result.categories ?? []).map((c) =>
+    c.key === "performance" ? { ...c, score: psi } : c
+  );
+  const score = categories.length
+    ? Math.round(categories.reduce((sum, c) => sum + c.score, 0) / categories.length)
+    : result.score;
 
   return {
-    url,
-    score: Math.round(perfScore * 100),
-    metrics,
-    issueCount: issues.length + opportunities.length,
-    issues,
-    opportunities,
+    ...result,
+    categories,
+    score,
+    metrics: categories.slice(0, 3).map((c) => ({
+      label: c.label,
+      value: `${c.score}/100`,
+      score: c.score / 100,
+    })),
   };
 }
 
@@ -347,7 +353,9 @@ export async function POST(request: NextRequest) {
       success: true,
       url: result.url,
       score: result.score,
-      metrics: result.metrics.slice(0, 3), // Only top 3 metrics
+      metrics: result.metrics,
+      categories: result.categories ?? [],
+      findings: result.findings ?? [],
       issueCount: result.issueCount,
     });
   } catch (error: any) {

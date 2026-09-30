@@ -180,8 +180,10 @@ describe('the project count is never written by hand', () => {
 describe('payment and revision claims match the terms', () => {
   const terms = readFileSync(join(ROOT, 'app/obchodni-podminky/page.tsx'), 'utf8');
 
-  it('the terms still require a deposit before work starts', () => {
-    expect(terms).toMatch(/zálohu\s*50\s*%?\s*před zahájením/i);
+  it('the terms tie the deposit to approving the quote, and work to the deposit', () => {
+    expect(terms).toMatch(/schválení cenové nabídky/i);
+    expect(terms).toMatch(/zálohu\s*50\s*%/i);
+    expect(terms).toMatch(/až po jejím uhrazení/i);
   });
 
   const FALSE_CLAIMS = [

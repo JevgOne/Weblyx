@@ -495,7 +495,7 @@
     }
   },
   "notFound": {
-    "metaTitle": "Stránka nenalezena | Weblyx",
+    "metaTitle": "Stránka nenalezena",
     "metaDescription": "Požadovaná stránka neexistuje.",
     "title": "Stránka nenalezena",
     "description": "Omlouváme se, ale stránka, kterou hledáte, neexistuje.",
@@ -504,7 +504,7 @@
     "contactLink": "/kontakt"
   },
   "faqPage": {
-    "metaTitle": "Časté otázky (FAQ) – Tvorba webových stránek | Weblyx",
+    "metaTitle": "Časté otázky (FAQ) – Tvorba webových stránek",
     "metaDescription": "Odpovědi na nejčastější otázky o tvorbě webů, cenách, dodacích lhůtách a službách.",
     "title": "Často kladené otázky",
     "subtitle": "Najděte odpovědi na všechny vaše otázky o tvorbě webových stránek",

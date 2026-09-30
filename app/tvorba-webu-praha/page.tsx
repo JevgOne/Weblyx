@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek Praha | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 3–10 dní. Sídlíme na Praze 1.",
+      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč. Sídlíme na Praze 1.",
     url: "https://www.weblyx.cz/tvorba-webu-praha",
     type: "website",
     images: [
@@ -66,7 +67,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tvorba webových stránek Praha | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
+      "Profesionální tvorba webových stránek v Praze. Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-webu-praha",
@@ -247,8 +248,8 @@ const RED_FLAGS = [
 const PROCESS = [
   { n: "01", title: "Konzultace", body: "Projdeme, co má web přinést a komu. Zdarma a nezávazně, osobně u nás na Školské nebo online." },
   { n: "02", title: "Nabídka s pevnou cenou", body: "Dostanete rozsah a cenu písemně. Cena platí pro ten rozsah — změny se domlouvají, nepřipisují." },
-  { n: "03", title: "Záloha 50 % a podklady", body: "Termín začíná běžet, až je záloha uhrazená a zároveň máme od vás všechny podklady — ne od prvního e-mailu. Záloha je na trhu běžná; nestandardní je, že vám u toho řekneme, co se stane, když termín nedodržíme: platíte jen polovinu." },
-  { n: "04", title: "Návrh a 2 kola revizí", body: "Dvě kola úprav designu jsou v ceně. Pokud ani po nich nejste spokojeni, vracíme zálohu." },
+  { n: "03", title: "Po schválení návrhu záloha 50 %", body: "Jakmile odsouhlasíte nabídku, hradíte zálohu 50 %. Termín začíná běžet, až je uhrazená a zároveň máme všechny podklady — ne od prvního e-mailu. Záloha je na trhu běžná; nestandardní je, že vám u toho řekneme, co se stane, když termín nedodržíme: platíte jen polovinu." },
+  { n: "04", title: "Design a 2 kola revizí", body: "Dvě kola úprav designu jsou v ceně. Pokud ani po nich nejste spokojeni, vracíme zálohu." },
   { n: "05", title: "Vývoj a testování", body: "Stavíme na Next.js, testujeme na mobilech i desktopu a měříme PageSpeed dřív, než web pustíme ven." },
   { n: "06", title: "Spuštění a podpora", body: "Doplatek je splatný před předáním. Podpora 1–3 měsíce podle balíčku běží od spuštění. Žádný měsíční paušál." },
 ];
@@ -511,6 +512,7 @@ export default async function TvorbaWebuPrahaPage() {
                       "Dodání za 3–10 pracovních dní podle balíčku",
                       "30 dní podpora po spuštění zdarma",
                       "Bez měsíčních poplatků za hosting",
+                      DEPOSIT_SHORT,
                     ].map((feature) => (
                       <div key={feature} className="flex items-start gap-2">
                         <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />

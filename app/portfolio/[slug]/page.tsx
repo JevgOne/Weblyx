@@ -44,24 +44,27 @@ function metaDescription(text: string, fallback: string): string {
  * appending "| Weblyx Portfolio" pushed several past 90 characters. The part
  * before the dash is the project name, which is what a search result needs.
  */
-const TITLE_MAX = 60;
-
-function metaTitle(title: string, brand: string): string {
-  const full = `${title} | ${brand}`;
-  if (full.length <= TITLE_MAX) return full;
-
-  const name = title.split(/\s+[–—-]\s+/)[0].trim();
-  const short = `${name} | ${brand}`;
-  return short.length <= TITLE_MAX ? short : name.slice(0, TITLE_MAX);
-}
-
 /**
- * Prerender the published projects. Same reason as the blog: without it every
- * visit re-rendered the page and re-read Turso, and nothing was ever cached.
+ * The brand comes from the root layout's title template ("%s | Weblyx"), so a
+ * page that appends it too ends up as "Titan Gym | Weblyx | Weblyx". This
+ * returns the project title alone, trimmed to what fits once the template has
+ * had its say.
+ *
+ * An earlier version also cut at the first dash, which turned "Titan Gym – web
+ * pro boxerský klub s online bookingem" into "Titan Gym" — 27 characters of
+ * search result describing nothing. The descriptive half is the half worth
+ * keeping.
  */
-export async function generateStaticParams() {
-  const items = await safeRead(() => getPublishedPortfolio('cs'), [], 'portfolio static params');
-  return items.map((item) => ({ slug: item.id }));
+const BRAND_SUFFIX = " | Weblyx".length;
+const TITLE_MAX = 60 - BRAND_SUFFIX;
+
+function metaTitle(title: string): string {
+  const clean = title.replace(/\s+/g, " ").trim();
+  if (clean.length <= TITLE_MAX) return clean;
+
+  const cut = clean.slice(0, TITLE_MAX);
+  const atWord = cut.lastIndexOf(" ");
+  return (atWord > 20 ? cut.slice(0, atWord) : cut).replace(/[\s–—-]+$/, "");
 }
 
 export async function generateMetadata({
@@ -86,7 +89,7 @@ export async function generateMetadata({
     const brandName = isDE ? 'Seitelyx' : 'Weblyx';
 
     return {
-      title: metaTitle(project.title, brandName),
+      title: metaTitle(project.title),
       description: metaDescription(
         project.description || "",
         isDE ? `Projektbeispiel: ${project.title}` : `Ukázka projektu: ${project.title}`

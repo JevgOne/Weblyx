@@ -311,7 +311,7 @@ export function Pricing({ serverTiers }: PricingProps) {
                 {locale === 'de' ? 'Faire Zahlungsbedingungen' : 'Férové platební podmínky'}
               </h4>
               <p className="text-[13px] text-[hsl(var(--ink-soft))] leading-relaxed">
-                {locale === 'de' ? '50 % Anzahlung, 50 % nach Go-Live. Keine monatlichen Gebühren.' : '50 % záloha, doplatek po předání. Žádné měsíční poplatky.'}
+                {locale === 'de' ? 'Nach Freigabe des Angebots 50 % Anzahlung, 50 % nach Go-Live. Keine monatlichen Gebühren.' : 'Po schválení návrhu záloha 50 %, doplatek po předání. Žádné měsíční poplatky.'}
               </p>
             </div>
 

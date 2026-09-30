@@ -28,7 +28,6 @@ const FOOTER_COLUMNS = [
       { label: "Recenze", href: "/recenze" },
       { label: "Blog", href: "/blog" },
       { label: "Časté otázky", href: "/faq" },
-      { label: "Archiv změn", href: "/archiv" },
     ],
   },
   {

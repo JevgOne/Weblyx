@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tvorba webových stránek Ostrava | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
+      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč.",
     url: "https://www.weblyx.cz/tvorba-webu-ostrava",
     type: "website",
     images: [
@@ -66,7 +67,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tvorba webových stránek Ostrava | Od 7 990 Kč | Weblyx",
     description:
-      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 3–10 dní.",
+      "Profesionální tvorba webových stránek v Ostravě. Next.js weby s PageSpeed 90+, dodání za 3–5 dní. Od 7 990 Kč.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/tvorba-webu-ostrava",
@@ -378,6 +379,7 @@ export default async function TvorbaWebuOstravaPage() {
                       "Lokální SEO pro Ostravu a MSK",
                       "PageSpeed 90+ garantováno (od 14 900 Kč)",
                       "Bez měsíčních poplatků za hosting",
+                      DEPOSIT_SHORT,
                       "Podpora po spuštění zdarma (1–3 měsíce podle balíčku)",
                     ].map((feature) => (
                       <div key={feature} className="flex items-start gap-2">
