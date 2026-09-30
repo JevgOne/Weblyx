@@ -21,10 +21,10 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: "Recenze klientů",
+    title: "Recenze klientů — hodnocení 5,0 na Googlu",
     // The old description gave no reason to click. The rating is the reason.
     description:
-      "Hodnocení 5,0 na Google. Přečtěte si, jak spolupráce s Weblyx probíhala — vlastními slovy klientů.",
+      "Hodnocení 5,0 na Googlu. Přečtěte si vlastními slovy klientů, jak spolupráce probíhala — weby, e-shopy i redesigny, od živnostníků po firmy.",
     alternates: { canonical: "https://www.weblyx.cz/recenze" },
   };
 }

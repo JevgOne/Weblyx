@@ -64,7 +64,14 @@ function metaTitle(title: string): string {
 
   const cut = clean.slice(0, TITLE_MAX);
   const atWord = cut.lastIndexOf(" ");
-  return (atWord > 20 ? cut.slice(0, atWord) : cut).replace(/[\s–—-]+$/, "");
+  let out = (atWord > 20 ? cut.slice(0, atWord) : cut).replace(/[\s–—-]+$/, "");
+
+  // Do not leave the title hanging on a preposition: "…klub s online" reads
+  // like the sentence was cut off, because it was.
+  const DANGLING = /\s+(a|i|s|se|v|ve|z|ze|k|ke|o|od|po|pro|na|do|u|za|při|bez|podle|včetně)$/i;
+  while (DANGLING.test(out)) out = out.replace(DANGLING, "");
+
+  return out.replace(/[\s–—-]+$/, "");
 }
 
 export async function generateMetadata({

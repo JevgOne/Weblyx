@@ -380,3 +380,51 @@ describe('the Prague page lists every package', () => {
     expect(meta).not.toMatch(/7 990[\s\S]{0,40}dodání za 5–7 dní/);
   });
 });
+
+/**
+ * Titles and descriptions stay inside what a search result actually shows.
+ *
+ * An external crawl found nine pages with titles too short to say anything,
+ * six with no structured data at all, and several carrying the brand twice —
+ * the root layout's template appends "| Weblyx", so a page that writes it too
+ * gets it twice. These are the pages that were reported.
+ */
+describe('reported pages carry usable metadata', () => {
+  const PAGES = [
+    'app/cookies/page.tsx',
+    'app/obchodni-podminky/page.tsx',
+    'app/ochrana-udaju/page.tsx',
+    'app/pagespeed-garance/page.tsx',
+    'app/recenze/page.tsx',
+    'app/poptavka/page.tsx',
+  ];
+
+  for (const rel of PAGES) {
+    it(`${rel} declares structured data`, () => {
+      expect(readFileSync(join(ROOT, rel), 'utf8')).toContain('JsonLd');
+    });
+  }
+
+  it('no page writes the brand into its own title — the template adds it', () => {
+    const hits: string[] = [];
+    for (const path of FILES) {
+      const rel = relative(ROOT, path);
+      if (!rel.startsWith('app/') || !rel.endsWith('page.tsx')) continue;
+      const src = readFileSync(path, 'utf8');
+
+      // Only the title on the metadata object itself is rewritten by the
+      // template. openGraph and twitter carry their own and may repeat the
+      // brand, so the scan stops at the first nested block.
+      const start = src.search(/export const metadata|: Promise<Metadata> \{|\): Metadata \{/);
+      if (start === -1) continue;
+      const nested = src.slice(start).search(/\n\s*(openGraph|twitter|alternates|icons)\s*:/);
+      const head = nested === -1 ? src.slice(start) : src.slice(start, start + nested);
+
+      const m = head.match(/\btitle:\s*"([^"]*)"/);
+      if (m && /\|\s*(Weblyx|Seitelyx)\s*$/.test(m[1])) {
+        hits.push(`${rel}  title: "${m[1]}"`);
+      }
+    }
+    expect(hits, `značka se zdvojí se šablonou:\n${hits.join('\n')}`).toEqual([]);
+  });
+});

@@ -28,7 +28,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "WordPress alternativa | Next.js web bez poplatků",
-  description: "WordPress je pomalý, zranitelný a předražený. Srovnání WordPress vs Next.js: PageSpeed, bezpečnost, náklady. Moderní alternativa WordPress od 7 990 Kč bez měsíčních poplatků.",
+  description: "Srovnání WordPress vs Next.js: rychlost, bezpečnost a skutečné náklady. Moderní alternativa od 7 990 Kč bez měsíčních poplatků.",
   keywords: [
     "wordpress alternativa",
     "wordpress vs next.js",

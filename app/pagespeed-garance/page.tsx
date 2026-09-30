@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://www.weblyx.cz/pagespeed-garance" },
-  title: "PageSpeed Garance 90+",
-  description: "Detailní podmínky naší garance rychlosti načítání PageSpeed 90+ nebo vrácení peněz.",
+  title: "Garance PageSpeed 90+ — nebo vám vrátíme peníze",
+  description: "Garantujeme PageSpeed skóre 90+ od balíčku Základní Web, jinak vracíme peníze. Co přesně měříme, jak si to ověříte sami a za jakých podmínek garance platí.",
 };
 
 export default function PageSpeedGuaranteePage() {
+  const breadcrumbs = [
+    { name: "Domů", url: "https://www.weblyx.cz" },
+    { name: "Garance PageSpeed 90+", url: "https://www.weblyx.cz/pagespeed-garance" },
+  ];
+
   return (
+    <>
+      <JsonLd data={generateWebPageSchema({ name: "Garance PageSpeed 90+", description: "Podmínky garance rychlosti načítání: PageSpeed 90+ nebo vrácení peněz.", url: "https://www.weblyx.cz/pagespeed-garance", breadcrumbs })} />
+      <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
     <main className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-4xl prose prose-lg">
         <h1>Podmínky PageSpeed Garance 90+</h1>
@@ -148,5 +158,6 @@ export default function PageSpeedGuaranteePage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

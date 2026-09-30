@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 import { getDomainLocale, getBrandConfig } from "@/lib/brand";
 
 
@@ -16,15 +18,23 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: "Zásady cookies",
+    title: "Zásady cookies — co ukládáme a jak to vypnete",
     description:
-      "Jaké cookies Weblyx používá, k čemu slouží a jak si je můžete kdykoli nastavit.",
+      "Jaké cookies Weblyx používá, k čemu každá skupina slouží, jak dlouho se drží a jak si souhlas kdykoli změníte nebo odvoláte. Nezbytné, analytické i marketingové.",
     alternates: { canonical: "https://www.weblyx.cz/cookies" },
   };
 }
 
 export default function CookiesPage() {
+  const breadcrumbs = [
+    { name: "Domů", url: "https://www.weblyx.cz" },
+    { name: "Zásady cookies", url: "https://www.weblyx.cz/cookies" },
+  ];
+
   return (
+    <>
+      <JsonLd data={generateWebPageSchema({ name: "Zásady cookies", description: "Jaké cookies web používá, k čemu slouží a jak si souhlas kdykoli změníte.", url: "https://www.weblyx.cz/cookies", breadcrumbs })} />
+      <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
     <main className="min-h-screen py-20">
       <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
@@ -184,5 +194,6 @@ export default function CookiesPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

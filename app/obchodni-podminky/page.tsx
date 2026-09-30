@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
-  title: "Obchodní podmínky",
-  description: "Všeobecné obchodní podmínky poskytování služeb. Pravidla spolupráce, platební podmínky a reklamační řád.",
+  title: "Obchodní podmínky — záloha, termíny a reklamace",
+  description: "Závazné podmínky spolupráce: po schválení cenové nabídky záloha 50 %, doplatek před předáním. Termín dodání, co se stane při jeho nedodržení, revize a reklamace.",
   openGraph: {
     title: "Obchodní podmínky | Weblyx",
     description: "Všeobecné obchodní podmínky poskytování služeb.",
@@ -25,7 +27,15 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
+  const breadcrumbs = [
+    { name: "Domů", url: "https://www.weblyx.cz" },
+    { name: "Obchodní podmínky", url: "https://www.weblyx.cz/obchodni-podminky" },
+  ];
+
   return (
+    <>
+      <JsonLd data={generateWebPageSchema({ name: "Obchodní podmínky", description: "Závazné podmínky spolupráce: záloha 50 % po schválení nabídky, termíny dodání, revize a reklamace.", url: "https://www.weblyx.cz/obchodni-podminky", breadcrumbs })} />
+      <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
     <main className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-4xl prose prose-lg">
         <h1>Obchodní podmínky</h1>
@@ -146,5 +156,6 @@ export default function TermsPage() {
         </p>
       </div>
     </main>
+    </>
   );
 }

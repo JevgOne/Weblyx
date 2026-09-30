@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 
 export const metadata: Metadata = {
-  title: "Ochrana osobních údajů",
-  description: "Zásady ochrany osobních údajů a GDPR compliance. Informace o zpracování osobních údajů dle nařízení GDPR.",
+  title: "Ochrana osobních údajů — co sbíráme a proč",
+  description: "Jaké údaje sbíráme z poptávkového formuláře a analytiky, jak dlouho je držíme, komu je předáváme a jak si vyžádáte jejich výmaz. V souladu s GDPR.",
   openGraph: {
     title: "Ochrana osobních údajů | Weblyx",
     description: "Zásady ochrany osobních údajů a GDPR compliance.",
@@ -25,7 +27,15 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
+  const breadcrumbs = [
+    { name: "Domů", url: "https://www.weblyx.cz" },
+    { name: "Ochrana osobních údajů", url: "https://www.weblyx.cz/ochrana-udaju" },
+  ];
+
   return (
+    <>
+      <JsonLd data={generateWebPageSchema({ name: "Ochrana osobních údajů", description: "Jaké osobní údaje zpracováváme, jak dlouho je držíme a jak si vyžádáte jejich výmaz.", url: "https://www.weblyx.cz/ochrana-udaju", breadcrumbs })} />
+      <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
     <main className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-4xl prose prose-lg">
         <h1>Ochrana osobních údajů</h1>
@@ -109,5 +119,6 @@ export default function PrivacyPage() {
         </p>
       </div>
     </main>
+    </>
   );
 }

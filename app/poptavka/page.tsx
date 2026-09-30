@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { QuoteForm } from "@/components/poptavka/QuoteForm";
 import { getLocale } from "next-intl/server";
@@ -11,7 +13,7 @@ export const revalidate = 3600;
 const isSeitelyx = process.env.NEXT_PUBLIC_DOMAIN?.includes('seitelyx.de');
 
 export const metadata: Metadata = isSeitelyx ? {
-  title: "Unverbindliche Anfrage – Websites ab 320 € | Seitelyx",
+  title: "Unverbindliche Anfrage – Websites ab 320 €",
   description: "Füllen Sie das Formular aus und wir melden uns innerhalb von 24 Stunden mit einem Angebot. Neue Website, Redesign, Online-Shop oder Landing Page.",
   keywords: [
     "Website Anfrage",
@@ -64,7 +66,24 @@ export default async function QuotePage() {
   const isDE = locale === 'de';
   const pricing = await getPricingData();
 
+  const breadcrumbs = [
+    { name: "Domů", url: "https://www.weblyx.cz" },
+    { name: isDE ? "Anfrage" : "Poptávka", url: "https://www.weblyx.cz/poptavka" },
+  ];
+
   return (
+    <>
+    <JsonLd
+      data={generateWebPageSchema({
+        name: isDE ? "Unverbindliche Anfrage" : "Nezávazná poptávka",
+        description: isDE
+          ? "Formular für ein unverbindliches Angebot innerhalb von 24 Stunden."
+          : "Formulář pro nezávaznou cenovou nabídku do 24 hodin. Po schválení návrhu se hradí záloha 50 %.",
+        url: "https://www.weblyx.cz/poptavka",
+        breadcrumbs,
+      })}
+    />
+    <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
     <div className="min-h-screen py-16 px-4 bg-gradient-to-br from-background via-primary/5 to-background">
       <div className="container mx-auto max-w-2xl">
         {/* Static server-rendered content for SEO */}
@@ -108,5 +127,6 @@ export default async function QuotePage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
