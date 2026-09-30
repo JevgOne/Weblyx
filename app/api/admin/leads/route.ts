@@ -47,6 +47,18 @@ export async function GET(request: NextRequest) {
         briefGeneratedAt: row.brief_generated_at,
         proposalEmailSent: row.proposal_email_sent === 1,
         proposalEmailSentAt: row.proposal_email_sent_at,
+        // Where the enquiry came from. Null for organic and direct, which is
+        // most of them — the absence is information too.
+        attribution: {
+          utmSource: row.utm_source,
+          utmMedium: row.utm_medium,
+          utmCampaign: row.utm_campaign,
+          utmTerm: row.utm_term,
+          utmContent: row.utm_content,
+          gclid: row.gclid,
+          landingPage: row.landing_page,
+          referrer: row.referrer,
+        },
         createdAt: new Date(row.created_at * 1000).toISOString(),
         updatedAt: new Date(row.updated_at * 1000).toISOString(),
         created: new Date(row.created_at * 1000).toISOString(),

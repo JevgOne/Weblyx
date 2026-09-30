@@ -24,6 +24,9 @@ const NEW_MIGRATIONS = [
   // 010 alters pricing_addons, which 006 creates — it has to run through the
   // runner, not the "applied by hand" path, or the table is not there yet.
   '010_addon_kind.sql',
+  // 014 adds attribution columns to `leads`. Additive and nullable, so it is
+  // safe to run against a database that already has rows.
+  '014_lead_attribution.sql',
 ];
 
 function statements(file: string): string[] {

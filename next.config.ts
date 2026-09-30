@@ -115,7 +115,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/cenik',
-        destination: '/#cenik',
+        destination: '/cenik-webu',
         permanent: true,
       },
       {

@@ -327,3 +327,16 @@ html {
 body:has(.wbx-admin) .site-chrome {
   display: none;
 }
+
+/* --- Ad landing pages ------------------------------------------------------
+   The root layout renders the header and footer for every route, and in the
+   App Router a child cannot remove what a parent laid down. A page that wants
+   neither opts out the same way the admin panel does: it carries a class and
+   the chrome steps aside.
+
+   This hides rather than removes — the markup stays in the DOM. For a page
+   whose only job is to convert an ad click that is the point: no visible way
+   out, while the links remain for anything reading the HTML. */
+body:has(.wbx-landing) .site-chrome {
+  display: none;
+}

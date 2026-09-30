@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AttributionCapture } from "@/components/tracking/AttributionCapture";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import "./nova/nova.css";
@@ -105,6 +106,7 @@ export default async function RootLayout({
                   component deciding this from usePathname() renders the wrong
                   answer into prerendered HTML, which is how the Czech homepage
                   ended up with two headers and two footers. */}
+              <AttributionCapture />
               <div className="site-chrome">{isCzech ? <NovaHeader /> : <Header />}</div>
               {children}
               <div className="site-chrome">

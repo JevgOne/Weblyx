@@ -450,6 +450,35 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
             </div>
           )}
 
+          {/* Where the lead came from. Shown only when there is something to
+              show — most enquiries are organic and an empty box says nothing. */}
+          {(() => {
+            const a = (currentLead as any).attribution;
+            if (!a || !(a.gclid || a.utmSource || a.utmCampaign || a.landingPage || a.referrer)) return null;
+            const rows: Array<[string, string | null]> = [
+              ["Kampaň", a.utmCampaign],
+              ["Zdroj", a.utmSource && a.utmMedium ? `${a.utmSource} / ${a.utmMedium}` : a.utmSource],
+              ["Klíčové slovo", a.utmTerm],
+              ["Inzerát", a.utmContent],
+              ["Google Ads klik", a.gclid],
+              ["Vstupní stránka", a.landingPage],
+              ["Odkud přišel", a.referrer],
+            ];
+            return (
+              <div className="space-y-2">
+                <h4 className="font-semibold">Odkud poptávka přišla</h4>
+                <div className="bg-muted p-4 rounded-lg space-y-2">
+                  {rows.filter(([, v]) => v).map(([label, value]) => (
+                    <div key={label} className="text-sm break-all">
+                      <span className="font-medium">{label}: </span>
+                      <span>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* NEW: Extended Business Info */}
           {(currentLead.industry || currentLead.companySize || currentLead.existingWebsite) && (
             <div className="space-y-2">

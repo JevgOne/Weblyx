@@ -278,3 +278,78 @@ describe('the free audit is reachable', () => {
     expect(readFileSync(join(__dirname, '..', 'components/nova/footer.tsx'), 'utf8')).toContain('"/audit"');
   });
 });
+
+/**
+ * The landing pages and what they are obliged to carry.
+ *
+ * Every one of them shows a price, so every one has to say that half of it is
+ * due on approval — that is the term a visitor is most likely to be surprised
+ * by, and burying it is how a quote turns into an argument.
+ */
+describe('landing pages', () => {
+  const PAGES = [
+    'app/web-praha-nabidka/page.tsx',
+    'app/cenik-webu/page.tsx',
+    'app/web-za-3-5-dni/page.tsx',
+    'app/web-pro-male-firmy/page.tsx',
+    'app/web-pro-zivnostniky/page.tsx',
+  ];
+
+  for (const rel of PAGES) {
+    const src = readFileSync(join(__dirname, '..', rel), 'utf8');
+
+    it(`${rel} states the deposit`, () => {
+      expect(src).toMatch(/DEPOSIT_SHORT|Po schválení návrhu/);
+    });
+
+    it(`${rel} declares structured data`, () => {
+      expect(src).toContain('JsonLd');
+    });
+  }
+
+  it('only the ad landing hides the site chrome', () => {
+    // The others are organic pages too: hiding their header would cut them out
+    // of the site's internal linking for no gain.
+    const hiding = PAGES.filter((rel) =>
+      readFileSync(join(__dirname, '..', rel), 'utf8').includes('wbx-landing')
+    );
+    expect(hiding).toEqual(['app/web-praha-nabidka/page.tsx']);
+  });
+
+  it('the ad landing is noindex and absent from the sitemap', () => {
+    const page = readFileSync(join(__dirname, '..', 'app/web-praha-nabidka/page.tsx'), 'utf8');
+    expect(page).toMatch(/robots:\s*\{\s*index:\s*false/);
+    const sitemap = readFileSync(join(__dirname, '..', 'app/sitemap.ts'), 'utf8');
+    expect(sitemap).not.toMatch(/\$\{baseUrl\}\/web-praha-nabidka/);
+  });
+
+  it('the chrome opt-out exists in the stylesheet', () => {
+    const css = readFileSync(join(__dirname, '..', 'app/globals.css'), 'utf8');
+    expect(css).toMatch(/body:has\(\.wbx-landing\)\s*\.site-chrome/);
+  });
+});
+
+/**
+ * Attribution. Nothing captured utm or gclid, so every enquiry arrived without
+ * a way to tell which campaign paid for it.
+ */
+describe('lead attribution', () => {
+  it('the enquiry endpoint stores the campaign columns', () => {
+    const route = readFileSync(join(__dirname, '..', 'app/api/contact/route.ts'), 'utf8');
+    for (const col of ['utm_source', 'utm_campaign', 'gclid', 'landing_page', 'referrer']) {
+      expect(route, `chybí ${col}`).toContain(col);
+    }
+  });
+
+  it('capture is first-touch, so browsing does not erase the source', () => {
+    const src = readFileSync(join(__dirname, '..', 'components/tracking/AttributionFields.tsx'), 'utf8');
+    expect(src).toContain('sessionStorage');
+    expect(src).toMatch(/if \(stored && \(stored\.gclid \|\| stored\.utm_source\)\) return stored;/);
+  });
+
+  it('the migration is additive', () => {
+    const sql = readFileSync(join(__dirname, '..', 'migrations/014_lead_attribution.sql'), 'utf8');
+    expect(sql).toMatch(/ALTER TABLE leads ADD COLUMN/);
+    expect(sql).not.toMatch(/DROP|DELETE|UPDATE\s+leads/i);
+  });
+});

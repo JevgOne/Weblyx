@@ -13,7 +13,7 @@ import { getPublishedBlogPostsByLanguage } from '@/lib/turso/blog';
  * every day — and a sitemap that cries wolf gets its lastmod ignored for
  * the whole domain, including the blog, where the dates are real.
  */
-const STATIC_LAST_MODIFIED = new Date('2026-09-19');
+const STATIC_LAST_MODIFIED = new Date('2026-09-30');
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN === 'seitelyx.de' ? 'https://seitelyx.de' : 'https://www.weblyx.cz';
@@ -229,6 +229,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'monthly',
           priority: 0.7,
         },
+        {
+          url: `${baseUrl}/cenik-webu`,
+          lastModified: STATIC_LAST_MODIFIED,
+          changeFrequency: 'monthly',
+          priority: 0.8,
+        },
+        {
+          url: `${baseUrl}/web-za-3-5-dni`,
+          lastModified: STATIC_LAST_MODIFIED,
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/web-pro-male-firmy`,
+          lastModified: STATIC_LAST_MODIFIED,
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        // /web-praha-nabidka is deliberately absent: it is noindex and exists
+        // only as an ad destination, so listing it would invite the crawl the
+        // metadata asks it not to make.
         {
           url: `${baseUrl}/audit`,
           lastModified: STATIC_LAST_MODIFIED,

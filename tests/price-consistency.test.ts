@@ -294,10 +294,21 @@ describe('the address matches the commercial register', () => {
       readFileSync(path, 'utf8')
         .split('\n')
         .forEach((line, i) => {
-          if (/Revoluční/.test(line)) hits.push(`${rel}:${i + 1}`);
+          // The map embed on /kontakt carried the old street percent-encoded,
+          // so the plain-text check never saw it and the pin sat on Revoluční
+          // for months while every caption said Školská. Match both forms.
+          const ENCODED = /Revolu(čn|%C4%8Dn)/i;
+          if (ENCODED.test(line)) hits.push(`${rel}:${i + 1}  ${line.trim().slice(0, 90)}`);
         });
     }
     expect(hits, `stará adresa zůstala:\n${hits.join('\n')}`).toEqual([]);
+  });
+
+  it('the map on the contact page points at the registered office', () => {
+    const src = readFileSync(join(ROOT, 'app/kontakt/page.tsx'), 'utf8');
+    const iframe = src.match(/maps\.google\.com\/maps\?q=([^"&]+)/);
+    expect(iframe, 'mapa na /kontakt nenalezena').not.toBeNull();
+    expect(decodeURIComponent(iframe![1])).toContain('Školská 660/3');
   });
 
   it('schema.org carries the registered office', () => {

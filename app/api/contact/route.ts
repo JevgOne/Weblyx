@@ -9,7 +9,17 @@ import { generateContactFormEmail } from "@/lib/email/templates";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, projectType, companyName, description, __form_timestamp } = body;
+    const {
+      name, email, phone, projectType, companyName, description, __form_timestamp,
+      // Where the visitor came from. Optional — organic and direct traffic
+      // carries none of it, and the enquiry is just as real without it.
+      utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+      gclid, landing_page, referrer,
+    } = body;
+
+    /** Attribution is visitor-supplied text; cap it rather than trust it. */
+    const attr = (value: unknown, max = 200): string | null =>
+      typeof value === "string" && value.trim() ? value.trim().slice(0, max) : null;
 
     // 🤖 BOT DETECTION: Honeypot validation
     if (!validateHoneypot(body)) {
@@ -53,8 +63,11 @@ export async function POST(request: NextRequest) {
       sql: `
         INSERT INTO leads (
           id, name, email, phone, company, project_type,
-          business_description, status, source, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
+          business_description, status, source,
+          utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+          gclid, landing_page, referrer,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())
       `,
       args: [
         leadId,
@@ -66,6 +79,14 @@ export async function POST(request: NextRequest) {
         description,
         'new',
         'contact_form',
+        attr(utm_source),
+        attr(utm_medium),
+        attr(utm_campaign),
+        attr(utm_term),
+        attr(utm_content),
+        attr(gclid),
+        attr(landing_page),
+        attr(referrer, 300),
       ],
     });
 

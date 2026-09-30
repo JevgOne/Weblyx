@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -27,7 +28,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Web pro živnostníky a OSVČ od 7 990 Kč",
-  description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Levný web pro podnikatele s garancí PageSpeed 90+, SEO v ceně, dodání za 5–7 dní. Bez měsíčních poplatků.",
+  description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Levný web pro podnikatele s garancí PageSpeed 90+, SEO v ceně, dodání za 3–5 dní. Bez měsíčních poplatků.",
   keywords: [
     "web pro živnostníky",
     "webové stránky pro OSVČ",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Web pro živnostníky | Od 7 990 Kč | Weblyx",
-    description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní, SEO v ceně.",
+    description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 3–5 dní, SEO v ceně.",
     url: "https://www.weblyx.cz/web-pro-zivnostniky",
     type: "website",
     images: [{ url: "/images/og/og-web-pro-zivnostniky.png", width: 1200, height: 630, alt: "Weblyx - Web pro živnostníky" }],
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Web pro živnostníky | Od 7 990 Kč | Weblyx",
-    description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 5–7 dní.",
+    description: "Profesionální web pro živnostníky a OSVČ od 7 990 Kč. Dodání za 3–5 dní.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/web-pro-zivnostniky",
@@ -61,7 +62,7 @@ export const metadata: Metadata = {
 const PAIN_POINTS = [
   {
     problem: "Nemám čas řešit web",
-    solution: "Dodáme hotový web za 5–7 dní. Vy se staráte o podnikání, my o web.",
+    solution: "Dodáme hotový web za 3–5 dní. Vy se staráte o podnikání, my o web.",
   },
   {
     problem: "Nemám na to rozpočet",
@@ -100,7 +101,7 @@ const FAQS = [
   {
     question: "Jak dlouho trvá vytvoření webu pro živnostníka?",
     answer:
-      "Jednoduchý prezentační web pro živnostníka dodáváme za 5–7 pracovních dní. Stačí nám vaše podklady (texty, fotky, logo) a my se postaráme o zbytek.",
+      "Jednoduchou vizitku dodáme za 3–5 pracovních dní, web o několika podstránkách za 5–7. Lhůta začíná běžet, až je uhrazená záloha a zároveň máme vaše podklady — texty, fotky a logo.",
   },
   {
     question: "Můžu si web spravovat sám?",
@@ -156,7 +157,7 @@ export default function WebProZivnostnikyPage() {
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
               </Link>{" "}
-              dodaný za 5–7 dní.
+              dodaný za 3–5 dní.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/poptavka" size="lg" showArrow>
@@ -245,6 +246,9 @@ export default function WebProZivnostnikyPage() {
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
               <strong>Webové stránky pro OSVČ od 7 990 Kč</strong>. Jednorázová platba, žádné skryté poplatky.
+            </p>
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto -mt-6 mb-10">
+              {DEPOSIT_SHORT} Doplatek před předáním.
             </p>
 
             <Card className="border-2 border-primary/40 shadow-xl max-w-lg mx-auto">
@@ -359,7 +363,7 @@ export default function WebProZivnostnikyPage() {
                   Pojďme vytvořit <span className="text-primary">váš profesionální web</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Za 5–7 dní budete mít web, na který budete pyšní. Vyplňte{" "}
+                  Za 3–5 dní budete mít web, na který budete pyšní. Vyplňte{" "}
                   <strong>nezávaznou poptávku</strong> a do 24 hodin se vám ozveme s nabídkou.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

@@ -4,6 +4,7 @@ const FOOTER_COLUMNS = [
     links: [
       { label: "Tvorba webových stránek", href: "/sluzby#web" },
       { label: "Audit webu zdarma", href: "/audit" },
+      { label: "Ceník webu", href: "/cenik-webu" },
       { label: "SEO optimalizace", href: "/seo-optimalizace" },
       { label: "Redesign webu", href: "/redesign-webu" },
       { label: "Rychlost načítání", href: "/pagespeed-garance" },
@@ -18,6 +19,7 @@ const FOOTER_COLUMNS = [
       { label: "Tvorba webu Ostrava", href: "/tvorba-webu-ostrava" },
       { label: "Web pro živnostníky", href: "/web-pro-zivnostniky" },
       { label: "Web pro restaurace", href: "/web-pro-restaurace" },
+      { label: "Web pro malé firmy", href: "/web-pro-male-firmy" },
     ],
   },
   {
