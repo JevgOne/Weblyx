@@ -54,6 +54,24 @@ interface AuditResult {
   opportunities?: AuditIssue[];
 }
 
+/**
+ * Our own measurement of 50 Czech company websites, published at
+ * /blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43. A score on its
+ * own tells a visitor nothing; a score against a benchmark we measured
+ * ourselves is the one thing in this report the competition cannot copy.
+ */
+const BENCHMARK_AVERAGE = 43;
+const BENCHMARK_SAMPLE = 50;
+const BENCHMARK_URL =
+  "https://www.weblyx.cz/blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43";
+
+function benchmarkVerdict(score: number): string {
+  if (score >= 90) return `To je výrazně nad průměrem českých firemních webů (${BENCHMARK_AVERAGE}/100) — patříte do nejlepších procent.`;
+  if (score >= BENCHMARK_AVERAGE + 15) return `To je nad průměrem českých firemních webů, který jsme naměřili na ${BENCHMARK_AVERAGE}/100.`;
+  if (score >= BENCHMARK_AVERAGE) return `To je kolem průměru českých firemních webů (${BENCHMARK_AVERAGE}/100) — prostor ke zlepšení tu je.`;
+  return `To je pod průměrem českých firemních webů, který jsme naměřili na ${BENCHMARK_AVERAGE}/100.`;
+}
+
 const CATEGORY_LABELS: Array<[string, string]> = [
   ["seo", "SEO"],
   ["performance", "Rychlost"],
@@ -194,7 +212,12 @@ async function runAudit(url: string): Promise<AuditResult> {
 function buildEmailHtml(result: AuditResult): string {
   const overallColor = getScoreColor(result.score / 100);
 
-  const metricsHtml = result.metrics
+  // All six dimensions, not the three that fit on the page.
+  const rows = (result.categories?.length
+    ? result.categories.map((c) => ({ label: c.label, value: `${c.score}/100`, score: c.score / 100 }))
+    : result.metrics);
+
+  const metricsHtml = rows
     .map(
       (m) => `
     <tr>
@@ -204,18 +227,43 @@ function buildEmailHtml(result: AuditResult): string {
     )
     .join("");
 
-  const issuesHtml = [...(result.issues || []), ...(result.opportunities || [])]
+  // Every finding carries what to do about it. The report used to list titles
+  // only — "Obrázky bez ALT atributu" says what, never what next, which is the
+  // whole reason someone asked for an audit.
+  const findings = result.findings?.length
+    ? result.findings.map((f) => ({
+        title: f.title,
+        advice: f.recommendation,
+        critical: f.severity === "critical",
+      }))
+    : [...(result.issues || []), ...(result.opportunities || [])].map((i) => ({
+        title: i.title,
+        advice: i.description,
+        critical: false,
+      }));
+
+  const issuesHtml = findings
     .slice(0, 15)
     .map(
-      (issue) => `
+      (f) => `
     <tr>
-      <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">
-        <strong>🔴 ${issue.title}</strong>
-        ${issue.savings ? `<br><span style="color:#94a3b8;font-size:12px;">Potenciální úspora: ${issue.savings}</span>` : ""}
+      <td style="padding:12px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">
+        <strong style="color:${f.critical ? "#dc2626" : "#d97706"};">${f.critical ? "🔴" : "🟡"} ${f.title}</strong>
+        ${f.advice ? `<br><span style="color:#475569;font-size:13px;line-height:1.5;">${f.advice}</span>` : ""}
       </td>
     </tr>`
     )
     .join("");
+
+  const benchmarkHtml = `
+    <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:16px 18px;margin:0 0 20px;">
+      <p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#0f766e;">Jak si stojíte proti trhu</p>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#334155;">
+        ${benchmarkVerdict(result.score)}
+        Změřili jsme ${BENCHMARK_SAMPLE} českých firemních webů —
+        <a href="${BENCHMARK_URL}" style="color:#0d9488;">celá analýza je tady</a>.
+      </p>
+    </div>`;
 
   return `
 <!DOCTYPE html>
@@ -239,14 +287,16 @@ function buildEmailHtml(result: AuditResult): string {
           ${result.score}
         </div>
         <p style="color:#64748b;font-size:14px;margin:12px 0 0;">
-          Performance skóre pro<br>
+          Celkové skóre pro<br>
           <strong style="color:#0f172a;">${result.url}</strong>
         </p>
       </div>
 
+      ${benchmarkHtml}
+
       <!-- Metrics -->
       <h2 style="font-size:18px;color:#0f172a;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #14b8a6;">
-        📊 Přehled metrik
+        📊 Skóre podle kategorií
       </h2>
       <table style="width:100%;border-collapse:collapse;margin-bottom:32px;">
         ${metricsHtml}
@@ -341,12 +391,19 @@ export async function POST(request: NextRequest) {
       ipAddress,
     });
 
-    // Send full report via email (fire-and-forget)
-    sendEmail({
+    // Awaited on purpose. This used to be fire-and-forget, and on Vercel the
+    // instance freezes as soon as the response is returned — the request to
+    // Resend never finished and no report was ever delivered. Roughly 300ms on
+    // a three-second call, and a failure here must not cost the visitor their
+    // result, so it stays non-fatal.
+    await sendEmail({
       to: email,
       subject: `🔍 Audit webu: ${normalizedUrl} — skóre ${result.score}/100`,
       html: buildEmailHtml(result),
-    }).catch((err) => console.error("Failed to send audit email:", err));
+    }).catch((err) => {
+      console.error("Failed to send audit email:", err);
+      return { success: false as const, error: String(err) };
+    });
 
     // Return partial results to client (no detailed issues)
     return NextResponse.json({
@@ -357,6 +414,12 @@ export async function POST(request: NextRequest) {
       categories: result.categories ?? [],
       findings: result.findings ?? [],
       issueCount: result.issueCount,
+      benchmark: {
+        average: BENCHMARK_AVERAGE,
+        sample: BENCHMARK_SAMPLE,
+        url: BENCHMARK_URL,
+        verdict: benchmarkVerdict(result.score),
+      },
     });
   } catch (error: any) {
     console.error("Audit error:", error);

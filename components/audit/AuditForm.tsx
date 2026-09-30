@@ -36,6 +36,13 @@ interface AuditFinding {
   recommendation: string;
 }
 
+interface AuditBenchmark {
+  average: number;
+  sample: number;
+  url: string;
+  verdict: string;
+}
+
 interface AuditResult {
   url: string;
   score: number;
@@ -43,6 +50,7 @@ interface AuditResult {
   categories: AuditCategory[];
   findings: AuditFinding[];
   issueCount: number;
+  benchmark?: AuditBenchmark;
 }
 
 function scoreTone(score: number): { color: string; label: string } {
@@ -113,6 +121,22 @@ export function AuditForm() {
             </p>
             <p className="mt-1 text-sm text-muted-foreground">ze 100 · {tone.label}</p>
           </div>
+
+          {result.benchmark && (
+            <div
+              className="rounded-xl border p-5"
+              style={{ background: "rgba(20,184,166,.06)", borderColor: "rgba(20,184,166,.3)" }}
+            >
+              <p className="text-sm font-semibold">Jak si stojíte proti trhu</p>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                {result.benchmark.verdict} Změřili jsme {result.benchmark.sample} českých
+                firemních webů —{" "}
+                <a href={result.benchmark.url} className="text-primary hover:underline">
+                  celá analýza je tady
+                </a>.
+              </p>
+            </div>
+          )}
 
           {result.categories.length > 0 && (
             <div className="space-y-3">
