@@ -134,8 +134,8 @@ export default function CTAEditorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-50">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -148,8 +148,6 @@ export default function CTAEditorPage() {
               Zpět
             </Button>
             <div>
-              <h1 className="text-xl font-bold">Editor CTA sekce</h1>
-              <p className="text-sm text-muted-foreground">Call-to-Action banner</p>
             </div>
           </div>
 
@@ -174,7 +172,7 @@ export default function CTAEditorPage() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {notification && (

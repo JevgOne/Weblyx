@@ -61,9 +61,7 @@ export default function ShoptetAbandonedCartsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Opuštěné košíky</h1>
-        <p className="text-muted-foreground">Přehled nedokončených nákupů ze Shoptet</p>
+      <div><p className="text-muted-foreground">Přehled nedokončených nákupů ze Shoptet</p>
       </div>
 
       <Alert>
@@ -108,7 +106,7 @@ export default function ShoptetAbandonedCartsPage() {
         </Card>
       ) : (
         <Card>
-          <Table>
+          <Table className="min-w-[810px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Zákazník</TableHead>

@@ -167,9 +167,7 @@ export default function MediaLibraryPage() {
             Zpět
           </Link>
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold">📸 Knihovna médií</h1>
-          <p className="text-muted-foreground">
+        <div><p className="text-muted-foreground">
             Nahraj obrázky hromadně (Vercel Blob Storage), AI vygeneruje ALT texty
           </p>
         </div>

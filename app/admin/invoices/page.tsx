@@ -221,9 +221,7 @@ export default function AdminInvoicesPage() {
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Zpět
-          </Button>
-          <h1 className="text-3xl font-bold">Faktury</h1>
-          <p className="text-muted-foreground">
+          </Button><p className="text-muted-foreground">
             Správa faktur a dokladů
           </p>
         </div>
@@ -379,7 +377,7 @@ export default function AdminInvoicesPage() {
               </p>
             </div>
           ) : (
-            <Table>
+            <Table className="min-w-[1080px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Číslo faktury</TableHead>

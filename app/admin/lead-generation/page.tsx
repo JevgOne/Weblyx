@@ -164,9 +164,7 @@ export default function LeadGenerationPage() {
               Zpět
             </Link>
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Lead Generation</h1>
-            <p className="text-muted-foreground">
+          <div><p className="text-muted-foreground">
               Správa leadů, analýza webů a generování emailů
             </p>
           </div>
@@ -258,7 +256,8 @@ export default function LeadGenerationPage() {
           ) : leads.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <p>Zat�m nejsou ~�dn� leady.</p>
-              <p className="text-sm mt-2">Importujte CSV soubor pro za�tek.</p>
+              <p className="text-sm mt-2">Importujte CSV soubor pro za
+�tek.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">

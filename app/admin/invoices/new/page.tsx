@@ -267,9 +267,7 @@ export default function NewInvoicePage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Zpět
-        </Button>
-        <h1 className="text-3xl font-bold">Nová faktura</h1>
-        <p className="text-muted-foreground">
+        </Button><p className="text-muted-foreground">
           Vytvořte novou fakturu pro klienta
         </p>
       </div>

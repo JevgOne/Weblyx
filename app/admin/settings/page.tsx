@@ -56,9 +56,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-[#0A0A0F] text-white p-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Nastavení</h1>
-          <p className="text-zinc-400">Správa vašeho admin účtu</p>
+        <div className="mb-8"><p className="text-zinc-400">Správa vašeho admin účtu</p>
         </div>
 
         {/* Password Change Card */}

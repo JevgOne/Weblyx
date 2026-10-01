@@ -273,8 +273,8 @@ export default function FAQManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-50">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -287,10 +287,6 @@ export default function FAQManagementPage() {
               Zpět
             </Button>
             <div>
-              <h1 className="text-xl font-bold">Správa FAQ</h1>
-              <p className="text-sm text-muted-foreground">
-                {faqs.length} otázek celkem
-              </p>
             </div>
           </div>
 
@@ -299,7 +295,7 @@ export default function FAQManagementPage() {
             Přidat FAQ
           </Button>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {notification && (

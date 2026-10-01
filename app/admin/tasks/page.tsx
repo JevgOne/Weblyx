@@ -179,11 +179,7 @@ export default function TasksPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">
-              {isOwnerOrAdmin ? 'Všechny úkoly' : 'Moje úkoly'}
-            </h1>
-            <p className="text-muted-foreground">
+          <div><p className="text-muted-foreground">
               {isOwnerOrAdmin
                 ? 'Správa a přiřazování úkolů specialistům'
                 : 'Vaše přiřazené úkoly k vypracování'}

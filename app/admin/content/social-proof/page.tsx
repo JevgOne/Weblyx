@@ -134,16 +134,14 @@ export default function SocialProofEditorPage() {
   const current = formData[activeLocale];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-50">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => router.push("/admin/content")} className="gap-2">
               <ArrowLeft className="h-4 w-4" /> Zpět
             </Button>
             <div>
-              <h1 className="text-xl font-bold">Social Proof Stats</h1>
-              <p className="text-sm text-muted-foreground">Čísla a statistiky</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -155,7 +153,7 @@ export default function SocialProofEditorPage() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {notification && (

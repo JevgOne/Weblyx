@@ -81,9 +81,7 @@ export default function ShoptetOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Objednávky</h1>
-        <p className="text-muted-foreground">Přehled objednávek ze Shoptet</p>
+      <div><p className="text-muted-foreground">Přehled objednávek ze Shoptet</p>
       </div>
 
       <StatsCards
@@ -144,7 +142,7 @@ export default function ShoptetOrdersPage() {
         </Card>
       ) : (
         <Card>
-          <Table>
+          <Table className="min-w-[945px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Číslo</TableHead>

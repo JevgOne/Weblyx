@@ -571,29 +571,12 @@ export default function MetaAdsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/admin/dashboard")}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  <Facebook className="h-6 w-6 text-blue-600" />
-                  Meta Marketing
-                  {connected && (
-                    <Badge className="bg-blue-600 text-xs">Připojeno</Badge>
-                  )}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Facebook + Instagram Ads • AI Analýza • Generátor
-                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -1763,7 +1746,7 @@ export default function MetaAdsPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {error && (
@@ -1953,7 +1936,7 @@ export default function MetaAdsPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <Table>
+                      <Table className="min-w-[945px]">
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-12"></TableHead>

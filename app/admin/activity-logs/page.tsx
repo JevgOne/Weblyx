@@ -137,25 +137,16 @@ export default function ActivityLogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       {/* Header */}
-      <header className="border-b bg-card">
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push('/admin/dashboard')}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div className="bg-primary rounded-lg p-2">
                 <History className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">Záznamy aktivit</h1>
-                <p className="text-sm text-muted-foreground">Historie akcí v admin panelu</p>
               </div>
             </div>
 
@@ -170,7 +161,7 @@ export default function ActivityLogsPage() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

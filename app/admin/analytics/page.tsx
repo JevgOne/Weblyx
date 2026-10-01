@@ -192,17 +192,12 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => router.push("/admin/dashboard")}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div>
-                <h1 className="text-2xl font-bold">Analytics & SEO</h1>
-                <p className="text-sm text-muted-foreground">GA4 + Google Search Console</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -223,7 +218,7 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         <Tabs value={activeTab} onValueChange={setActiveTab}>

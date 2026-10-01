@@ -155,32 +155,18 @@ export default function GenerateBlogPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/admin/blog")}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                  AI Blog Generator
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Vygeneruj SEO-optimalizovaný blog článek pomocí AI
-                </p>
               </div>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -351,9 +337,7 @@ export default function GenerateBlogPage() {
                   </TabsList>
 
                   <TabsContent value="preview" className="space-y-4">
-                    <div className="prose prose-sm max-w-none">
-                      <h1 className="text-2xl font-bold">{generatedArticle.title}</h1>
-                      <p className="text-muted-foreground italic">{generatedArticle.excerpt}</p>
+                    <div className="prose prose-sm max-w-none"><p className="text-muted-foreground italic">{generatedArticle.excerpt}</p>
                       <ReactMarkdown>{generatedArticle.content}</ReactMarkdown>
                     </div>
                   </TabsContent>

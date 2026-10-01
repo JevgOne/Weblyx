@@ -201,24 +201,13 @@ export default function AdminReviewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       {/* Header */}
-      <header className="border-b bg-card">
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/admin/dashboard")}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div>
-                <h1 className="text-2xl font-bold">Recenze</h1>
-                <p className="text-sm text-muted-foreground">
-                  Správa zákaznických recenzí
-                </p>
               </div>
             </div>
 
@@ -243,7 +232,7 @@ export default function AdminReviewsPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
@@ -373,7 +362,7 @@ export default function AdminReviewsPage() {
               <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="reviews-list">
                   {(provided) => (
-                    <Table>
+                    <Table className="min-w-[1080px]">
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-[50px]"></TableHead>

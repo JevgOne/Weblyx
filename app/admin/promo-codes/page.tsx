@@ -199,9 +199,7 @@ export default function PromoCodesPage() {
               Zpět
             </Link>
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Promo kódy</h1>
-            <p className="text-muted-foreground">Správa slev a promo kódů</p>
+          <div><p className="text-muted-foreground">Správa slev a promo kódů</p>
           </div>
         </div>
         <Button onClick={() => setShowForm(!showForm)}>
@@ -371,7 +369,7 @@ export default function PromoCodesPage() {
               <p>Zatím nemáte žádné promo kódy.</p>
             </div>
           ) : (
-            <Table>
+            <Table className="min-w-[945px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Kód</TableHead>

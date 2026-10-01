@@ -81,9 +81,7 @@ export default function ShoptetSyncPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Synchronizace Shoptet</h1>
-        <p className="text-muted-foreground">Správa synchronizace dat z vašeho Shoptet e-shopu</p>
+      <div><p className="text-muted-foreground">Správa synchronizace dat z vašeho Shoptet e-shopu</p>
       </div>
 
       {/* Config Status */}
@@ -225,7 +223,7 @@ export default function ShoptetSyncPage() {
               ))}
             </div>
           ) : syncData?.history && syncData.history.length > 0 ? (
-            <Table>
+            <Table className="min-w-[810px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Typ</TableHead>

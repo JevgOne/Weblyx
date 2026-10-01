@@ -74,9 +74,7 @@ export default function ShoptetProductsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Produkty</h1>
-        <p className="text-muted-foreground">Přehled produktů synchronizovaných ze Shoptet</p>
+      <div><p className="text-muted-foreground">Přehled produktů synchronizovaných ze Shoptet</p>
       </div>
 
       <StatsCards
@@ -144,7 +142,7 @@ export default function ShoptetProductsPage() {
         </Card>
       ) : (
         <Card>
-          <Table>
+          <Table className="min-w-[810px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Produkt</TableHead>

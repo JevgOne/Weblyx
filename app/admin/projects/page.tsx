@@ -192,32 +192,20 @@ export default function AdminProjectsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
+      <div className="border-b">
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/admin/dashboard")}
-                className="shrink-0"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl md:text-2xl font-bold">Projekty</h1>
                   {unassignedCount > 0 && (
                     <Badge variant="destructive" className="animate-pulse">
                       🚨 {unassignedCount} nepřiřazeno
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  Správa všech projektů ({projects.length} celkem)
-                </p>
               </div>
             </div>
 
@@ -227,7 +215,7 @@ export default function AdminProjectsPage() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
@@ -322,7 +310,7 @@ export default function AdminProjectsPage() {
 
         {/* Projects Table */}
         <Card>
-          <Table>
+          <Table className="min-w-[1215px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Projekt</TableHead>

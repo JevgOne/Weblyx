@@ -281,9 +281,7 @@ export default function EroWebAnalyzaPage() {
                 >
                   <Menu className="w-5 h-5 text-foreground" />
                 </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">{t.eroweb.title}</h1>
-                  <p className="text-muted-foreground">
+                <div><p className="text-muted-foreground">
                     {t.eroweb.subtitle}
                   </p>
                 </div>

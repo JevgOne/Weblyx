@@ -227,26 +227,15 @@ export default function NewBlogPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push("/admin/blog")}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
             <div>
-              <h1 className="text-2xl font-bold">Nový článek</h1>
-              <p className="text-sm text-muted-foreground">
-                Vytvoření nového blog příspěvku
-              </p>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <form onSubmit={handleSubmit}>

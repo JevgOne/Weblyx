@@ -76,9 +76,7 @@ export default function ShoptetCustomersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Zákazníci</h1>
-        <p className="text-muted-foreground">Přehled zákazníků s RFM segmentací</p>
+      <div><p className="text-muted-foreground">Přehled zákazníků s RFM segmentací</p>
       </div>
 
       <StatsCards
@@ -127,7 +125,7 @@ export default function ShoptetCustomersPage() {
         </Card>
       ) : (
         <Card>
-          <Table>
+          <Table className="min-w-[810px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Zákazník</TableHead>

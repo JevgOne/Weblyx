@@ -157,9 +157,7 @@ export default function AdminPaymentsPage() {
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Zpět
-          </Button>
-          <h1 className="text-3xl font-bold">Platby</h1>
-          <p className="text-muted-foreground">
+          </Button><p className="text-muted-foreground">
             Správa plateb přes GoPay
           </p>
         </div>
@@ -313,7 +311,7 @@ export default function AdminPaymentsPage() {
               </p>
             </div>
           ) : (
-            <Table>
+            <Table className="min-w-[1080px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>VS</TableHead>

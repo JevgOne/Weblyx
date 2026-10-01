@@ -467,32 +467,12 @@ export default function GoogleAdsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+    <div>
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => router.push("/admin/dashboard")}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  Google Marketing
-                  <div className="flex gap-1">
-                    {connected && (
-                      <Badge variant="default" className="bg-yellow-500 text-xs">Ads</Badge>
-                    )}
-                    {ga4Connected && (
-                      <Badge variant="default" className="bg-blue-500 text-xs">GA4</Badge>
-                    )}
-                    {gscConnected && (
-                      <Badge variant="default" className="bg-green-500 text-xs">GSC</Badge>
-                    )}
-                  </div>
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Google Ads • Analytics 4 • Search Console
-                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -973,7 +953,7 @@ export default function GoogleAdsPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {error && (
@@ -1133,7 +1113,7 @@ export default function GoogleAdsPage() {
                     <CardTitle>Kampaně (posledních 30 dní)</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Table>
+                    <Table className="min-w-[1215px]">
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">Akce</TableHead>
@@ -1190,7 +1170,7 @@ export default function GoogleAdsPage() {
                     <CardTitle>Klíčová slova (posledních 30 dní)</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Table>
+                    <Table className="min-w-[1080px]">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Klíčové slovo</TableHead>

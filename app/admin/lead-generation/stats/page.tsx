@@ -78,9 +78,7 @@ export default function StatsPage() {
               Zpět
             </Link>
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Statistiky Lead Generation</h1>
-            <p className="text-muted-foreground">
+          <div><p className="text-muted-foreground">
               Přehled výkonnosti a metrik kampaní
             </p>
           </div>
@@ -313,7 +311,8 @@ export default function StatsPage() {
               <p className="text-2xl font-bold">{stats.activeCampaigns}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Dokonen kampan</p>
+              <p className="text-sm text-muted-foreground">Dokon
+en kampan</p>
               <p className="text-2xl font-bold">{stats.completedCampaigns}</p>
             </div>
           </div>

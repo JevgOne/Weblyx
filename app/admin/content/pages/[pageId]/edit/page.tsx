@@ -220,9 +220,9 @@ export default function PageEditorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
+      <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -246,12 +246,10 @@ export default function PageEditorPage() {
               <div className="h-6 w-px bg-border" />
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold">{pageData.pageName}</h1>
                   <Badge variant="outline" className={categoryColors[pageData.category]}>
                     {categoryLabels[pageData.category]}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">Editace textu stránky</p>
               </div>
             </div>
 
@@ -272,7 +270,7 @@ export default function PageEditorPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
