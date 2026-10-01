@@ -262,14 +262,19 @@ export default function WebProZivnostnikyPage() {
               <CardContent className="space-y-4">
                 <ul className="space-y-2 text-left">
                   {[
+                    // The card is headed "od 7 990 Kč", so it has to list what
+                    // 7 990 Kč buys. It used to promise 3–5 subpages and three
+                    // months of support — the contents of the 14 900 and 29 900
+                    // packages — under the entry price.
                     "Moderní responzivní design",
-                    "3–5 podstránek",
+                    "1 stránka, 3–5 sekcí",
                     "Kontaktní formulář",
                     "Google Mapy",
-                    "SEO optimalizace",
+                    "SEO základy",
                     "SSL certifikát",
-                    "PageSpeed 90+ garance (od 14 900 Kč)",
-                    "3 měsíce podpora zdarma",
+                    "1 měsíc podpory zdarma",
+                    "Více podstránek a blog od 14 900 Kč",
+                    "PageSpeed 90+ garance od 14 900 Kč",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary" /> {f}
