@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 
@@ -7,6 +8,29 @@ export const metadata: Metadata = {
   title: "Garance PageSpeed 90+ — nebo vám vrátíme peníze",
   description: "Garantujeme PageSpeed skóre 90+ od balíčku Základní Web, jinak vracíme peníze. Co přesně měříme, jak si to ověříte sami a za jakých podmínek garance platí.",
 };
+
+const GARANCE_FAQ: Faq[] = [
+  {
+    question: "Co garance přesně slibuje?",
+    answer:
+      "PageSpeed skóre 90 a víc, nebo vracíme peníze. Platí od balíčku Základní Web za 14 900 Kč.",
+  },
+  {
+    question: "Jak se skóre měří?",
+    answer:
+      "Nástrojem PageSpeed Insights od Googlu, v mobilní verzi, na předané stránce bez pozdějších zásahů klienta. Změřit si to můžete sami, je to zdarma.",
+  },
+  {
+    question: "Proč garance neplatí u nejlevnějšího balíčku?",
+    answer:
+      "U Landing Page za 7 990 Kč je rozsah tak malý, že se garance neuplatňuje — weby z něj přesto skóre 90+ běžně dosahují. Garantované je to od 14 900 Kč.",
+  },
+  {
+    question: "Co když skóre klesne později?",
+    answer:
+      "Garance se vztahuje na stav při předání. Pokud na web později přibudou velké obrázky, externí skripty nebo widgety třetích stran, skóre to ovlivní a my to neovlivníme.",
+  },
+];
 
 export default function PageSpeedGuaranteePage() {
   const breadcrumbs = [
@@ -157,6 +181,7 @@ export default function PageSpeedGuaranteePage() {
           </p>
         </div>
       </div>
+      <LandingFaq items={GARANCE_FAQ} />
     </main>
     </>
   );

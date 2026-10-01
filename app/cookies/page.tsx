@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 import { getDomainLocale, getBrandConfig } from "@/lib/brand";
@@ -24,6 +25,29 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: { canonical: "https://www.weblyx.cz/cookies" },
   };
 }
+
+const COOKIES_FAQ: Faq[] = [
+  {
+    question: "Jaké cookies web používá?",
+    answer:
+      "Nezbytné pro provoz webu, analytické pro měření návštěvnosti a marketingové pro měření reklamních kampaní.",
+  },
+  {
+    question: "Musím souhlas dát?",
+    answer:
+      "Ne. Bez souhlasu běží jen nezbytné cookies a web funguje normálně. Analytické ani marketingové se bez souhlasu nespustí.",
+  },
+  {
+    question: "Jak souhlas odvolám?",
+    answer:
+      "Nastavením v cookie liště, která se dá kdykoli znovu vyvolat, nebo smazáním cookies v prohlížeči.",
+  },
+  {
+    question: "Předáváte data třetím stranám?",
+    answer:
+      "Při udělení souhlasu se analytické údaje zpracovávají v Google Analytics a marketingové v Google Ads. Bez souhlasu se nepředává nic.",
+  },
+];
 
 export default function CookiesPage() {
   const breadcrumbs = [
@@ -193,6 +217,7 @@ export default function CookiesPage() {
           </section>
         </div>
       </div>
+      <LandingFaq items={COOKIES_FAQ} />
     </main>
     </>
   );

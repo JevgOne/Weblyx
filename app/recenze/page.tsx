@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { Star, ExternalLink, Quote } from "lucide-react";
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { getDomainLocale } from "@/lib/brand";
@@ -55,6 +56,24 @@ function formatDate(date: Date): string {
     year: "numeric",
   }).format(date);
 }
+
+const RECENZE_FAQ: Faq[] = [
+  {
+    question: "Odkud recenze pocházejí?",
+    answer:
+      "Z Google profilu Weblyx. Jsou to texty, které klienti skutečně napsali — nepřepisujeme je ani nezkracujeme. Hodnocení na Googlu máme 5,0.",
+  },
+  {
+    question: "Můžu si je ověřit?",
+    answer:
+      "Ano, všechny jsou veřejné na našem Google profilu. Odkaz na něj najdete v patičce webu.",
+  },
+  {
+    question: "Jak si mám web ověřit sám?",
+    answer:
+      "Otevřete si projekty v portfoliu a změřte si je v PageSpeed Insights od Googlu. Je to zdarma a stejný test si můžete udělat u jakékoli agentury, kterou zvažujete.",
+  },
+];
 
 export default async function RecenzePage() {
   const reviews = await safeRead(() => getPublishedReviews("cs"), [], "CS reviews");
@@ -232,6 +251,7 @@ export default async function RecenzePage() {
           </p>
         </div>
       </section>
+      <LandingFaq items={RECENZE_FAQ} />
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 
@@ -25,6 +26,29 @@ export const metadata: Metadata = {
     canonical: "https://www.weblyx.cz/ochrana-udaju",
   },
 };
+
+const GDPR_FAQ: Faq[] = [
+  {
+    question: "Jaké údaje o mně sbíráte?",
+    answer:
+      "Z poptávkového formuláře jméno, e-mail, telefon a popis zakázky. Z analytiky anonymizované údaje o návštěvě a u příchodu z reklamy i označení kampaně. Nic z toho neprodáváme.",
+  },
+  {
+    question: "Jak dlouho údaje uchováváte?",
+    answer:
+      "Po dobu nezbytnou pro vyřízení poptávky a splnění zákonných povinností. Když o výmaz požádáte dřív, provedeme ho — pokud nám jeho uchování neukládá zákon, typicky u účetních dokladů.",
+  },
+  {
+    question: "Jak si vyžádám výmaz nebo výpis?",
+    answer:
+      "Napište na info@weblyx.cz. Máte právo na přístup k údajům, jejich opravu, výmaz, omezení zpracování i na přenositelnost.",
+  },
+  {
+    question: "Používáte cookies a musím je přijmout?",
+    answer:
+      "Nezbytné cookies web potřebuje k provozu. Analytické a marketingové se spouštějí až po vašem souhlasu — dokud ho nedáte, neměří se nic. Souhlas můžete kdykoli změnit.",
+  },
+];
 
 export default function PrivacyPage() {
   const breadcrumbs = [
@@ -118,6 +142,7 @@ export default function PrivacyPage() {
           Telefon: <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a>
         </p>
       </div>
+      <LandingFaq items={GDPR_FAQ} />
     </main>
     </>
   );

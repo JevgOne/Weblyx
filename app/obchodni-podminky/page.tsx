@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
 
@@ -25,6 +26,34 @@ export const metadata: Metadata = {
     canonical: "https://www.weblyx.cz/obchodni-podminky",
   },
 };
+
+const VOP_FAQ: Faq[] = [
+  {
+    question: "Kdy se platí záloha a kolik?",
+    answer:
+      "Po schválení cenové nabídky klient hradí zálohu 50 %, doplatek je splatný před předáním hotového díla. Prací začínáme až po uhrazení zálohy.",
+  },
+  {
+    question: "Od čeho se počítá termín dodání?",
+    answer:
+      "Termín začíná běžet dnem, kdy je uhrazená záloha a zároveň klient dodal všechny potřebné podklady — texty, loga, fotografie a přístupy. Nastanou-li tyto skutečnosti v různé dny, rozhoduje ten pozdější. Nepočítá se od prvního kontaktu ani od odeslání poptávky.",
+  },
+  {
+    question: "Co se stane, když termín nedodržíte?",
+    answer:
+      "Celková cena zakázky se snižuje na 50 % původně sjednané ceny. Uhrazená záloha se pak považuje za úhradu celé zakázky a doplatek klient neplatí.",
+  },
+  {
+    question: "Kolik je v ceně revizí?",
+    answer:
+      "Dvě kola revizí designu. Pokud klient ani po nich není spokojen, vrací se záloha.",
+  },
+  {
+    question: "Komu bude patřit web a doména?",
+    answer:
+      "Dílo i doména jsou klienta. Doporučujeme ověřit si u každého dodavatele, kdo je zapsaný jako držitel domény v registru CZ.NIC — rozhoduje to, ne kdo ji platí nebo spravuje.",
+  },
+];
 
 export default function TermsPage() {
   const breadcrumbs = [
@@ -155,6 +184,7 @@ export default function TermsPage() {
           Telefon: <a href="tel:+420702110166" className="text-primary hover:underline">+420 702 110 166</a>
         </p>
       </div>
+      <LandingFaq items={VOP_FAQ} />
     </main>
     </>
   );

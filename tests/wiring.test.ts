@@ -466,3 +466,43 @@ describe('priced pages publish their prices as data', () => {
     expect(lib).toContain("unitCode: 'DAY'");
   });
 });
+
+/**
+ * Every commercial page answers questions in a form a machine can lift.
+ *
+ * An engine quoting a page looks for a question and the answer directly under
+ * it. Pages that only made statements gave it nothing to anchor to, and the
+ * ones that did carry a FAQ had it only in the markup, where a reader could
+ * not see it — schema is meant to describe what is on the page.
+ */
+describe('commercial pages carry visible, machine-readable answers', () => {
+  const PAGES = [
+    'app/sluzby/page.tsx',
+    'app/o-nas/page.tsx',
+    'app/kontakt/page.tsx',
+    'app/portfolio/page.tsx',
+    'app/recenze/page.tsx',
+    'app/pagespeed-garance/page.tsx',
+    'app/audit/page.tsx',
+    // The policy pages matter here too: "what are their terms" and "what do
+    // they do with my data" are questions an assistant is actually asked.
+    'app/obchodni-podminky/page.tsx',
+    'app/ochrana-udaju/page.tsx',
+    'app/cookies/page.tsx',
+  ];
+
+  for (const rel of PAGES) {
+    it(`${rel} publishes a FAQ`, () => {
+      const src = readFileSync(join(__dirname, '..', rel), 'utf8');
+      // Either through the shared component or its own FAQPage block.
+      expect(src).toMatch(/LandingFaq|"@type": "FAQPage"|'@type': 'FAQPage'|FAQPage/);
+    });
+  }
+
+  it('the FAQ component renders the questions as well as declaring them', () => {
+    const src = readFileSync(join(__dirname, '..', 'components/landing/LandingFaq.tsx'), 'utf8');
+    expect(src).toContain('"@type": "FAQPage"');
+    // The same items must appear in the markup, not only in the JSON-LD.
+    expect(src).toMatch(/items\.map\(\(f\) => \(/);
+  });
+});

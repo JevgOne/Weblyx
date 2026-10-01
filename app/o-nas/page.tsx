@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,29 @@ export const metadata: Metadata = {
     languages: getAlternateLanguages('/o-nas')
   }
 };
+
+const ONAS_FAQ: Faq[] = [
+  {
+    question: "Kdo je Weblyx?",
+    answer:
+      "Webové studio se sídlem na adrese Školská 660/3, Praha 1. Provozuje ho Altro Servis Group s.r.o., IČO 23673389. Stavíme weby na Next.js místo WordPressu, od 7 990 Kč, bez měsíčních poplatků.",
+  },
+  {
+    question: "Kde sídlíte a dá se k vám přijít?",
+    answer:
+      "Školská 660/3, Praha 1, kousek od Národní třídy. Schůzku si můžete domluvit u nás, nebo přijedeme za vámi. Pracujeme ale i čistě na dálku, pro klienty z celé republiky.",
+  },
+  {
+    question: "Jak dlouho fungujete?",
+    answer:
+      "Od února 2024. Hodnocení na Googlu máme 5,0. Realizované projekty najdete v portfoliu — každý si můžete otevřít a rychlost si změřit sami.",
+  },
+  {
+    question: "Proč stavíte na Next.js a ne na WordPressu?",
+    answer:
+      "Weby na Next.js se načítají rychleji, nepotřebují drahý hosting ani měsíční správu a nejsou terčem automatizovaných útoků na pluginy. Od balíčku Základní Web garantujeme PageSpeed 90+, jinak vracíme peníze.",
+  },
+];
 
 export default async function AboutPage() {
   // Counted, never typed — see lib/site-stats.ts.
@@ -266,6 +290,7 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+        <LandingFaq items={ONAS_FAQ} />
       </main>
     </>
   );

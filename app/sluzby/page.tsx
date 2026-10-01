@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -188,6 +189,39 @@ const ADDITIONAL_SERVICES = [
       "Malé úpravy obsahu",
       "Měsíční reporty o výkonu webu",
     ],
+  },
+];
+
+const SLUZBY_FAQ: Faq[] = [
+  {
+    question: "Kolik stojí tvorba webových stránek?",
+    answer:
+      "Jednostránkový web 7 990 Kč, web o 3–5 podstránkách s blogem 14 900 Kč a web o 10+ podstránkách s plnou správou obsahu 29 900 Kč. Cena je jednorázová a pevná pro dohodnutý rozsah, bez měsíčních poplatků za hosting. E-shop na míru vychází orientačně na 34 900 Kč.",
+  },
+  {
+    question: "Jak dlouho trvá, než bude web hotový?",
+    answer:
+      "Podle balíčku 3 až 10 pracovních dní. Lhůta začíná běžet, až je uhrazená záloha 50 % a zároveň máme všechny podklady — texty, logo, fotky a potřebné přístupy. Pokud termín nedodržíme, platíte jen 50 % ceny.",
+  },
+  {
+    question: "Kdy a jak se platí?",
+    answer:
+      "Po schválení cenové nabídky hradíte zálohu 50 %, doplatek je splatný před předáním hotového webu. Platit můžete fakturou s QR kódem nebo převodem. Po spuštění neplatíte žádný měsíční paušál.",
+  },
+  {
+    question: "Co když se mi návrh nebude líbit?",
+    answer:
+      "V ceně jsou dvě kola revizí designu. Pokud ani po nich nejste spokojeni, vracíme zálohu.",
+  },
+  {
+    question: "Co je ve službě SEO a kolik stojí?",
+    answer:
+      "Technické SEO je v ceně každého webu — struktura nadpisů, titulky, popisky, sitemap, strukturovaná data a rychlost. Průběžné SEO je samostatná služba: jednorázový audit od 3 000 Kč, měsíční správa od 5 000 Kč.",
+  },
+  {
+    question: "Spravujete web i po spuštění?",
+    answer:
+      "Podpora je v ceně 1 až 3 měsíce podle balíčku. Dál nabízíme roční údržbu za 24 000 Kč — aktualizace, zálohy, drobné úpravy obsahu a technická podpora. Povinná není.",
   },
 ];
 
@@ -563,6 +597,7 @@ export default async function ServicesPage() {
             </Card>
           </div>
         </section>
+        <LandingFaq items={SLUZBY_FAQ} />
       </main>
     </>
   );

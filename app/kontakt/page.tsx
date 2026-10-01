@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { Contact } from "@/components/home/contact";
 
@@ -65,6 +66,29 @@ export const metadata: Metadata = isSeitelyx ? {
     languages: getAlternateLanguages('/kontakt')
   }
 };
+
+const KONTAKT_FAQ: Faq[] = [
+  {
+    question: "Jak rychle se ozvete?",
+    answer:
+      "Do 24 hodin od odeslání poptávky. Spěchá-li to, volejte na +420 702 110 166 — v pracovní dny 8:00 až 18:00.",
+  },
+  {
+    question: "Kde vás najdu?",
+    answer:
+      "Školská 660/3, Praha 1, kousek od Národní třídy. Schůzku doporučujeme domluvit předem na +420 702 110 166 nebo na info@weblyx.cz.",
+  },
+  {
+    question: "Co mám do poptávky napsat?",
+    answer:
+      "Stačí, co má web umět a pro koho je. Konkrétní rozsah doladíme při konzultaci, která je zdarma a nezávazná. Cenovou nabídku s pevnou cenou dostanete písemně.",
+  },
+  {
+    question: "Pracujete i mimo Prahu?",
+    answer:
+      "Ano, pro klienty z celé České republiky. Celá spolupráce se dá vyřídit na dálku — podklady, schvalování návrhu i předání.",
+  },
+];
 
 export default async function ContactPage() {
   const locale = await getLocale();
@@ -209,6 +233,7 @@ export default async function ContactPage() {
 
         {/* Client-side contact form */}
         <Contact isMainPage={false} />
+        <LandingFaq items={KONTAKT_FAQ} />
       </main>
     </>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import Link from "next/link";
 import Image from "next/image";
@@ -83,6 +84,29 @@ async function getPortfolioProjects(locale?: string) {
     return [];
   }
 }
+
+const PORTFOLIO_FAQ: Faq[] = [
+  {
+    question: "Jsou to skutečné weby?",
+    answer:
+      "Ano, každý projekt si můžete otevřít a prohlédnout. Doporučujeme si u nich rovnou změřit rychlost v PageSpeed Insights — a udělat totéž u kohokoli, koho zvažujete.",
+  },
+  {
+    question: "Kolik takový web stojí?",
+    answer:
+      "Podle rozsahu 7 990 až 29 900 Kč jednorázově, bez měsíčních poplatků. E-shop na míru orientačně od 34 900 Kč. Po schválení nabídky se hradí záloha 50 %.",
+  },
+  {
+    question: "Jak dlouho trvala realizace?",
+    answer:
+      "Jednostránkové weby 3 až 5 pracovních dní, rozsáhlejší 5 až 10. U projektů s vlastními funkcemi nebo e-shopem to bývá 2 až 3 týdny.",
+  },
+  {
+    question: "Děláte i redesign stávajícího webu?",
+    answer:
+      "Ano, a často to dává větší smysl než stavět od nuly — obsah, odkazy a pozice ve vyhledávání už máte. Při redesignu držíme původní adresy stránek, a kde to nejde, nastavíme přesměrování.",
+  },
+];
 
 export default async function PortfolioPage() {
   const locale = await getLocale();
@@ -234,6 +258,7 @@ export default async function PortfolioPage() {
             </div>
           </div>
         </section>
+        <LandingFaq items={PORTFOLIO_FAQ} />
       </main>
     </>
   );
