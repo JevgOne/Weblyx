@@ -36,36 +36,58 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * The five questions the page answers, in the order it answers them.
+ *
+ * `plain` is the answer stripped of links — structured data takes text, and a
+ * quote lifted into an AI answer has to stand on its own anyway.
+ */
+const SECTIONS = [
+  {
+    question: "Co audit kontroluje?",
+    plain:
+      "Audit projde šest oblastí a každou oboduje zvlášť. Rychlost načítání měří, jak dlouho návštěvník čeká, než se stránka ukáže. SEO kontroluje titulky, popisky, strukturu nadpisů, sitemap a strukturovaná data. Bezpečnost ověřuje HTTPS, hlavičky a nezabezpečený obsah. Dál se díváme na přístupnost, na nastavení pro sdílení na sociálních sítích a na připravenost pro AI vyhledávání.",
+  },
+  {
+    question: "Co znamená výsledné skóre?",
+    plain:
+      "Výsledek zasazujeme proti vlastnímu měření: změřili jsme padesát českých firemních webů a průměr byl 43 ze 100. Skóre 90 a výš znamená, že web patří do nejlepších procent českého trhu. Mezi 50 a 89 web funguje, ale konkurence s lepším skóre ho předbíhá. Pod 50 návštěvníci odcházejí dřív, než se stránka načte.",
+  },
+  {
+    question: "Jak dlouho audit trvá?",
+    plain:
+      "Celkové skóre a šest dílčích hodnocení se zobrazí během několika sekund přímo na stránce. Detailní rozpis s konkrétními doporučeními přijde na e-mail. Nic neplatíte a k ničemu se nezavazujete.",
+  },
+  {
+    question: "Je audit opravdu zdarma?",
+    plain:
+      "Ano, bez podmínek a bez skrytých poplatků. Z nálezů je obvykle vidět, jestli stačí pár oprav, nebo se vyplatí web předělat. Ceny webů začínají na 7 990 Kč a po schválení návrhu se hradí záloha 50 %.",
+  },
+  {
+    question: "Můžu si web změřit sám?",
+    plain:
+      "Rychlost ano — Google nabízí PageSpeed Insights zdarma a doporučujeme si tím projít i weby agentur, které zvažujete. Náš audit přidává to, co PageSpeed neměří: strukturovaná data, hierarchii nadpisů, chybějící alternativní texty, nastavení pro sdílení a připravenost pro AI vyhledávání.",
+  },
+];
+
 export default function AuditPage() {
+  /**
+   * The questions and their answers, declared once.
+   *
+   * The page carried five questions as headings and a FAQPage listing three,
+   * only two of which matched — one of them asked something the page never
+   * said. An engine that finds schema describing content it cannot see has
+   * reason to ignore the schema entirely, which is the opposite of the point.
+   * Both the markup and the structured data now read from this.
+   */
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Co je v auditu webu zdarma?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Audit zahrnuje PageSpeed analýzu (mobilní i desktopovou rychlost), SEO check (meta tagy, nadpisy, strukturovaná data), analýzu Core Web Vitals a bezpečnostní kontrolu (HTTPS, hlavičky, GDPR)."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Jak dlouho audit trvá?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Celkové skóre a hlavní metriky se zobrazí přímo na stránce během několika sekund. Detailní rozpis s konkrétními doporučeními dostanete na e-mail."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Je audit opravdu zdarma?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Ano, audit je kompletně zdarma a nezávazný. Žádné skryté poplatky."
-        }
-      }
-    ]
+    mainEntity: SECTIONS.map((s) => ({
+      "@type": "Question",
+      name: s.question,
+      acceptedAnswer: { "@type": "Answer", text: s.plain },
+    })),
   };
 
   return (
@@ -106,7 +128,7 @@ export default function AuditPage() {
         <section className="border-t px-4 py-14">
           <div className="container mx-auto max-w-3xl space-y-10">
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold md:text-3xl">Co audit kontroluje?</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">{SECTIONS[0].question}</h2>
               <p className="leading-relaxed text-muted-foreground">
                 Audit projde šest oblastí a každou oboduje zvlášť, takže uvidíte, kde
                 přesně web ztrácí. <strong>Rychlost načítání</strong> měří, jak dlouho
@@ -127,7 +149,7 @@ export default function AuditPage() {
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold md:text-3xl">Co znamená výsledné skóre?</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">{SECTIONS[1].question}</h2>
               <p className="leading-relaxed text-muted-foreground">
                 Číslo samo o sobě neříká nic, dokud nevíte, s čím ho srovnat. Proto
                 výsledek zasazujeme proti vlastnímu měření:{" "}
@@ -144,7 +166,7 @@ export default function AuditPage() {
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold md:text-3xl">Jak dlouho audit trvá?</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">{SECTIONS[2].question}</h2>
               <p className="leading-relaxed text-muted-foreground">
                 Celkové skóre a šest dílčích hodnocení se zobrazí{" "}
                 <strong>během několika sekund</strong> přímo na téhle stránce. Detailní
@@ -154,7 +176,7 @@ export default function AuditPage() {
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold md:text-3xl">Je audit opravdu zdarma?</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">{SECTIONS[3].question}</h2>
               <p className="leading-relaxed text-muted-foreground">
                 Ano, bez podmínek a bez skrytých poplatků. Děláme ho proto, že většina
                 lidí netuší, jak si jejich web stojí, a protože z nálezů je obvykle
@@ -171,7 +193,7 @@ export default function AuditPage() {
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold md:text-3xl">Můžu si web změřit sám?</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">{SECTIONS[4].question}</h2>
               <p className="leading-relaxed text-muted-foreground">
                 Rychlost ano — Google nabízí PageSpeed Insights zdarma a doporučujeme
                 si tím projít i weby agentur, které zvažujete. Náš audit přidává to,
