@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Clock } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
+import { generateWebPageSchema, generateBreadcrumbSchema, generateOrganizationSchema, generatePricedOffersSchema } from "@/lib/schema-org";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LandingForm } from "@/components/landing/LandingForm";
 import { StickyCta } from "@/components/landing/StickyCta";
 import { CallLink } from "@/components/landing/CallLink";
 import { DEPOSIT_SHORT } from "@/lib/deposit";
+
+/** Bumped when the page is edited, not on every build. */
+const LAST_UPDATED = "2026-10-01";
 
 export const revalidate = 3600;
 
@@ -86,6 +89,12 @@ const CENIK_FAQ: Faq[] = [
   },
 ];
 
+const OFFER_TIERS = [
+  { name: "Landing Page", price: 7990, deliveryDays: "3–5", description: "Jednostránkový web o 3–5 sekcích s kontaktním formulářem a základním SEO." },
+  { name: "Základní Web", price: 14900, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
+  { name: "Standardní Web", price: 29900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
+];
+
 export default function CenikWebuPage() {
   const breadcrumbs = [
     { name: "Domů", url: "https://www.weblyx.cz" },
@@ -100,9 +109,12 @@ export default function CenikWebuPage() {
           description: "Tři balíčky s pevnou cenou od 7 990 Kč, bez měsíčních poplatků.",
           url: "https://www.weblyx.cz/cenik-webu",
           breadcrumbs,
+          dateModified: LAST_UPDATED,
         })}
       />
       <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
+      <JsonLd data={generateOrganizationSchema({ locale: "cs" })} />
+      <JsonLd data={generatePricedOffersSchema(OFFER_TIERS, "https://www.weblyx.cz/cenik-webu")} />
 
       <main className="min-h-screen pb-24 md:pb-0">
         <Breadcrumbs items={[{ label: "Ceník webu", href: "/cenik-webu" }]} />

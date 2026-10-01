@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Clock, MapPin, Star, Zap } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { generateLocalBusinessSchema } from "@/lib/schema-org";
+import { generateLocalBusinessSchema, generatePricedOffersSchema } from "@/lib/schema-org";
 import { LandingForm } from "@/components/landing/LandingForm";
 import { StickyCta } from "@/components/landing/StickyCta";
 import { CallLink } from "@/components/landing/CallLink";
@@ -68,6 +68,12 @@ const PRAHA_FAQ: Faq[] = [
   },
 ];
 
+const OFFER_TIERS = [
+  { name: "Landing Page", price: 7990, deliveryDays: "3–5", description: "Jednostránkový web o 3–5 sekcích s kontaktním formulářem a základním SEO." },
+  { name: "Základní Web", price: 14900, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
+  { name: "Standardní Web", price: 29900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
+];
+
 export default async function WebPrahaNabidkaPage() {
   const projects = projectsLabel(await countPublishedProjects("cs"));
   const rating = await getRatingStat("cs");
@@ -85,6 +91,7 @@ export default async function WebPrahaNabidkaPage() {
           locale: "cs",
         })}
       />
+      <JsonLd data={generatePricedOffersSchema(OFFER_TIERS, "https://www.weblyx.cz/web-praha-nabidka")} />
 
       <main className="min-h-screen pb-24 md:pb-0">
         {/* HERO — the price and the timeframe are the offer, so they lead. */}

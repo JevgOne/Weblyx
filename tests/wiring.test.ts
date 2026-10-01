@@ -421,3 +421,48 @@ describe('bot checks guard the API, not public pages', () => {
     expect(src).toMatch(/isApiRoute && \['POST', 'PUT', 'DELETE', 'PATCH'\]/);
   });
 });
+
+/**
+ * What a machine can read off a page that quotes a price.
+ *
+ * Question headings and FAQPage tell an engine what is being answered. They do
+ * not tell it what the thing costs, how long it takes, or who is selling it —
+ * and "kolik stojí web" is the question these pages exist to answer. The
+ * numbers were on the page only as prose, so an assistant had to read and hope.
+ */
+describe('priced pages publish their prices as data', () => {
+  const PRICED = [
+    'app/cenik-webu/page.tsx',
+    'app/web-za-3-5-dni/page.tsx',
+    'app/web-pro-male-firmy/page.tsx',
+    'app/web-praha-nabidka/page.tsx',
+  ];
+
+  for (const rel of PRICED) {
+    const src = readFileSync(join(__dirname, '..', rel), 'utf8');
+
+    it(`${rel} publishes an OfferCatalog`, () => {
+      expect(src).toContain('generatePricedOffersSchema');
+    });
+
+    it(`${rel} quotes the prices that are in pricing_tiers`, () => {
+      for (const price of [7990, 14900, 29900]) {
+        expect(src, `chybí ${price}`).toContain(String(price));
+      }
+    });
+  }
+
+  it('the offers name a seller that the page actually declares', () => {
+    // provider/seller point at #organization; something on the page has to
+    // claim that id or the reference dangles.
+    const lib = readFileSync(join(__dirname, '..', 'lib/schema-org.ts'), 'utf8');
+    expect(lib).toMatch(/'@id': `\$\{url\.replace\(\/\\\/\$\/, ''\)\}\/#organization`/);
+    expect(lib).toMatch(/'@id': 'https:\/\/www\.weblyx\.cz\/#organization'/);
+  });
+
+  it('the delivery window travels with the price', () => {
+    const lib = readFileSync(join(__dirname, '..', 'lib/schema-org.ts'), 'utf8');
+    expect(lib).toContain('deliveryLeadTime');
+    expect(lib).toContain("unitCode: 'DAY'");
+  });
+});

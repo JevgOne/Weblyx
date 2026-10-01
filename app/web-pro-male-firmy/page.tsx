@@ -4,13 +4,16 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Star } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-org";
+import { generateWebPageSchema, generateBreadcrumbSchema, generateOrganizationSchema, generatePricedOffersSchema } from "@/lib/schema-org";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LandingForm } from "@/components/landing/LandingForm";
 import { StickyCta } from "@/components/landing/StickyCta";
 import { CallLink } from "@/components/landing/CallLink";
 import { DEPOSIT_SHORT } from "@/lib/deposit";
 import { countPublishedProjects, getRatingStat, projectsLabel } from "@/lib/site-stats";
+
+/** Bumped when the page is edited, not on every build. */
+const LAST_UPDATED = "2026-10-01";
 
 export const revalidate = 3600;
 
@@ -64,6 +67,12 @@ const FIRMY_FAQ: Faq[] = [
   },
 ];
 
+const OFFER_TIERS = [
+  { name: "Landing Page", price: 7990, deliveryDays: "3–5", description: "Jednostránkový web o 3–5 sekcích s kontaktním formulářem a základním SEO." },
+  { name: "Základní Web", price: 14900, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
+  { name: "Standardní Web", price: 29900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
+];
+
 export default async function WebProMaleFirmyPage() {
   const projects = projectsLabel(await countPublishedProjects("cs"));
   const rating = await getRatingStat("cs");
@@ -81,9 +90,12 @@ export default async function WebProMaleFirmyPage() {
           description: "Web na Next.js pro malé firmy od 7 990 Kč, PageSpeed 90+ garantovaně.",
           url: "https://www.weblyx.cz/web-pro-male-firmy",
           breadcrumbs,
+          dateModified: LAST_UPDATED,
         })}
       />
       <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
+      <JsonLd data={generateOrganizationSchema({ locale: "cs" })} />
+      <JsonLd data={generatePricedOffersSchema(OFFER_TIERS, "https://www.weblyx.cz/web-pro-male-firmy")} />
 
       <main className="min-h-screen pb-24 md:pb-0">
         <Breadcrumbs items={[{ label: "Web pro malé firmy", href: "/web-pro-male-firmy" }]} />
@@ -126,7 +138,7 @@ export default async function WebProMaleFirmyPage() {
               Stavíme na Next.js místo WordPressu, takže weby nepotřebují drahý hosting
               ani měsíční správu. <strong>Od balíčku Základní Web garantujeme PageSpeed
               90+, jinak vracíme peníze.</strong> Změřte si to sami — na našich
-              referencích i na komkoli, koho zvažujete.
+              referencích i u kohokoli, koho zvažujete.
             </p>
           </div>
         </section>

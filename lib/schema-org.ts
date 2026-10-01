@@ -80,6 +80,10 @@ export function generateOrganizationSchema(data?: OrganizationData) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    // A stable identifier the other schemas point at. Without it every page
+    // declares a separate, unrelated company that happens to share a name —
+    // and an engine resolving entities has no reason to join them up.
+    '@id': `${url.replace(/\/$/, '')}/#organization`,
     name,
     url,
     logo: {
@@ -216,6 +220,10 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
+    // The same identifier the Organization schema uses. A local business is
+    // the company, not a second one at the same address — and the offers on
+    // these pages point at this id as their seller.
+    '@id': 'https://www.weblyx.cz/#organization',
     name,
     url,
     description,
@@ -387,6 +395,8 @@ export interface WebPageData {
   description: string;
   url: string;
   breadcrumbs?: BreadcrumbItem[];
+  /** ISO date. A page with no freshness signal looks abandoned to a crawler. */
+  dateModified?: string;
 }
 
 export function generateWebPageSchema(data: WebPageData) {
@@ -397,6 +407,11 @@ export function generateWebPageSchema(data: WebPageData) {
     description: data.description,
     url: data.url,
     inLanguage: 'cs',
+    ...(data.dateModified ? { dateModified: data.dateModified } : {}),
+    // Naming the publisher on every page, not just the homepage, ties the page
+    // to the company as an entity. Without it each page is an anonymous
+    // document that happens to mention a price.
+    publisher: { '@id': `${BASE_URL}/#organization` },
     isPartOf: {
       '@type': 'WebSite',
       name: 'Weblyx',
@@ -520,5 +535,67 @@ export function generatePortfolioSchema(items: PortfolioItem[]) {
         item: generateCreativeWorkSchema(item),
       })),
     },
+  };
+}
+
+
+// ============================================================================
+// PRICED SERVICE OFFERS (for pages that quote a price)
+// ============================================================================
+
+export interface PricedTier {
+  name: string;
+  price: number;
+  /** e.g. "3–5" — rendered into the offer as a delivery lead time. */
+  deliveryDays: string;
+  description: string;
+}
+
+/**
+ * The price list, machine-readable.
+ *
+ * A pricing page whose numbers exist only as text answers nothing when an
+ * assistant is asked what a website costs — it has to read the prose and hope.
+ * This states it: the package, the amount, the currency, how long it takes and
+ * who is selling it.
+ *
+ * `priceValidUntil` is deliberately absent; these are not time-limited offers
+ * and inventing an expiry would make them look stale the day after it passes.
+ */
+export function generatePricedOffersSchema(tiers: PricedTier[], pageUrl: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    name: 'Ceník tvorby webových stránek',
+    url: pageUrl,
+    provider: { '@id': `${BASE_URL}/#organization` },
+    itemListElement: tiers.map((t, i) => {
+      const [min, max] = t.deliveryDays.split(/[–-]/).map((x) => parseInt(x.trim(), 10));
+      return {
+        '@type': 'Offer',
+        position: i + 1,
+        name: t.name,
+        description: t.description,
+        price: String(t.price),
+        priceCurrency: 'CZK',
+        availability: 'https://schema.org/InStock',
+        url: pageUrl,
+        seller: { '@id': `${BASE_URL}/#organization` },
+        itemOffered: {
+          '@type': 'Service',
+          name: t.name,
+          description: t.description,
+          serviceType: 'Tvorba webových stránek',
+          areaServed: { '@type': 'Country', name: 'Česko' },
+          provider: { '@id': `${BASE_URL}/#organization` },
+        },
+        deliveryLeadTime: {
+          '@type': 'QuantitativeValue',
+          minValue: min,
+          maxValue: Number.isFinite(max) ? max : min,
+          unitCode: 'DAY',
+        },
+      };
+    }),
   };
 }
