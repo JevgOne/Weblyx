@@ -10,7 +10,6 @@ import { NovaProcess } from "@/components/nova/process";
 import { NovaPortfolio } from "@/components/nova/portfolio";
 import { NovaPriceConfigurator } from "@/components/nova/price-configurator";
 import { NovaReviews } from "@/components/nova/reviews";
-import { NovaChangelog } from "@/components/nova/changelog";
 import { NovaFaq } from "@/components/nova/faq";
 import { NovaContact } from "@/components/nova/contact";
 
@@ -63,7 +62,6 @@ export function NovaHome({ pricing, now }: { pricing: PricingData; now: Date }) 
         <NovaPriceConfigurator pricing={pricing} />
         <NovaReviews />
         <NovaFaq />
-        <NovaChangelog />
         <NovaContact />
       </main>
     </div>

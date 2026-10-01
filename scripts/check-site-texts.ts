@@ -52,11 +52,6 @@ interface Rule {
  */
 const ALLOWED: Array<{ path: RegExp; hit: RegExp; why: string }> = [
   {
-    path: /^\/$/,
-    hit: /24 990|9 990/,
-    why: 'archiv změn na homepage cituje ceny, které jsme odstranili',
-  },
-  {
     path: /proc-vas-web-nikdo-nenavstevuje|nejcastejsi-chyby-tvorba-webu/,
     hit: /do 2 hodin/,
     why: 'vymyšlený instalatér jako ukázka dobrého textu, ne náš slib',
