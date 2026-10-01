@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Star } from "lucide-react";
@@ -33,6 +34,34 @@ const STEPS = [
   { n: "1", title: "Audit zdarma", body: "Změříme váš stávající web — rychlost, SEO, bezpečnost. Výsledek uvidíte hned." },
   { n: "2", title: "Nabídka do 24 hodin", body: "Pevná cena za vyjmenovaný rozsah. Po schválení návrhu záloha 50 %." },
   { n: "3", title: "Web za 3–5 dní", body: "Termín běží od zálohy a od dodání podkladů. Když ho nedodržíme, platíte polovinu." },
+];
+
+const FIRMY_FAQ: Faq[] = [
+  {
+    question: "Jak poznám, že je můj web pomalý?",
+    answer:
+      "Změřte si ho v PageSpeed Insights od Googlu, je to zdarma. My jsme změřili padesát českých firemních webů a průměrné skóre bylo 43 ze 100. Nad 90 je dobře, pod 50 přichází firma o návštěvníky, kteří odejdou dřív, než se stránka načte.",
+  },
+  {
+    question: "Proč Next.js místo WordPressu?",
+    answer:
+      "Weby na Next.js se načítají rychleji, nepotřebují drahý hosting ani měsíční správu a nejsou terčem automatizovaných útoků na pluginy. Od balíčku Základní Web garantujeme PageSpeed 90+, jinak vracíme peníze.",
+  },
+  {
+    question: "Kolik stojí web pro malou firmu?",
+    answer:
+      "Od 7 990 Kč za jednostránkovou prezentaci, 14 900 Kč za web o třech až pěti podstránkách s blogem a 29 900 Kč za rozsáhlejší web s plnou správou obsahu. Jednorázově, bez měsíčních poplatků.",
+  },
+  {
+    question: "Jak dlouho to trvá a kdy se platí?",
+    answer:
+      "Tři až deset pracovních dní podle rozsahu. Po schválení nabídky hradíte zálohu 50 %, doplatek před předáním. Termín běží od zálohy a od dodání podkladů.",
+  },
+  {
+    question: "Můžu si web pak spravovat sám?",
+    answer:
+      "Od balíčku Základní Web ano — dostanete editor, ve kterém měníte texty, obrázky i články bez zásahu vývojáře. U rozsáhlejších webů je to plná správa obsahu včetně podstránek.",
+  },
 ];
 
 export default async function WebProMaleFirmyPage() {
@@ -83,7 +112,7 @@ export default async function WebProMaleFirmyPage() {
 
         <section className="border-y bg-muted/30 px-4 py-14">
           <div className="container mx-auto max-w-3xl">
-            <h2 className="mb-4 text-2xl font-bold md:text-3xl">Proč to vadí</h2>
+            <h2 className="mb-4 text-2xl font-bold md:text-3xl">Proč pomalý web stojí firmu zákazníky?</h2>
             <p className="mb-4 leading-relaxed text-muted-foreground">
               Pomalý web neodradí návštěvníka tím, že by si stěžoval. Odejde a vy se to
               nedozvíte — v analytice to vypadá jen jako méně poptávek. Čísla z naší
@@ -104,7 +133,7 @@ export default async function WebProMaleFirmyPage() {
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-4xl">
-            <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Jak to proběhne</h2>
+            <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Jak probíhá tvorba webu pro malou firmu?</h2>
             <div className="grid gap-5 md:grid-cols-3">
               {STEPS.map((s) => (
                 <Card key={s.n} className="border-border/60">
@@ -125,7 +154,7 @@ export default async function WebProMaleFirmyPage() {
         <section className="border-t bg-muted/30 px-4 py-14">
           <div className="container mx-auto max-w-2xl" id="poptavka">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl font-bold md:text-3xl">Začněte auditem zdarma</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">Jak zjistím, co je na mém webu špatně?</h2>
               <p className="mt-2 text-muted-foreground">
                 Změříme váš web a řekneme, co zlepšit. Nezávazně. Nebo volejte{" "}
                 <CallLink className="font-semibold text-primary hover:underline" />.
@@ -146,6 +175,7 @@ export default async function WebProMaleFirmyPage() {
             </ul>
           </div>
         </section>
+        <LandingFaq items={FIRMY_FAQ} />
       </main>
 
       <StickyCta />

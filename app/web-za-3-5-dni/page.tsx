@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Clock } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -41,6 +42,34 @@ const NEEDED = [
   "Kontaktní údaje a otevírací dobu",
 ];
 
+const RYCHLOST_FAQ: Faq[] = [
+  {
+    question: "Je web za tři dny vůbec kvalitní?",
+    answer:
+      "Jednostránková vizitka se třemi až pěti sekcemi je práce zhruba na šestnáct hodin. Za tři až pět dní se stihne proto, že je rozsah jasně vymezený, ne proto, že by se odbývala. Rozsáhlejší weby trvají 5 až 10 dní.",
+  },
+  {
+    question: "Od kdy se termín počítá?",
+    answer:
+      "Od chvíle, kdy je uhrazená záloha 50 % a zároveň máme všechny podklady — texty, logo, fotky a potřebné přístupy. Ne od prvního e-mailu a ne od odeslání poptávky. Lhůta se staví po dobu, kdy čekáme na doplnění.",
+  },
+  {
+    question: "Co se stane, když termín nedodržíte?",
+    answer:
+      "Snižuje se celková cena zakázky na 50 %. Uhrazená záloha se pak považuje za úhradu celé zakázky a doplatek neplatíte. Je to psané v obchodních podmínkách, ne jen v marketingu.",
+  },
+  {
+    question: "Kolik kol úprav je v ceně?",
+    answer:
+      "Dvě kola revizí designu. Pokud ani po nich nejste spokojeni, vracíme zálohu.",
+  },
+  {
+    question: "Co když nemám texty připravené?",
+    answer:
+      "Řekneme to na začátku a domluvíme se na copywritingu zvlášť. Čekání na podklady je jediná věc, která termín reálně posouvá.",
+  },
+];
+
 export default function WebZa35DniPage() {
   const breadcrumbs = [
     { name: "Domů", url: "https://www.weblyx.cz" },
@@ -77,7 +106,7 @@ export default function WebZa35DniPage() {
 
         <section className="px-4 pb-14">
           <div className="container mx-auto max-w-3xl">
-            <h2 className="mb-8 text-2xl font-bold md:text-3xl">Jak to jde den po dni</h2>
+            <h2 className="mb-8 text-2xl font-bold md:text-3xl">Jak může být web hotový za tři dny?</h2>
             <ol className="space-y-3">
               {TIMELINE.map((s, i) => (
                 <li key={i}>
@@ -101,7 +130,7 @@ export default function WebZa35DniPage() {
 
         <section className="border-y bg-muted/30 px-4 py-14">
           <div className="container mx-auto max-w-3xl">
-            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Co od vás potřebujeme</h2>
+            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Co musím dodat, aby se termín stihl?</h2>
             <p className="mb-6 text-muted-foreground">
               Tohle je jediná věc, která termín reálně posouvá. Lhůta se staví po dobu,
               kdy čekáme na podklady.
@@ -120,7 +149,7 @@ export default function WebZa35DniPage() {
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-2xl" id="poptavka">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl font-bold md:text-3xl">Rezervujte si termín</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">Jak si zarezervuji termín?</h2>
               <p className="mt-2 flex flex-wrap items-center justify-center gap-x-2 text-muted-foreground">
                 <Clock className="h-4 w-4" /> Ozveme se do 24 hodin. Nebo volejte{" "}
                 <CallLink className="font-semibold text-primary hover:underline" />.
@@ -129,6 +158,7 @@ export default function WebZa35DniPage() {
             <LandingForm source="/web-za-3-5-dni" heading="Nezávazná poptávka" />
           </div>
         </section>
+        <LandingFaq items={RYCHLOST_FAQ} />
       </main>
 
       <StickyCta />

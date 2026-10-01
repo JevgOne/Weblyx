@@ -66,6 +66,24 @@ Cenu mění integrace: další platební brány a dopravci, napojení na sklad n
 - [GEO optimalizace](https://www.weblyx.cz/geo-optimalizace): Optimalizace pro citace v ChatGPT, Perplexity a Google AI Overviews.
 - [Redesign webu](https://www.weblyx.cz/redesign-webu): Modernizace stávajícího webu, od 15 000 Kč.
 - [Garance rychlosti](https://www.weblyx.cz/pagespeed-garance): PageSpeed 90+ nebo vrácení peněz, od balíčku Základní Web.
+- [Audit webu zdarma](https://www.weblyx.cz/audit): Okamžité skóre rychlosti, SEO a bezpečnosti s konkrétními doporučeními.
+
+## Stránky s odpověďmi na konkrétní dotazy
+
+- [Ceník tvorby webu](https://www.weblyx.cz/cenik-webu): Všechny tři balíčky s pevnou cenou a srovnání s agenturou a stavebnicí.
+- [Web za 3–5 dní](https://www.weblyx.cz/web-za-3-5-dni): Časová osa den po dni, co dodává klient a od čeho běží termín.
+- [Web pro malé firmy](https://www.weblyx.cz/web-pro-male-firmy): Proč pomalý web stojí zákazníky, podloženo měřením 50 českých webů.
+- [Web pro živnostníky a OSVČ](https://www.weblyx.cz/web-pro-zivnostniky): Web pro řemeslníky, služby a freelancery od 7 990 Kč.
+
+## Platební a dodací podmínky
+
+Po schválení cenové nabídky klient hradí zálohu 50 %, doplatek je splatný před předáním.
+Termín dodání začíná běžet až ve chvíli, kdy je uhrazená záloha a zároveň klient dodal
+všechny podklady (texty, logo, fotky, přístupy) — podle toho, co nastane později.
+Nikoli od prvního kontaktu ani od odeslání poptávky.
+Pokud Weblyx termín nedodrží, snižuje se celková cena zakázky na 50 % sjednané ceny.
+V ceně jsou dvě kola revizí designu; pokud klient ani po nich není spokojen, vrací se záloha.
+Žádné měsíční poplatky za hosting ani povinná správa po spuštění.
 
 ## Články s konkrétními čísly
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Clock } from "lucide-react";
@@ -57,6 +58,34 @@ const COMPARISON = [
   { who: "Stavebnice (Webnode, Wix)", price: "0 Kč na začátku", monthly: "250 – 550 Kč", time: "Podle vás", own: "Web žije jen s předplatným" },
 ];
 
+const CENIK_FAQ: Faq[] = [
+  {
+    question: "Kolik stojí web v roce 2026?",
+    answer:
+      "Jednostránkový web od 7 990 Kč, firemní web o třech až pěti podstránkách od 14 900 Kč a rozsáhlejší web s plnou správou obsahu od 29 900 Kč. Cena je jednorázová a pevná pro dohodnutý rozsah.",
+  },
+  {
+    question: "Jsou v ceně nějaké měsíční poplatky?",
+    answer:
+      "Ne. Platíte jednou a web je váš, včetně domény. Konkurence si za správu běžně účtuje 500 až 1 200 Kč měsíčně a za SEO od 2 000 Kč měsíčně, což za tři roky udělá 18 až 43 tisíc navíc.",
+  },
+  {
+    question: "Co se stane po schválení nabídky?",
+    answer:
+      "Hradíte zálohu 50 % a od jejího uhrazení — a od dodání podkladů — začíná běžet termín. Doplatek je splatný před předáním.",
+  },
+  {
+    question: "Je levnější stavebnice jako Webnode nebo Wix?",
+    answer:
+      "Na začátku ano, dlouhodobě ne. Stavebnice vyjdou na 2 000 až 5 000 Kč ročně, takže jednostránkový web za 7 990 Kč se proti nim zaplatí zhruba za rok a půl — a to bez započtení času, který nad ním strávíte. Web navíc žije jen po dobu předplatného.",
+  },
+  {
+    question: "Je v ceně SEO?",
+    answer:
+      "Ano. Technické SEO — struktura nadpisů, titulky, popisky, sitemap, rychlost a strukturovaná data — děláme při stavbě, ne jako příplatek po ní. Dodělávat ho zpětně stojí víc než ho udělat rovnou.",
+  },
+];
+
 export default function CenikWebuPage() {
   const breadcrumbs = [
     { name: "Domů", url: "https://www.weblyx.cz" },
@@ -96,7 +125,7 @@ export default function CenikWebuPage() {
               {TIERS.map((t) => (
                 <Card key={t.name} className={t.highlight ? "border-primary/40 shadow-sm" : "border-border/60"}>
                   <CardContent className="space-y-3 p-6">
-                    <h2 className="text-lg font-bold">{t.name}</h2>
+                    <h3 className="text-lg font-bold">{t.name}</h3>
                     <p className="text-3xl font-bold text-primary">{t.price}</p>
                     <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                       <Clock className="h-4 w-4" /> {t.time}
@@ -119,7 +148,7 @@ export default function CenikWebuPage() {
 
         <section className="border-y bg-muted/30 px-4 py-14">
           <div className="container mx-auto max-w-5xl">
-            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Weblyx vs. agentura vs. stavebnice</h2>
+            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Co se vyplatí víc — agentura, nebo stavebnice?</h2>
             <p className="mb-8 text-muted-foreground">
               Rozhoduje sloupec s měsíčním poplatkem. Předplatné vypadá levněji v den
               podpisu a přestává někdy ve druhém roce.
@@ -159,7 +188,7 @@ export default function CenikWebuPage() {
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-2xl" id="poptavka">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl font-bold md:text-3xl">Kalkulace do 24 hodin</h2>
+              <h2 className="text-2xl font-bold md:text-3xl">Jak zjistím přesnou cenu pro svůj web?</h2>
               <p className="mt-2 text-muted-foreground">
                 Napište, co potřebujete, a pošleme pevnou cenu. Nebo volejte{" "}
                 <CallLink className="font-semibold text-primary hover:underline" />.
@@ -174,6 +203,7 @@ export default function CenikWebuPage() {
             </p>
           </div>
         </section>
+        <LandingFaq items={CENIK_FAQ} />
       </main>
 
       <StickyCta />

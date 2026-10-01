@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Clock, MapPin, Star, Zap } from "lucide-react";
@@ -37,6 +38,34 @@ const BENEFITS = [
   { icon: Check, title: "Pevná cena od 7 990 Kč", body: "Cena platí pro dohodnutý rozsah. Žádné měsíční poplatky za hosting ani povinná správa." },
   { icon: Zap, title: "Garance PageSpeed 90+", body: "Od balíčku Základní Web garantujeme skóre 90+, jinak vracíme peníze. Změřte si to sami." },
   { icon: MapPin, title: "Sídlíme na Praze 1", body: "Školská 660/3. Můžeme se potkat osobně, nebo přijedeme za vámi." },
+];
+
+const PRAHA_FAQ: Faq[] = [
+  {
+    question: "Kolik stojí tvorba webu v Praze?",
+    answer:
+      "U nás od 7 990 Kč za jednostránkovou vizitku, 14 900 Kč za web o třech až pěti podstránkách a 29 900 Kč za web o deseti a více podstránkách s plnou správou obsahu. Cena je pevná pro dohodnutý rozsah. Na pražském trhu se běžné firemní weby pohybují od 9 900 Kč u nejlevnějších dodavatelů po 120 000 až 400 000 Kč u velkých studií.",
+  },
+  {
+    question: "Jak dlouho trvá vytvoření webu?",
+    answer:
+      "Jednostránkovou vizitku dodáme za 3 až 5 pracovních dní, web o několika podstránkách za 5 až 7 a rozsáhlejší firemní web za 7 až 10. Lhůta začíná běžet, až je uhrazená záloha a zároveň máme všechny podklady — texty, logo a fotky. Pokud termín nedodržíme, platíte jen polovinu ceny.",
+  },
+  {
+    question: "Kdy se platí a kolik dopředu?",
+    answer:
+      "Po schválení cenové nabídky hradíte zálohu 50 %, doplatek je splatný před předáním hotového webu. Žádné měsíční poplatky za hosting ani povinná správa po spuštění.",
+  },
+  {
+    question: "Můžeme se sejít osobně v Praze?",
+    answer:
+      "Ano. Sídlíme na adrese Školská 660/3, Praha 1, kousek od Národní třídy. Schůzku si můžete domluvit u nás, nebo přijedeme za vámi.",
+  },
+  {
+    question: "Co když nemám texty ani fotky?",
+    answer:
+      "Řekneme to hned na začátku a domluvíme se na copywritingu zvlášť, aby vám nečekáním na podklady neutekl termín. Struktuře stránek a tomu, co kam patří, pomůžeme vždy.",
+  },
 ];
 
 export default async function WebPrahaNabidkaPage() {
@@ -109,7 +138,7 @@ export default async function WebPrahaNabidkaPage() {
                   <CardContent className="flex gap-4 p-6">
                     <b.icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                     <div className="space-y-1.5">
-                      <h2 className="font-bold">{b.title}</h2>
+                      <h3 className="font-bold">{b.title}</h3>
                       <p className="text-sm leading-relaxed text-muted-foreground">{b.body}</p>
                     </div>
                   </CardContent>
@@ -122,7 +151,7 @@ export default async function WebPrahaNabidkaPage() {
         {/* PRICES — the whole list, so the entry price is not a bait number. */}
         <section className="border-y bg-muted/30 px-4 py-14">
           <div className="container mx-auto max-w-5xl">
-            <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Co kolik stojí</h2>
+            <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Kolik stojí web v Praze?</h2>
             <div className="grid gap-5 md:grid-cols-3">
               {[
                 { name: "Landing Page", price: "7 990 Kč", time: "3–5 dní", what: "Jedna stránka, 3–5 sekcí" },
@@ -150,7 +179,7 @@ export default async function WebPrahaNabidkaPage() {
         {/* REFERENCES — named only where the client's own site confirms it. */}
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-5xl">
-            <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Weby, které běží v Praze</h2>
+            <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Jaké weby jste v Praze udělali?</h2>
             <div className="grid gap-5 md:grid-cols-3">
               {[
                 { name: "AK Barbers", note: "Barbershop se čtyřmi pražskými pobočkami — Praha 1, 3, 5 a 6.", url: "https://www.akbarber.com" },
@@ -179,7 +208,7 @@ export default async function WebPrahaNabidkaPage() {
         {/* CLOSE */}
         <section className="border-t bg-muted/30 px-4 py-14">
           <div className="container mx-auto max-w-2xl text-center">
-            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Řekneme vám cenu do 24 hodin</h2>
+            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Jak rychle dostanu cenovou nabídku?</h2>
             <p className="mb-8 text-muted-foreground">
               Nezávazně a zdarma. Nebo rovnou volejte{" "}
               <CallLink className="font-semibold text-primary hover:underline" />.
@@ -195,6 +224,7 @@ export default async function WebPrahaNabidkaPage() {
             </p>
           </div>
         </section>
+        <LandingFaq items={PRAHA_FAQ} />
       </main>
 
       <StickyCta />
