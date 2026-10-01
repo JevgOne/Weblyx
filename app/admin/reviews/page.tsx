@@ -17,19 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ArrowLeft,
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  GripVertical,
-  Eye,
-  EyeOff,
-  Star,
-  StarOff,
-  Briefcase,
-} from "lucide-react";
+import { ArrowLeft, Search, Plus, Edit, Trash2, GripVertical, Eye, EyeOff, Star, StarOff, Briefcase, Upload } from "lucide-react";
 import { Review } from "@/types/review";
 
 export default function AdminReviewsPage() {
@@ -234,13 +222,25 @@ export default function AdminReviewsPage() {
               </div>
             </div>
 
-            <Button
-              className="gap-2"
-              onClick={() => router.push("/admin/reviews/new")}
-            >
-              <Plus className="h-4 w-4" />
-              Nová recenze
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              {/* Nineteen reviews on the Google profile, five here. Adding the
+                  rest one form at a time is why they are not here yet. */}
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => router.push("/admin/reviews/import")}
+              >
+                <Upload className="h-4 w-4" />
+                Hromadně z Googlu
+              </Button>
+              <Button
+                className="gap-2"
+                onClick={() => router.push("/admin/reviews/new")}
+              >
+                <Plus className="h-4 w-4" />
+                Nová recenze
+              </Button>
+            </div>
           </div>
         </div>
       </header>

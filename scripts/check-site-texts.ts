@@ -25,11 +25,41 @@ interface Rule {
   why: string;
   /** Pages allowed to contain it anyway. */
   except?: RegExp;
+  /**
+   * Set when the rule governs a claim we make about ourselves. The match is
+   * then ignored if it sits inside quotation marks or an illustration — an
+   * article teaching someone to write "Opravíme ho do 2 hodin" on a plumber's
+   * site is not us promising to answer in two hours.
+   */
+  ourClaimOnly?: boolean;
+}
+
+/**
+ * Whether a match is somebody else's words rather than ours.
+ *
+ * The checker reported eighteen findings and every one was an example, a
+ * competitor's published price, or our own changelog describing a price we
+ * had already removed. A check that cries wolf eighteen times is a check
+ * nobody reads, and the real contradiction hides in the noise.
+ */
+function isIllustration(text: string, at: number, hit: string): boolean {
+  const before = text.slice(Math.max(0, at - 220), at);
+  const around = text.slice(Math.max(0, at - 220), at + hit.length + 120);
+
+  // Inside a quotation — examples of copy are written as quotes.
+  const quotes = (before.match(/[„"]/g) ?? []).length;
+  if (quotes % 2 === 1) return true;
+
+  // Named as an example, a competitor, or a thing we changed.
+  return /\b(například|třeba|vzor|ukázk|příklad|fiktivn|špatn[ěý]|takhle ne|místo toho|konkurence|agentur[ayi]|stavebnic|uváděly staré|starou cenu|dříve|původně)\b/i.test(
+    around
+  );
 }
 
 const RULES: Rule[] = [
   {
     name: 'retired price',
+    ourClaimOnly: true,
     forbidden: /\b(8 000|9 990|10 000|24 990|25 000|85 000|49 990|89 990|14 990|12 990|16 990|54 900)\s*Kč/,
     why: 'balíčky stojí 7 990 / 14 900 / 29 900 Kč',
     // WordPress hosting costs and the monthly SEO retainer are not our prices.
@@ -42,11 +72,13 @@ const RULES: Rule[] = [
   },
   {
     name: 'revisions promise',
+    ourClaimOnly: true,
     forbidden: /neomezené revize|neomezený počet revizí/i,
     why: 'v ceně jsou 2 kola revizí',
   },
   {
     name: 'response time',
+    ourClaimOnly: true,
     forbidden: /do 2 h\b|do 2 hodin|2-4 hodin|2–4 hodin/i,
     why: 'web slibuje odpověď do 24 hodin',
   },
@@ -62,6 +94,7 @@ const RULES: Rule[] = [
   },
   {
     name: 'wrong phone',
+    ourClaimOnly: true,
     forbidden: /\+420 ?7(?!02 ?110 ?166)\d{2} ?\d{3} ?\d{3}/,
     why: 'telefon je +420 702 110 166',
     // The enquiry forms use a placeholder number in their inputs.
@@ -115,6 +148,7 @@ async function main() {
       const hit = text.match(rule.forbidden);
       if (hit) {
         const at = text.indexOf(hit[0]);
+        if (rule.ourClaimOnly && isIllustration(text, at, hit[0])) continue;
         const context = text.slice(Math.max(0, at - 60), at + 70).trim();
         console.log(`  ✗  ${path}`);
         console.log(`       ${rule.name}: „${hit[0]}" — ${rule.why}`);
