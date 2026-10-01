@@ -42,6 +42,56 @@ interface Rule {
  * had already removed. A check that cries wolf eighteen times is a check
  * nobody reads, and the real contradiction hides in the noise.
  */
+/**
+ * Known-good matches, each with the reason it is not a contradiction.
+ *
+ * The point of this list is that everything outside it is a real finding. A
+ * check that reports a dozen things nobody intends to fix is a check nobody
+ * runs, so anything deliberate is written down here rather than tolerated in
+ * the output.
+ */
+const ALLOWED: Array<{ path: RegExp; hit: RegExp; why: string }> = [
+  {
+    path: /^\/$/,
+    hit: /24 990|9 990/,
+    why: 'archiv změn na homepage cituje ceny, které jsme odstranili',
+  },
+  {
+    path: /proc-vas-web-nikdo-nenavstevuje|nejcastejsi-chyby-tvorba-webu/,
+    hit: /do 2 hodin/,
+    why: 'vymyšlený instalatér jako ukázka dobrého textu, ne náš slib',
+  },
+  {
+    path: /klient-chtel-web-za-5000/,
+    hit: /25 000/,
+    why: 'příběh klienta, který zaplatil jinde — ne naše cena',
+  },
+  {
+    path: /analyzovali-jsme-50-ceskych-webu/,
+    hit: /10 000/,
+    why: 'průměrná zakázka čtenáře, ne cena webu',
+  },
+  {
+    path: /tvorba-webu-praha-jak-vybrat-agenturu-ceny/,
+    hit: /10 000/,
+    why: 'hypotetické srovnání dvou webů za stejnou cenu',
+  },
+  {
+    path: /wordpress-vs-wix/,
+    hit: /8 000/,
+    why: 'pětileté náklady na Wix Business, ne naše cena',
+  },
+  {
+    path: /kolik-realne-vydelame-na-webu-za-8-tisic/,
+    hit: /8 000/,
+    why: 'název případovky o konkrétní zakázce',
+  },
+];
+
+function isAllowedHit(path: string, hit: string): boolean {
+  return ALLOWED.some((a) => a.path.test(path) && a.hit.test(hit));
+}
+
 function isIllustration(text: string, at: number, hit: string): boolean {
   const before = text.slice(Math.max(0, at - 220), at);
   const around = text.slice(Math.max(0, at - 220), at + hit.length + 120);
@@ -50,8 +100,14 @@ function isIllustration(text: string, at: number, hit: string): boolean {
   const quotes = (before.match(/[„"]/g) ?? []).length;
   if (quotes % 2 === 1) return true;
 
-  // Named as an example, a competitor, or a thing we changed.
-  return /\b(například|třeba|vzor|ukázk|příklad|fiktivn|špatn[ěý]|takhle ne|místo toho|konkurence|agentur[ayi]|stavebnic|uváděly staré|starou cenu|dříve|původně)\b/i.test(
+  // A range is a market figure, not a price of ours: our packages cost one
+  // amount each. "3 000–8 000 Kč za optimalizaci obrázků" is what a repair
+  // costs, "2 000–10 000 Kč" is what a VPS costs, and neither is a package.
+  const asRange = new RegExp(`\\d[\\d\\s]*\\s*[–-]\\s*${hit.replace(/[.*+?^$()[\]{}|\\]/g, '\\$&')}`);
+  if (asRange.test(around)) return true;
+
+  // Named as an example, a competitor's published price, or a change we made.
+  return /\b(například|třeba|vzor|ukázk|příklad|fiktivn|špatn[ěý]|takhle ne|místo toho|konkurence|agentur[ayi]|stavebnic|uváděly staré|starou cenu|dříve|původně|hosting|VPS|focení|fotograf|Wix|Webnode|Shoptet|create201|wpdistro|pixelfield|dejtonaweb|weby-praha)\b/i.test(
     around
   );
 }
@@ -148,6 +204,7 @@ async function main() {
       const hit = text.match(rule.forbidden);
       if (hit) {
         const at = text.indexOf(hit[0]);
+        if (rule.ourClaimOnly && isAllowedHit(path, hit[0])) continue;
         if (rule.ourClaimOnly && isIllustration(text, at, hit[0])) continue;
         const context = text.slice(Math.max(0, at - 60), at + 70).trim();
         console.log(`  ✗  ${path}`);
