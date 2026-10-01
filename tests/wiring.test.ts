@@ -353,3 +353,40 @@ describe('lead attribution', () => {
     expect(sql).not.toMatch(/DROP|DELETE|UPDATE\s+leads/i);
   });
 });
+
+/**
+ * The crawlers that must never get a 403.
+ *
+ * `REQUIRED_BROWSER_KEYWORDS` rejects any agent that does not name a browser,
+ * which is most legitimate crawlers. AdsBot-Google is the expensive one: it
+ * checks the landing page before Google will run an ad, and a 403 there gets
+ * the campaign disapproved. Seznam matters for a Czech site for the obvious
+ * reason.
+ */
+describe('legitimate crawlers are whitelisted', () => {
+  const src = readFileSync(join(__dirname, '..', 'middleware.ts'), 'utf8');
+  const list = src.slice(src.indexOf('WHITELISTED_BOTS'), src.indexOf('BLOCKED_USER_AGENTS'));
+
+  const MUST_PASS = [
+    'adsbot-google',
+    'mediapartners-google',
+    'apis-google',
+    'google-safety',
+    'googlebot',
+    'seznambot',
+    'seznamscreenshoter',
+  ];
+
+  for (const bot of MUST_PASS) {
+    it(`${bot} is on the whitelist`, () => {
+      expect(list).toContain(`'${bot}'`);
+    });
+  }
+
+  it('the whitelist is consulted before every other rule', () => {
+    const whitelistAt = src.indexOf('WHITELISTED_BOTS.some');
+    const lengthAt = src.indexOf('userAgent.length < 10');
+    expect(whitelistAt).toBeGreaterThan(-1);
+    expect(whitelistAt).toBeLessThan(lengthAt);
+  });
+});

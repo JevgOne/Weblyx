@@ -24,6 +24,20 @@ const WHITELISTED_BOTS = [
   'lighthouse', 'pagespeed', 'chrome-lighthouse',
   'gtmetrix', 'pingdom', 'uptimerobot',
   'vercel-edge-functions', 'vercel',
+  // Google's non-search crawlers. None of them send a browser keyword, so the
+  // REQUIRED_BROWSER_KEYWORDS rule rejected them outright — and `adsbot-google`
+  // is the one that checks the landing page of an ad before Google will run it.
+  // A 403 there means the campaign is disapproved, which is a strange way to
+  // lose money on a site that sells advertising.
+  'adsbot-google', 'mediapartners-google', 'apis-google',
+  'google-safety', 'googleother', 'google-read-aloud',
+  'feedfetcher-google', 'googlebot-image', 'googlebot-video', 'googlebot-news',
+
+  // Seznam. The Czech search engine matters here more than most of the list
+  // above; its crawler passes only because it happens to say "Mozilla", and
+  // the screenshot generator that renders previews does not.
+  'seznambot', 'seznamscreenshoter', 'seznam',
+
   // Internal bots
   'weblyxbot',
 ];
