@@ -479,7 +479,7 @@ export default async function ServicesPage() {
                 Doplňkové služby
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Doplňkové služby a <span className="text-primary">podpora</span>
+                Co se dá k webu <span className="text-primary">dokoupit?</span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Nabízíme také další služby pro zlepšení výkonu, SEO a údržbu vašeho webu.

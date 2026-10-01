@@ -242,8 +242,8 @@ export default async function TvorbaWebuOstravaPage() {
                 Proč Ostrava potřebuje moderní weby
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Ostrava prochází{" "}
-                <span className="text-primary">digitální transformací</span>
+                Proč řešit web zvlášť pro{" "}
+                <span className="text-primary">Ostravu?</span>
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -307,8 +307,8 @@ export default async function TvorbaWebuOstravaPage() {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-12 space-y-3">
               <h2 className="text-3xl md:text-4xl font-bold">
-                Webové služby pro{" "}
-                <span className="text-primary">ostravské podnikatele</span>
+                Co pro ostravské firmy{" "}
+                <span className="text-primary">děláme?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Komplexní řešení od jednoduchého webu po <strong>digitální transformaci celé firmy</strong>.

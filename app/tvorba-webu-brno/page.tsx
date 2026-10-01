@@ -238,9 +238,9 @@ export default async function TvorbaWebuBrnoPage() {
             <div className="text-center mb-12 space-y-3">
               <Badge variant="outline">Proč právě Brno?</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Brno je{" "}
+                Proč řešit web zvlášť pro{" "}
                 <span className="text-primary">
-                  technologické srdce Moravy
+                  Brno?
                 </span>
               </h2>
             </div>
@@ -301,8 +301,8 @@ export default async function TvorbaWebuBrnoPage() {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-12 space-y-3">
               <h2 className="text-3xl md:text-4xl font-bold">
-                Webové služby pro{" "}
-                <span className="text-primary">brněnské firmy</span>
+                Co pro brněnské firmy{" "}
+                <span className="text-primary">děláme?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Od prezentačních webů po komplexní e-shopy — vše na{" "}

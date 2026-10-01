@@ -175,7 +175,7 @@ export default function WebProZivnostnikyPage() {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-12 space-y-3">
               <h2 className="text-3xl md:text-4xl font-bold">
-                Znáte to? <span className="text-primary">Vyřešíme to za vás</span>
+                Co živnostníky na webu <span className="text-primary">nejvíc brzdí?</span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Jako <strong>OSVČ</strong> máte spoustu starostí. Web by neměl být jednou z nich.
@@ -242,7 +242,7 @@ export default function WebProZivnostnikyPage() {
         <section className="py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Transparentní <span className="text-primary">ceny bez háčků</span>
+              Kolik web pro živnostníka <span className="text-primary">stojí?</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
               <strong>Webové stránky pro OSVČ od 7 990 Kč</strong>. Jednorázová platba, žádné skryté poplatky.
@@ -295,7 +295,7 @@ export default function WebProZivnostnikyPage() {
         <section className="py-12 px-4 bg-muted/20">
           <div className="container mx-auto max-w-5xl">
             <h2 className="text-2xl font-bold mb-6 text-center">
-              Weby pro různé obory podnikání
+              Pro jaké obory weby děláme?
             </h2>
             <div className="grid md:grid-cols-3 gap-4">
               <Link href="/web-pro-restaurace" className="group">

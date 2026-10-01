@@ -376,8 +376,8 @@ export default async function TvorbaWebuPrahaPage() {
             <div className="text-center mb-12 space-y-3">
               <Badge variant="outline">Proč zrovna Praha?</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Praha je{" "}
-                <span className="text-primary">hlavní město podnikání</span>
+                Proč řešit web{" "}
+                <span className="text-primary">zvlášť pro Prahu?</span>
               </h2>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
@@ -443,7 +443,7 @@ export default async function TvorbaWebuPrahaPage() {
             <div className="text-center mb-12 space-y-3">
               <h2 className="text-3xl md:text-4xl font-bold">
                 Co pro vás{" "}
-                <span className="text-primary">vytvoříme</span>
+                <span className="text-primary">vytvoříme?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Kompletní <strong>webové služby pro pražské firmy</strong> a živnostníky — podívejte se na{" "}
@@ -584,7 +584,7 @@ export default async function TvorbaWebuPrahaPage() {
               <Badge variant="outline">Srovnání</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
                 Kolik stojí web{" "}
-                <span className="text-primary">v Praze</span>
+                <span className="text-primary">v Praze?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Ceny níž jsou z veřejných ceníků pražských dodavatelů, stav září 2026.
@@ -642,7 +642,7 @@ export default async function TvorbaWebuPrahaPage() {
               <Badge variant="outline">Než někomu pošlete zálohu</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
                 Jak poznáte{" "}
-                <span className="text-primary">předraženou nabídku</span>
+                <span className="text-primary">předraženou nabídku?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Pět věcí, které si na nabídce ověříte bez znalosti kódu. Platí i na nás —
@@ -673,8 +673,8 @@ export default async function TvorbaWebuPrahaPage() {
             <div className="text-center mb-12 space-y-3">
               <Badge variant="outline">Postup</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Jak to{" "}
-                <span className="text-primary">probíhá</span>
+                Jak spolupráce{" "}
+                <span className="text-primary">probíhá?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Včetně dvou věcí, které jinde v nabídce nenajdete — zálohy a toho,
@@ -713,8 +713,8 @@ export default async function TvorbaWebuPrahaPage() {
             <div className="text-center mb-12 space-y-3">
               <Badge variant="outline">Reference</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Weby, které běží{" "}
-                <span className="text-primary">v Praze</span>
+                Jaké weby jsme udělali{" "}
+                <span className="text-primary">v Praze?</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Otevřete si je a zkontrolujte. Rychlost si můžete sami změřit

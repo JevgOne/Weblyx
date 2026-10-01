@@ -135,7 +135,7 @@ export default async function AboutPage() {
         <div className="container mx-auto max-w-4xl">
           <div className="space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-bold">Náš příběh</h2>
+              <h2 className="text-3xl md:text-4xl font-bold">Kdo za Weblyxem stojí?</h2>
               <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
                 <p>
                   Myšlenka na Weblyx se zrodila v únoru 2024. Potřebovali jsme vlastní web – moderní, rychlý a přizpůsobený tomu, kdo jsme a jak chceme působit. Obcházeli jsme studia, freelancery i 'levné weby' a všude slyšeli to samé: šablonové WordPress řešení, dlouhé dodací lhůty a spoustu kompromisů.
@@ -223,7 +223,7 @@ export default async function AboutPage() {
       <section className="py-16 md:py-24 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold">Naše hodnoty</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">Podle čeho pracujeme?</h2>
             <p className="text-lg text-muted-foreground">
               Principy, které nás vedou každý den
             </p>
