@@ -390,3 +390,34 @@ describe('legitimate crawlers are whitelisted', () => {
     expect(whitelistAt).toBeLessThan(lengthAt);
   });
 });
+
+/**
+ * A public page answers anyone; the API does not.
+ *
+ * Both checks used to guard every route, so a marketing page returned 403 to
+ * anything that did not name a browser in its user agent. That stopped no
+ * attacker — a header is one line to forge — and did stop Google's AdsBot from
+ * validating an ad's destination, which disapproves the campaign. The checks
+ * belong on the API, where requests change state.
+ */
+describe('bot checks guard the API, not public pages', () => {
+  const src = readFileSync(join(__dirname, '..', 'middleware.ts'), 'utf8');
+
+  it('the user-agent check is scoped to API routes', () => {
+    expect(src).toMatch(/if \(isApiRoute && isSuspiciousUserAgent\(userAgent\)\)/);
+    expect(src).not.toMatch(/if \(!isAdminRoute && isSuspiciousUserAgent/);
+  });
+
+  it('the header check is scoped to API routes', () => {
+    expect(src).toMatch(/if \(isApiRoute && !isWhitelistedBot && !hasValidHeaders/);
+    expect(src).not.toMatch(/if \(!isApiRoute && !isWhitelistedBot && !hasValidHeaders/);
+  });
+
+  it('rate limiting still covers public pages', () => {
+    expect(src).toMatch(/if \(!isWhitelistedBot && !isAdminRoute\) \{/);
+  });
+
+  it('CSRF still guards state-changing API requests', () => {
+    expect(src).toMatch(/isApiRoute && \['POST', 'PUT', 'DELETE', 'PATCH'\]/);
+  });
+});

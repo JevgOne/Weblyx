@@ -150,13 +150,27 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith('/admin');
   const isApiRoute = pathname.startsWith('/api');
 
-  // 1. Block suspicious user agents
-  if (!isAdminRoute && isSuspiciousUserAgent(userAgent)) {
+  // 1. & 2. User-agent and header shape are checked on the API, not on public
+  // pages.
+  //
+  // These two rules used to guard every route, and a public marketing page
+  // answered 403 to anything that did not name a browser. That bought no
+  // security — an attacker writes "Chrome" into a header in one line — while
+  // it broke the things that genuinely need to read a page: Google's AdsBot
+  // checking an ad's destination before approving the campaign, Seznam
+  // rendering a preview, uptime monitors, link checkers, and the agency tool
+  // that verifies a landing page exists before letting ads point at it. Every
+  // one of those was answered with a 403 for the crime of being honest about
+  // what it is.
+  //
+  // A public page is public. What still protects it is rate limiting below,
+  // the suspicious-path rule, and the fact that there is nothing behind it to
+  // take. The API keeps both checks, because that is where state changes.
+  if (isApiRoute && isSuspiciousUserAgent(userAgent)) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // 2. Validate browser headers
-  if (!isApiRoute && !isWhitelistedBot && !hasValidHeaders(request)) {
+  if (isApiRoute && !isWhitelistedBot && !hasValidHeaders(request)) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
