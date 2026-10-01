@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { DEPOSIT_SHORT } from "@/lib/deposit";
+import Link from "next/link";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import { AuditForm } from "@/components/audit/AuditForm";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -89,9 +91,95 @@ export default function AuditPage() {
         </section>
 
         {/* Form section */}
-        <section className="pb-20 md:pb-28 px-4">
+        <section className="pb-16 px-4">
           <div className="container mx-auto max-w-2xl">
             <AuditForm />
+          </div>
+        </section>
+
+        {/*
+          The page used to be a hero and a form — 86 words, no headings at all,
+          while the FAQ existed only in the structured data. Schema is supposed
+          to describe what is on the page, and a lead magnet nobody can find is
+          not a lead magnet.
+        */}
+        <section className="border-t px-4 py-14">
+          <div className="container mx-auto max-w-3xl space-y-10">
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold md:text-3xl">Co audit kontroluje?</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Audit projde šest oblastí a každou oboduje zvlášť, takže uvidíte, kde
+                přesně web ztrácí. <strong>Rychlost načítání</strong> měří, jak dlouho
+                návštěvník čeká, než se stránka ukáže.{" "}
+                <strong>SEO</strong> kontroluje titulky, popisky, strukturu nadpisů,
+                sitemap a strukturovaná data — tedy to, podle čeho Google stránce
+                rozumí. <strong>Bezpečnost</strong> ověřuje HTTPS, hlavičky a to, jestli
+                web někde nenačítá nezabezpečený obsah.
+              </p>
+              <p className="leading-relaxed text-muted-foreground">
+                Dál se díváme na <strong>přístupnost</strong> (alternativní texty u
+                obrázků, popsaná tlačítka a odkazy), na{" "}
+                <strong>sociální sítě</strong> (jak se web zobrazí, když ho někdo sdílí)
+                a na <strong>připravenost pro AI vyhledávání</strong> — jestli má web
+                strukturovaná data, ze kterých si asistenti jako ChatGPT nebo Perplexity
+                umí vzít odpověď.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold md:text-3xl">Co znamená výsledné skóre?</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Číslo samo o sobě neříká nic, dokud nevíte, s čím ho srovnat. Proto
+                výsledek zasazujeme proti vlastnímu měření:{" "}
+                <Link href="/blog/analyzovali-jsme-50-ceskych-webu-prumerny-pagespeed-43" className="text-primary hover:underline">
+                  změřili jsme padesát českých firemních webů a průměr byl 43 ze 100
+                </Link>
+                .
+              </p>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><strong className="text-foreground">90 a výš</strong> — web je v nejlepších procentech českého trhu.</li>
+                <li><strong className="text-foreground">50 až 89</strong> — funguje, ale konkurence s lepším skóre vás předbíhá.</li>
+                <li><strong className="text-foreground">Pod 50</strong> — návštěvníci odcházejí dřív, než se stránka načte, a vy se to z analytiky nedozvíte.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold md:text-3xl">Jak dlouho audit trvá?</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Celkové skóre a šest dílčích hodnocení se zobrazí{" "}
+                <strong>během několika sekund</strong> přímo na téhle stránce. Detailní
+                rozpis s konkrétními doporučeními — tedy co s každým nálezem dělat —
+                přijde na e-mail. Nic neplatíte a k ničemu se nezavazujete.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold md:text-3xl">Je audit opravdu zdarma?</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Ano, bez podmínek a bez skrytých poplatků. Děláme ho proto, že většina
+                lidí netuší, jak si jejich web stojí, a protože z nálezů je obvykle
+                vidět, jestli stačí pár oprav, nebo se vyplatí{" "}
+                <Link href="/redesign-webu" className="text-primary hover:underline">
+                  web předělat
+                </Link>
+                . Pokud se rozhodnete pro druhou variantu, najdete ceny v{" "}
+                <Link href="/cenik-webu" className="text-primary hover:underline">
+                  ceníku
+                </Link>{" "}
+                — od 7 990 Kč, {DEPOSIT_SHORT.toLowerCase()}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold md:text-3xl">Můžu si web změřit sám?</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Rychlost ano — Google nabízí PageSpeed Insights zdarma a doporučujeme
+                si tím projít i weby agentur, které zvažujete. Náš audit přidává to,
+                co PageSpeed neměří: strukturovaná data, hierarchii nadpisů, chybějící
+                alternativní texty, nastavení pro sdílení a připravenost pro AI
+                vyhledávání. A hlavně vám řekne, co s tím.
+              </p>
+            </div>
           </div>
         </section>
       </main>
