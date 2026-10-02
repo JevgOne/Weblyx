@@ -33,6 +33,7 @@ import {
   leadStatusMeta,
   nextLeadStatus,
 } from "@/lib/leads/status";
+import { leadValueLabel } from "@/lib/leads/labels";
 
 export default function AdminLeadsPage() {
   const router = useRouter();
@@ -225,7 +226,7 @@ export default function AdminLeadsPage() {
           {newLeadsCount > 0 && (
             <>
               {" · "}
-              <span className="font-semibold text-red-600">{newLeadsCount}</span> čeká na převzetí
+              <span className="font-semibold text-teal-700">{newLeadsCount}</span> čeká na převzetí
             </>
           )}
         </p>
@@ -353,10 +354,10 @@ export default function AdminLeadsPage() {
                 filteredLeads.map((lead) => (
                   <TableRow
                     key={lead.id}
-                    className={`cursor-pointer transition-colors hover:bg-muted/50 ${
+                    className={`cursor-pointer transition-colors hover:bg-slate-50 ${
                       lead.status === 'new'
-                        ? 'bg-red-50/70 dark:bg-red-950/20 border-l-4 border-l-red-500'
-                        : ''
+                        ? 'bg-[#f1faf9] border-l-4 border-l-teal-500'
+                        : 'bg-white'
                     }`}
                   >
                     <TableCell>
@@ -365,7 +366,7 @@ export default function AdminLeadsPage() {
                           {lead.status === 'new' && (
                             <span
                               aria-label="Nová poptávka"
-                              className="h-2 w-2 shrink-0 rounded-full bg-red-500"
+                              className="h-2 w-2 shrink-0 rounded-full bg-teal-500"
                             />
                           )}
                           <span className="font-medium">{lead.name}</span>
@@ -410,12 +411,12 @@ export default function AdminLeadsPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="whitespace-nowrap">
-                        {lead.projectType}
+                        {leadValueLabel(lead.projectType ?? "")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm">
                       <span className="line-clamp-2">
-                        {lead.budgetRange || lead.budget || '-'}
+                        {leadValueLabel(lead.budgetRange || lead.budget || '-')}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -446,9 +447,7 @@ export default function AdminLeadsPage() {
                       </span>
                     </TableCell>
                     <TableCell
-                      className={`sticky right-0 z-10 text-right shadow-[-8px_0_8px_-8px_rgba(15,23,42,.12)] ${
-                        lead.status === 'new' ? 'bg-[#fef4f4]' : 'bg-card'
-                      }`}
+                      className="sticky right-0 z-10 bg-inherit text-right shadow-[-8px_0_8px_-8px_rgba(15,23,42,.12)]"
                     >
                       <div className="flex justify-end gap-1">
                         <Button size="sm" variant="ghost" onClick={() => handleViewDetail(lead)}>
@@ -457,12 +456,11 @@ export default function AdminLeadsPage() {
                         {lead.status === 'new' ? (
                           <Button
                             size="sm"
-                            variant="destructive"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleTakeLead(lead);
                             }}
-                            className="gap-1.5 whitespace-nowrap font-semibold"
+                            className="gap-1.5 whitespace-nowrap bg-slate-900 font-semibold text-white hover:bg-slate-800"
                           >
                             <UserCheck className="h-3.5 w-3.5" />
                             Vzít
@@ -513,7 +511,7 @@ export default function AdminLeadsPage() {
                 key={lead.id}
                 className={`p-4 transition-all ${
                   lead.status === 'new'
-                    ? 'border-l-4 border-l-red-500 bg-red-50/70 dark:bg-red-950/20'
+                    ? 'border-l-4 border-l-teal-500 bg-[#f1faf9]'
                     : ''
                 }`}
               >
@@ -523,7 +521,7 @@ export default function AdminLeadsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         {lead.status === 'new' && (
-                          <span className="text-red-600 font-bold text-xl">🚨</span>
+                          <span aria-label="Nová poptávka" className="h-2 w-2 shrink-0 rounded-full bg-teal-500" />
                         )}
                         <h3 className="font-semibold text-lg">{lead.name}</h3>
                       </div>
@@ -567,7 +565,7 @@ export default function AdminLeadsPage() {
 
                   {/* Details */}
                   <div className="flex flex-wrap gap-2 text-xs">
-                    <Badge variant="outline">{lead.projectType}</Badge>
+                    <Badge variant="outline">{leadValueLabel(lead.projectType ?? "")}</Badge>
                     {lead.budgetRange && (
                       <Badge variant="secondary">{lead.budgetRange}</Badge>
                     )}
@@ -598,8 +596,7 @@ export default function AdminLeadsPage() {
                     {lead.status === 'new' ? (
                       <Button
                         size="default"
-                        variant="destructive"
-                        className="flex-1 gap-1.5 font-semibold"
+                        className="flex-1 gap-1.5 bg-slate-900 font-semibold text-white hover:bg-slate-800"
                         onClick={() => handleTakeLead(lead)}
                       >
                         <UserCheck className="h-4 w-4" />

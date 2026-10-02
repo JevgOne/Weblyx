@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Loader2, Mail, Phone, Building2, Calendar, DollarSign, Trash2, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
+import { Loader2, Mail, Phone, Building2, Globe, Trash2, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { canonicalLeadStatus, leadStatusMeta, nextLeadStatus } from "@/lib/leads/status";
 import { formatCzk } from "@/lib/pricing/types";
+import { leadValueLabel } from "@/lib/leads/labels";
 
 interface LeadDetailDialogProps {
   open: boolean;
@@ -30,6 +31,145 @@ interface LeadDetailDialogProps {
   onRefresh?: () => void;
   onLeadUpdate?: (updatedLead: any) => void;
 }
+
+/* --- What the enquiry forms store, in words ---------------------------------
+   The forms save machine values ("new-web", "asap", "partial") and camelCase
+   keys. The panel used to print them as they were, or not at all. */
+
+const FIELD_LABELS: Record<string, string> = {
+  purpose: "Účel webu",
+  targetAudience: "Cílová skupina",
+  mainActions: "Co má návštěvník udělat",
+  sections: "Sekce webu",
+  hasContent: "Podklady (texty, fotky)",
+  contentNotes: "Poznámka k obsahu",
+  style: "Styl",
+  colors: "Barvy",
+  inspiration: "Inspirace",
+  mustHave: "Nesmí chybět",
+  expectations: "Očekávání",
+  primary: "Hlavní",
+  secondary: "Doplňková",
+  accent: "Akcent",
+  noPreference: "Bez preference",
+  needsAnalytics: "Google Analytics",
+  needsFacebookPixel: "Facebook Pixel",
+  needsGoogleAds: "Google Ads",
+  integrations: "Integrace",
+  languages: "Jazyky",
+};
+
+const SOURCE_LABELS: Record<string, string> = {
+  audit: "Bezplatný audit",
+  contact_form: "Kontaktní formulář",
+  questionnaire: "Dotazník",
+};
+
+const labelOf = (key: string) =>
+  FIELD_LABELS[key] ??
+  key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim();
+
+function isEmpty(value: unknown): boolean {
+  if (value === null || value === undefined || value === false) return true;
+  if (typeof value === "string") return value.trim() === "";
+  if (Array.isArray(value)) return value.every(isEmpty);
+  if (typeof value === "object") return Object.values(value as object).every(isEmpty);
+  return false;
+}
+
+const chipClass =
+  "inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700";
+
+/** Renders whatever a form field holds: text, a list, colours, a nested object. */
+function FieldValue({ value }: { value: unknown }) {
+  if (value === true) return <span>Ano</span>;
+
+  if (Array.isArray(value)) {
+    return (
+      <span className="flex flex-wrap gap-1.5">
+        {value.filter((v) => !isEmpty(v)).map((v, i) => (
+          <span key={i} className={chipClass}>
+            {typeof v === "string" ? leadValueLabel(v) : JSON.stringify(v)}
+          </span>
+        ))}
+      </span>
+    );
+  }
+
+  if (typeof value === "object" && value !== null) {
+    return (
+      <span className="flex flex-wrap gap-x-4 gap-y-1.5">
+        {Object.entries(value)
+          .filter(([, v]) => !isEmpty(v))
+          .map(([k, v]) =>
+            typeof v === "string" && /^#[0-9a-f]{3,8}$/i.test(v) ? (
+              <span key={k} className="inline-flex items-center gap-1.5">
+                <span
+                  className="h-4 w-4 rounded-full border border-slate-300"
+                  style={{ background: v }}
+                />
+                {labelOf(k)} <span className="text-slate-500">{v}</span>
+              </span>
+            ) : v === true ? (
+              <span key={k}>{labelOf(k)}</span>
+            ) : (
+              <span key={k}>
+                {labelOf(k)}: <FieldValue value={v} />
+              </span>
+            )
+          )}
+      </span>
+    );
+  }
+
+  const text = String(value);
+  if (/^https?:\/\//.test(text)) {
+    return (
+      <a href={text} target="_blank" rel="noopener noreferrer" className="break-all text-teal-700 hover:underline">
+        {text}
+      </a>
+    );
+  }
+  return <span className="whitespace-pre-wrap break-words">{leadValueLabel(text)}</span>;
+}
+
+/** A titled block of label/value rows. Renders nothing when every row is empty. */
+function Section({ title, rows }: { title: string; rows: Array<[string, unknown]> }) {
+  const filled = rows.filter(([, v]) => !isEmpty(v));
+  if (filled.length === 0) return null;
+  return (
+    <section className="space-y-2">
+      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">{title}</h4>
+      <dl className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-slate-50 px-4">
+        {filled.map(([label, value]) => (
+          <div key={label} className="grid gap-1 py-2.5 text-sm sm:grid-cols-[190px_1fr] sm:gap-4">
+            <dt className="font-medium text-slate-500">{label}</dt>
+            <dd className="min-w-0 text-slate-900">
+              <FieldValue value={value} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+/** Lighthouse bands: red under 50, amber to 89, green above. */
+function scoreClass(score: number | null) {
+  if (score === null) return "bg-slate-100 text-slate-500";
+  if (score < 50) return "bg-red-100 text-red-700";
+  if (score < 90) return "bg-amber-100 text-amber-700";
+  return "bg-emerald-100 text-emerald-700";
+}
+
+const dateTime = (iso: string) =>
+  new Intl.DateTimeFormat("cs-CZ", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
 
 export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUpdate }: LeadDetailDialogProps) {
   const [currentLead, setCurrentLead] = useState(lead);
@@ -219,14 +359,28 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
     }
   };
 
+
+  const config = currentLead.configuration;
+  const attribution = currentLead.attribution ?? {};
+  const audits: any[] = Array.isArray(currentLead.audits) ? currentLead.audits : [];
+  const isDone = canonicalLeadStatus(currentLead.status) === "done";
+  const inputClass = "border-slate-300 bg-white text-slate-900 placeholder:text-slate-400";
+
+  // The dialog is portalled to <body>, outside `.wbx-admin`, so neither the
+  // panel's tokens nor its "always light" override reach it. Colours here are
+  // therefore stated outright, and no `dark:` variants: those follow the
+  // visitor's OS and painted near-black fields onto a white panel.
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto border-slate-200 bg-white text-slate-900">
         <DialogHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between gap-4 pr-6">
             <div>
-              <DialogTitle className="text-2xl">{currentLead.name}</DialogTitle>
-              <DialogDescription>Detail poptávky</DialogDescription>
+              <DialogTitle className="text-2xl text-slate-900">{currentLead.name}</DialogTitle>
+              <DialogDescription className="text-slate-500">
+                {SOURCE_LABELS[currentLead.source] ?? "Poptávka"} ·{" "}
+                {dateTime(currentLead.createdAt || currentLead.created)}
+              </DialogDescription>
             </div>
             <button
               type="button"
@@ -242,103 +396,219 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
           </div>
         </DialogHeader>
 
-        {/* Success/Error Messages */}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
             {success}
           </div>
         )}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
             {error}
           </div>
         )}
 
         <div className="space-y-6">
-          {/* Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <a href={`mailto:${currentLead.email}`} className="hover:text-primary">
-                  {currentLead.email}
-                </a>
-              </div>
-
-              {currentLead.phone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <a href={`tel:${currentLead.phone}`} className="hover:text-primary">
-                    {currentLead.phone}
-                  </a>
-                </div>
-              )}
-
-              {currentLead.company && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
-                  <span>{currentLead.company}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  Vytvořeno: {new Date(currentLead.createdAt || currentLead.created).toLocaleDateString("cs-CZ")}
-                </span>
-              </div>
-
-              {currentLead.budgetRange && (
-                <div className="flex items-center gap-2 text-sm">
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span>Rozpočet: {currentLead.budgetRange}</span>
-                </div>
-              )}
-
-              {currentLead.projectType && (
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Typ projektu: </span>
-                  <Badge variant="outline">{currentLead.projectType}</Badge>
-                </div>
-              )}
-
-              {currentLead.timeline && (
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Termín: </span>
-                  <span>{currentLead.timeline}</span>
-                </div>
-              )}
-            </div>
+          {/* Contact — the first thing anyone opening an enquiry is after */}
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <a href={`mailto:${currentLead.email}`} className="inline-flex items-center gap-2 font-semibold text-teal-700 hover:underline">
+              <Mail className="h-4 w-4" />
+              {currentLead.email}
+            </a>
+            {currentLead.phone && (
+              <a href={`tel:${currentLead.phone}`} className="inline-flex items-center gap-2 font-semibold text-teal-700 hover:underline">
+                <Phone className="h-4 w-4" />
+                {currentLead.phone}
+              </a>
+            )}
+            {currentLead.company && (
+              <span className="inline-flex items-center gap-2 text-slate-700">
+                <Building2 className="h-4 w-4 text-slate-400" />
+                {currentLead.company}
+              </span>
+            )}
+            {currentLead.existingWebsite && (
+              <a
+                href={/^https?:\/\//.test(currentLead.existingWebsite) ? currentLead.existingWebsite : `https://${currentLead.existingWebsite}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-teal-700 hover:underline"
+              >
+                <Globe className="h-4 w-4" />
+                {currentLead.existingWebsite}
+              </a>
+            )}
           </div>
 
-          {/* CREATE TASK SECTION - Main workflow */}
-          {canonicalLeadStatus(currentLead.status) !== 'done' && (
-            <div className="space-y-4 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-purple-950/20 dark:to-violet-900/20 p-6 rounded-lg border-2 border-purple-200 dark:border-purple-800">
+          <Section
+            title="Poptávka"
+            rows={[
+              ["Typ projektu", currentLead.projectTypeOther || currentLead.projectType],
+              ["Rozpočet", currentLead.budgetRange],
+              ["Termín", currentLead.timeline],
+              ["Zpráva", currentLead.businessDescription],
+              ["Cíl projektu", currentLead.projectGoal],
+              ["Důvod", currentLead.projectReason],
+              ["Další požadavky", currentLead.additionalRequirements],
+              ["Přiřazeno", currentLead.assignedTo],
+            ]}
+          />
+
+          {/* The audit this lead ran on /audit — for those leads it is the enquiry */}
+          {audits.length > 0 && (
+            <section className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2 text-base font-semibold">
-                  <ClipboardList className="h-5 w-5 text-purple-600" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Audit webu</h4>
+                <Link href="/admin/audity" className="text-xs font-semibold text-teal-700 hover:underline">
+                  Všechny audity →
+                </Link>
+              </div>
+              <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-slate-50 px-4">
+                {audits.map((a) => (
+                  <li key={a.id} className="flex items-start gap-3 py-3 text-sm">
+                    <span
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-base font-extrabold ${scoreClass(a.score)}`}
+                      title="Celkové skóre"
+                    >
+                      {a.score ?? "—"}
+                    </span>
+                    <div className="min-w-0">
+                      <a href={a.url} target="_blank" rel="noopener noreferrer" className="break-all font-semibold text-slate-900 hover:underline">
+                        {a.url}
+                      </a>
+                      <p className="text-slate-600">
+                        {a.status === "failed"
+                          ? "Audit se nepodařilo dokončit."
+                          : [
+                              ...(Array.isArray(a.metrics) ? a.metrics.map((m: any) => `${m.label}: ${m.value}`) : []),
+                              a.issueCount !== null ? `nalezených problémů: ${a.issueCount}` : null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                      </p>
+                      <p className="text-xs text-slate-500">{dateTime(a.createdAt)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {config?.tierName && (
+            <Section
+              title="Konfigurace z ceníku"
+              rows={[
+                ["Balíček", config.tierName],
+                [
+                  "Doplňky",
+                  Array.isArray(config.addons) && config.addons.length > 0
+                    ? config.addons.map((addon: any) => `${addon.name} (${addon.hours} h)`)
+                    : "bez doplňků",
+                ],
+                [
+                  "Cena",
+                  `${formatCzk(Number(config.totalPrice) || 0)} Kč${config.hourlyRate ? ` (sazba ${config.hourlyRate} Kč/h)` : ""}`,
+                ],
+                ["Odhad práce", config.totalHours ? `${config.totalHours} h` : null],
+                ["Dodání", config.deliveryDays ? `${config.deliveryDays} dní` : null],
+              ]}
+            />
+          )}
+
+          <Section
+            title="Projekt"
+            rows={[
+              ...Object.entries(currentLead.projectDetails ?? {}).map(
+                ([key, value]) => [labelOf(key), value] as [string, unknown]
+              ),
+              ["Požadované funkce", currentLead.features],
+            ]}
+          />
+
+          <Section
+            title="Design"
+            rows={Object.entries(currentLead.designPreferences ?? {}).map(
+              ([key, value]) => [labelOf(key), value] as [string, unknown]
+            )}
+          />
+
+          <Section
+            title="Firma"
+            rows={[
+              ["Odvětví", currentLead.industry],
+              ["Velikost firmy", currentLead.companySize],
+              ["IČO", currentLead.ico],
+              ["Adresa", currentLead.address],
+              ["Let na trhu", currentLead.yearsInBusiness],
+              ["V čem jsou jiní", currentLead.usp],
+              ["Jak získávají zákazníky", currentLead.customerAcquisition],
+              ["Konkurence", currentLead.topCompetitors],
+              ["Sociální sítě", currentLead.socialMedia],
+            ]}
+          />
+
+          <Section
+            title="Marketing a technika"
+            rows={Object.entries(
+              typeof currentLead.marketingTech === "object" && currentLead.marketingTech
+                ? currentLead.marketingTech
+                : {}
+            ).map(([key, value]) => [labelOf(key), value] as [string, unknown])}
+          />
+
+          <Section
+            title="Jak se spojit"
+            rows={[
+              ["Preferovaný kontakt", currentLead.preferredContact],
+              ["Kdy se hodí schůzka", currentLead.preferredMeetingTime],
+              ["Jak se o nás dozvěděli", currentLead.howDidYouHear],
+            ]}
+          />
+
+          {/* Most enquiries are organic and an empty box says nothing. */}
+          <Section
+            title="Odkud poptávka přišla"
+            rows={[
+              ["Kampaň", attribution.utmCampaign],
+              [
+                "Zdroj",
+                attribution.utmSource && attribution.utmMedium
+                  ? `${attribution.utmSource} / ${attribution.utmMedium}`
+                  : attribution.utmSource,
+              ],
+              ["Klíčové slovo", attribution.utmTerm],
+              ["Inzerát", attribution.utmContent],
+              ["Google Ads klik", attribution.gclid],
+              ["Vstupní stránka", attribution.landingPage],
+              ["Odkud přišel", attribution.referrer],
+            ]}
+          />
+
+          {/* Hand-off to a specialist. Below the enquiry on purpose: it used to
+              sit on top and push everything the client wrote off the screen. */}
+          {!isDone && (
+            <section className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-5">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2 text-base font-semibold text-slate-900">
+                  <ClipboardList className="h-5 w-5 text-teal-600" />
                   Vytvořit úkol pro specialistu
                 </Label>
                 <a
                   href="https://claude.ai"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-purple-600 hover:underline flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs font-semibold text-teal-700 hover:underline"
                 >
                   <ExternalLink className="h-3 w-3" />
                   Otevřít Claude
                 </a>
               </div>
 
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-slate-500">
                 Vygenerujte Brief a KW analýzu v Claude a vložte je sem. Pak vytvořte úkol pro specialistu.
               </p>
 
-              {/* Brief Field */}
               <div className="space-y-2">
-                <Label htmlFor="taskBrief" className="text-sm font-medium">
+                <Label htmlFor="taskBrief" className="text-sm font-medium text-slate-900">
                   1. Brief (zadání projektu) *
                 </Label>
                 <Textarea
@@ -346,15 +616,14 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                   placeholder="Sem vložte vygenerovaný Brief z Claude...
 
 Např: Vytvořit moderní webovou prezentaci pro kadeřnický salon. Hlavní cíl: zvýšit online rezervace o 30%. Design: čistý, minimalistický, ženská cílová skupina..."
-                  className="min-h-[150px] bg-white dark:bg-gray-900"
+                  className={`min-h-[150px] ${inputClass}`}
                   value={taskBrief}
                   onChange={(e) => setTaskBrief(e.target.value)}
                 />
               </div>
 
-              {/* KW Analysis Field */}
               <div className="space-y-2">
-                <Label htmlFor="taskKwAnalysis" className="text-sm font-medium">
+                <Label htmlFor="taskKwAnalysis" className="text-sm font-medium text-slate-900">
                   2. Klíčová slova & SEO analýza (volitelné)
                 </Label>
                 <Textarea
@@ -362,24 +631,20 @@ Např: Vytvořit moderní webovou prezentaci pro kadeřnický salon. Hlavní cí
                   placeholder="Sem vložte výsledky KW analýzy z Claude...
 
 Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (1900), barvení vlasů..."
-                  className="min-h-[120px] bg-white dark:bg-gray-900"
+                  className={`min-h-[120px] ${inputClass}`}
                   value={taskKwAnalysis}
                   onChange={(e) => setTaskKwAnalysis(e.target.value)}
                 />
               </div>
 
-              {/* Assignment and Priority */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Přiřadit specialistovi</Label>
-                  <Select
-                    value={taskAssignedTo}
-                    onValueChange={setTaskAssignedTo}
-                  >
-                    <SelectTrigger className="bg-white dark:bg-gray-900">
+                  <Label className="text-sm font-medium text-slate-900">Přiřadit specialistovi</Label>
+                  <Select value={taskAssignedTo} onValueChange={setTaskAssignedTo}>
+                    <SelectTrigger className={inputClass}>
                       <SelectValue placeholder="Vybrat specialistu" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-slate-200 bg-white text-slate-900">
                       <SelectItem value="unassigned">Nepřiřazeno</SelectItem>
                       {specialists.map((s) => (
                         <SelectItem key={s.id} value={s.id}>
@@ -390,15 +655,12 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Priorita</Label>
-                  <Select
-                    value={taskPriority}
-                    onValueChange={(v) => setTaskPriority(v as any)}
-                  >
-                    <SelectTrigger className="bg-white dark:bg-gray-900">
+                  <Label className="text-sm font-medium text-slate-900">Priorita</Label>
+                  <Select value={taskPriority} onValueChange={(v) => setTaskPriority(v as any)}>
+                    <SelectTrigger className={inputClass}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-slate-200 bg-white text-slate-900">
                       <SelectItem value="low">Nízká</SelectItem>
                       <SelectItem value="medium">Střední</SelectItem>
                       <SelectItem value="high">Vysoká</SelectItem>
@@ -408,278 +670,55 @@ Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (
                 </div>
               </div>
 
-              {/* Create Task Button */}
-              <Button
+              <button
+                type="button"
                 onClick={handleCreateTask}
                 disabled={creatingTask || !taskBrief.trim()}
-                size="lg"
-                className="w-full bg-gradient-to-r from-purple-600 to-violet-700 hover:from-purple-700 hover:to-violet-800 text-white font-bold shadow-lg hover:shadow-xl transition-all"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
               >
                 {creatingTask ? (
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Vytvářím úkol...
                   </>
                 ) : (
                   <>
-                    <ClipboardList className="h-5 w-5 mr-2" />
+                    <ClipboardList className="h-4 w-4" />
                     Vytvořit úkol pro specialistu
                   </>
                 )}
-              </Button>
+              </button>
+            </section>
+          )}
+
+          {isDone && (
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700">
+              <UserCheck className="h-5 w-5" />
+              Tato poptávka již byla převedena na úkol.
             </div>
           )}
 
-          {/* Already converted notice */}
-          {canonicalLeadStatus(currentLead.status) === 'done' && (
-            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                <UserCheck className="h-5 w-5" />
-                <span className="font-medium">Tato poptávka již byla převedena na úkol.</span>
-              </div>
-            </div>
-          )}
-
-          {/* Business Description */}
-          {currentLead.businessDescription && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Popis byznysu</h4>
-              <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm whitespace-pre-wrap">{currentLead.businessDescription}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Where the lead came from. Shown only when there is something to
-              show — most enquiries are organic and an empty box says nothing. */}
-          {(() => {
-            const a = (currentLead as any).attribution;
-            if (!a || !(a.gclid || a.utmSource || a.utmCampaign || a.landingPage || a.referrer)) return null;
-            const rows: Array<[string, string | null]> = [
-              ["Kampaň", a.utmCampaign],
-              ["Zdroj", a.utmSource && a.utmMedium ? `${a.utmSource} / ${a.utmMedium}` : a.utmSource],
-              ["Klíčové slovo", a.utmTerm],
-              ["Inzerát", a.utmContent],
-              ["Google Ads klik", a.gclid],
-              ["Vstupní stránka", a.landingPage],
-              ["Odkud přišel", a.referrer],
-            ];
-            return (
-              <div className="space-y-2">
-                <h4 className="font-semibold">Odkud poptávka přišla</h4>
-                <div className="bg-muted p-4 rounded-lg space-y-2">
-                  {rows.filter(([, v]) => v).map(([label, value]) => (
-                    <div key={label} className="text-sm break-all">
-                      <span className="font-medium">{label}: </span>
-                      <span>{value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* NEW: Extended Business Info */}
-          {(currentLead.industry || currentLead.companySize || currentLead.existingWebsite) && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Informace o firmě</h4>
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                {currentLead.industry && (
-                  <div className="text-sm">
-                    <span className="font-medium">Odvětví: </span>
-                    <span>{currentLead.industry}</span>
-                  </div>
-                )}
-                {currentLead.companySize && (
-                  <div className="text-sm">
-                    <span className="font-medium">Velikost firmy: </span>
-                    <span>{currentLead.companySize} zaměstnanců</span>
-                  </div>
-                )}
-                {currentLead.existingWebsite && (
-                  <div className="text-sm">
-                    <span className="font-medium">Existující web: </span>
-                    <a
-                      href={currentLead.existingWebsite}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      {currentLead.existingWebsite}
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Configuration from the price configurator (older leads have none) */}
-          {currentLead.configuration?.tierName && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Konfigurace z ceníku</h4>
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                <div className="text-sm">
-                  <span className="font-medium">Balíček: </span>
-                  <span>{currentLead.configuration.tierName}</span>
-                </div>
-                <div className="text-sm">
-                  <span className="font-medium">Doplňky: </span>
-                  {Array.isArray(currentLead.configuration.addons) &&
-                  currentLead.configuration.addons.length > 0 ? (
-                    <span>
-                      {currentLead.configuration.addons
-                        .map((addon: any) => `${addon.name} (${addon.hours} h)`)
-                        .join(", ")}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">bez doplňků</span>
-                  )}
-                </div>
-                <div className="text-sm">
-                  <span className="font-medium">Cena: </span>
-                  <span>
-                    {formatCzk(Number(currentLead.configuration.totalPrice) || 0)} Kč
-                    {currentLead.configuration.hourlyRate
-                      ? ` (sazba ${currentLead.configuration.hourlyRate} Kč/h)`
-                      : ""}
-                  </span>
-                </div>
-                <div className="text-sm">
-                  <span className="font-medium">Odhad práce: </span>
-                  <span>{currentLead.configuration.totalHours} h</span>
-                </div>
-                {currentLead.configuration.deliveryDays && (
-                  <div className="text-sm">
-                    <span className="font-medium">Dodání: </span>
-                    <span>{currentLead.configuration.deliveryDays} dní</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Project Details */}
-          {currentLead.projectDetails && Object.keys(currentLead.projectDetails).length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Detaily projektu</h4>
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                {Object.entries(currentLead.projectDetails).map(([key, value]) => (
-                  <div key={key} className="text-sm">
-                    <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: </span>
-                    <span>{String(value)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Features */}
-          {currentLead.features && Array.isArray(currentLead.features) && currentLead.features.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Požadované funkce</h4>
-              <div className="flex flex-wrap gap-2">
-                {currentLead.features.map((feature: string, idx: number) => (
-                  <Badge key={idx} variant="secondary">{feature}</Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Design Preferences */}
-          {currentLead.designPreferences && Object.keys(currentLead.designPreferences).length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Designové preference</h4>
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                {Object.entries(currentLead.designPreferences).map(([key, value]) => (
-                  <div key={key} className="text-sm">
-                    <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: </span>
-                    <span>{String(value)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* NEW: Marketing & Technical Requirements */}
-          {currentLead.marketingTech && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Marketing & Technické požadavky</h4>
-              <div className="bg-muted p-4 rounded-lg space-y-3">
-                {/* Tracking */}
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Tracking:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {currentLead.marketingTech.needsAnalytics && <Badge variant="secondary">Google Analytics</Badge>}
-                    {currentLead.marketingTech.needsFacebookPixel && <Badge variant="secondary">Facebook Pixel</Badge>}
-                    {currentLead.marketingTech.needsGoogleAds && <Badge variant="secondary">Google Ads</Badge>}
-                  </div>
-                </div>
-                {/* Integrations */}
-                {currentLead.marketingTech.integrations && currentLead.marketingTech.integrations.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Integrace:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {currentLead.marketingTech.integrations.map((integration: string, idx: number) => (
-                        <Badge key={idx} variant="outline">{integration}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {/* Languages */}
-                {currentLead.marketingTech.languages && currentLead.marketingTech.languages.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Jazyky:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {currentLead.marketingTech.languages.map((lang: string, idx: number) => (
-                        <Badge key={idx} variant="secondary">{lang}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Delete Section */}
-          <div className="pt-6 border-t mt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold text-destructive">Danger Zone</h4>
-                <p className="text-sm text-muted-foreground">
-                  Smazat tento lead trvale z databáze
-                </p>
-              </div>
-              <Button
-                variant={confirmDelete ? "destructive" : "outline"}
-                size="sm"
+          <div className="border-t border-slate-200 pt-5">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm text-slate-500">Smazat poptávku trvale z databáze</p>
+              <button
+                type="button"
                 onClick={handleDelete}
                 disabled={deleting}
-                className={confirmDelete ? "" : "text-destructive hover:bg-destructive hover:text-destructive-foreground"}
+                className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-semibold disabled:opacity-60 ${
+                  confirmDelete
+                    ? "border-red-600 bg-red-600 text-white"
+                    : "border-slate-200 bg-white text-red-600 hover:border-red-300 hover:bg-red-50"
+                }`}
               >
-                {deleting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Mažu...
-                  </>
-                ) : confirmDelete ? (
-                  <>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Potvrdit smazání
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Smazat Lead
-                  </>
-                )}
-              </Button>
+                {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                {deleting ? "Mažu..." : confirmDelete ? "Potvrdit smazání" : "Smazat poptávku"}
+              </button>
             </div>
             {confirmDelete && !deleting && (
-              <div className="mt-3 p-3 bg-destructive/10 border border-destructive rounded-lg">
-                <p className="text-sm text-destructive font-medium">
-                  ⚠️ Klikněte znovu pro potvrzení. Tato akce je nevratná!
-                </p>
-              </div>
+              <p className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">
+                Klikněte znovu pro potvrzení. Tato akce je nevratná.
+              </p>
             )}
           </div>
         </div>

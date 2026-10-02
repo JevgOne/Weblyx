@@ -13,6 +13,36 @@ export async function GET(request: NextRequest) {
       'SELECT * FROM leads ORDER BY created_at DESC'
     );
 
+    const auditsByLead = new Map<string, any[]>();
+    try {
+      const audits = await turso.execute(
+        `SELECT id, lead_id, url, score, metrics, issue_count, status, created_at
+           FROM audits WHERE lead_id IS NOT NULL ORDER BY created_at DESC`
+      );
+      for (const a of audits.rows as any[]) {
+        let metrics: unknown = [];
+        try {
+          metrics = a.metrics ? JSON.parse(String(a.metrics)) : [];
+        } catch {
+          metrics = [];
+        }
+        const list = auditsByLead.get(String(a.lead_id)) ?? [];
+        list.push({
+          id: a.id,
+          url: a.url,
+          score: a.score === null ? null : Number(a.score),
+          metrics,
+          issueCount: a.issue_count === null ? null : Number(a.issue_count),
+          status: a.status,
+          createdAt: new Date(Number(a.created_at) * 1000).toISOString(),
+        });
+        auditsByLead.set(String(a.lead_id), list);
+      }
+    } catch (error) {
+      // The enquiries matter more than the audits attached to them.
+      console.error('Error fetching audits for leads:', error);
+    }
+
     const leads = result.rows.map((row: any) => {
       // Parse JSON fields
       const parseJSON = (field: any) => {
@@ -47,6 +77,30 @@ export async function GET(request: NextRequest) {
         briefGeneratedAt: row.brief_generated_at,
         proposalEmailSent: row.proposal_email_sent === 1,
         proposalEmailSentAt: row.proposal_email_sent_at,
+        assignedTo: row.assigned_to,
+        convertedToProjectId: row.converted_to_project_id,
+        // Everything else the enquiry forms collect. These were stored and
+        // never sent to the panel, so the detail showed a name and an e-mail
+        // for someone who had filled in three screens.
+        existingWebsite: row.existing_website,
+        industry: row.industry,
+        companySize: row.company_size,
+        ico: row.ico,
+        address: row.address,
+        yearsInBusiness: row.years_in_business,
+        usp: row.usp,
+        customerAcquisition: row.customer_acquisition,
+        topCompetitors: parseJSON(row.top_competitors),
+        socialMedia: parseJSON(row.social_media),
+        marketingTech: parseJSON(row.marketing_tech),
+        projectGoal: row.project_goal,
+        projectReason: row.project_reason,
+        additionalRequirements: row.additional_requirements,
+        howDidYouHear: row.how_did_you_hear,
+        preferredContact: row.preferred_contact,
+        preferredMeetingTime: row.preferred_meeting_time,
+        // A lead that came from /audit is, in substance, its audit.
+        audits: auditsByLead.get(String(row.id)) ?? [],
         // Where the enquiry came from. Null for organic and direct, which is
         // most of them — the absence is information too.
         attribution: {
