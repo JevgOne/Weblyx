@@ -11,8 +11,11 @@ import { safeRead } from "@/lib/safe-read";
  *
  * The rating and the count are counted from the same rows, so the headline can
  * never claim an average the reviews below it do not support.
+ *
+ * Every review is shown. The section used to stop at three, under a headline
+ * that counted all of them — "15 recenzí" above three cards reads as twelve
+ * being held back.
  */
-const MAX_SHOWN = 3;
 
 /** "5 recenzí" — Czech has three plural forms: 1, 2–4, 5+. */
 function reviewCountLabel(count: number): string {
@@ -33,7 +36,7 @@ export async function NovaReviews() {
   if (reviews.length === 0) return null;
 
   const average = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-  const shown = reviews.slice(0, MAX_SHOWN);
+  const shown = reviews;
 
   // Only claim Google as the source when every review shown actually came from
   // it. The column is free text and the rows say "Google", not "google".
@@ -52,11 +55,13 @@ export async function NovaReviews() {
         </p>
       </div>
 
-      <div className="nova-col3 grid grid-cols-3 gap-6">
+      {/* Columns, not a grid: the reviews run from one line to a long
+          paragraph, and a grid row is as tall as its longest card. */}
+      <div className="columns-1 gap-6 md:columns-2 lg:columns-3">
         {shown.map((review) => (
           <figure
             key={review.id}
-            className="rounded-[18px] border p-[34px]"
+            className="mb-6 break-inside-avoid rounded-[18px] border p-[34px]"
             style={{ background: "var(--n-bg-alt)", borderColor: "var(--n-border-soft)" }}
           >
             <blockquote className="text-base font-medium" style={{ lineHeight: 1.6 }}>
