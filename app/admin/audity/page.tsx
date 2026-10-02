@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Loader2, Phone } from "lucide-react";
+import { ExternalLink, Loader2, Phone, Send } from "lucide-react";
 import type { AuditRecord, AuditSource, CallStatus } from "@/lib/audits/server";
 
 const PAGE_SIZE = 25;
@@ -54,6 +54,16 @@ function hostOf(url: string) {
   }
 }
 
+const inputClass =
+  "w-full rounded-lg border px-3 py-2 text-[15px] outline-none focus:border-[color:var(--a-brand)]";
+const inputStyle = {
+  borderColor: "var(--a-border)",
+  background: "var(--a-bg)",
+  color: "var(--a-ink)",
+} as const;
+
+const EMPTY_DRAFT = { url: "", email: "", companyName: "", contactName: "" };
+
 const dateTime = (unix: number) =>
   new Intl.DateTimeFormat("cs-CZ", {
     day: "numeric",
@@ -71,6 +81,10 @@ export default function AdminAuditsPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState(EMPTY_DRAFT);
+  const [running, setRunning] = useState(false);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const load = useCallback(async (offset: number, source: Filter = "all") => {
     offset === 0 ? setLoading(true) : setLoadingMore(true);
@@ -115,6 +129,53 @@ export default function AdminAuditsPage() {
     }
   }
 
+  /** Runs the audit and mails the report; `payload` is a row id or a new prospect. */
+  async function sendReport(payload: { id: string } | typeof EMPTY_DRAFT) {
+    setError(null);
+    setNotice(null);
+    const res = await fetch("/api/admin/audits", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json().catch(() => null);
+    if (!json?.success) throw new Error(json?.error || "Report se nepodařilo odeslat");
+    return json.data.audit as AuditRecord;
+  }
+
+  async function runForProspect(event: React.FormEvent) {
+    event.preventDefault();
+    setRunning(true);
+    try {
+      const audit = await sendReport(draft);
+      setDraft(EMPTY_DRAFT);
+      setNotice(`Report pro ${hostOf(audit.url)} odešel na ${audit.email}.`);
+    } catch (err: any) {
+      setError(err?.message || "Report se nepodařilo odeslat");
+    } finally {
+      setRunning(false);
+      // Also after a failed send: the audit itself is kept, so it can be retried.
+      load(0, filter);
+    }
+  }
+
+  async function resend(a: AuditRecord) {
+    const question = a.reportSentAt
+      ? `Report už na ${a.email} odešel ${dateTime(a.reportSentAt)}. Poslat znovu?`
+      : `Spustit audit webu ${hostOf(a.url)} a poslat report na ${a.email}?`;
+    if (!window.confirm(question)) return;
+    setSendingId(a.id);
+    try {
+      const audit = await sendReport({ id: a.id });
+      setAudits((cur) => cur.map((x) => (x.id === audit.id ? audit : x)));
+      setNotice(`Report pro ${hostOf(audit.url)} odešel na ${audit.email}.`);
+    } catch (err: any) {
+      setError(err?.message || "Report se nepodařilo odeslat");
+    } finally {
+      setSendingId(null);
+    }
+  }
+
   return (
     <div className="wbx-card p-[26px]">
       <div className="mb-[18px]">
@@ -126,6 +187,69 @@ export default function AdminAuditsPage() {
           svého webu i e-mail — je to hotový podklad na zavolání.
         </p>
       </div>
+
+      <form
+        onSubmit={runForProspect}
+        className="mb-5 space-y-3 rounded-xl border p-4"
+        style={{ borderColor: "var(--a-border)", background: "var(--a-bg)" }}
+      >
+        <p className="text-sm font-semibold">
+          Poslat audit{" "}
+          <span style={{ color: "var(--a-muted)" }}>
+            — proklepneme web a na e-mail pošleme skóre, nalezené problémy a co s nimi
+          </span>
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <input
+            value={draft.url}
+            onChange={(e) => setDraft({ ...draft, url: e.target.value })}
+            placeholder="Web, např. firma.cz"
+            required
+            className={inputClass}
+            style={inputStyle}
+          />
+          <input
+            type="email"
+            value={draft.email}
+            onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+            placeholder="E-mail, kam report pošleme"
+            required
+            className={inputClass}
+            style={inputStyle}
+          />
+          <input
+            value={draft.companyName}
+            onChange={(e) => setDraft({ ...draft, companyName: e.target.value })}
+            placeholder="Firma (nepovinné)"
+            maxLength={120}
+            className={inputClass}
+            style={inputStyle}
+          />
+          <input
+            value={draft.contactName}
+            onChange={(e) => setDraft({ ...draft, contactName: e.target.value })}
+            placeholder="Oslovení, např. pane Nováku (nepovinné)"
+            maxLength={80}
+            className={inputClass}
+            style={inputStyle}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={running}
+          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          style={{ background: "var(--a-ink)" }}
+        >
+          {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {running ? "Analyzuji web, chvíli to potrvá…" : "Spustit audit a poslat"}
+        </button>
+      </form>
+
+      {notice && (
+        <p className="mb-3 text-[13px] font-semibold" style={{ color: "#0F9268" }}>
+          {notice}
+        </p>
+      )}
 
       <div className="mb-4 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
@@ -229,6 +353,31 @@ export default function AdminAuditsPage() {
                       </button>
                     );
                   })()}
+                  {a.email && (
+                    <button
+                      type="button"
+                      onClick={() => resend(a)}
+                      disabled={sendingId === a.id}
+                      title={
+                        a.reportSentAt
+                          ? `Report odeslán ${dateTime(a.reportSentAt)} — kliknutím pošlete znovu`
+                          : "Spustí audit a pošle report na e-mail"
+                      }
+                      className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-bold disabled:opacity-60"
+                      style={
+                        a.reportSentAt
+                          ? { color: "var(--a-muted)", borderColor: "var(--a-border)" }
+                          : { color: "var(--a-brand)", borderColor: "var(--a-brand)" }
+                      }
+                    >
+                      {sendingId === a.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Send className="h-3.5 w-3.5" />
+                      )}
+                      {a.reportSentAt ? "Report odeslán" : "Poslat report"}
+                    </button>
+                  )}
                   {a.leadId && (
                     <Link
                       href="/admin/leads"

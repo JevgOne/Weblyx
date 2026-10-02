@@ -30,6 +30,8 @@ export interface AuditRecord {
   leadId: string | null;
   status: 'ok' | 'failed';
   error: string | null;
+  /** When the report was last mailed from the admin panel, unix seconds. */
+  reportSentAt: number | null;
   createdAt: number;
 }
 
@@ -67,6 +69,7 @@ function toRecord(row: any): AuditRecord {
     leadId: row.lead_id ? String(row.lead_id) : null,
     status: row.status === 'failed' ? 'failed' : 'ok',
     error: row.error ? String(row.error) : null,
+    reportSentAt: row.report_sent_at ? Number(row.report_sent_at) : null,
     createdAt: Number(row.created_at),
   };
 }
@@ -220,6 +223,63 @@ export async function recordAdminAnalysis(params: {
     console.error('Failed to record admin analysis:', error);
     return null;
   }
+}
+
+export async function getAudit(id: string): Promise<AuditRecord | null> {
+  const result = await turso.execute({ sql: 'SELECT * FROM audits WHERE id = ? LIMIT 1', args: [id] });
+  return result.rows[0] ? toRecord(result.rows[0]) : null;
+}
+
+/**
+ * Records an audit staff ran from the audits list in order to mail the report.
+ *
+ * Unlike `recordAudit` this creates no lead: the prospect has not contacted
+ * us, we looked them up. They become a lead when they answer.
+ */
+export async function recordAdminAudit(params: {
+  url: string;
+  email: string;
+  companyName?: string | null;
+  contactName?: string | null;
+  score: number;
+  metrics: AuditMetric[];
+  issueCount: number;
+}): Promise<string> {
+  const id = nanoid();
+  await turso.execute({
+    sql: `INSERT INTO audits
+            (id, source, url, email, company_name, contact_name,
+             score, metrics, issue_count, status, call_status, created_at)
+          VALUES (?, 'admin', ?, ?, ?, ?, ?, ?, ?, 'ok', 'new', unixepoch())`,
+    args: [
+      id,
+      params.url,
+      params.email,
+      params.companyName ?? null,
+      params.contactName ?? null,
+      params.score,
+      JSON.stringify(params.metrics),
+      params.issueCount,
+    ],
+  });
+  return id;
+}
+
+/**
+ * Stamps a row once its report has gone out, and refreshes the numbers: the
+ * audit is re-run at send time, so the list should show what the mail said.
+ */
+export async function markReportSent(
+  id: string,
+  result: { score: number; metrics: AuditMetric[]; issueCount: number }
+): Promise<void> {
+  await turso.execute({
+    sql: `UPDATE audits
+             SET score = ?, metrics = ?, issue_count = ?, status = 'ok', error = NULL,
+                 report_sent_at = unixepoch()
+           WHERE id = ?`,
+    args: [result.score, JSON.stringify(result.metrics), result.issueCount, id],
+  });
 }
 
 /** Updates the call state and notes from the audits list. */
