@@ -87,6 +87,16 @@ export async function POST(request: NextRequest) {
     const features = parseJSON(lead.features);
 
     // Generate unique project ID
+    /** Total from the price configurator; older leads carry no configuration. */
+    const configuredPrice = (raw: unknown): number | null => {
+      try {
+        const total = Number(JSON.parse(String(raw ?? 'null'))?.totalPrice);
+        return total > 0 ? Math.round(total) : null;
+      } catch {
+        return null;
+      }
+    };
+
     const projectId = `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Create project from lead data
@@ -100,8 +110,9 @@ export async function POST(request: NextRequest) {
         tags,
         assigned_to,
         progress,
+        lead_id,
         created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         projectId,
         lead.company || lead.name, // name
@@ -109,12 +120,13 @@ export async function POST(request: NextRequest) {
         lead.name, // client_name
         lead.email, // client_email
         lead.phone || null, // client_phone
-        'in-progress', // status
+        'in_progress', // status — the value the projects page counts and labels
         'medium', // priority
-        null, // budget (parse from budget_range later if needed)
+        configuredPrice(lead.configuration), // budget, from the price configurator when there is one
         JSON.stringify([lead.project_type || 'Web']), // tags
         targetAdminId, // assigned_to
         0, // progress
+        leadId, // lead_id
         now, // created_at
         now, // updated_at
       ],

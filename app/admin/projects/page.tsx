@@ -25,51 +25,6 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Search, Plus, Calendar, DollarSign, User, UserCheck, UserX } from "lucide-react";
 
-// Mock data
-const mockProjects = [
-  {
-    id: "1",
-    projectNumber: "WBX-2025-0001",
-    name: "E-shop Outdoor",
-    clientName: "Jan Novák",
-    clientEmail: "jan@priklad.cz",
-    projectType: "E-shop",
-    status: "in_progress",
-    priority: "high",
-    deadline: "2025-02-15",
-    priceTotal: 85000,
-    pricePaid: 42500,
-    progress: 65,
-  },
-  {
-    id: "2",
-    projectNumber: "WBX-2025-0002",
-    name: "Web Fitness Studio",
-    clientName: "Marie Svobodová",
-    clientEmail: "marie@fitness.cz",
-    projectType: "Web",
-    status: "unpaid",
-    priority: "medium",
-    deadline: "2025-02-20",
-    priceTotal: 45000,
-    pricePaid: 0,
-    progress: 0,
-  },
-  {
-    id: "3",
-    projectNumber: "WBX-2025-0003",
-    name: "Landing SaaS",
-    clientName: "Tomáš Dvořák",
-    clientEmail: "tomas@startup.cz",
-    projectType: "Landing page",
-    status: "delivered",
-    priority: "low",
-    deadline: "2025-01-10",
-    priceTotal: 15000,
-    pricePaid: 15000,
-    progress: 100,
-  },
-];
 
 const statusConfig = {
   unpaid: { label: "Nezaplaceno", color: "bg-red-500" },
@@ -94,6 +49,7 @@ export default function AdminProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -107,9 +63,11 @@ export default function AdminProjectsPage() {
           throw new Error('Failed to load projects');
         }
       } catch (error) {
+        // No demo rows in place of real ones: fake projects in an admin panel
+        // read as real work and nobody notices the database is unreachable.
         console.error("❌ Error loading projects:", error);
-        // Fallback to mock data
-        setProjects(mockProjects);
+        setProjects([]);
+        setLoadError("Projekty se nepodařilo načíst. Zkuste stránku obnovit.");
       }
       setLoading(false);
     };
@@ -220,7 +178,7 @@ export default function AdminProjectsPage() {
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="grid gap-3 grid-cols-2 md:grid-cols-4 mb-6">
-          <Card className={unassignedCount > 0 ? "border-red-500 bg-red-50 dark:bg-red-950" : ""}>
+          <Card className={unassignedCount > 0 ? "border-red-500 bg-red-50" : ""}>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                 Nepřiřazené 🚨
@@ -488,12 +446,11 @@ export default function AdminProjectsPage() {
         </Card>
 
         {/* Info note */}
-        <div className="mt-6 p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            💡 <strong>Tip:</strong> Toto jsou demo data. Po připojení Firebase se zde zobrazí
-            reálné projekty z databáze.
-          </p>
-        </div>
+        {loadError && (
+          <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {loadError}
+          </div>
+        )}
       </main>
     </div>
   );

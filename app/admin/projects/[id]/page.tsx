@@ -55,7 +55,7 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/projects/${projectId}`);
+      const response = await fetch(`/api/admin/projects/${projectId}`);
       const result = await response.json();
 
       if (result.success) {
@@ -115,7 +115,7 @@ export default function ProjectDetailPage() {
       setSaving(true);
       setMessage(null);
 
-      const response = await fetch(`/api/projects/${projectId}`, {
+      const response = await fetch(`/api/admin/projects/${projectId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
