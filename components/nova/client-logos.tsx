@@ -43,12 +43,26 @@ export async function NovaClientLogos() {
       >
         DŮVĚŘUJÍ NÁM
       </h2>
-      <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-5 opacity-80">
-        {clients.map((name, index) => (
-          <span key={name} className="text-[22px]" style={NAME_STYLES[index % NAME_STYLES.length]}>
-            {name}
-          </span>
-        ))}
+      {/* A moving band rather than a static wall: the names run past in a loop.
+          The list is rendered twice so the band joins seamlessly at -50%; the
+          copy is hidden from assistive tech. Pure CSS, so it costs no script,
+          pauses on hover and stands still for reduced motion. */}
+      <div className="nova-marquee opacity-80">
+        <div className="nova-marquee-track" style={{ animationDuration: `${Math.max(20, clients.length * 5)}s` }}>
+          {[0, 1].map((copy) => (
+            <div key={copy} className="nova-marquee-group" aria-hidden={copy === 1 || undefined}>
+              {clients.map((name, index) => (
+                <span
+                  key={name}
+                  className="whitespace-nowrap text-[22px]"
+                  style={NAME_STYLES[index % NAME_STYLES.length]}
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
