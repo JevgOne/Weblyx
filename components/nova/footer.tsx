@@ -8,6 +8,7 @@ const FOOTER_COLUMNS = [
       { label: "Web za 3–5 dní", href: "/web-za-3-5-dni" },
       { label: "SEO optimalizace", href: "/seo-optimalizace" },
       { label: "Redesign webu", href: "/redesign-webu" },
+      { label: "Tvorba e-shopu", href: "/tvorba-eshopu" },
       { label: "Rychlost načítání", href: "/pagespeed-garance" },
       { label: "Údržba a podpora", href: "/sluzby#maintenance" },
     ],

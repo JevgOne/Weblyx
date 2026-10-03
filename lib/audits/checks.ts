@@ -194,11 +194,16 @@ export async function runChecks(analysis: WebAnalysisResult): Promise<AuditCheck
     fix: 'To je text, který lidé uvidí v Googlu. Ideálně titulek do 60 znaků a popis 120–160 znaků, který láká ke kliknutí.',
   });
 
-  const ratingOk = hasType(/AggregateRating|Review/);
+  // Google stopped showing review stars for a business's own reviews of
+  // itself in 2019, so promising "stars in the results" would be a promise we
+  // cannot keep. What reviews on the site do is earn trust — and give Google
+  // and AI assistants a rating they can read.
+  const ratingSchema = hasType(/AggregateRating|Review/);
+  const reviewsVisible = ratingSchema || /recenz|hodnocení|reference|napsali o nás|★/.test(lower);
   add({
-    id: 'stars', group: 'google', label: 'Hvězdičky z recenzí ve výsledcích', ok: ratingOk,
-    detail: ratingOk ? 'Hodnocení ve strukturovaných datech' : 'Chybí',
-    fix: 'Recenze na webu se strukturovanými daty můžou ve vyhledávání ukázat hvězdičky — na ty se kliká víc.',
+    id: 'stars', group: 'google', label: 'Recenze zákazníků na webu', ok: reviewsVisible,
+    detail: ratingSchema ? 'Recenze i hodnocení ve strukturovaných datech' : reviewsVisible ? 'Recenze na webu jsou' : 'Recenze jsme nenašli',
+    fix: 'Recenze z Googlu přímo na webu přesvědčí váhajícího zákazníka líp než jakýkoli text o vás — a AI asistenti z nich čerpají, když někdo hledá doporučení.',
   });
 
   const mapsOk = /google\.[a-z.]+\/maps|maps\.google\.|goo\.gl\/maps|maps\.app\.goo\.gl|g\.page\//.test(lower);
