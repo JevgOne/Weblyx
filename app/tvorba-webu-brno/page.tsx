@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "tvorba webu Brno",
     "webové stránky Brno",
     "webdesign Brno",
-    "webová agentura Brno",
+    "webové studio Brno",
     "tvorba e-shopu Brno",
     "SEO optimalizace Brno",
     "web pro firmy Brno",

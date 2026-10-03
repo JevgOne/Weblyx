@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "tvorba webu Praha",
     "webové stránky Praha",
     "webdesign Praha",
-    "webová agentura Praha",
+    "webové studio Praha",
     "tvorba e-shopu Praha",
     "SEO optimalizace Praha",
     "web pro firmy Praha",
@@ -139,7 +139,7 @@ const FAQS = [
       "Ano, a často to dává větší smysl než stavět od nuly — obsah, odkazy a pozice ve vyhledávání už máte. Při redesignu držíme původní URL a kde to nejde, nastavíme přesměrování, aby se nezahodilo to, co web za roky nasbíral. Zrychlení bývá u starých WordPress webů nejvíc vidět.",
   },
   {
-    question: "Proč si vybrat Weblyx a ne jinou pražskou agenturu?",
+    question: "Proč si vybrat Weblyx a ne pražskou agenturu?",
     answer:
       "Stavíme na Next.js místo WordPressu, takže weby jsou rychlejší a nepotřebují drahý hosting ani měsíční správu. Garantujeme PageSpeed 90+ nebo vracíme peníze (od balíčku Základní Web) a termín dodání kryjeme slevou 50 % z ceny, když ho nedodržíme. A skutečně sídlíme v Praze 1, ne jen v nadpisu stránky.",
   },

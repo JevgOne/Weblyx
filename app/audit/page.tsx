@@ -66,7 +66,7 @@ const SECTIONS = [
   {
     question: "Můžu si web změřit sám?",
     plain:
-      "Rychlost ano — Google nabízí PageSpeed Insights zdarma a doporučujeme si tím projít i weby agentur, které zvažujete. Náš audit přidává to, co PageSpeed neměří: strukturovaná data, hierarchii nadpisů, chybějící alternativní texty, nastavení pro sdílení a připravenost pro AI vyhledávání.",
+      "Rychlost ano — Google nabízí PageSpeed Insights zdarma a doporučujeme si tím projít i weby dodavatelů, které zvažujete. Náš audit přidává to, co PageSpeed neměří: strukturovaná data, hierarchii nadpisů, chybějící alternativní texty, nastavení pro sdílení a připravenost pro AI vyhledávání.",
   },
 ];
 
@@ -197,7 +197,7 @@ export default function AuditPage() {
               <h2 className="text-2xl font-bold md:text-3xl">{SECTIONS[4].question}</h2>
               <p className="leading-relaxed text-muted-foreground">
                 Rychlost ano — Google nabízí PageSpeed Insights zdarma a doporučujeme
-                si tím projít i weby agentur, které zvažujete. Náš audit přidává to,
+                si tím projít i weby dodavatelů, které zvažujete. Náš audit přidává to,
                 co PageSpeed neměří: strukturovaná data, hierarchii nadpisů, chybějící
                 alternativní texty, nastavení pro sdílení a připravenost pro AI
                 vyhledávání. A hlavně vám řekne, co s tím.

@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Construct the prompt
-    const systemPrompt = `Jsi expert copywriter specializující se na SEO-optimalizované blog články pro webdesign/development agenturu.
+    const systemPrompt = `Jsi expert copywriter specializující se na SEO-optimalizované blog články pro webové studio Weblyx (tvorba webů a e-shopů). Weblyx není agentura — piš o něm vždy jako o webovém studiu.
 
 **Důležitá pravidla:**
 - Piš ${language === 'cs' ? 'v češtině' : 'v němčině'}

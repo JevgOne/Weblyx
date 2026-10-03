@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "tvorba webu Ostrava",
     "webové stránky Ostrava",
     "webdesign Ostrava",
-    "webová agentura Ostrava",
+    "webové studio Ostrava",
     "tvorba e-shopu Ostrava",
     "SEO optimalizace Ostrava",
     "web pro firmy Ostrava",
@@ -117,7 +117,7 @@ const FAQS = [
   {
     question: "Proč by si ostravská firma měla vybrat Weblyx?",
     answer:
-      "Ostrava prochází ekonomickou transformací a firmy zde potřebují moderní online prezentaci. Nabízíme Next.js technologii, která je 3× rychlejší než WordPress, garantujeme PageSpeed 90+ a dodáme web za 3–10 dní. Kvalita pražské agentury za férovou cenu.",
+      "Ostrava prochází ekonomickou transformací a firmy zde potřebují moderní online prezentaci. Nabízíme Next.js technologii, která je 3× rychlejší než WordPress, garantujeme PageSpeed 90+ a dodáme web za 3–10 dní. Kvalita pražského webového studia za férovou cenu.",
   },
   {
     question: "Děláte i redesign starých webů?",
@@ -295,7 +295,7 @@ export default async function TvorbaWebuOstravaPage() {
                 Sídlíme na adrese Školská 660/3, Praha 1 —{" "}
                 <strong>pracujeme s klienty z celé ČR</strong>. Poznejte{" "}
                 <Link href="/o-nas" className="text-primary hover:underline">
-                  náš tým a příběh agentury Weblyx
+                  náš tým a příběh studia Weblyx
                 </Link>.
               </p>
             </div>

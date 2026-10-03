@@ -23,7 +23,7 @@ export async function GET() {
 function getCzechContent(): string {
   return `# Weblyx
 
-> Weblyx je česká webová agentura (Altro Servis Group s.r.o., IČO 23673389, Praha).
+> Weblyx je české webové studio (Altro Servis Group s.r.o., IČO 23673389, Praha).
 > Staví weby na míru na Next.js s pevnou cenou předem, bez měsíčních poplatků za web.
 > Landing page 7 990 Kč, základní web 9 990 Kč, standardní web 24 900 Kč — jednorázově, konečné ceny.
 > Dodání 3–10 pracovních dní podle rozsahu. Nejsme plátci DPH.

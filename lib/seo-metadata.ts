@@ -57,7 +57,7 @@ const seoContent: Record<Locale, SEOContent> = {
   cs: {
     title: 'Tvorba webových stránek od 7 990 Kč | Web za týden | Weblyx',
     titleTemplate: '%s | Weblyx',
-    description: 'Profesionální webové stránky od 7 990 Kč. Dodání za 5-7 dní, načítání pod 2s, SEO v ceně. Česká webová agentura s garancí kvality.',
+    description: 'Profesionální webové stránky od 7 990 Kč. Dodání za 5-7 dní, načítání pod 2s, SEO v ceně. České webové studio s garancí kvality.',
     keywords: [
       // Core keywords
       'tvorba webových stránek',
@@ -65,8 +65,8 @@ const seoContent: Record<Locale, SEOContent> = {
       'webové stránky na míru',
       'profesionální webové stránky',
       'tvorba webových stránek cena',
-      'webová agentura',
-      'webdesign agentura',
+      'webové studio',
+      'webdesign studio',
 
       // Price & value keywords
       'kolik stojí webové stránky',
@@ -111,7 +111,7 @@ const seoContent: Record<Locale, SEOContent> = {
       'webové řešení',
 
       // Location keywords (national)
-      'česká webová agentura',
+      'české webové studio',
       'webové stránky česká republika',
       'tvorba webu online',
     ],

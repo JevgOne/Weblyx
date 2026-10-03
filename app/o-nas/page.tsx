@@ -10,18 +10,18 @@ import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "
 import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
 
 export const metadata: Metadata = {
-  title: "O nás | Česká webová agentura od 7 990 Kč",
-  description: "Weblyx je česká webová agentura. Od roku 2024 stavíme rychlé weby na míru. Web za 5–7 dní, načítání pod 2s. Férové ceny, žádné skryté poplatky.",
+  title: "O nás | České webové studio od 7 990 Kč",
+  description: "Weblyx je české webové studio. Od roku 2024 stavíme rychlé weby na míru. Web za 5–7 dní, načítání pod 2s. Férové ceny, žádné skryté poplatky.",
   keywords: [
-    "o nás webová agentura",
-    "webová agentura Praha",
+    "o nás webové studio",
+    "webové studio Praha",
     "moderní technologie",
     "tvorba webu Praha",
     "Next.js React"
   ],
   openGraph: {
-    title: "O nás | Weblyx – moderní webová agentura",
-    description: "Moderní webová agentura z Prahy zaměřená na rychlé a kvalitní webové stránky.",
+    title: "O nás | Weblyx – moderní webové studio",
+    description: "Moderní webové studio z Prahy zaměřené na rychlé a kvalitní webové stránky.",
     url: "https://www.weblyx.cz/o-nas",
     type: "website",
     images: [
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "O nás | Weblyx – moderní webová agentura",
-    description: "Moderní webová agentura z Prahy zaměřená na rychlé a kvalitní webové stránky.",
+    title: "O nás | Weblyx – moderní webové studio",
+    description: "Moderní webové studio z Prahy zaměřené na rychlé a kvalitní webové stránky.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/o-nas",
@@ -111,7 +111,7 @@ export default async function AboutPage() {
 
   const webpageSchema = generateWebPageSchema({
     name: 'O nás – Weblyx',
-    description: 'Česká webová agentura. Od února 2024 stavíme rychlé weby na míru. Web za 5-7 dní, férové ceny.',
+    description: 'České webové studio. Od února 2024 stavíme rychlé weby na míru. Web za 5-7 dní, férové ceny.',
     url: 'https://www.weblyx.cz/o-nas',
     breadcrumbs,
   });
@@ -127,7 +127,7 @@ export default async function AboutPage() {
       <section className="py-20 md:py-32 px-4 gradient-hero grid-pattern">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-            Česká <span className="text-primary">webová agentura</span>
+            České <span className="text-primary">webové studio</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Tvoříme rychlé a moderní weby pro živnostníky a firmy.
@@ -206,7 +206,7 @@ export default async function AboutPage() {
                     <li>a dá se dál rozvíjet, ne rovnou zahodit při první změně.</li>
                   </ul>
                   <p>
-                    Nechceme být další agentura, která 'prodá web a zmizí'. Naším cílem je být partner, za kterým můžete kdykoliv přijít s tím, že chcete něco zlepšit, zrychlit, napojit nebo rozšířit. 🚀
+                    Nechceme být další dodavatel, který 'prodá web a zmizí'. Naším cílem je být partner, za kterým můžete kdykoliv přijít s tím, že chcete něco zlepšit, zrychlit, napojit nebo rozšířit. 🚀
                   </p>
                 </div>
               </CardContent>

@@ -180,7 +180,7 @@
     "q19": "Jaké technologie používáte?",
     "a19": "Používáme Next.js (React framework), Tailwind CSS pro styling a Vercel pro hosting. Tyto technologie zajišťují rychlost, bezpečnost a snadnou údržbu.",
     "q20": "Proč si vybrat Weblyx?",
-    "a20": "Jsme česká agentura, která dodává rychle (5-7 dní), za férové ceny (od 7 990 Kč), s garancí kvality (PageSpeed 90+ nebo peníze zpět, od balíčku Základní Web za 9 990 Kč). Od února 2024 jsme dokončili přes deset projektů s hodnocením 5.0 na Google."
+    "a20": "Jsme české webové studio, které dodává rychle (5-7 dní), za férové ceny (od 7 990 Kč), s garancí kvality (PageSpeed 90+ nebo peníze zpět, od balíčku Základní Web za 9 990 Kč). Od února 2024 jsme dokončili přes deset projektů s hodnocením 5.0 na Google."
   },
   "contact": {
     "title": "Kontaktujte nás",
@@ -196,7 +196,7 @@
   },
   "footer": {
     "about": "O společnosti",
-    "aboutText": "Weblyx je česká webová agentura. Tvoříme rychlé a moderní weby pro živnostníky a firmy.",
+    "aboutText": "Weblyx je české webové studio. Tvoříme rychlé a moderní weby pro živnostníky a firmy.",
     "quickLinks": "Rychlé odkazy",
     "legal": "Právní informace",
     "privacy": "Ochrana údajů",

@@ -125,7 +125,7 @@ export default async function HomePage() {
 
   const serviceSchema = generateServiceSchema({
     serviceName: "Profesionální tvorba webových stránek",
-    description: "Tvorba webových stránek pro živnostníky a firmy. Dodání za 5-7 dní, garantované načítání pod 2 sekundy, SEO optimalizace v ceně. Česká agentura.",
+    description: "Tvorba webových stránek pro živnostníky a firmy. Dodání za 5-7 dní, garantované načítání pod 2 sekundy, SEO optimalizace v ceně. České webové studio.",
     serviceType: "Web Development",
     areaServed: "Česká republika",
     offers: {

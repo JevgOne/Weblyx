@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     "linkbuilding",
     "keyword research",
     "SEO Praha",
-    "SEO agentura",
+    "SEO služby",
   ],
   openGraph: {
     title: "SEO optimalizace a služby | Od 5 000 Kč/měsíc | Weblyx",

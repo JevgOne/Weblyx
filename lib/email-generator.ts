@@ -16,7 +16,7 @@ export async function generateEmail(prompt: EmailGenerationPrompt): Promise<Emai
   const issuesList = issues.map(i => `- ${i.title}: ${i.description}`).join('\n');
 
   // Create prompt for Gemini
-  const geminiPrompt = `Jsi obchodní představitel webové agentury Weblyx. Tvým úkolem je napsat krátký, přátelský a personalizovaný email pro potenciálního klienta.
+  const geminiPrompt = `Jsi obchodní zástupce webového studia Weblyx. Tvým úkolem je napsat krátký, přátelský a personalizovaný email pro potenciálního klienta.
 
 **Informace o klientovi:**
 - Název firmy: ${companyName}
@@ -36,7 +36,7 @@ ${issuesList || '- Žádné velké problémy nenalezeny'}
 
 **Úkol:**
 Napiš krátký (max 150 slov), přátelský email, který:
-1. Představí Weblyx jako moderní webovou agenturu
+1. Představí Weblyx jako moderní webové studio
 2. Zmíní 2-3 konkrétní problémy z analýzy jejich webu
 3. Ukáže konkrétní dopady těchto problémů (např. ztracení zákazníků, horší SEO)
 4. Nabídne nezávaznou konzultaci zdarma
@@ -120,7 +120,7 @@ narazil jsem na web ${website || companyName} a všiml jsem si několika problé
 - SEO skóre: ${analysisResult.overallScore}/100
 - ${analysisResult.issueCount.critical} kritických problémů
 
-Jsme Weblyx – moderní webová agentura. Specializujeme se na rychlé weby postavené na Next.js místo WordPressu.
+Jsme Weblyx – moderní webové studio. Specializujeme se na rychlé weby postavené na Next.js místo WordPressu.
 
 Zajímala by vás nezávazná analýza a konzultace zdarma?
 

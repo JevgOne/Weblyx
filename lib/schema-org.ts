@@ -36,7 +36,7 @@ export function generateOrganizationSchema(data?: OrganizationData) {
       name: 'Weblyx',
       url: 'https://www.weblyx.cz',
       logo: 'https://www.weblyx.cz/logo.svg',
-      description: 'Moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
+      description: 'Moderní webové studio zaměřené na tvorbu kvalitních webových stránek s využitím AI technologií',
       email: 'info@weblyx.cz',
       phone: '+420702110166',
       addressLocality: 'Praha',
@@ -140,7 +140,7 @@ export function generateWebSiteSchema() {
     '@type': 'WebSite',
     name: 'Weblyx',
     url: BASE_URL,
-    description: 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
+    description: 'Moderní webové studio - tvorba webů, e-shopů a SEO optimalizace',
     inLanguage: 'cs',
     publisher: {
       '@type': 'Organization',
@@ -173,7 +173,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
     cs: {
       name: 'Weblyx',
       url: 'https://www.weblyx.cz',
-      description: 'Moderní webová agentura - tvorba webů, e-shopů a SEO optimalizace',
+      description: 'Moderní webové studio - tvorba webů, e-shopů a SEO optimalizace',
       email: 'info@weblyx.cz',
       phone: '+420702110166',
       addressLocality: 'Praha',
@@ -439,7 +439,7 @@ export interface AboutPageData {
 export function generateAboutPageSchema(data?: AboutPageData) {
   const {
     name = 'O nás',
-    description = 'Jsme moderní webová agentura zaměřená na tvorbu kvalitních webových stránek s využitím AI technologií',
+    description = 'Jsme moderní webové studio zaměřené na tvorbu kvalitních webových stránek s využitím AI technologií',
     url = `${BASE_URL}/o-nas`,
   } = data || {};
 
@@ -471,7 +471,7 @@ export function generateContactPageSchema() {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
     name: 'Kontakt',
-    description: 'Kontaktujte Weblyx - moderní webovou agenturu',
+    description: 'Kontaktujte Weblyx - moderní webové studio',
     url: `${BASE_URL}/kontakt`,
     inLanguage: 'cs',
     isPartOf: {

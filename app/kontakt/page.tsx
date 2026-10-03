@@ -43,7 +43,7 @@ export const metadata: Metadata = isSeitelyx ? {
   title: "Kontakt – nezávazná konzultace zdarma",
   description: "Máte zájem o nový web nebo redesign? Napište nám a do 24 hodin se ozveme s návrhem řešení a orientační cenou. Konzultace zdarma.",
   keywords: [
-    "kontakt webová agentura",
+    "kontakt webové studio",
     "tvorba webu Praha",
     "nezávazná konzultace",
     "poptávka webu",
@@ -107,7 +107,7 @@ export default async function ContactPage() {
 
   const webpageSchema = generateWebPageSchema({
     name: 'Kontakt',
-    description: isDE ? `Kontaktieren Sie ${brandName} - moderne Webagentur` : `Kontaktujte ${brandName} - moderní webovou agenturu`,
+    description: isDE ? `Kontaktieren Sie ${brandName} - moderne Webagentur` : `Kontaktujte ${brandName} - moderní webové studio`,
     url: `${baseUrl}/kontakt`,
     breadcrumbs,
   });

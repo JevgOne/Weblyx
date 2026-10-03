@@ -71,7 +71,7 @@ const RECENZE_FAQ: Faq[] = [
   {
     question: "Jak si mám web ověřit sám?",
     answer:
-      "Otevřete si projekty v portfoliu a změřte si je v PageSpeed Insights od Googlu. Je to zdarma a stejný test si můžete udělat u jakékoli agentury, kterou zvažujete.",
+      "Otevřete si projekty v portfoliu a změřte si je v PageSpeed Insights od Googlu. Je to zdarma a stejný test si můžete udělat u kohokoli, koho zvažujete.",
   },
 ];
 
