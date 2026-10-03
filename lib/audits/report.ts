@@ -49,6 +49,12 @@ export interface AuditResult {
   findings?: AuditFinding[];
   /** Yes/no checks: AI visibility, Google, mobile, trust (lib/audits/checks). */
   checks?: AuditCheck[];
+  /**
+   * Where the speed score came from: Google Lighthouse, or our own estimate
+   * and why — "no-key", "psi-403", "psi-timeout". Without it a missing key and
+   * a failing API look identical from outside.
+   */
+  speedSource?: string;
   /** Lighthouse lab figures on mobile, only when PageSpeed answered. */
   vitals?: Array<{ label: string; value: string; good: boolean }>;
   // Only in email, not returned to client
@@ -225,20 +231,20 @@ const VITALS: Array<[audit: string, label: string, good: (v: number) => boolean]
   ["cumulative-layout-shift", "Poskakování obsahu (CLS)", (v) => v <= 0.1],
 ];
 
-async function pagespeedScore(url: string): Promise<PsiResult | null> {
-  if (!PSI_KEY) return null;
+async function pagespeedScore(url: string): Promise<PsiResult | string> {
+  if (!PSI_KEY) return "no-key";
   try {
     const res = await fetch(
       `${PSI_API}?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&key=${encodeURIComponent(PSI_KEY)}`,
       { signal: AbortSignal.timeout(45000) }
     );
     if (!res.ok) {
-      console.warn(`PageSpeed unavailable (${res.status}); keeping the in-house speed score.`);
-      return null;
+      console.warn(`PageSpeed unavailable (${res.status}); keeping the in-house speed score.`, (await res.text()).slice(0, 300));
+      return `psi-${res.status}`;
     }
     const data = await res.json();
     const raw = data?.lighthouseResult?.categories?.performance?.score;
-    if (typeof raw !== "number") return null;
+    if (typeof raw !== "number") return "psi-no-score";
     const audits = data?.lighthouseResult?.audits ?? {};
     const vitals = VITALS.flatMap(([id, label, good]) => {
       const a = audits[id];
@@ -247,16 +253,16 @@ async function pagespeedScore(url: string): Promise<PsiResult | null> {
         : [];
     });
     return { score: Math.round(raw * 100), vitals };
-  } catch (err) {
+  } catch (err: any) {
     console.warn("PageSpeed unreachable; keeping the in-house speed score.", err);
-    return null;
+    return err?.name === "TimeoutError" ? "psi-timeout" : "psi-unreachable";
   }
 }
 
 export async function runAudit(url: string): Promise<AuditResult> {
   const [result, psi] = await Promise.all([runLocalAudit(url), pagespeedScore(url)]);
 
-  if (psi === null) return result;
+  if (typeof psi === "string") return { ...result, speedSource: `estimate:${psi}` };
 
   // Real Lighthouse beats our estimate, so it replaces the speed figure and
   // the overall score is recomputed from the six dimensions it belongs to.
@@ -270,6 +276,7 @@ export async function runAudit(url: string): Promise<AuditResult> {
   return {
     ...result,
     vitals: psi.vitals,
+    speedSource: "lighthouse",
     categories,
     score,
     metrics: categories.slice(0, 3).map((c) => ({

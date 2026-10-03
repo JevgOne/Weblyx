@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
       findings: result.findings ?? [],
       checks: result.checks ?? [],
       vitals: result.vitals ?? [],
+      speedSource: result.speedSource,
       offer: offerFor(result),
       issueCount: result.issueCount,
       benchmark: {
