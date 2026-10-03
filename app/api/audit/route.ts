@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/lib/email/resend-client";
+import { EMAIL_CONFIG, sendEmail } from "@/lib/email/resend-client";
 import { recordAudit } from "@/lib/audits/server";
 import {
   BENCHMARK_AVERAGE,
@@ -7,8 +7,12 @@ import {
   BENCHMARK_URL,
   benchmarkVerdict,
   buildEmailHtml,
+  offerFor,
   runAudit,
 } from "@/lib/audits/report";
+
+// The crawl, the checklist and PageSpeed (up to 45 s) run in one request.
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,6 +74,8 @@ export async function POST(request: NextRequest) {
       to: email,
       subject: `🔍 Audit webu: ${normalizedUrl} — skóre ${result.score}/100`,
       html: buildEmailHtml(result),
+      // The report invites a reply; from noreply@ that reply went nowhere.
+      replyTo: EMAIL_CONFIG.adminEmail,
     }).catch((err) => {
       console.error("Failed to send audit email:", err);
       return { success: false as const, error: String(err) };
@@ -83,6 +89,9 @@ export async function POST(request: NextRequest) {
       metrics: result.metrics,
       categories: result.categories ?? [],
       findings: result.findings ?? [],
+      checks: result.checks ?? [],
+      vitals: result.vitals ?? [],
+      offer: offerFor(result),
       issueCount: result.issueCount,
       benchmark: {
         average: BENCHMARK_AVERAGE,

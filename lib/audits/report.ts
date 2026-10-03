@@ -1,4 +1,5 @@
 import { analyzeWebsite } from "@/lib/web-analyzer";
+import { CHECK_GROUPS, runChecks, type AuditCheck } from "@/lib/audits/checks";
 
 /**
  * PageSpeed Insights first, our own analyzer as the floor.
@@ -46,9 +47,53 @@ export interface AuditResult {
   categories?: AuditCategory[];
   /** What is actually wrong, in words the visitor can act on. */
   findings?: AuditFinding[];
+  /** Yes/no checks: AI visibility, Google, mobile, trust (lib/audits/checks). */
+  checks?: AuditCheck[];
+  /** Lighthouse lab figures on mobile, only when PageSpeed answered. */
+  vitals?: Array<{ label: string; value: string; good: boolean }>;
   // Only in email, not returned to client
   issues?: AuditIssue[];
   opportunities?: AuditIssue[];
+}
+
+export interface AuditOffer {
+  headline: string;
+  body: string;
+  cta: string;
+}
+
+/**
+ * What to do about it, priced. The report used to end on "Nezávazná
+ * konzultace" — a visitor who has just learned their site scores 38 wants to
+ * know what fixing it costs, and a number is what turns the audit into an
+ * enquiry. Prices are the live packages; ours are final (no VAT on top).
+ */
+export function offerFor(result: Pick<AuditResult, "score" | "checks">): AuditOffer {
+  const failed = (result.checks ?? []).filter((c) => c.ok === false).length;
+  if (result.score < 60 || failed >= 8) {
+    return {
+      headline: "Vyplatí se nový web",
+      body:
+        `Oprav je tolik, že nový web vyjde levněji a rychleji než záplatování. ` +
+        `Landing page za 7 990 Kč, web o 3–5 stránkách za 9 990 Kč, hotovo za 3–7 dní — ` +
+        `a všechno z kontroly výše na něm bude splněné. Ceny jsou konečné, nejsme plátci DPH.`,
+      cta: "Chci nový web",
+    };
+  }
+  if (failed > 0) {
+    return {
+      headline: `Doplníme ${failed} ${failed === 1 ? "věc, která chybí" : failed < 5 ? "věci, které chybí" : "věcí, které chybí"}`,
+      body:
+        `Web je v dobrém základu. Chybějící body z kontroly doplníme na současném webu — ` +
+        `napište nám a do 24 hodin pošleme pevnou cenu.`,
+      cta: "Chci cenu za opravu",
+    };
+  }
+  return {
+    headline: "Web je v dobré kondici",
+    body: "Další krok je dostat se výš ve vyhledávání a v odpovědích AI asistentů. Rádi s vámi probereme, kde je prostor.",
+    cta: "Nezávazná konzultace",
+  };
 }
 
 /**
@@ -104,6 +149,12 @@ function formatMs(ms: number): string {
 /** Our own analysis, shaped like a PSI result so the caller cannot tell. */
 async function runLocalAudit(url: string): Promise<AuditResult> {
   const a = await analyzeWebsite(url);
+  // The checklist never fails the audit: a robots.txt that times out is a
+  // missing line in the report, not an error page for the visitor.
+  const checks = await runChecks(a).catch((err) => {
+    console.warn("Audit checks failed:", err);
+    return [] as AuditCheck[];
+  });
   const cat = a.categoryScores;
 
   const categories: AuditCategory[] = cat
@@ -141,6 +192,7 @@ async function runLocalAudit(url: string): Promise<AuditResult> {
     categories,
     findings,
     issueCount: a.issueCount.critical + a.issueCount.warning,
+    checks,
     issues,
     opportunities: [],
   };
@@ -160,7 +212,20 @@ async function runLocalAudit(url: string): Promise<AuditResult> {
  * Without a key — the anonymous quota is exhausted and answers 429 — the audit
  * is unaffected.
  */
-async function pagespeedScore(url: string): Promise<number | null> {
+interface PsiResult {
+  score: number;
+  vitals: Array<{ label: string; value: string; good: boolean }>;
+}
+
+/** Lighthouse's own pass marks for the lab figures it reports. */
+const VITALS: Array<[audit: string, label: string, good: (v: number) => boolean]> = [
+  ["largest-contentful-paint", "Načtení hlavního obsahu (LCP)", (v) => v <= 2500],
+  ["first-contentful-paint", "První zobrazení (FCP)", (v) => v <= 1800],
+  ["total-blocking-time", "Zaseknutí stránky (TBT)", (v) => v <= 200],
+  ["cumulative-layout-shift", "Poskakování obsahu (CLS)", (v) => v <= 0.1],
+];
+
+async function pagespeedScore(url: string): Promise<PsiResult | null> {
   if (!PSI_KEY) return null;
   try {
     const res = await fetch(
@@ -173,7 +238,15 @@ async function pagespeedScore(url: string): Promise<number | null> {
     }
     const data = await res.json();
     const raw = data?.lighthouseResult?.categories?.performance?.score;
-    return typeof raw === "number" ? Math.round(raw * 100) : null;
+    if (typeof raw !== "number") return null;
+    const audits = data?.lighthouseResult?.audits ?? {};
+    const vitals = VITALS.flatMap(([id, label, good]) => {
+      const a = audits[id];
+      return typeof a?.numericValue === "number" && a.displayValue
+        ? [{ label, value: String(a.displayValue).replace(/\u00a0/g, " "), good: good(a.numericValue) }]
+        : [];
+    });
+    return { score: Math.round(raw * 100), vitals };
   } catch (err) {
     console.warn("PageSpeed unreachable; keeping the in-house speed score.", err);
     return null;
@@ -188,7 +261,7 @@ export async function runAudit(url: string): Promise<AuditResult> {
   // Real Lighthouse beats our estimate, so it replaces the speed figure and
   // the overall score is recomputed from the six dimensions it belongs to.
   const categories = (result.categories ?? []).map((c) =>
-    c.key === "performance" ? { ...c, score: psi } : c
+    c.key === "performance" ? { ...c, score: psi.score } : c
   );
   const score = categories.length
     ? Math.round(categories.reduce((sum, c) => sum + c.score, 0) / categories.length)
@@ -196,6 +269,7 @@ export async function runAudit(url: string): Promise<AuditResult> {
 
   return {
     ...result,
+    vitals: psi.vitals,
     categories,
     score,
     metrics: categories.slice(0, 3).map((c) => ({
@@ -274,6 +348,49 @@ export function buildEmailHtml(result: AuditResult, options: { intro?: string } 
       </p>
     </div>`;
 
+  // The yes/no checklist, grouped. Details can quote the audited site (schema
+  // types, bot names), so they are escaped like any other foreign text.
+  const checks = result.checks ?? [];
+  const checksHtml = CHECK_GROUPS.map((g) => {
+    const rows = checks.filter((c) => c.group === g.key && c.ok !== null);
+    if (rows.length === 0) return "";
+    return `
+      <p style="margin:18px 0 8px;font-size:14px;font-weight:700;color:#0f172a;">${escapeHtml(g.label)}</p>
+      <table style="width:100%;border-collapse:collapse;">
+        ${rows
+          .map(
+            (c) => `
+        <tr>
+          <td style="width:28px;padding:8px 0;vertical-align:top;font-size:16px;">${c.ok ? "✅" : "❌"}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">
+            <strong style="color:#0f172a;">${escapeHtml(c.label)}</strong>
+            <span style="color:#64748b;"> — ${escapeHtml(c.detail)}</span>
+            ${c.ok ? "" : `<br><span style="color:#475569;font-size:13px;line-height:1.5;">${escapeHtml(c.fix)}</span>`}
+          </td>
+        </tr>`
+          )
+          .join("")}
+      </table>`;
+  }).join("");
+
+  const vitalsHtml = result.vitals?.length
+    ? `
+      <h2 style="font-size:18px;color:#0f172a;margin:0 0 6px;padding-bottom:8px;border-bottom:2px solid #14b8a6;">⚡ Rychlost na mobilu (Google Lighthouse)</h2>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:32px;">
+        ${result.vitals
+          .map(
+            (v) => `
+        <tr>
+          <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">${escapeHtml(v.label)}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;font-weight:600;color:${v.good ? "#16a34a" : "#dc2626"};">${escapeHtml(v.value)}</td>
+        </tr>`
+          )
+          .join("")}
+      </table>`
+    : "";
+
+  const offer = offerFor(result);
+
   return `
 <!DOCTYPE html>
 <html>
@@ -313,6 +430,17 @@ export function buildEmailHtml(result: AuditResult, options: { intro?: string } 
         ${metricsHtml}
       </table>
 
+      ${vitalsHtml}
+
+      <!-- Checklist -->
+      ${
+        checksHtml
+          ? `
+      <h2 style="font-size:18px;color:#0f172a;margin:0 0 4px;padding-bottom:8px;border-bottom:2px solid #14b8a6;">✔️ Kontrola bod po bodu</h2>
+      <div style="margin-bottom:32px;">${checksHtml}</div>`
+          : ""
+      }
+
       <!-- Issues -->
       ${
         issuesHtml
@@ -327,15 +455,17 @@ export function buildEmailHtml(result: AuditResult, options: { intro?: string } 
           : ""
       }
 
-      <!-- CTA -->
-      <div style="background:#f0fdfa;border-radius:12px;padding:24px;text-align:center;margin-top:24px;">
-        <h3 style="color:#0f172a;font-size:16px;margin:0 0 8px;">Chcete tyto problémy vyřešit?</h3>
-        <p style="color:#64748b;font-size:14px;margin:0 0 16px;">
-          Náš tým vám pomůže zrychlit web a zlepšit SEO. Nezávazná konzultace zdarma.
-        </p>
-        <a href="https://www.weblyx.cz/poptavka" style="display:inline-block;padding:12px 32px;background:#14b8a6;color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">
-          Nezávazná konzultace →
+      <!-- Offer -->
+      <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:24px;text-align:center;margin-top:24px;">
+        <h3 style="color:#0f172a;font-size:18px;margin:0 0 8px;">${escapeHtml(offer.headline)}</h3>
+        <p style="color:#334155;font-size:14px;line-height:1.6;margin:0 0 18px;">${escapeHtml(offer.body)}</p>
+        <a href="https://www.weblyx.cz/poptavka?zdroj=audit&web=${encodeURIComponent(result.url)}" style="display:inline-block;padding:12px 28px;background:#14b8a6;color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">
+          ${escapeHtml(offer.cta)} →
         </a>
+        <p style="color:#64748b;font-size:13px;margin:14px 0 0;">
+          Nebo zavolejte: <a href="tel:+420702110166" style="color:#0d9488;font-weight:600;text-decoration:none;">702 110 166</a>
+          · odpovězte na tento e-mail
+        </p>
       </div>
 
       <!-- Footer -->

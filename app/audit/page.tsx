@@ -7,8 +7,8 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Audit webu zdarma | PageSpeed, SEO, bezpečnost",
-  description: "Zdarma zanalyzujeme rychlost, SEO a bezpečnost vašeho webu. Skóre uvidíte hned na stránce, detailní rozpis s doporučeními přijde na e-mail.",
+  title: "Audit webu zdarma | Najde vás Google i ChatGPT?",
+  description: "Zdarma zkontrolujeme, jestli váš web najde Google i AI asistenti (ChatGPT, Perplexity), jak rychle se načítá na mobilu a co mu chybí. Výsledek hned, rozpis na e-mail.",
   keywords: [
     "audit webu zdarma",
     "analýza webu",
@@ -106,8 +106,9 @@ export default function AuditPage() {
               Audit vašeho webu <span className="text-primary">zdarma</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Zjistěte, jak si váš web vede v rychlosti, SEO a bezpečnosti.
-              Skóre uvidíte hned, detailní rozpis s doporučeními vám pošleme na e-mail.
+              Zjistěte, jestli váš web najde Google i ChatGPT, jak rychle se načítá na
+              mobilu a co mu chybí — přes 20 kontrol bod po bodu. Výsledek uvidíte hned,
+              rozpis s doporučeními vám pošleme na e-mail.
             </p>
           </div>
         </section>

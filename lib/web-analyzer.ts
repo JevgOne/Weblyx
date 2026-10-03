@@ -42,8 +42,13 @@ export class WebAnalyzer {
 
       const response = await fetch(this.url, {
         signal: controller.signal,
+        // A truncated UA string reads as a bot to most firewalls, and a
+        // blocked fetch turned into "your site is down" in the report.
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml',
+          'Accept-Language': 'cs-CZ,cs;q=0.9,en;q=0.8',
         }
       });
 
@@ -223,24 +228,39 @@ export class WebAnalyzer {
     } as WebAnalysisTechnical;
   }
 
-  async checkSitemap(): Promise<boolean> {
+  /**
+   * HEAD first, GET when HEAD is refused. Plenty of servers answer HEAD with
+   * 405 or 404 while serving the file fine, and every one of them was told it
+   * had no sitemap.
+   */
+  private async exists(path: string): Promise<boolean> {
+    const url = new URL(path, this.url).toString();
+    const init = { signal: AbortSignal.timeout(6000), headers: { 'User-Agent': 'Mozilla/5.0 (compatible; WeblyxAudit/1.0)' } };
     try {
-      const sitemapUrl = new URL('/sitemap.xml', this.url).toString();
-      const response = await fetch(sitemapUrl, { method: 'HEAD' });
-      return response.ok;
+      const head = await fetch(url, { ...init, method: 'HEAD' });
+      if (head.ok) return true;
+      const get = await fetch(url, { ...init, method: 'GET' });
+      return get.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  async checkSitemap(): Promise<boolean> {
+    if ((await this.exists('/sitemap.xml')) || (await this.exists('/sitemap_index.xml'))) return true;
+    // Sitemaps often live elsewhere and are announced in robots.txt.
+    try {
+      const robots = await fetch(new URL('/robots.txt', this.url).toString(), { signal: AbortSignal.timeout(6000) });
+      if (!robots.ok) return false;
+      const declared = (await robots.text()).match(/^\s*sitemap\s*:\s*(\S+)/im)?.[1];
+      return declared ? this.exists(declared) : false;
     } catch {
       return false;
     }
   }
 
   async checkRobotsTxt(): Promise<boolean> {
-    try {
-      const robotsUrl = new URL('/robots.txt', this.url).toString();
-      const response = await fetch(robotsUrl, { method: 'HEAD' });
-      return response.ok;
-    } catch {
-      return false;
-    }
+    return this.exists('/robots.txt');
   }
 
   analyzeOpenGraph(): WebAnalysisOpenGraph {
@@ -422,8 +442,13 @@ export class WebAnalyzer {
     const hasBreadcrumbSchema = schemaTypes.includes('BreadcrumbList');
 
     // Content freshness
-    const copyrightMatch = bodyText.match(/©\s*(\d{4})/);
-    const copyrightYear = copyrightMatch ? parseInt(copyrightMatch[1]) : null;
+    // "© 1996–2026" is a site that is current, not one abandoned in 1996:
+    // the latest year next to the copyright sign is the one that counts.
+    const copyrightYears = [...bodyText.matchAll(/(?:©|copyright|\(c\))[^\n]{0,40}/gi)]
+      .flatMap((m) => m[0].match(/\b(19|20)\d{2}\b/g) ?? [])
+      .map(Number)
+      .filter((y) => y <= new Date().getFullYear() + 1);
+    const copyrightYear = copyrightYears.length ? Math.max(...copyrightYears) : null;
     const hasDatePublished = $('[itemprop="datePublished"], time[datetime], meta[property="article:published_time"]').length > 0;
     let latestDateFound: string | null = null;
     $('time[datetime]').each((_, el) => {

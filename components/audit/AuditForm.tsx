@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Send, Loader2, Gauge, Zap, Search, ShieldCheck } from "lucide-react";
+import { Send, Loader2, Gauge, Search, ShieldCheck, Bot, Check, X, Phone } from "lucide-react";
 import confetti from "canvas-confetti";
 
 /**
@@ -43,8 +43,33 @@ interface AuditBenchmark {
   verdict: string;
 }
 
+interface AuditCheck {
+  id: string;
+  group: "ai" | "google" | "mobile" | "trust";
+  label: string;
+  ok: boolean | null;
+  detail: string;
+  fix: string;
+}
+
+interface AuditOffer {
+  headline: string;
+  body: string;
+  cta: string;
+}
+
+const GROUP_LABELS: Array<[AuditCheck["group"], string]> = [
+  ["ai", "Najde vás AI (ChatGPT, Perplexity, Google AI)?"],
+  ["google", "Google a mapy"],
+  ["mobile", "Zákazník na mobilu"],
+  ["trust", "Důvěra a pravidla"],
+];
+
 interface AuditResult {
   url: string;
+  checks?: AuditCheck[];
+  vitals?: Array<{ label: string; value: string; good: boolean }>;
+  offer?: AuditOffer;
   score: number;
   metrics: AuditMetric[];
   categories: AuditCategory[];
@@ -161,6 +186,58 @@ export function AuditForm() {
             </div>
           )}
 
+          {result.vitals && result.vitals.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-semibold">Rychlost na mobilu (Google Lighthouse)</p>
+              {result.vitals.map((v) => (
+                <div key={v.label} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground">{v.label}</span>
+                  <span className="font-semibold" style={{ color: v.good ? "#16a34a" : "#dc2626" }}>{v.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {result.checks && result.checks.some((c) => c.ok !== null) && (
+            <div className="space-y-5">
+              <p className="text-sm font-semibold">
+                Kontrola bod po bodu{" "}
+                <span className="font-normal text-muted-foreground">
+                  ({result.checks.filter((c) => c.ok === true).length} z{" "}
+                  {result.checks.filter((c) => c.ok !== null).length} v pořádku)
+                </span>
+              </p>
+              {GROUP_LABELS.map(([group, label]) => {
+                const rows = result.checks!.filter((c) => c.group === group && c.ok !== null);
+                if (rows.length === 0) return null;
+                return (
+                  <div key={group} className="space-y-2">
+                    <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+                    <ul className="space-y-1.5">
+                      {rows.map((c) => (
+                        <li key={c.id} className="flex items-start gap-2.5 text-sm">
+                          <span
+                            className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                            style={{ background: c.ok ? "rgba(22,163,74,.12)" : "rgba(220,38,38,.12)", color: c.ok ? "#16a34a" : "#dc2626" }}
+                            aria-label={c.ok ? "v pořádku" : "chybí"}
+                          >
+                            {c.ok ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="font-medium">
+                              {c.label} <span className="font-normal text-muted-foreground">— {c.detail}</span>
+                            </p>
+                            {!c.ok && <p className="text-muted-foreground leading-relaxed">{c.fix}</p>}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {result.findings.length > 0 && (
             <div className="space-y-3">
               <p className="text-sm font-semibold">
@@ -203,9 +280,27 @@ export function AuditForm() {
             </div>
           )}
 
+          {result.offer && (
+            <div
+              className="rounded-xl border p-6 text-center space-y-2"
+              style={{ background: "rgba(20,184,166,.06)", borderColor: "rgba(20,184,166,.3)" }}
+            >
+              <p className="text-lg font-bold">{result.offer.headline}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{result.offer.body}</p>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg">
-              <a href="/poptavka">Chci to spravit</a>
+              <a href={`/poptavka?zdroj=audit&web=${encodeURIComponent(result.url)}`}>
+                {result.offer?.cta ?? "Chci to spravit"}
+              </a>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <a href="tel:+420702110166">
+                <Phone className="mr-2 h-4 w-4" />
+                702 110 166
+              </a>
             </Button>
             <Button
               variant="outline"
@@ -225,10 +320,10 @@ export function AuditForm() {
       {/* What you get */}
       <div className="grid sm:grid-cols-2 gap-4">
         {[
-          { icon: Gauge, title: "PageSpeed analýza", desc: "Rychlost načítání na mobilu i desktopu" },
-          { icon: Search, title: "SEO check", desc: "Meta tagy, nadpisy, strukturovaná data, indexace" },
-          { icon: Zap, title: "Výkon a UX", desc: "Core Web Vitals, mobilní optimalizace, přístupnost" },
-          { icon: ShieldCheck, title: "Bezpečnost", desc: "HTTPS, hlavičky, GDPR souhlas" },
+          { icon: Bot, title: "Najde vás AI?", desc: "Přístup pro ChatGPT, Claude a Perplexity, llms.txt, FAQ, údaje o firmě" },
+          { icon: Search, title: "Google a mapy", desc: "Titulky, sitemap, hvězdičky z recenzí, Firma na Googlu" },
+          { icon: Gauge, title: "Rychlost a mobil", desc: "Načítání na mobilu, klikací telefon, moderní obrázky" },
+          { icon: ShieldCheck, title: "Důvěra a pravidla", desc: "HTTPS, cookie lišta, měření návštěvnosti, náhled při sdílení" },
         ].map((item) => (
           <div key={item.title} className="flex gap-3 p-4 rounded-xl bg-muted/50 border border-border/60">
             <item.icon className="h-5 w-5 text-primary shrink-0 mt-0.5" />
