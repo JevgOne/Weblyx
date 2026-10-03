@@ -26,8 +26,8 @@ import { generateWebPageSchema, BreadcrumbItem } from "@/lib/schema-org";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Redesign webu od 15 000 Kč | Modernizace stránek",
-  description: "Profesionální redesign webu a modernizace webových stránek od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO. Předělání webových stránek za 2–3 týdny.",
+  title: "Redesign webu od 9 990 Kč | Modernizace stránek",
+  description: "Profesionální redesign webu a modernizace webových stránek od 9 990 Kč. Nový moderní design, rychlejší načítání, lepší SEO. Předělání webových stránek za 2–3 týdny.",
   keywords: [
     "redesign webu",
     "modernizace webu",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Redesign webu | Modernizace webových stránek | Weblyx",
-    description: "Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
+    description: "Profesionální redesign webu od 9 990 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
     url: "https://www.weblyx.cz/redesign-webu",
     type: "website",
     images: [{ url: "/images/og/og-redesign-webu.png", width: 1200, height: 630, alt: "Weblyx - Redesign webu" }],
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Redesign webu | Modernizace webových stránek | Weblyx",
-    description: "Profesionální redesign webu od 15 000 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
+    description: "Profesionální redesign webu od 9 990 Kč. Nový moderní design, rychlejší načítání, lepší SEO.",
   },
   alternates: {
     canonical: "https://www.weblyx.cz/redesign-webu",
@@ -104,7 +104,7 @@ const FAQS = [
   {
     question: "Kolik stojí redesign webu?",
     answer:
-      "Ceny redesignu začínají od 15 000 Kč pro jednoduchý prezentační web. Cena závisí na rozsahu změn, počtu stránek a požadovaných funkcích. Připravíme vám nezávaznou kalkulaci zdarma.",
+      "Ceny redesignu začínají od 9 990 Kč pro jednoduchý prezentační web. Cena závisí na rozsahu změn, počtu stránek a požadovaných funkcích. Připravíme vám nezávaznou kalkulaci zdarma.",
   },
   {
     question: "Můžete převést web z WordPressu do Next.js?",
@@ -123,7 +123,7 @@ export default function RedesignWebuPage() {
   const webpageSchema = generateWebPageSchema({
     name: "Redesign webu",
     description:
-      "Profesionální redesign a modernizace webových stránek od 15 000 Kč.",
+      "Profesionální redesign a modernizace webových stránek od 9 990 Kč.",
     url: "https://www.weblyx.cz/redesign-webu",
     breadcrumbs,
   });
@@ -161,7 +161,7 @@ export default function RedesignWebuPage() {
               Předěláme váš zastaralý web do moderní podoby s{" "}
               <Link href="/pagespeed-garance" className="text-primary hover:underline">
                 garancí PageSpeed 90+
-              </Link>. Ceny od <strong>15 000 Kč</strong>.
+              </Link>. Ceny od <strong>9 990 Kč</strong>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <LeadButton href="/poptavka" size="lg" showArrow>

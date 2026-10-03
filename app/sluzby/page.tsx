@@ -149,7 +149,7 @@ const ADDITIONAL_SERVICES = [
     icon: Palette,
     title: "Redesign webu",
     slug: "redesign",
-    price: "od 15 000 Kč",
+    price: "od 9 990 Kč",
     description:
       "Modernizace zastaralých webů. Nový design, lepší UX, vyšší konverze při zachování vaší značky.",
     includes: [

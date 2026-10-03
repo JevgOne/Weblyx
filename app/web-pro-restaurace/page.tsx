@@ -293,7 +293,7 @@ export default function WebProRestauracePage() {
                 <CardHeader className="space-y-2 text-center">
                   <Badge className="w-fit mx-auto">Doporučujeme</Badge>
                   <h3 className="text-xl font-bold">Web s rezervacemi</h3>
-                  <p className="text-3xl font-black text-primary">od 9 900 Kč</p>
+                  <p className="text-3xl font-black text-primary">od 13 980 Kč</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2 text-left">
