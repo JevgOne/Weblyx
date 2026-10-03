@@ -34,6 +34,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
 import { isAdminOrHigher } from '@/lib/auth/permissions';
 import type { Task, TaskStatus, TaskPriority } from '@/lib/turso/tasks';
 
@@ -398,8 +399,9 @@ function TaskCard({
             )}
 
             {/* Description */}
-            <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-4 mt-3 whitespace-pre-wrap max-h-[200px] overflow-y-auto">
-              {task.description}
+            {/* Briefs are markdown (headings, lists); tailwind preflight strips their default styling */}
+            <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-4 mt-3 max-h-[480px] overflow-y-auto break-words [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-foreground [&_h1]:mb-2 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-foreground [&_h2]:mt-4 [&_h2]:mb-1 [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-3 [&_h3]:mb-1 [&_p]:my-1.5 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-foreground [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:italic">
+              <ReactMarkdown>{task.description}</ReactMarkdown>
             </div>
 
             {/* Meta */}

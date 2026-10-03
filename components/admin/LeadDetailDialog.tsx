@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Mail, Phone, Building2, Globe, Trash2, UserCheck, ClipboardList, ExternalLink } from "lucide-react";
+import { Loader2, Mail, Phone, Building2, Globe, Trash2, UserCheck, ClipboardList, RotateCcw } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -23,6 +23,7 @@ import {
 import { canonicalLeadStatus, leadStatusMeta, nextLeadStatus } from "@/lib/leads/status";
 import { formatCzk } from "@/lib/pricing/types";
 import { leadValueLabel } from "@/lib/leads/labels";
+import { buildLeadBriefMarkdown } from "@/lib/leads/brief";
 
 interface LeadDetailDialogProps {
   open: boolean;
@@ -192,6 +193,14 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
     setCurrentLead(lead);
   }, [lead]);
 
+  // Pre-fill the brief once per lead. Keyed on the id so a status change, which
+  // hands in a new lead object, does not wipe what staff have already edited.
+  useEffect(() => {
+    setTaskBrief(lead ? buildLeadBriefMarkdown(lead) : "");
+    setTaskKwAnalysis("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lead?.id]);
+
   // Load specialists for task assignment
   useEffect(() => {
     const loadSpecialists = async () => {
@@ -293,17 +302,11 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
 
     try {
       // Build complete task description
-      let description = `## Brief\n${taskBrief}`;
+      // The brief already carries contact, package and budget in its header.
+      let description = taskBrief.trim();
       if (taskKwAnalysis.trim()) {
-        description += `\n\n## Klíčová slova & SEO\n${taskKwAnalysis}`;
+        description += `\n\n## Klíčová slova & SEO\n${taskKwAnalysis.trim()}`;
       }
-
-      // Add lead info
-      description += `\n\n---\n**Kontakt:** ${currentLead.name}`;
-      if (currentLead.company) description += ` (${currentLead.company})`;
-      if (currentLead.email) description += `\n**Email:** ${currentLead.email}`;
-      if (currentLead.phone) description += `\n**Tel:** ${currentLead.phone}`;
-      if (currentLead.budgetRange) description += `\n**Rozpočet:** ${currentLead.budgetRange}`;
 
       const actualAssignedTo = taskAssignedTo === 'unassigned' ? null : taskAssignedTo;
       const specialist = specialists.find(s => s.id === actualAssignedTo);
@@ -312,7 +315,7 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: `${currentLead.projectType || 'Web'}: ${currentLead.company || currentLead.name}`,
+          title: `${config?.tierName || leadValueLabel(currentLead.projectType || '') || 'Web'}: ${currentLead.company || currentLead.name}`,
           description,
           domain: currentLead.existingWebsite || '',
           assigned_to: actualAssignedTo,
@@ -592,31 +595,28 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
                   <ClipboardList className="h-5 w-5 text-teal-600" />
                   Vytvořit úkol pro specialistu
                 </Label>
-                <a
-                  href="https://claude.ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => setTaskBrief(buildLeadBriefMarkdown(currentLead))}
                   className="flex items-center gap-1 text-xs font-semibold text-teal-700 hover:underline"
                 >
-                  <ExternalLink className="h-3 w-3" />
-                  Otevřít Claude
-                </a>
+                  <RotateCcw className="h-3 w-3" />
+                  Obnovit z poptávky
+                </button>
               </div>
 
               <p className="text-sm text-slate-500">
-                Vygenerujte Brief a KW analýzu v Claude a vložte je sem. Pak vytvořte úkol pro specialistu.
+                Brief se sám sestavil z poptávky a balíčku: stránky, sekce, kdo dodá jaký obsah, co je mimo rozsah.
+                Před odesláním ho upravte, zvlášť části označené „návrh“ a „ověřit“.
               </p>
 
               <div className="space-y-2">
                 <Label htmlFor="taskBrief" className="text-sm font-medium text-slate-900">
-                  1. Brief (zadání projektu) *
+                  1. Brief pro specialistu (markdown) *
                 </Label>
                 <Textarea
                   id="taskBrief"
-                  placeholder="Sem vložte vygenerovaný Brief z Claude...
-
-Např: Vytvořit moderní webovou prezentaci pro kadeřnický salon. Hlavní cíl: zvýšit online rezervace o 30%. Design: čistý, minimalistický, ženská cílová skupina..."
-                  className={`min-h-[150px] ${inputClass}`}
+                  className={`min-h-[420px] font-mono text-xs leading-relaxed ${inputClass}`}
                   value={taskBrief}
                   onChange={(e) => setTaskBrief(e.target.value)}
                 />
@@ -628,9 +628,7 @@ Např: Vytvořit moderní webovou prezentaci pro kadeřnický salon. Hlavní cí
                 </Label>
                 <Textarea
                   id="taskKwAnalysis"
-                  placeholder="Sem vložte výsledky KW analýzy z Claude...
-
-Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (1900), barvení vlasů..."
+                  placeholder="Např: Hlavní KW: kadeřnictví Praha (2400 hledání/měs), dámské střihy (1900), barvení vlasů..."
                   className={`min-h-[120px] ${inputClass}`}
                   value={taskKwAnalysis}
                   onChange={(e) => setTaskKwAnalysis(e.target.value)}
