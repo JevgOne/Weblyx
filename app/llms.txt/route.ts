@@ -39,7 +39,7 @@ Ceny jsou jednorázové a konečné. Konfigurátor na úvodní stránce je spoč
 | Standardní Web | 24 900 Kč | 10+ podstránek, na míru | 7–10 dní | 3 měsíce |
 
 Doplňky: blog s CMS 1 990 Kč · rezervační systém 3 990 Kč · online platby kartou 2 990 Kč ·
-napojení na Reservio/Notino 990 Kč · druhý jazyk 1 990 Kč (u Standardního webu 3 490 Kč) · copywriting 1 490 Kč ·
+napojení na externí rezervační systém (Reservio, Notino, Bookio…) 990 Kč · druhý jazyk 1 990 Kč (u Standardního webu 3 490 Kč) · copywriting 1 490 Kč ·
 roční údržba a podpora 2 990 Kč (předplaceně, bez měsíčních plateb).
 
 Platební podmínky: 50 % záloha před zahájením prací, doplatek před předáním.

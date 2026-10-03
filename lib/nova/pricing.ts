@@ -49,7 +49,7 @@ export const FALLBACK_TIERS: PricingPackage[] = [
 export const FALLBACK_ADDONS: PricingAddon[] = [
   { id: 'addon-blog', name: 'Blog s CMS editorem', hours: 4, price: 1990, kind: 'build', supportMonths: 0, availableTiers: ['tier-1'] },
   { id: 'addon-booking', name: 'Rezervační systém', hours: 6, price: 3990, kind: 'build', supportMonths: 0, availableTiers: ['tier-2'] },
-  { id: 'addon-booking-external', name: 'Napojení na Reservio / Notino', hours: 1, price: 990, kind: 'build', supportMonths: 0, availableTiers: ['tier-1', 'tier-2'] },
+  { id: 'addon-booking-external', name: 'Napojení na rezervační systém (Reservio, Notino…)', hours: 1, price: 990, kind: 'build', supportMonths: 0, availableTiers: ['tier-1', 'tier-2'] },
   { id: 'addon-payments', name: 'Online platby kartou', hours: 6, price: 2990, kind: 'build', supportMonths: 0, availableTiers: ['tier-2', 'tier-3'] },
   { id: 'addon-language', name: 'Druhý jazyk webu', hours: 2, price: 1990, kind: 'build', supportMonths: 0, availableTiers: ['tier-1', 'tier-2'] },
   { id: 'addon-language-large', name: 'Druhý jazyk webu', hours: 6, price: 3490, kind: 'build', supportMonths: 0, availableTiers: ['tier-3'] },
