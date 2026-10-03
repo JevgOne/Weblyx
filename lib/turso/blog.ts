@@ -60,7 +60,31 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   return result.rows.map((row) => rowToBlogPost(row as unknown as BlogPostRow));
 }
 
+/**
+ * Publishes every post whose scheduled time has passed.
+ *
+ * The cron at /api/cron/publish-scheduled-posts does this too, but it only runs
+ * when CRON_SECRET is configured — a post planned for Monday morning must not
+ * depend on that. The public lists call this first, so a due post goes live
+ * within one revalidation (60 s) either way. The publish date is the planned
+ * time, not whenever the first reader happened to arrive.
+ */
+export async function publishDueScheduledPosts(): Promise<void> {
+  try {
+    await turso.execute({
+      sql: `UPDATE blog_posts
+               SET published = 1, published_at = scheduled_date, scheduled_date = NULL, updated_at = unixepoch()
+             WHERE published = 0 AND scheduled_date IS NOT NULL AND scheduled_date <= ?`,
+      args: [Math.floor(Date.now() / 1000)],
+    });
+  } catch (error) {
+    // Reading the blog matters more than this bookkeeping.
+    console.error('publishDueScheduledPosts failed:', error);
+  }
+}
+
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
+  await publishDueScheduledPosts();
   const result = await turso.execute(
     'SELECT * FROM blog_posts WHERE published = 1 ORDER BY published_at DESC'
   );
@@ -282,6 +306,7 @@ export async function getBlogPostsByLanguage(language: 'cs' | 'de'): Promise<Blo
  * Get all published blog posts in a specific language
  */
 export async function getPublishedBlogPostsByLanguage(language: 'cs' | 'de'): Promise<BlogPost[]> {
+  await publishDueScheduledPosts();
   const result = await turso.execute({
     sql: 'SELECT * FROM blog_posts WHERE language = ? AND published = 1 ORDER BY published_at DESC',
     args: [language],

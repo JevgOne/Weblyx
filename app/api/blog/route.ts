@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
       publishedAt: post.publishedAt?.toISOString(),
+      scheduledDate: post.scheduledDate?.toISOString(),
       views: post.views,
       metaTitle: post.metaTitle,
       metaDescription: post.metaDescription,

@@ -34,6 +34,8 @@ interface BlogPost {
   category: string;
   tags: string[];
   imageUrl?: string;
+  /** Set while the post waits to go live on its own. */
+  scheduledDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,8 +60,13 @@ export default function BlogPage() {
             createdAt: new Date(post.createdAt),
             updatedAt: new Date(post.updatedAt),
             publishedAt: post.publishedAt ? new Date(post.publishedAt) : undefined,
+            scheduledDate: post.scheduledDate ? new Date(post.scheduledDate) : undefined,
           }));
-          setPosts(postsWithDates);
+          // What goes out next first, in publishing order; the rest as before.
+          const scheduled = postsWithDates
+            .filter((p: BlogPost) => !p.published && p.scheduledDate)
+            .sort((a: BlogPost, b: BlogPost) => a.scheduledDate!.getTime() - b.scheduledDate!.getTime());
+          setPosts([...scheduled, ...postsWithDates.filter((p: BlogPost) => !scheduled.includes(p))]);
         } else {
           console.error("Error fetching blog posts:", result.error);
           setPosts([]);
@@ -191,6 +198,18 @@ export default function BlogPage() {
                           <Badge variant="default" className="bg-primary">
                             <Eye className="h-3 w-3 mr-1" />
                             Publikováno
+                          </Badge>
+                        ) : post.scheduledDate ? (
+                          <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                            Naplánováno ·{" "}
+                            {post.scheduledDate.toLocaleString("cs-CZ", {
+                              timeZone: "Europe/Prague",
+                              day: "numeric",
+                              month: "numeric",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </Badge>
                         ) : (
                           <Badge variant="secondary">
