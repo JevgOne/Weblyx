@@ -1,4 +1,5 @@
 import Script from 'next/script';
+import { LoadOnInteraction } from './LoadOnInteraction';
 
 // Google Ads conversion tag ID
 const GOOGLE_ADS_ID = 'AW-8291837393';
@@ -28,10 +29,9 @@ export function GoogleAnalytics() {
         `}
       </Script>
 
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
+      {/* The library itself waits for the first interaction; gtag() calls
+          queue in dataLayer until then. See LoadOnInteraction. */}
+      <LoadOnInteraction srcs={[`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`]} />
       <Script id="google-analytics" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];

@@ -3,6 +3,9 @@
 import { useEffect } from 'react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
+import { LoadOnInteraction } from './LoadOnInteraction';
+
+const FB_EVENTS_SRC = 'https://connect.facebook.net/en_US/fbevents.js';
 
 /**
  * The ID is interpolated into an inline <Script>, so anything but digits can
@@ -68,20 +71,20 @@ export function FacebookPixel() {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            !function(f,b,e,v,n,t,s)
+            !function(f,n)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
             if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
+            n.queue=[]}(window);
             fbq('consent', 'revoke');
             fbq('init', '${FB_PIXEL_ID}');
             fbq('track', 'PageView');
           `,
         }}
       />
+      {/* The stub above queues every fbq() call; the library that replays
+          them waits for the first interaction. See LoadOnInteraction. */}
+      <LoadOnInteraction srcs={[FB_EVENTS_SRC]} />
     </>
   );
 }
