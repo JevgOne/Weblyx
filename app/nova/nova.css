@@ -56,6 +56,19 @@
   animation: wbxup 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
+/* The headline slides but never fades. Starting at opacity 0 kept it out of
+   the first paint, so on mobile Google measured the late cookie banner as the
+   page's main content: FCP 1.2 s, LCP 7.2 s, and a "PageSpeed 90+" promise
+   scoring in the 60s and 70s on our own homepage. */
+@keyframes wbxslide {
+  from { transform: translateY(20px); }
+  to { transform: none; }
+}
+
+.nova-h1.nova-up {
+  animation-name: wbxslide;
+}
+
 .nova-d1 { animation-delay: 0.05s; }
 .nova-d2 { animation-delay: 0.12s; }
 .nova-d3 { animation-delay: 0.22s; }

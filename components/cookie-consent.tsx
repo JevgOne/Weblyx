@@ -28,8 +28,9 @@ export function CookieConsent() {
     // Check if user has already consented
     const consent = Cookies.get("cookie-consent");
     if (!consent) {
-      // Delay showing popup for better UX
-      setTimeout(() => setIsVisible(true), 1000);
+      // No artificial delay: a banner that appears a second after hydration
+      // was the last big paint on mobile and became the measured LCP.
+      setIsVisible(true);
     } else {
       // Load saved preferences
       try {
