@@ -146,7 +146,7 @@ export default async function TvorbaWebuOstravaPage() {
     addressCountry: "CZ",
     streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
-    priceRange: "7990 Kč - 29900 Kč",
+    priceRange: "7990 Kč - 24900 Kč",
     locale: "cs",
   });
 
@@ -377,7 +377,7 @@ export default async function TvorbaWebuOstravaPage() {
                       "Next.js — 3× rychlejší než WordPress",
                       "Responzivní design pro všechna zařízení",
                       "Lokální SEO pro Ostravu a MSK",
-                      "PageSpeed 90+ garantováno (od 14 900 Kč)",
+                      "PageSpeed 90+ garantováno (od 9 990 Kč)",
                       "Bez měsíčních poplatků za hosting",
                       DEPOSIT_SHORT,
                       "Podpora po spuštění zdarma (1–3 měsíce podle balíčku)",

@@ -105,7 +105,7 @@ const FAQS = [
   {
     question: "Kolik stojí web pro restauraci?",
     answer:
-      "Webové stránky pro restauraci začínají od 7 990 Kč. V ceně je profesionální design, online jídelní lístek, kontaktní formulář, Google Mapy a SEO optimalizace. Rezervační systém je dostupný od 9 900 Kč.",
+      "Webové stránky pro restauraci začínají od 7 990 Kč. V ceně je profesionální design, online jídelní lístek, kontaktní formulář, Google Mapy a SEO optimalizace. Rezervační systém je dostupný od 3 990 Kč.",
   },
   {
     question: "Můžu si sám aktualizovat jídelní lístek?",

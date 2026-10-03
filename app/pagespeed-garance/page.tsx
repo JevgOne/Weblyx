@@ -13,7 +13,7 @@ const GARANCE_FAQ: Faq[] = [
   {
     question: "Co garance přesně slibuje?",
     answer:
-      "PageSpeed skóre 90 a víc, nebo vracíme peníze. Platí od balíčku Základní Web za 14 900 Kč.",
+      "PageSpeed skóre 90 a víc, nebo vracíme peníze. Platí od balíčku Základní Web za 9 990 Kč.",
   },
   {
     question: "Jak se skóre měří?",
@@ -23,7 +23,7 @@ const GARANCE_FAQ: Faq[] = [
   {
     question: "Proč garance neplatí u nejlevnějšího balíčku?",
     answer:
-      "U Landing Page za 7 990 Kč je rozsah tak malý, že se garance neuplatňuje — weby z něj přesto skóre 90+ běžně dosahují. Garantované je to od 14 900 Kč.",
+      "U Landing Page za 7 990 Kč je rozsah tak malý, že se garance neuplatňuje — weby z něj přesto skóre 90+ běžně dosahují. Garantované je to od 9 990 Kč.",
   },
   {
     question: "Co když skóre klesne později?",
@@ -90,7 +90,7 @@ export default function PageSpeedGuaranteePage() {
 
         <h3>3.1 Rozsah garance</h3>
         <ul>
-          <li>Garance se vztahuje na <strong>základní webové stránky</strong> (od balíčku Základní Web za 14 900 Kč)</li>
+          <li>Garance se vztahuje na <strong>základní webové stránky</strong> (od balíčku Základní Web za 9 990 Kč)</li>
           <li>Měří se <strong>domovská stránka</strong> ve stavu, v jakém byla předána klientovi</li>
           <li>Platí pro <strong>mobilní verzi</strong> webu (Mobile Performance Score)</li>
         </ul>

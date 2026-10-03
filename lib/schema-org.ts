@@ -180,7 +180,7 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
       addressCountry: 'CZ',
       streetAddress: 'Školská 660/3, Praha 1',
       postalCode: '110 00',
-      priceRange: '7990 Kč - 29900 Kč',
+      priceRange: '7990 Kč - 24900 Kč',
       openingHours: ['Mo-Fr 08:00-18:00'],
       areaServedName: 'Czech Republic',
     },

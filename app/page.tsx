@@ -117,7 +117,7 @@ export default async function HomePage() {
   // by place id, and the review markup lives on /recenze where the text of
   // every review is actually on the page.
   const localBusinessSchema = generateLocalBusinessSchema({
-    priceRange: "7990 Kč - 29900 Kč",
+    priceRange: "7990 Kč - 24900 Kč",
     openingHours: ["Mo-Fr 08:00-18:00"],
   });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
@@ -130,7 +130,7 @@ export default async function HomePage() {
     areaServed: "Česká republika",
     offers: {
       priceCurrency: "CZK",
-      priceRange: "7990-29900",
+      priceRange: "7990-24900",
     },
   });
 

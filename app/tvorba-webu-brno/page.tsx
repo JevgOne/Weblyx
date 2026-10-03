@@ -145,7 +145,7 @@ export default async function TvorbaWebuBrnoPage() {
     addressCountry: "CZ",
     streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
-    priceRange: "7990 Kč - 29900 Kč",
+    priceRange: "7990 Kč - 24900 Kč",
     locale: "cs",
   });
 
@@ -372,7 +372,7 @@ export default async function TvorbaWebuBrnoPage() {
                       "Moderní Next.js technologie",
                       "Responzivní design (mobil, tablet, desktop)",
                       "SEO optimalizace pro lokální vyhledávání",
-                      "PageSpeed 90+ garantováno (od 14 900 Kč)",
+                      "PageSpeed 90+ garantováno (od 9 990 Kč)",
                       "SSL certifikát zdarma",
                       "Podpora po spuštění zdarma (1–3 měsíce podle balíčku)",
                     ].map((feature) => (

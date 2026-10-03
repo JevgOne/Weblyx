@@ -215,6 +215,10 @@ export function NovaPriceConfigurator({ pricing }: { pricing: PricingData }) {
             <p className="mt-2.5 text-sm font-medium" style={{ color: "var(--n-text-dim)" }}>
               jednorázově · {addonCountLabel(config.addons.length)}
             </p>
+            {/* Competitors quote prices before VAT; ours are what the client pays. */}
+            <p className="mt-1 text-sm font-medium" style={{ color: "var(--n-text-dim)" }}>
+              konečná cena · nejsme plátci DPH
+            </p>
 
             <dl>
               <div

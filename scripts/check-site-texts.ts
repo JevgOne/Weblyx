@@ -111,8 +111,10 @@ const RULES: Rule[] = [
   {
     name: 'retired price',
     ourClaimOnly: true,
-    forbidden: /\b(8 000|9 990|10 000|24 990|25 000|85 000|49 990|89 990|14 990|12 990|16 990|54 900)\s*Kč/,
-    why: 'balíčky stojí 7 990 / 14 900 / 29 900 Kč',
+    // 14 900 / 29 900 were the packages until October 2026, 24 000 the yearly
+    // maintenance, 9 900 the booking add-on (as ours; competitors quote it too).
+    forbidden: /\b(8 000|10 000|24 990|25 000|85 000|49 990|89 990|14 990|12 990|16 990|54 900|14 900|29 900|24 000)\s*Kč/,
+    why: 'balíčky stojí 7 990 / 9 990 / 24 900 Kč, roční údržba 2 990 Kč',
     // WordPress hosting costs and the monthly SEO retainer are not our prices.
     except: /wordpress-alternativa|seo-optimalizace|geo-optimalizace/,
   },

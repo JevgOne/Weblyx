@@ -34,7 +34,7 @@ const TIERS = [
   },
   {
     name: "Základní Web",
-    price: "14 900 Kč",
+    price: "9 990 Kč",
     time: "5–7 pracovních dní",
     summary: "Web o několika podstránkách, který si sami plníte.",
     features: ["3–5 podstránek", "Moderní design", "Pokročilé SEO", "Blog s CMS editorem", "Napojení na sociální sítě", "2 měsíce podpory", "Garance PageSpeed 90+"],
@@ -42,7 +42,7 @@ const TIERS = [
   },
   {
     name: "Standardní Web",
-    price: "29 900 Kč",
+    price: "24 900 Kč",
     time: "7–10 pracovních dní",
     summary: "Plnohodnotný firemní web se správou obsahu.",
     features: ["10+ podstránek", "Premium design na míru", "Full CMS", "Rezervační systém", "Newsletter", "3 měsíce podpory", "Drobné úpravy 2 h zdarma"],
@@ -56,7 +56,7 @@ const TIERS = [
  * cheaper on the day you sign and stops looking cheaper somewhere in year two.
  */
 const COMPARISON = [
-  { who: "Weblyx", price: "7 990 – 29 900 Kč jednorázově", monthly: "0 Kč", time: "3–10 dní", own: "Web i doména jsou vaše" },
+  { who: "Weblyx", price: "7 990 – 24 900 Kč jednorázově", monthly: "0 Kč", time: "3–10 dní", own: "Web i doména jsou vaše" },
   { who: "Zakázková agentura", price: "od 25 000 Kč, běžně 50–400 tis.", monthly: "500 – 4 000 Kč", time: "3 týdny – 4 měsíce", own: "Podle smlouvy" },
   { who: "Stavebnice (Webnode, Wix)", price: "0 Kč na začátku", monthly: "250 – 550 Kč", time: "Podle vás", own: "Web žije jen s předplatným" },
 ];
@@ -65,7 +65,7 @@ const CENIK_FAQ: Faq[] = [
   {
     question: "Kolik stojí web v roce 2026?",
     answer:
-      "Jednostránkový web od 7 990 Kč, firemní web o třech až pěti podstránkách od 14 900 Kč a rozsáhlejší web s plnou správou obsahu od 29 900 Kč. Cena je jednorázová a pevná pro dohodnutý rozsah.",
+      "Jednostránkový web od 7 990 Kč, firemní web o třech až pěti podstránkách od 9 990 Kč a rozsáhlejší web s plnou správou obsahu od 24 900 Kč. Cena je jednorázová a pevná pro dohodnutý rozsah.",
   },
   {
     question: "Jsou v ceně nějaké měsíční poplatky?",
@@ -91,8 +91,8 @@ const CENIK_FAQ: Faq[] = [
 
 const OFFER_TIERS = [
   { name: "Landing Page", price: 7990, deliveryDays: "3–5", description: "Jednostránkový web o 3–5 sekcích s kontaktním formulářem a základním SEO." },
-  { name: "Základní Web", price: 14900, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
-  { name: "Standardní Web", price: 29900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
+  { name: "Základní Web", price: 9990, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
+  { name: "Standardní Web", price: 24900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
 ];
 
 export default function CenikWebuPage() {
@@ -191,8 +191,9 @@ export default function CenikWebuPage() {
             </div>
             <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground">
               Ceny konkurence pocházejí z veřejných ceníků pražských dodavatelů, stav
-              září 2026. Nejsme nejlevnější: za 9 900 Kč bez DPH dostanete jinde web
-              do 48 hodin, ale na připravené oborové šabloně.
+              září 2026. Nejrychlejší nejsme: za 9 900 Kč bez DPH (11 979 Kč s DPH) dostanete jinde
+              web do 48 hodin, ale na připravené oborové šabloně. Naše ceny jsou konečné —
+              nejsme plátci DPH.
             </p>
           </div>
         </section>

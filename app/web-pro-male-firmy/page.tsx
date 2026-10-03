@@ -53,7 +53,7 @@ const FIRMY_FAQ: Faq[] = [
   {
     question: "Kolik stojí web pro malou firmu?",
     answer:
-      "Od 7 990 Kč za jednostránkovou prezentaci, 14 900 Kč za web o třech až pěti podstránkách s blogem a 29 900 Kč za rozsáhlejší web s plnou správou obsahu. Jednorázově, bez měsíčních poplatků.",
+      "Od 7 990 Kč za jednostránkovou prezentaci, 9 990 Kč za web o třech až pěti podstránkách s blogem a 24 900 Kč za rozsáhlejší web s plnou správou obsahu. Jednorázově, bez měsíčních poplatků.",
   },
   {
     question: "Jak dlouho to trvá a kdy se platí?",
@@ -69,8 +69,8 @@ const FIRMY_FAQ: Faq[] = [
 
 const OFFER_TIERS = [
   { name: "Landing Page", price: 7990, deliveryDays: "3–5", description: "Jednostránkový web o 3–5 sekcích s kontaktním formulářem a základním SEO." },
-  { name: "Základní Web", price: 14900, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
-  { name: "Standardní Web", price: 29900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
+  { name: "Základní Web", price: 9990, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
+  { name: "Standardní Web", price: 24900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
 ];
 
 export default async function WebProMaleFirmyPage() {

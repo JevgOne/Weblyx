@@ -25,7 +25,7 @@ import { PricingTier } from "@/types/cms";
 /**
  * Price is edited directly. It used to be derived as `hours x rate`, which
  * forced every package onto a multiple of the rate and could not express the
- * live prices (7 990 / 14 900 / 29 900). Hours stay as the public statement of
+ * live prices (7 990 / 9 990 / 24 900). Hours stay as the public statement of
  * scope; the rate is no longer shown to visitors, so nothing has to divide.
  */
 type TierForm = Omit<PricingTier, "id" | "createdAt" | "updatedAt">;
@@ -454,7 +454,7 @@ export default function PricingManagementPage() {
                     type="number"
                     value={formData.price}
                     onChange={handleInputChange}
-                    placeholder="14900"
+                    placeholder="9990"
                     min="1"
                     step="10"
                     required

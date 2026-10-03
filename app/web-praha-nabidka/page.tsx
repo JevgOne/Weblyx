@@ -44,7 +44,7 @@ const PRAHA_FAQ: Faq[] = [
   {
     question: "Kolik stojí tvorba webu v Praze?",
     answer:
-      "U nás od 7 990 Kč za jednostránkovou vizitku, 14 900 Kč za web o třech až pěti podstránkách a 29 900 Kč za web o deseti a více podstránkách s plnou správou obsahu. Cena je pevná pro dohodnutý rozsah. Na pražském trhu se běžné firemní weby pohybují od 9 900 Kč u nejlevnějších dodavatelů po 120 000 až 400 000 Kč u velkých studií.",
+      "U nás od 7 990 Kč za jednostránkovou vizitku, 9 990 Kč za web o třech až pěti podstránkách a 24 900 Kč za web o deseti a více podstránkách s plnou správou obsahu. Cena je pevná pro dohodnutý rozsah. Na pražském trhu se běžné firemní weby pohybují od 9 900 Kč u nejlevnějších dodavatelů po 120 000 až 400 000 Kč u velkých studií.",
   },
   {
     question: "Jak dlouho trvá vytvoření webu?",
@@ -70,8 +70,8 @@ const PRAHA_FAQ: Faq[] = [
 
 const OFFER_TIERS = [
   { name: "Landing Page", price: 7990, deliveryDays: "3–5", description: "Jednostránkový web o 3–5 sekcích s kontaktním formulářem a základním SEO." },
-  { name: "Základní Web", price: 14900, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
-  { name: "Standardní Web", price: 29900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
+  { name: "Základní Web", price: 9990, deliveryDays: "5–7", description: "Web o 3–5 podstránkách s blogem, CMS editorem a garancí PageSpeed 90+." },
+  { name: "Standardní Web", price: 24900, deliveryDays: "7–10", description: "Web o 10+ podstránkách s plnou správou obsahu a rezervačním systémem." },
 ];
 
 export default async function WebPrahaNabidkaPage() {
@@ -162,8 +162,8 @@ export default async function WebPrahaNabidkaPage() {
             <div className="grid gap-5 md:grid-cols-3">
               {[
                 { name: "Landing Page", price: "7 990 Kč", time: "3–5 dní", what: "Jedna stránka, 3–5 sekcí" },
-                { name: "Základní Web", price: "14 900 Kč", time: "5–7 dní", what: "3–5 podstránek, blog s editorem" },
-                { name: "Standardní Web", price: "29 900 Kč", time: "7–10 dní", what: "10+ podstránek, plné CMS" },
+                { name: "Základní Web", price: "9 990 Kč", time: "5–7 dní", what: "3–5 podstránek, blog s editorem" },
+                { name: "Standardní Web", price: "24 900 Kč", time: "7–10 dní", what: "10+ podstránek, plné CMS" },
               ].map((p) => (
                 <Card key={p.name} className="border-border/60">
                   <CardContent className="space-y-1.5 p-6">

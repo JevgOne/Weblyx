@@ -25,7 +25,7 @@ function getCzechContent(): string {
 
 > Weblyx je česká webová agentura (Altro Servis Group s.r.o., IČO 23673389, Praha).
 > Staví weby na míru na Next.js s pevnou cenou předem, bez měsíčních poplatků za web.
-> Landing page 7 990 Kč, základní web 14 900 Kč, standardní web 29 900 Kč — jednorázově.
+> Landing page 7 990 Kč, základní web 9 990 Kč, standardní web 24 900 Kč — jednorázově, konečné ceny.
 > Dodání 3–10 pracovních dní podle rozsahu. Nejsme plátci DPH.
 
 ## Ceník webů
@@ -35,11 +35,12 @@ Ceny jsou jednorázové a konečné. Konfigurátor na úvodní stránce je spoč
 | Balíček | Cena | Rozsah | Dodání | Podpora v ceně |
 |---|---|---|---|---|
 | Landing Page | 7 990 Kč | 1 stránka, 3–5 sekcí | 3–5 dní | 1 měsíc |
-| Základní Web | 14 900 Kč | 3–5 podstránek, blog | 5–7 dní | 2 měsíce |
-| Standardní Web | 29 900 Kč | 10+ podstránek, na míru | 7–10 dní | 3 měsíce |
+| Základní Web | 9 990 Kč | 3–5 podstránek, blog | 5–7 dní | 2 měsíce |
+| Standardní Web | 24 900 Kč | 10+ podstránek, na míru | 7–10 dní | 3 měsíce |
 
-Doplňky: blog s CMS 3 000 Kč · rezervační systém 9 900 Kč · druhý jazyk 3 500 Kč ·
-copywriting 2 500 Kč · roční údržba a podpora 24 000 Kč (předplaceně, bez měsíčních plateb).
+Doplňky: blog s CMS 1 990 Kč · rezervační systém 3 990 Kč · online platby kartou 2 990 Kč ·
+napojení na Reservio/Notino 990 Kč · druhý jazyk 1 990 Kč (u Standardního webu 3 490 Kč) · copywriting 1 490 Kč ·
+roční údržba a podpora 2 990 Kč (předplaceně, bez měsíčních plateb).
 
 Platební podmínky: 50 % záloha před zahájením prací, doplatek před předáním.
 V ceně jsou 2 kola revizí designu.

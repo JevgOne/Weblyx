@@ -94,7 +94,7 @@ const PORTFOLIO_FAQ: Faq[] = [
   {
     question: "Kolik takový web stojí?",
     answer:
-      "Podle rozsahu 7 990 až 29 900 Kč jednorázově, bez měsíčních poplatků. E-shop na míru orientačně od 34 900 Kč. Po schválení nabídky se hradí záloha 50 %.",
+      "Podle rozsahu 7 990 až 24 900 Kč jednorázově, bez měsíčních poplatků. E-shop na míru orientačně od 34 900 Kč. Po schválení nabídky se hradí záloha 50 %.",
   },
   {
     question: "Jak dlouho trvala realizace?",

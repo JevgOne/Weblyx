@@ -133,8 +133,8 @@ function generateGeneralEmail(analysis: any): string {
     offer += `• Plná SEO optimalizace (meta tagy, schema.org)\n`;
     offer += `• Responzivní design pro všechna zařízení\n`;
     offer += `• Google Analytics & sledování konverzí\n\n`;
-    offer += `💰 Cena: Od 15 000 Kč\n`;
-    offer += `⏱️ Termín: 7-10 pracovních dní\n`;
+    offer += `💰 Cena: Od 9 990 Kč\n`;
+    offer += `⏱️ Termín: 5-7 pracovních dní\n`;
   } else if (avgScore < 75) {
     offer += `Váš web má potenciál! Nabízíme:\n\n`;
     offer += `⚡ OPTIMALIZACE & VYLEPŠENÍ\n`;
@@ -152,7 +152,7 @@ function generateGeneralEmail(analysis: any): string {
     offer += `• Doplnění chybějících SEO prvků\n`;
     offer += `• Pravidelná údržba a aktualizace\n`;
     offer += `• Technická podpora\n\n`;
-    offer += `💰 Cena: Od 5 000 Kč jednorázově nebo 2 000 Kč/měsíc údržba\n`;
+    offer += `💰 Cena: Roční údržba 2 990 Kč, žádné měsíční poplatky\n`;
     offer += `⏱️ Termín: 1-3 pracovní dny\n`;
   }
 
@@ -205,8 +205,8 @@ function generateSlowWebEmail(analysis: any): string {
   email += `✓ Až 300% vyšší konverze\n`;
   email += `✓ Moderní design zdarma\n\n`;
 
-  email += `💰 Cena: Od 15 000 Kč (redesign + optimalizace)\n`;
-  email += `⏱️ Termín: 7-10 pracovních dní\n`;
+  email += `💰 Cena: Od 9 990 Kč (redesign + optimalizace)\n`;
+  email += `⏱️ Termín: 5-7 pracovních dní\n`;
   email += `🎁 BONUS: První měsíc údržby ZDARMA\n\n`;
 
   email += `📊 SROVNÁNÍ\n`;
@@ -242,7 +242,7 @@ function generateBadSEOEmail(analysis: any): string {
 
   email += `💡 ŘEŠENÍ: PROFESIONÁLNÍ SEO\n`;
   email += `─────────────────────\n`;
-  email += `Kompletní SEO optimalizace za 8 000 Kč:\n\n`;
+  email += `Kompletní SEO optimalizace od 7 990 Kč:\n\n`;
   email += `✓ Keyword research pro vaše odvětví\n`;
   email += `✓ Optimalizace všech meta tagů\n`;
   email += `✓ Schema.org strukturovaná data\n`;
@@ -296,7 +296,7 @@ function generateMobileIssuesEmail(analysis: any): string {
   email += `✓ Přístupnost pro všechna zařízení\n`;
   email += `✓ Google Mobile-Friendly test: PASS\n\n`;
 
-  email += `💰 Cena: Od 12 000 Kč\n`;
+  email += `💰 Cena: Od 9 990 Kč\n`;
   email += `⏱️ Termín: 5-7 pracovních dní\n`;
   email += `🎁 BONUS: Mobilní app vzhled zdarma\n\n`;
 
@@ -332,7 +332,7 @@ function generateOutdatedDesignEmail(analysis: any): string {
 
   email += `💡 ŘEŠENÍ: MODERNÍ REDESIGN 2025\n`;
   email += `─────────────────────\n`;
-  email += `Kompletní redesign za 15 000 Kč:\n\n`;
+  email += `Kompletní redesign od 9 990 Kč:\n\n`;
   email += `✓ Moderní minimalistický design\n`;
   email += `✓ Profesionální UI/UX\n`;
   email += `✓ Trendy 2025 (glassmorphism, gradients)\n`;
@@ -341,8 +341,8 @@ function generateOutdatedDesignEmail(analysis: any): string {
   email += `✓ Brand identity refresh\n`;
   email += `✓ Next.js místo WordPressu\n\n`;
 
-  email += `💰 Cena: Od 15 000 Kč\n`;
-  email += `⏱️ Termín: 7-10 pracovních dní\n`;
+  email += `💰 Cena: Od 9 990 Kč\n`;
+  email += `⏱️ Termín: 5-7 pracovních dní\n`;
   email += `🎁 AKCE: Logo refresh ZDARMA (v ceně)\n\n`;
 
   email += `📊 VÝSLEDKY NAŠICH KLIENTŮ\n`;

@@ -22,7 +22,7 @@ const FALLBACK = [
   {
     question: "Kolik stojí webové stránky?",
     answer:
-      "Landing page stojí 7 990 Kč, základní web s 3–5 podstránkami a blogem 14 900 Kč a standardní web s 10+ podstránkami 29 900 Kč — vždy jednorázově, bez měsíčních poplatků za web.",
+      "Landing page stojí 7 990 Kč, základní web s 3–5 podstránkami a blogem 9 990 Kč a standardní web s 10+ podstránkami 24 900 Kč — vždy jednorázově, bez měsíčních poplatků za web. Ceny jsou konečné, nejsme plátci DPH.",
   },
   {
     question: "Jak dlouho trvá vytvoření webu?",
@@ -37,7 +37,7 @@ const FALLBACK = [
   {
     question: "Nabízíte následnou podporu?",
     answer:
-      "Podpora po spuštění je v ceně každého balíčku: 1 měsíc u landing page, 2 měsíce u základního webu a 3 měsíce u standardního. Poté si můžete pořídit roční údržbu za 24 000 Kč.",
+      "Podpora po spuštění je v ceně každého balíčku: 1 měsíc u landing page, 2 měsíce u základního webu a 3 měsíce u standardního. Poté si můžete pořídit roční údržbu za 2 990 Kč.",
   },
 ];
 

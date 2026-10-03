@@ -106,7 +106,7 @@ const FAQS = [
   {
     question: "Kolik stojí tvorba webových stránek v Praze?",
     answer:
-      "Na pražském trhu zaplatíte za firemní web od 9 900 Kč u nejlevnějších dodavatelů po 120 000 až 400 000 Kč u velkých studií. U nás začínáte na 7 990 Kč za jednostránkovou vizitku, 14 900 Kč za web o 3–5 podstránkách s blogem a 29 900 Kč za web o 10+ podstránkách s plným CMS. Cenu znáte před podpisem a po spuštění neplatíte žádný měsíční paušál.",
+      "Na pražském trhu zaplatíte za firemní web od 9 900 Kč u nejlevnějších dodavatelů po 120 000 až 400 000 Kč u velkých studií. U nás začínáte na 7 990 Kč za jednostránkovou vizitku, 9 990 Kč za web o 3–5 podstránkách s blogem a 24 900 Kč za web o 10+ podstránkách s plným CMS. Cenu znáte před podpisem a po spuštění neplatíte žádný měsíční paušál.",
   },
   {
     question: "Jak dlouho trvá vytvoření webu?",
@@ -116,7 +116,7 @@ const FAQS = [
   {
     question: "Co přesně dostanu za 7 990 Kč?",
     answer:
-      "Jednu stránku o 3–5 sekcích — vizitku, nic víc. Je v tom responzivní design, kontaktní formulář, základní SEO, napojení na Google Analytics a měsíc podpory po spuštění. Není to šablona s vyměněným logem: stavíme na Next.js a stránka se staví pro vás. Pokud potřebujete podstránky, blog nebo CMS, začíná to na 14 900 Kč — tu hranici vám řekneme dopředu, ne až u faktury.",
+      "Jednu stránku o 3–5 sekcích — vizitku, nic víc. Je v tom responzivní design, kontaktní formulář, základní SEO, napojení na Google Analytics a měsíc podpory po spuštění. Není to šablona s vyměněným logem: stavíme na Next.js a stránka se staví pro vás. Pokud potřebujete podstránky, blog nebo CMS, začíná to na 9 990 Kč — tu hranici vám řekneme dopředu, ne až u faktury.",
   },
   {
     question: "Můžeme se sejít osobně v Praze?",
@@ -175,7 +175,7 @@ const PACKAGES = [
   },
   {
     name: "Základní Web",
-    price: "14 900 Kč",
+    price: "9 990 Kč",
     delivery: "5–7 pracovních dní",
     summary: "Web o několika podstránkách, který si sami plníte.",
     features: [
@@ -190,7 +190,7 @@ const PACKAGES = [
   },
   {
     name: "Standardní Web",
-    price: "29 900 Kč",
+    price: "24 900 Kč",
     delivery: "7–10 pracovních dní",
     summary: "Plnohodnotný firemní web se správou obsahu.",
     features: [
@@ -214,7 +214,7 @@ const PACKAGES = [
 const MARKET = [
   { who: "weby-praha.cz", what: "Web do 48 h na oborové šabloně", price: "9 900 Kč bez DPH", time: "48 hodin" },
   { who: "dejtonaweb.cz", what: "Základní web", price: "od 9 900 Kč", time: "2–3 týdny" },
-  { who: "Weblyx", what: "Landing Page / Základní / Standardní", price: "7 990 – 29 900 Kč", time: "3–10 dní", us: true },
+  { who: "Weblyx", what: "Landing Page / Základní / Standardní", price: "7 990 – 24 900 Kč", time: "3–10 dní", us: true },
   { who: "create201.cz", what: "Firemní web, cca 5 stránek", price: "od 25 000 Kč", time: "3–6 týdnů" },
   { who: "wpdistro.cz", what: "Firemní web", price: "od 49 000 Kč", time: "5–10 dní" },
   { who: "pixelfield.cz", what: "Firemní web", price: "120 000 – 400 000 Kč", time: "4–6 týdnů" },
@@ -236,7 +236,7 @@ const RED_FLAGS = [
   },
   {
     title: "O údržbě se mluví až po podpisu",
-    body: "Roční údržba se běžně pohybuje kolem 15 až 25 % ceny vývoje. Kdo ji v nabídce nezmíní, počítá s tím, že ji doplatíte později. Naše weby měsíční paušál nemají; roční údržba je volitelná a stojí 24 000 Kč.",
+    body: "Roční údržba se běžně pohybuje kolem 15 až 25 % ceny vývoje. Kdo ji v nabídce nezmíní, počítá s tím, že ji doplatíte později. Naše weby měsíční paušál nemají; roční údržba je volitelná a stojí 2 990 Kč.",
   },
   {
     title: "Padne věta „to neřešte“ nebo „SEO doděláme potom“",
@@ -283,7 +283,7 @@ export default async function TvorbaWebuPrahaPage() {
     addressCountry: "CZ",
     streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
-    priceRange: "7990 Kč - 29900 Kč",
+    priceRange: "7990 Kč - 24900 Kč",
     locale: "cs",
   });
 
@@ -508,7 +508,7 @@ export default async function TvorbaWebuPrahaPage() {
                     {[
                       "Responzivní design pro všechna zařízení",
                       "SEO optimalizace v ceně",
-                      "PageSpeed 90+ garantováno (od 14 900 Kč)",
+                      "PageSpeed 90+ garantováno (od 9 990 Kč)",
                       "Dodání za 3–10 pracovních dní podle balíčku",
                       "30 dní podpora po spuštění zdarma",
                       "Bez měsíčních poplatků za hosting",
@@ -533,7 +533,7 @@ export default async function TvorbaWebuPrahaPage() {
               <Badge variant="outline">Celý ceník, ne jen „od“</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
                 Co dostanete za{" "}
-                <span className="text-primary">7 990, 14 900 a 29 900 Kč</span>
+                <span className="text-primary">7 990, 9 990 a 24 900 Kč</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Tři balíčky, pevná cena za vyjmenovaný rozsah. Žádný měsíční paušál
@@ -618,9 +618,10 @@ export default async function TvorbaWebuPrahaPage() {
             </div>
             <p className="text-muted-foreground mt-8 leading-relaxed max-w-3xl">
               Z té tabulky plyne jedna věc, kterou je fér říct rovnou:{" "}
-              <strong>nejsme nejlevnější ani nejrychlejší</strong>. Za 9 900 Kč bez DPH
+              <strong>nejrychlejší nejsme</strong>. Za 9 900 Kč bez DPH (11 979 Kč s DPH)
               dostanete jinde web do osmačtyřiceti hodin — ale na připravené oborové
-              šabloně. Rozdíl mezi tím a stavbou na míru je přesně ten, kvůli kterému
+              šabloně. U nás stojí web o 3–5 podstránkách 9 990 Kč a je to cena konečná:
+              nejsme plátci DPH. Rozdíl mezi tím a stavbou na míru je přesně ten, kvůli kterému
               tahle stránka existuje. Pokud vám šablona stačí, je to rozumná volba a
               nemá smysl platit víc.
             </p>

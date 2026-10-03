@@ -97,7 +97,7 @@ function getIdealForText(title: string, fallback: string): string {
  *
  * They used to be read out of the `services` table, which carried its own copy
  * of the three packages — and that copy had gone stale: 9 990 and 24 990 Kc
- * against the 14 900 and 29 900 the configurator actually bills. Worse, this
+ * against the 14 900 and 29 900 the configurator billed at the time. Worse, this
  * page turns each one into a `Service` + `Offer` JSON-LD block, so the wrong
  * figure was being handed to search engines as structured data. One table, one
  * price.
@@ -179,7 +179,7 @@ const ADDITIONAL_SERVICES = [
     icon: HeadphonesIcon,
     title: "Údržba a podpora",
     slug: "maintenance",
-    price: "od 24 000 Kč/rok",
+    price: "2 990 Kč/rok",
     description:
       "Pravidelné aktualizace, zálohy a technická podpora. Váš web bude vždy funkční a bezpečný.",
     includes: [
@@ -196,7 +196,7 @@ const SLUZBY_FAQ: Faq[] = [
   {
     question: "Kolik stojí tvorba webových stránek?",
     answer:
-      "Jednostránkový web 7 990 Kč, web o 3–5 podstránkách s blogem 14 900 Kč a web o 10+ podstránkách s plnou správou obsahu 29 900 Kč. Cena je jednorázová a pevná pro dohodnutý rozsah, bez měsíčních poplatků za hosting. E-shop na míru vychází orientačně na 34 900 Kč.",
+      "Jednostránkový web 7 990 Kč, web o 3–5 podstránkách s blogem 9 990 Kč a web o 10+ podstránkách s plnou správou obsahu 24 900 Kč. Cena je jednorázová a pevná pro dohodnutý rozsah, bez měsíčních poplatků za hosting. E-shop na míru vychází orientačně na 34 900 Kč.",
   },
   {
     question: "Jak dlouho trvá, než bude web hotový?",
@@ -221,7 +221,7 @@ const SLUZBY_FAQ: Faq[] = [
   {
     question: "Spravujete web i po spuštění?",
     answer:
-      "Podpora je v ceně 1 až 3 měsíce podle balíčku. Dál nabízíme roční údržbu za 24 000 Kč — aktualizace, zálohy, drobné úpravy obsahu a technická podpora. Povinná není.",
+      "Podpora je v ceně 1 až 3 měsíce podle balíčku. Dál nabízíme roční údržbu za 2 990 Kč — aktualizace, zálohy, technická podpora a až 6 hodin drobných úprav obsahu ročně. Povinná není.",
   },
 ];
 
