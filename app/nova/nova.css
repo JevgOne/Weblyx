@@ -76,6 +76,24 @@
 .nova-d5 { animation-delay: 0.42s; }
 .nova-d6 { animation-delay: 0.52s; }
 
+/* --- Review band ------------------------------------------------------------
+   Cards are a fixed width so the band shows "there is more" at every size: a
+   card and a bit on a phone, three and a bit on desktop. */
+.nova-review-card {
+  /* Narrow enough on a phone that the next card peeks in at the edge. */
+  width: min(calc(100vw - 100px), 360px);
+}
+
+.nova-review-track {
+  scrollbar-width: none;
+  scroll-padding-left: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nova-review-track::-webkit-scrollbar {
+  display: none;
+}
+
 /* --- Client band ------------------------------------------------------------
    Two identical groups side by side; shifting the track by half its width
    lands the second group exactly where the first started. Edges fade out. */

@@ -1,5 +1,6 @@
 import { getPublishedReviews } from "@/lib/turso/reviews";
 import { safeRead } from "@/lib/safe-read";
+import { ReviewsSlider } from "./reviews-slider";
 
 /**
  * Real reviews, read from the CMS.
@@ -46,39 +47,27 @@ export async function NovaReviews() {
 
   return (
     <section className="nova-container nova-section">
-      <div className="mb-16 text-center">
+      <div className="mb-12 text-center">
         <p className="text-[44px] font-extrabold" style={{ letterSpacing: "-.04em" }}>
-          {formatRating(average)} <span style={{ color: "var(--n-brand-dark)" }}>★</span>
+          {formatRating(average).replace(".", ",")} <span style={{ color: "#f5b301" }}>★</span>
         </p>
         <p className="mt-2.5 text-[17px] font-semibold" style={{ color: "var(--n-text-muted)" }}>
           {sourceLabel} · {reviewCountLabel(reviews.length)}
         </p>
       </div>
 
-      {/* Columns, not a grid: the reviews run from one line to a long
-          paragraph, and a grid row is as tall as its longest card. */}
-      <div className="columns-1 gap-6 md:columns-2 lg:columns-3">
-        {shown.map((review) => (
-          <figure
-            key={review.id}
-            className="mb-6 break-inside-avoid rounded-[18px] border p-[34px]"
-            style={{ background: "var(--n-bg-alt)", borderColor: "var(--n-border-soft)" }}
-          >
-            <blockquote className="text-base font-medium" style={{ lineHeight: 1.6 }}>
-              „{review.text}“
-            </blockquote>
-            <figcaption className="mt-6">
-              <span className="block text-[15px] font-bold">{review.authorName}</span>
-              <span
-                className="block text-[13px] font-medium"
-                style={{ color: "var(--n-text-muted)" }}
-              >
-                {review.authorRole || (isGoogle(review.source) ? "Google recenze" : "Klient")}
-              </span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      <ReviewsSlider
+        reviews={shown.map((review) => ({
+          id: review.id,
+          authorName: review.authorName,
+          authorImage: review.authorImage || null,
+          rating: review.rating,
+          text: review.text,
+          date: new Intl.DateTimeFormat("cs-CZ", { month: "long", year: "numeric" }).format(review.date),
+          fromGoogle: isGoogle(review.source),
+          sourceUrl: review.sourceUrl || null,
+        }))}
+      />
     </section>
   );
 }
