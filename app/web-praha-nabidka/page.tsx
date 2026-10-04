@@ -88,6 +88,7 @@ export default async function WebPrahaNabidkaPage() {
           addressLocality: "Praha",
           streetAddress: "Školská 660/3, Praha 1",
           postalCode: "110 00",
+          areaServedCities: ["Praha"],
           locale: "cs",
         })}
       />

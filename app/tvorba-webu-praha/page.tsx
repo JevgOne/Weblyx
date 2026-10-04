@@ -284,6 +284,7 @@ export default async function TvorbaWebuPrahaPage() {
     streetAddress: "Školská 660/3, Praha 1",
     postalCode: "110 00",
     priceRange: "7990 Kč - 24900 Kč",
+    areaServedCities: ["Praha"],
     locale: "cs",
   });
 

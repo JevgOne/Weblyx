@@ -37,7 +37,7 @@ export function NovaHero({
         </div>
 
         <h1 className="nova-h1 nova-up nova-d2 mt-6">
-          Profesionální web za týden — bez měsíčních poplatků
+          Tvorba webových stránek za týden — bez měsíčních poplatků
         </h1>
 
         <p

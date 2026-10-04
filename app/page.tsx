@@ -119,6 +119,7 @@ export default async function HomePage() {
   const localBusinessSchema = generateLocalBusinessSchema({
     priceRange: "7990 Kč - 24900 Kč",
     openingHours: ["Mo-Fr 08:00-18:00"],
+    areaServedCities: ["Praha"],
   });
   const faqSchema = enabledFaqs.length > 0 ? generateFAQSchema(enabledFaqs) : null;
   const offersSchema = pricingTiers.length > 0 ? generateOffersSchema(pricingTiers) : null;

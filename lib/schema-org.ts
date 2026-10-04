@@ -158,6 +158,8 @@ export interface LocalBusinessData extends OrganizationData {
   openingHours?: string[];
   streetAddress?: string;
   postalCode?: string;
+  /** Cities a page is about (e.g. "Brno"); listed in areaServed next to the country. */
+  areaServedCities?: string[];
   aggregateRating?: {
     ratingValue: number;
     reviewCount: number;
@@ -224,8 +226,13 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
     // the company, not a second one at the same address — and the offers on
     // these pages point at this id as their seller.
     '@id': 'https://www.weblyx.cz/#organization',
-    name,
-    url,
+    // One entity, one name and one url. The city pages used to pass their own
+    // ("Weblyx – Tvorba webových stránek Brno", /tvorba-webu-brno), so the
+    // same @id described a different business on every page. What a page is
+    // about goes in areaServed; the page itself is the WebPage schema.
+    name: config.name,
+    url: config.url,
+    ...(url !== config.url && { mainEntityOfPage: url }),
     description,
     address: {
       '@type': 'PostalAddress',
@@ -276,10 +283,10 @@ export function generateLocalBusinessSchema(data?: LocalBusinessData) {
         closes,
       };
     }),
-    areaServed: {
-      '@type': 'Country',
-      name: config.areaServedName,
-    },
+    areaServed: [
+      ...(data?.areaServedCities ?? []).map((city) => ({ '@type': 'City', name: city })),
+      { '@type': 'Country', name: config.areaServedName },
+    ],
   };
 }
 
