@@ -75,7 +75,13 @@ function toRecord(row: any): AuditRecord {
 }
 
 /**
- * Records one audit and, for a first-time address, the lead behind it.
+ * Records one audit. It is not an enquiry and creates none.
+ *
+ * Audits used to open a lead for every new address, so each test run and
+ * every curious visitor landed in Poptávky next to people who had actually
+ * asked for a website. The audit list is where these belong; when the same
+ * address has a real enquiry, the audit is linked to it so the lead detail
+ * can show it.
  *
  * Never throws: the visitor asked for a report, not for our bookkeeping to
  * work. A failure here must not turn their audit into an error message.
@@ -94,52 +100,21 @@ export async function recordAudit(params: {
   ipAddress?: string | null;
 }): Promise<void> {
   try {
-    // One lead per address. Someone auditing three of their sites is one
-    // prospect, not three, and the audits list already shows every run.
     const existing = await turso.execute({
-      sql: 'SELECT id FROM leads WHERE email = ? LIMIT 1',
+      sql: "SELECT id FROM leads WHERE email = ? AND COALESCE(source, '') != 'audit' ORDER BY created_at DESC LIMIT 1",
       args: [params.email],
     });
-
-    let leadId = existing.rows[0] ? String((existing.rows[0] as any).id) : null;
-
-    if (!leadId) {
-      leadId = nanoid();
-      const host = (() => {
-        try {
-          return new URL(params.url).hostname.replace(/^www\./, '');
-        } catch {
-          return params.url;
-        }
-      })();
-
-      await turso.execute({
-        sql: `INSERT INTO leads (
-                id, name, email, company, project_type, business_description,
-                existing_website, status, source, created_at, updated_at
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, 'new', 'audit', unixepoch(), unixepoch())`,
-        args: [
-          leadId,
-          params.name?.trim() || host,
-          params.email,
-          host,
-          'audit',
-          params.score !== null && params.score !== undefined
-            ? `Spustil bezplatný audit webu ${params.url} — skóre ${params.score}/100.`
-            : `Spustil bezplatný audit webu ${params.url}.`,
-          params.url,
-        ],
-      });
-    }
+    const leadId = existing.rows[0] ? String((existing.rows[0] as any).id) : null;
 
     await turso.execute({
       sql: `INSERT INTO audits
-              (id, url, email, score, metrics, issue_count, lead_id, status, error, ip_address, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch())`,
+              (id, url, email, contact_name, score, metrics, issue_count, lead_id, status, error, ip_address, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch())`,
       args: [
         nanoid(),
         params.url,
         params.email,
+        params.name?.trim() || null,
         params.score ?? null,
         JSON.stringify(params.metrics ?? []),
         params.issueCount ?? null,
