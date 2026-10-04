@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NovaMobileMenu } from "./mobile-menu";
 
 /**
  * `hash` points at a section of the homepage; `href` is a page of its own.
@@ -35,6 +36,17 @@ export function NovaHeader({ anchorBase = "/" }: { anchorBase?: string } = {}) {
       }}
     >
       <div className="nova-container flex items-center justify-between gap-6 py-4">
+        <div className="flex items-center gap-2">
+        <NovaMobileMenu
+          items={NAV.map((item) => ({ label: item.label, href: item.href ?? `${anchorBase}${item.hash}` }))}
+          extra={[
+            { label: "Ceník webů", href: "/cenik-webu" },
+            { label: "Tvorba e-shopu", href: "/tvorba-eshopu" },
+            { label: "Recenze", href: "/recenze" },
+            { label: "Blog", href: "/blog" },
+            { label: "O nás", href: "/o-nas" },
+          ]}
+        />
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <span
             className="flex h-[30px] w-[30px] items-center justify-center rounded-lg text-[17px] font-extrabold text-white"
@@ -46,6 +58,7 @@ export function NovaHeader({ anchorBase = "/" }: { anchorBase?: string } = {}) {
             Weblyx
           </span>
         </Link>
+        </div>
 
         {/* Nav collapses below the 1080px breakpoint; the CTA always stays. */}
         <nav
