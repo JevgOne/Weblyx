@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getHomepagePortfolio } from "@/lib/turso/portfolio";
 import { safeRead } from "@/lib/safe-read";
+import { NovaPortfolioGrid } from "./portfolio-grid";
 
 /**
  * Featured work, read from the portfolio CMS.
@@ -11,6 +11,9 @@ import { safeRead } from "@/lib/safe-read";
  * admin kept its old name here — and one listed project was not flagged for
  * the homepage at all. Flagging a project in the admin is now the whole
  * mechanism: name, tagline, image and link all travel together.
+ *
+ * All flagged projects are sent; four of them are shown, chosen at random on
+ * each visit (NovaPortfolioGrid).
  */
 const MAX_SHOWN = 4;
 
@@ -26,7 +29,7 @@ export async function NovaPortfolio() {
   // The section is all cards; with none it would render as a bare heading.
   if (items.length === 0) return null;
 
-  const projects = items.slice(0, MAX_SHOWN).map((item) => {
+  const projects = items.map((item) => {
     const { name, tagline } = splitTitle(item.title);
     return {
       id: item.id,
@@ -54,52 +57,7 @@ export async function NovaPortfolio() {
         </Link>
       </div>
 
-      <div className="nova-col2 grid grid-cols-2 gap-8">
-        {projects.map((project) => {
-          const card = (
-            <>
-              <div
-                className="relative overflow-hidden rounded-2xl border"
-                style={{
-                  aspectRatio: "16 / 11",
-                  background: "#E2E8F0",
-                  borderColor: "var(--n-border-soft)",
-                }}
-              >
-                {project.imageUrl ? (
-                  <Image
-                    src={project.imageUrl}
-                    alt={`${project.name} — ukázka realizace`}
-                    fill
-                    sizes="(max-width: 1080px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <span
-                    className="absolute inset-0 flex items-center justify-center text-sm font-medium"
-                    style={{ color: "var(--n-text-muted)" }}
-                  >
-                    {project.name}
-                  </span>
-                )}
-              </div>
-              <h3 className="mt-5 text-xl font-bold" style={{ letterSpacing: "-.02em" }}>
-                {project.name}
-              </h3>
-              <p className="mt-1 text-[15px] font-medium" style={{ color: "var(--n-text-muted)" }}>
-                {project.category}
-              </p>
-            </>
-          );
-
-          // Every project now comes from the CMS, so each one has a detail page.
-          return (
-            <Link key={project.id} href={project.href} className="block">
-              {card}
-            </Link>
-          );
-        })}
-      </div>
+      <NovaPortfolioGrid projects={projects} max={MAX_SHOWN} />
     </section>
   );
 }
