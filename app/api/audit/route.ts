@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EMAIL_CONFIG, sendEmail } from "@/lib/email/resend-client";
 import { recordAudit } from "@/lib/audits/server";
+import { notifyNewAudit } from "@/lib/audits/notify";
 import {
   BENCHMARK_AVERAGE,
   BENCHMARK_SAMPLE,
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
         error: err?.message ? String(err.message).slice(0, 300) : "unknown",
         ipAddress,
       });
+      await notifyNewAudit({ url: normalizedUrl, email, name, failed: true });
       throw err;
     }
 
@@ -64,6 +66,9 @@ export async function POST(request: NextRequest) {
       issueCount: result.issueCount,
       ipAddress,
     });
+
+    // The team hears about it straight away (e-mail + Telegram).
+    await notifyNewAudit({ url: normalizedUrl, email, name, score: result.score, checks: result.checks });
 
     // Awaited on purpose. This used to be fire-and-forget, and on Vercel the
     // instance freezes as soon as the response is returned — the request to

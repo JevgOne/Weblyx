@@ -246,16 +246,21 @@ export async function runChecks(analysis: WebAnalysisResult): Promise<AuditCheck
 
   const tracking = /googletagmanager\.com|google-analytics\.com|gtag\(|connect\.facebook\.net|fbq\(|hotjar|clarity\.ms|sklik|seznam\.cz\/js\/rc|h\.seznam\.cz|ssp\.seznam|gemius|mc\.yandex/.test(lower);
   const analyticsOk = tracking || /plausible\.io|umami|matomo|piwik|simpleanalytics|\/dot\.js|fathom|cloudflareinsights|vercel-insights|\/_vercel\/insights/.test(lower);
+  const consent = /cookiebot|cookieyes|onetrust|cookie-?consent|cookieconsent|cookie-?banner|cookie-?lišt|souhlas s cookies|consentmanager|termly|iubenda|klaro|complianz|usercentrics|didomi|cookiehub|cc-banner/.test(lower);
+  // A site that asks for cookie consent usually loads its analytics only after
+  // the visitor agrees — from a script chunk that is not in the page at all
+  // until then. Seen from outside that is indistinguishable from "no
+  // analytics", and telling an owner who has GA4 that they measure nothing is
+  // exactly the false finding that loses them. So it stays undecided.
   add({
-    id: 'analytics', group: 'trust', label: 'Měření návštěvnosti', ok: analyticsOk,
-    detail: analyticsOk ? 'Nalezeno' : 'Nenalezeno',
+    id: 'analytics', group: 'trust', label: 'Měření návštěvnosti', ok: analyticsOk ? true : consent ? null : false,
+    detail: analyticsOk ? 'Nalezeno' : consent ? 'Načítá se nejspíš až po souhlasu s cookies, zvenku nelze ověřit' : 'Nenalezeno',
     fix: 'Bez měření nevíte, kolik lidí přichází, odkud a jestli vám web vůbec něco přináší.',
   });
 
-  const consent = /cookiebot|cookieyes|onetrust|cookie-?consent|cookieconsent|cookie-?banner|cookie-?lišt|souhlas s cookies|consentmanager|termly|iubenda|klaro|complianz|usercentrics|didomi|cookiehub|cc-banner/.test(lower);
   add({
-    id: 'cookies', group: 'trust', label: 'Cookie lišta', ok: tracking ? consent : null,
-    detail: !tracking ? 'Web nepoužívá měřicí kódy, lišta není potřeba' : consent ? 'Nalezena' : 'Měřicí kódy běží, lištu jsme nenašli',
+    id: 'cookies', group: 'trust', label: 'Cookie lišta', ok: tracking ? consent : consent ? true : null,
+    detail: consent ? 'Nalezena' : !tracking ? 'Web nepoužívá měřicí kódy, lišta není potřeba' : 'Měřicí kódy běží, lištu jsme nenašli',
     fix: 'Měření a reklamní kódy smí běžet až po souhlasu návštěvníka — jinak hrozí potíže s GDPR a Google Ads omezí měření.',
   });
 

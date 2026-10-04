@@ -14,8 +14,8 @@ interface NavItem {
   permission?: Permission;
   /** Subtitle shown under the page title in the topbar. */
   subtitle: string;
-  /** Shows the count of new leads. */
-  badge?: "newLeads";
+  /** Shows the count of new leads, or of audits nobody has called about. */
+  badge?: "newLeads" | "newAudits";
 }
 
 interface NavGroup {
@@ -33,7 +33,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Přehled", href: "/admin/dashboard", permission: "dashboard", subtitle: "Souhrn aktivity vašeho studia" },
       { label: "Poptávky", href: "/admin/leads", permission: "leads", subtitle: "Příchozí poptávky z webu", badge: "newLeads" },
-      { label: "Audity", href: "/admin/audity", permission: "leads", subtitle: "Weby, které jsme proklepli, a koho obvolat" },
+      { label: "Audity", href: "/admin/audity", permission: "leads", subtitle: "Weby, které jsme proklepli, a koho obvolat", badge: "newAudits" },
       { label: "Analyzovat web", href: "/admin/tools/web-analyzer", permission: "web_analyzer", subtitle: "Rozbor webu pro oslovení" },
       { label: "Projekty", href: "/admin/projects", permission: "projects", subtitle: "Rozpracované a hotové weby" },
     ],
@@ -96,6 +96,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const { user, can } = useAdminAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [newLeads, setNewLeads] = useState<number | null>(null);
+  const [newAudits, setNewAudits] = useState<number | null>(null);
 
   // Close the drawer whenever navigation happens.
   useEffect(() => setMobileOpen(false), [pathname]);
@@ -109,6 +110,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         if (cancelled || !result?.success) return;
         const count = result.data?.leads?.new ?? result.data?.leads?.total ?? null;
         if (typeof count === "number") setNewLeads(count);
+        const audits = result.data?.audits?.new;
+        if (typeof audits === "number") setNewAudits(audits);
       })
       .catch(() => {
         // Badge is decorative — a failed count simply stays hidden.
@@ -173,6 +176,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   {item.label}
                   {item.badge === "newLeads" && newLeads ? (
                     <span className="wbx-nav-badge">{newLeads}</span>
+                  ) : null}
+                  {item.badge === "newAudits" && newAudits ? (
+                    <span className="wbx-nav-badge">{newAudits}</span>
                   ) : null}
                 </Link>
               ))}

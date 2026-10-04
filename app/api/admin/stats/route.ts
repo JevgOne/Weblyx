@@ -14,12 +14,15 @@ export async function GET() {
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN published = 1 THEN 1 ELSE 0 END) as published FROM blog_posts", args: [] },
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN published = 1 THEN 1 ELSE 0 END) as published, SUM(CASE WHEN featured = 1 THEN 1 ELSE 0 END) as featured FROM reviews", args: [] },
       { sql: "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_leads, SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress, SUM(CASE WHEN status IN ('done', 'converted') THEN 1 ELSE 0 END) as done FROM leads", args: [] },
+      // Audits visitors ran that nobody has called about yet — the sidebar badge.
+      { sql: "SELECT COUNT(*) as new_audits FROM audits WHERE source = 'web' AND call_status = 'new'", args: [] },
     ]);
 
     const portfolio = results[0].rows[0];
     const blog = results[1].rows[0];
     const reviews = results[2].rows[0];
     const leads = results[3].rows[0];
+    const audits = results[4].rows[0];
 
     return NextResponse.json({
       success: true,
@@ -33,6 +36,7 @@ export async function GET() {
           inProgress: Number(leads.in_progress) || 0,
           done: Number(leads.done) || 0,
         },
+        audits: { new: Number(audits.new_audits) || 0 },
       },
     });
   } catch (error: any) {

@@ -152,3 +152,24 @@ export async function sendTestTelegramNotification(): Promise<boolean> {
     description: 'Testovací poptávka - chci modernizovat existující e-shop a přidat nové funkce pro zákazníky.',
   });
 }
+
+/**
+ * Sends a plain HTML-formatted message. For notifications that are not leads
+ * (a free audit run on the site, for one) and so do not fit formatLeadMessage.
+ */
+export async function sendTelegramText(html: string): Promise<boolean> {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return false;
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: html, parse_mode: 'HTML', disable_web_page_preview: true }),
+    });
+    const data = await response.json();
+    if (!data.ok) console.error('❌ [Telegram] API error:', data.description);
+    return Boolean(data.ok);
+  } catch (error) {
+    console.error('❌ [Telegram] send failed:', error);
+    return false;
+  }
+}
