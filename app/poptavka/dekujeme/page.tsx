@@ -133,7 +133,7 @@ export default function ThankYouPage() {
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-primary" />
-              <span>Hodnocení 5.0 na Google</span>
+              <span>Hodnocení 4,9 na Googlu</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-primary" />

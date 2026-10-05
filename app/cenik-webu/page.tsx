@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   description:
     "Kolik stojí web v roce 2026. Tři balíčky s pevnou cenou od 7 990 Kč, bez měsíčních poplatků. Srovnání s agenturou a stavebnicí, kalkulace do 24 hodin.",
   alternates: { canonical: "https://www.weblyx.cz/cenik-webu" },
+  openGraph: { images: [{ url: "/images/og/og-cenik-webu.png", width: 1200, height: 630 }] },
 };
 
 /** Mirrors pricing_tiers. Prices and delivery windows live in one place. */

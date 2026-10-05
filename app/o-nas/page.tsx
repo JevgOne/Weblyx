@@ -96,7 +96,7 @@ export default async function AboutPage() {
   const stats = [
     { value: "Únor 2024", label: "Založeno" },
     { value: projects, label: "Projektů dokončeno" },
-    { value: "5.0 ★", label: "Google hodnocení" },
+    { value: "4,9 ★", label: "Google hodnocení" },
     { value: "< 2s", label: "Průměrná rychlost" },
   ];
 

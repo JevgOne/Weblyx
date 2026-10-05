@@ -5,6 +5,7 @@ import { generateWebPageSchema, generateBreadcrumbSchema } from "@/lib/schema-or
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://www.weblyx.cz/pagespeed-garance" },
+  openGraph: { images: [{ url: "/images/og/og-pagespeed-garance.png", width: 1200, height: 630 }] },
   title: "Garance PageSpeed 90+ — nebo vám vrátíme peníze",
   description: "Garantujeme PageSpeed skóre 90+ od balíčku Základní Web, jinak vracíme peníze. Co přesně měříme, jak si to ověříte sami a za jakých podmínek garance platí.",
 };

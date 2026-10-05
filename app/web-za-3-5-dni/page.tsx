@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   description:
     "Web hotový za 3–5 pracovních dní od 7 990 Kč. Co k tomu potřebujeme, jak jde den po dni a od čeho termín běží. Rezervace termínu do 24 hodin.",
   alternates: { canonical: "https://www.weblyx.cz/web-za-3-5-dni" },
+  openGraph: { images: [{ url: "/images/og/og-web-za-3-5-dni.png", width: 1200, height: 630 }] },
 };
 
 /**

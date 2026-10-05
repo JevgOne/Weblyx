@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   description:
     "Průměrný český firemní web má PageSpeed 43 ze 100 — měřili jsme jich padesát. Web na Next.js za 3–5 dní od 7 990 Kč, PageSpeed 90+ garantovaně.",
   alternates: { canonical: "https://www.weblyx.cz/web-pro-male-firmy" },
+  openGraph: { images: [{ url: "/images/og/og-web-pro-male-firmy.png", width: 1200, height: 630 }] },
 };
 
 /**

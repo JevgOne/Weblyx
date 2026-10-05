@@ -22,11 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: "Recenze klientů — hodnocení 5,0 na Googlu",
+    title: "Recenze klientů — hodnocení 4,9 na Googlu",
     // The old description gave no reason to click. The rating is the reason.
     description:
-      "Hodnocení 5,0 na Googlu. Přečtěte si vlastními slovy klientů, jak spolupráce probíhala — weby, e-shopy i redesigny, od živnostníků po firmy.",
+      "Hodnocení 4,9 na Googlu. Přečtěte si vlastními slovy klientů, jak spolupráce probíhala — weby, e-shopy i redesigny, od živnostníků po firmy.",
     alternates: { canonical: "https://www.weblyx.cz/recenze" },
+    openGraph: { images: [{ url: "/images/og/og-recenze.png", width: 1200, height: 630 }] },
   };
 }
 

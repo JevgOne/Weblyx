@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "cs_CZ",
     siteName: "Weblyx",
+    images: [{ url: "/images/og/og-homepage.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary",
