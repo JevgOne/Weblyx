@@ -1,5 +1,7 @@
 "use client";
 
+import { markLeadSent } from "@/lib/analytics/lead-conversion";
+
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -237,25 +239,8 @@ export function QuoteForm({ pricing }: { pricing: PricingData }) {
         return;
       }
 
-      // 🎯 Conversion tracking
-      if (typeof window !== 'undefined') {
-        if ((window as any).fbq) {
-          (window as any).fbq('track', 'Lead');
-          (window as any).fbq('track', 'SubmitApplication');
-        }
-        if ((window as any).gtag) {
-          (window as any).gtag('event', 'conversion', {
-            'event_category': 'Lead',
-            'event_label': 'Quote Form Submitted',
-            'value': 1
-          });
-          (window as any).gtag('event', 'generate_lead', {
-            'currency': 'CZK',
-            'value': 10000
-          });
-          (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
-        }
-      }
+      // Reported once, by the thank-you page this form redirects to.
+      markLeadSent('poptavka');
 
       // 🎉 Celebrate with confetti!
       celebrateSuccess();

@@ -6,34 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Mail, Phone, ArrowRight } from "lucide-react";
 import confetti from "canvas-confetti";
+import { LOAD_TAGS_EVENT, LOAD_TAGS_FLAG, consumeLeadSent, reportLeadConversion } from "@/lib/analytics/lead-conversion";
 
 export default function ThankYouPage() {
   useEffect(() => {
-    // 🎯 CONVERSION TRACKING - Fire once on page load
-    // Facebook Pixel - Track conversion
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'Lead');
-      (window as any).fbq('track', 'SubmitApplication');
-    }
-
-    // Google Analytics GA4 - Track conversion
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'conversion', {
-        'event_category': 'Lead',
-        'event_label': 'Quote Form Submitted',
-        'value': 1
-      });
-      (window as any).gtag('event', 'generate_lead', {
-        'currency': 'CZK',
-        'value': 10000 // Estimated project value
-      });
-      // Google Ads conversion tracking (Submit Lead Form)
-      (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-8291837393',
-        'value': 10000,
-        'currency': 'CZK'
-      });
-    }
+    // Load the Google tag now, and report the conversion only when this visit
+    // follows a submitted form — not on a refresh or a direct visit.
+    (window as any)[LOAD_TAGS_FLAG] = true;
+    window.dispatchEvent(new Event(LOAD_TAGS_EVENT));
+    const source = consumeLeadSent();
+    if (source) reportLeadConversion(source);
 
     // Konfety při načtení stránky
     const duration = 3000;

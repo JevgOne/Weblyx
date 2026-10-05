@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { markLeadSent, reportLeadConversion } from "@/lib/analytics/lead-conversion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +19,7 @@ interface ContactProps {
 }
 
 export function Contact({ isMainPage = false }: ContactProps) {
+  const router = useRouter();
   // i18n translations
   const t = useTranslations('contactForm');
   const locale = useLocale();
@@ -194,18 +197,13 @@ export function Contact({ isMainPage = false }: ContactProps) {
         message: t('messages.successMessage'),
       });
 
-      // 🎯 Conversion tracking
-      if (typeof window !== 'undefined') {
-        if ((window as any).fbq) {
-          (window as any).fbq('track', 'Lead');
-        }
-        if ((window as any).gtag) {
-          (window as any).gtag('event', 'ads_conversion_Contact_Us_1', {});
-          (window as any).gtag('event', 'generate_lead', {
-            'currency': 'CZK',
-            'value': 10000
-          });
-        }
+      // On weblyx.cz the thank-you page reports the conversion; the German
+      // site has no Czech thank-you page, so it still reports here.
+      if (!window.location.hostname.includes('seitelyx')) {
+        markLeadSent('kontakt');
+        router.push('/poptavka/dekujeme');
+      } else {
+        reportLeadConversion('kontakt');
       }
 
       // 🎉 Celebrate with confetti!

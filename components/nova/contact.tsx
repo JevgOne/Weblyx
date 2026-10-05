@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { markLeadSent } from "@/lib/analytics/lead-conversion";
 import { HoneypotInput } from "@/components/security/HoneypotInput";
 
 const DETAILS = [
@@ -25,6 +27,7 @@ const inputStyle = {
 } as const;
 
 export function NovaContact() {
+  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -80,15 +83,9 @@ export function NovaContact() {
         throw new Error(data.error || "Odeslání se nezdařilo. Zkuste to prosím znovu.");
       }
 
-      if (typeof window !== "undefined") {
-        (window as any).fbq?.("track", "Lead");
-        (window as any).gtag?.("event", "generate_lead", { currency: "CZK", value: 10000 });
-        // The same Google Ads conversion the /poptavka form fires. Without it
-        // a homepage enquiry counted in GA4 but never reached Google Ads, so
-        // campaigns were optimising against nothing.
-        (window as any).gtag?.("event", "ads_conversion_Contact_Us_1", {});
-      }
-
+      // Reported once, by the thank-you page (Google Ads counts its page load).
+      markLeadSent("homepage");
+      router.push("/poptavka/dekujeme");
       setStatus("sent");
       setForm({ name: "", email: "", companyName: "", projectType: "", description: "" });
       setGdprConsent(false);

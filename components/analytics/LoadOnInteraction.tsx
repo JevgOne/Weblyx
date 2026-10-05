@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { LOAD_TAGS_EVENT, LOAD_TAGS_FLAG } from '@/lib/analytics/lead-conversion';
 
 /**
  * Injects third-party scripts on the visitor's first interaction instead of
@@ -16,7 +17,9 @@ import { useEffect } from 'react';
  * A visitor who never scrolls, taps or types still gets the scripts after
  * FALLBACK_MS, so a page left open is counted.
  */
-const EVENTS = ['pointerdown', 'keydown', 'touchstart', 'scroll', 'wheel'] as const;
+// LOAD_TAGS_EVENT: the thank-you page needs the tags at once to report the
+// conversion, whether or not the visitor touches anything there.
+const EVENTS = ['pointerdown', 'keydown', 'touchstart', 'scroll', 'wheel', LOAD_TAGS_EVENT] as const;
 const FALLBACK_MS = 12000;
 
 export function LoadOnInteraction({ srcs }: { srcs: string[] }) {
@@ -42,6 +45,9 @@ export function LoadOnInteraction({ srcs }: { srcs: string[] }) {
       EVENTS.forEach((e) => window.removeEventListener(e, load));
     };
     EVENTS.forEach((e) => window.addEventListener(e, load, { once: true, passive: true }));
+    // On a fresh load of the thank-you page its effect runs before this one
+    // (children first), so the event above was already sent; the flag is not.
+    if ((window as unknown as Record<string, unknown>)[LOAD_TAGS_FLAG]) load();
 
     return cleanup;
   }, [srcs]);

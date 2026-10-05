@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { markLeadSent } from "@/lib/analytics/lead-conversion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +51,7 @@ export function LandingForm({
   /** Which landing page this came from — lands in the enquiry text. */
   source: string;
 }) {
+  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -102,9 +105,11 @@ export function LandingForm({
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data?.error || "Odeslání selhalo");
 
+      // Only after the server confirmed — a failed request is not a lead. The
+      // thank-you page reports it, once, for every form on the site.
+      markLeadSent(source);
       setSent(true);
-      // Only after the server confirmed — a failed request is not a lead.
-      track("generate_lead", { currency: "CZK", value: 10000, form_id: source });
+      router.push("/poptavka/dekujeme");
     } catch (err) {
       setError(
         err instanceof Error && err.message
