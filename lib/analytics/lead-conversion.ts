@@ -53,6 +53,12 @@ export function reportLeadConversion(source: string): void {
   };
   sendFb();
   w.gtag?.('event', 'generate_lead', { currency: 'CZK', value: 10000, form_id: source });
-  // The Google Ads "Contact Us" conversion (Google tag event).
+  // Google Ads: the 'Contact Us' conversion (a Google tag event) and the
+  // 'Submit lead form' conversion, whose event snippet belongs on this page.
   w.gtag?.('event', 'ads_conversion_Contact_Us_1', {});
+  w.gtag?.('event', 'conversion', {
+    send_to: 'AW-17746246958/Mwm2CKmNpIAcEK76iI5C',
+    value: 10000,
+    currency: 'CZK',
+  });
 }

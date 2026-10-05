@@ -1,8 +1,11 @@
 import Script from 'next/script';
 import { LoadOnInteraction } from './LoadOnInteraction';
 
-// Google Ads conversion tag ID
-const GOOGLE_ADS_ID = 'AW-8291837393';
+// Google Ads tag ID. It is not the account number: 829-183-7393 is the
+// customer id and was used here for months, so the Ads tag never loaded and no
+// conversion or remarketing audience ever reached the account. The tag's own id
+// comes from the account's conversion actions (send_to of 'Submit lead form').
+const GOOGLE_ADS_ID = 'AW-17746246958';
 
 export function GoogleAnalytics() {
   // Dynamic GA4 ID based on domain
