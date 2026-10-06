@@ -24,6 +24,15 @@ const FALLBACK = [
   { title: "Landing page", description: "Jedna stránka s vysokou konverzí — levnější a rychlejší než WordPress.", link: "/#cenik" },
 ];
 
+/** Custom features we have shipped, named as the client would name them. */
+const CUSTOM_WORK = [
+  "Rezervační systém na míru s Telegram botem",
+  "Věrnostní program pro kosmetický salon",
+  "Věrnostní program pro barber shop",
+  "CRM systém na míru",
+  "Interní messaging pro CRM systém",
+];
+
 export async function NovaServices() {
   const rows = await safeRead(() => getActiveServices("cs"), [], "nova services");
 
@@ -90,6 +99,53 @@ export async function NovaServices() {
             </article>
           );
         })}
+      </div>
+
+      {/* Custom work sits outside the CMS grid: it is not a seventh service
+          with a detail page, and six tiles are what fill the three columns. */}
+      <div
+        className="nova-col2 mt-6 grid items-center gap-12 rounded-[20px] px-9 py-[42px]"
+        style={{ gridTemplateColumns: "1fr 1fr", background: "var(--n-ink)", color: "#ffffff" }}
+      >
+        <div>
+          <p className="mb-4 text-sm font-semibold" style={{ color: "var(--n-brand-light)" }}>
+            Funkce na míru
+          </p>
+          <h3 className="text-[28px] font-bold" style={{ letterSpacing: "-.02em", lineHeight: 1.2 }}>
+            Potřebujete něco, co hotové řešení neumí?
+          </h3>
+          <p
+            className="mt-4 max-w-[460px] text-[16px] font-medium"
+            style={{ lineHeight: 1.6, color: "var(--n-text-dim)" }}
+          >
+            Web bývá jen začátek. Když potřebujete vlastní funkci, vymyslíme ji s vámi a
+            naprogramujeme.
+          </p>
+          <a
+            href="#kontakt"
+            className="mt-7 inline-block rounded-xl px-[26px] py-[15px] text-base font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ background: "var(--n-brand)" }}
+          >
+            Probrat vlastní funkci
+          </a>
+        </div>
+
+        <div>
+          <p className="mb-4 text-sm font-semibold" style={{ color: "var(--n-text-dim)" }}>
+            Naposledy jsme dodali
+          </p>
+          <ul className="grid gap-px overflow-hidden rounded-2xl" style={{ background: "var(--n-border-dark)" }}>
+            {CUSTOM_WORK.map((item) => (
+              <li
+                key={item}
+                className="px-6 py-5 text-[16px] font-semibold"
+                style={{ background: "var(--n-ink-2)" }}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
