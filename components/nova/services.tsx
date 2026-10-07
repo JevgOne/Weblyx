@@ -27,8 +27,7 @@ const FALLBACK = [
 /** Custom features we have shipped, named as the client would name them. */
 const CUSTOM_WORK: { label: string; href?: string }[] = [
   { label: "Rezervační systém na míru s Telegram botem", href: "/rezervacni-system-na-miru" },
-  { label: "Věrnostní program pro kosmetický salon" },
-  { label: "Věrnostní program pro barber shop" },
+  { label: "Dárkové poukazy s QR kódem", href: "/rezervacni-system-na-miru#poukazy" },
   { label: "CRM systém na míru", href: "/crm-system-na-miru" },
   { label: "Interní messaging pro CRM systém", href: "/crm-system-na-miru#interni-komunikace" },
 ];

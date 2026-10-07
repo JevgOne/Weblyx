@@ -38,13 +38,22 @@ const CONTENT: CustomFeatureContent = {
       ],
     },
     {
-      title: "Jak funguje online platba a poukazy?",
+      title: "Jak funguje online platba?",
       items: [
         "Platba kartou přes platební bránu hned při rezervaci",
-        "Dárkové poukazy, které se dají koupit online",
-        "Kód poukazu přijde kupujícímu e-mailem",
-        "Poukaz se uplatní při rezervaci; když pokryje celou cenu, platba se přeskočí",
+        "Potvrzení odchází až po přijetí platby",
         "Vrácení peněz z administrace, celé částky nebo její části",
+      ],
+    },
+    {
+      id: "poukazy",
+      title: "Jak fungují dárkové poukazy s QR kódem?",
+      items: [
+        "Poukaz se dá koupit online, na částku nebo na konkrétní službu",
+        "Přijde e-mailem i s QR kódem",
+        "Uplatní se při rezervaci; když pokryje celou cenu, platba se přeskočí",
+        "Na místě ho personál otevře přes QR kód a uplatní; dvakrát použít nejde",
+        "V administraci vidíte, který poukaz je platný, uplatněný nebo propadlý",
       ],
     },
     {
@@ -97,7 +106,7 @@ const CONTENT: CustomFeatureContent = {
     {
       question: "Umí systém dárkové poukazy?",
       answer:
-        "Ano. Poukaz se dá koupit online, kód přijde e-mailem a uplatní se při rezervaci. Pokud pokryje celou cenu, zákazník už nic neplatí.",
+        "Ano. Poukaz se dá koupit online a přijde e-mailem i s QR kódem. Uplatní se při rezervaci nebo na místě přes QR kód a dvakrát ho použít nejde.",
     },
     {
       question: "Může se stát, že si dva lidé zarezervují stejný termín?",
