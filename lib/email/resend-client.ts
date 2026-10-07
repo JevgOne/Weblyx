@@ -2,8 +2,9 @@ import { Resend } from 'resend';
 
 // Email sender configuration
 export const EMAIL_CONFIG = {
-  from: process.env.RESEND_FROM_EMAIL || 'Weblyx <noreply@weblyx.cz>',
-  adminEmail: process.env.ADMIN_EMAIL || 'info@weblyx.cz',
+  // Trimmed: the production value carried a trailing newline.
+  from: process.env.RESEND_FROM_EMAIL?.trim() || 'Weblyx <noreply@weblyx.cz>',
+  adminEmail: process.env.ADMIN_EMAIL?.trim() || 'info@weblyx.cz',
 } as const;
 
 // Lazy initialize Resend client to ensure API key is loaded
@@ -50,6 +51,14 @@ export async function sendEmail(params: {
       from: from || EMAIL_CONFIG.from,
       ...otherParams,
     });
+
+    // Resend reports a rejected message in the payload instead of throwing —
+    // an invalid API key came back as { data: null, error } and was counted
+    // as a sent e-mail by every caller.
+    if (result.error) {
+      console.error('❌ Email rejected by Resend:', result.error);
+      return { success: false, error: result.error.message };
+    }
 
     return { success: true, data: result };
   } catch (error: any) {
