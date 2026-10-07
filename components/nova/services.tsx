@@ -25,12 +25,12 @@ const FALLBACK = [
 ];
 
 /** Custom features we have shipped, named as the client would name them. */
-const CUSTOM_WORK = [
-  "Rezervační systém na míru s Telegram botem",
-  "Věrnostní program pro kosmetický salon",
-  "Věrnostní program pro barber shop",
-  "CRM systém na míru",
-  "Interní messaging pro CRM systém",
+const CUSTOM_WORK: { label: string; href?: string }[] = [
+  { label: "Rezervační systém na míru s Telegram botem", href: "/rezervacni-system-na-miru" },
+  { label: "Věrnostní program pro kosmetický salon" },
+  { label: "Věrnostní program pro barber shop" },
+  { label: "CRM systém na míru", href: "/crm-system-na-miru" },
+  { label: "Interní messaging pro CRM systém", href: "/crm-system-na-miru#interni-komunikace" },
 ];
 
 export async function NovaServices() {
@@ -136,12 +136,18 @@ export async function NovaServices() {
           </p>
           <ul className="grid gap-px overflow-hidden rounded-2xl" style={{ background: "var(--n-border-dark)" }}>
             {CUSTOM_WORK.map((item) => (
-              <li
-                key={item}
-                className="px-6 py-5 text-[16px] font-semibold"
-                style={{ background: "var(--n-ink-2)" }}
-              >
-                {item}
+              <li key={item.label} className="text-[16px] font-semibold" style={{ background: "var(--n-ink-2)" }}>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    className="flex items-center justify-between gap-4 px-6 py-5 transition-colors hover:bg-white/5"
+                  >
+                    {item.label}
+                    <span aria-hidden style={{ color: "var(--n-brand-light)" }}>›</span>
+                  </Link>
+                ) : (
+                  <span className="block px-6 py-5">{item.label}</span>
+                )}
               </li>
             ))}
           </ul>

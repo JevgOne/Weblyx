@@ -45,9 +45,12 @@ export function LandingForm({
   heading = "Nezávazná poptávka",
   note,
   source,
+  defaultType = "new-web",
 }: {
   heading?: string;
   note?: string;
+  /** Preselected project type; custom-feature pages are not about a new website. */
+  defaultType?: (typeof PROJECT_TYPES)[number]["value"];
   /** Which landing page this came from — lands in the enquiry text. */
   source: string;
 }) {
@@ -56,7 +59,7 @@ export function LandingForm({
     name: "",
     email: "",
     phone: "",
-    projectType: "new-web",
+    projectType: defaultType as string,
     companyName: "",
   });
   const [sending, setSending] = useState(false);

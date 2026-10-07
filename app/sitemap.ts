@@ -212,6 +212,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority: 0.8,
         },
         {
+          url: `${baseUrl}/rezervacni-system-na-miru`,
+          lastModified: new Date('2026-10-06'),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
+          url: `${baseUrl}/crm-system-na-miru`,
+          lastModified: new Date('2026-10-06'),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        },
+        {
           url: `${baseUrl}/web-pro-restaurace`,
           lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'monthly',

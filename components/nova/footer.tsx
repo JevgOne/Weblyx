@@ -9,6 +9,8 @@ const FOOTER_COLUMNS = [
       { label: "SEO optimalizace", href: "/seo-optimalizace" },
       { label: "Redesign webu", href: "/redesign-webu" },
       { label: "Tvorba e-shopu", href: "/tvorba-eshopu" },
+      { label: "Rezervační systém na míru", href: "/rezervacni-system-na-miru" },
+      { label: "CRM systém na míru", href: "/crm-system-na-miru" },
       { label: "Rychlost načítání", href: "/pagespeed-garance" },
       { label: "Údržba a podpora", href: "/sluzby#maintenance" },
     ],

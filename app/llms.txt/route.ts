@@ -129,6 +129,9 @@ Po celé České republice, se zaměřením na:
 Obory: [živnostníci a OSVČ](https://www.weblyx.cz/web-pro-zivnostniky) ·
 [restaurace](https://www.weblyx.cz/web-pro-restaurace) ·
 [advokáti](https://www.weblyx.cz/web-pro-pravniky)
+
+Systémy na míru: [rezervační systém](https://www.weblyx.cz/rezervacni-system-na-miru) ·
+[CRM systém](https://www.weblyx.cz/crm-system-na-miru)
 `;
 }
 
