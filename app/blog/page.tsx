@@ -199,9 +199,10 @@ export default async function BlogPage() {
             {posts.map((post, idx) => (
               <div key={post.id}>
                 <Link href={`/blog/${post.slug}`} className="group block py-10 md:py-14">
-                  {/* Full-width image */}
+                  {/* Full-width image at 16:9, the covers' own shape — at 21:9 the
+                      bottom of every cover was cut off. */}
                   {post.featuredImage && (
-                    <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden mb-8">
+                    <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-8">
                       <Image
                         src={post.featuredImage}
                         alt={post.title}

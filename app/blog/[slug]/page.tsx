@@ -390,22 +390,21 @@ export default async function BlogPostPage({
 
             {/* Header */}
             <header className="mb-10 md:mb-14">
-              {/* Date + reading time */}
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-5 text-sm text-neutral-500 dark:text-muted-foreground">
+              {/* Author, date and reading time — the author leads. */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6 text-sm text-neutral-500 dark:text-muted-foreground">
+                {post.authorName && (
+                  <>
+                    <span className="text-[15px] font-semibold text-neutral-900 dark:text-foreground">
+                      {post.authorName}
+                    </span>
+                    <span aria-hidden className="text-neutral-300 dark:text-border">·</span>
+                  </>
+                )}
                 <time dateTime={isoDate}>{publishedDate}</time>
                 <span aria-hidden className="text-neutral-300 dark:text-border">·</span>
                 <span>
                   {readTime} {t.readTimeSuffix}
                 </span>
-                {post.authorName && (
-                  <>
-                    <span aria-hidden className="text-neutral-300 dark:text-border">·</span>
-                    <span>
-                      {t.authorPrefix}{" "}
-                      <span className="font-medium text-neutral-700 dark:text-foreground/80">{post.authorName}</span>
-                    </span>
-                  </>
-                )}
               </div>
 
               {/* Line height inline: a global heading rule outranks the utility class. */}
@@ -504,7 +503,7 @@ export default async function BlogPostPage({
                       className="group block rounded-xl border border-neutral-100 dark:border-border overflow-hidden hover:border-primary/20 hover:shadow-sm transition-all duration-300"
                     >
                       {rp.featuredImage && (
-                        <div className="relative w-full h-32 overflow-hidden bg-neutral-100 dark:bg-card">
+                        <div className="relative w-full aspect-[16/9] overflow-hidden bg-neutral-100 dark:bg-card">
                           <Image
                             src={rp.featuredImage}
                             alt={rp.title}
