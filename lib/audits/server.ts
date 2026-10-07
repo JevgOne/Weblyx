@@ -98,7 +98,8 @@ export async function recordAudit(params: {
   status?: 'ok' | 'failed';
   error?: string | null;
   ipAddress?: string | null;
-}): Promise<void> {
+}): Promise<string | null> {
+  const id = nanoid();
   try {
     const existing = await turso.execute({
       sql: "SELECT id FROM leads WHERE email = ? AND COALESCE(source, '') != 'audit' ORDER BY created_at DESC LIMIT 1",
@@ -111,7 +112,7 @@ export async function recordAudit(params: {
               (id, url, email, contact_name, score, metrics, issue_count, lead_id, status, error, ip_address, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch())`,
       args: [
-        nanoid(),
+        id,
         params.url,
         params.email,
         params.name?.trim() || null,
@@ -124,8 +125,10 @@ export async function recordAudit(params: {
         params.ipAddress ?? null,
       ],
     });
+    return id;
   } catch (error) {
     console.error('Failed to record audit:', error);
+    return null;
   }
 }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EMAIL_CONFIG, sendEmail } from "@/lib/email/resend-client";
-import { recordAudit } from "@/lib/audits/server";
+import { markReportSent, recordAudit } from "@/lib/audits/server";
 import { notifyNewAudit } from "@/lib/audits/notify";
 import {
   BENCHMARK_AVERAGE,
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Recorded before the e-mail: the report is a courtesy, the lead is the
     // point, and this used to be thrown away entirely.
-    await recordAudit({
+    const auditId = await recordAudit({
       url: normalizedUrl,
       email,
       name,
@@ -75,16 +75,28 @@ export async function POST(request: NextRequest) {
     // Resend never finished and no report was ever delivered. Roughly 300ms on
     // a three-second call, and a failure here must not cost the visitor their
     // result, so it stays non-fatal.
-    await sendEmail({
+    const sent = await sendEmail({
       to: email,
       subject: `🔍 Audit webu: ${normalizedUrl} — skóre ${result.score}/100`,
       html: buildEmailHtml(result),
       // The report invites a reply; from noreply@ that reply went nowhere.
       replyTo: EMAIL_CONFIG.adminEmail,
-    }).catch((err) => {
-      console.error("Failed to send audit email:", err);
-      return { success: false as const, error: String(err) };
-    });
+    }).catch((err) => ({ success: false as const, error: String(err) }));
+
+    // The audits list reads `report_sent_at` to decide between "Report
+    // odeslán" and "Poslat report". This route never stamped it, so every
+    // audit from the website looked unsent even though the mail had gone out.
+    // Resend reports a rejected message in the payload instead of throwing.
+    const sendError = !sent.success ? sent.error : (sent as any).data?.error?.message;
+    if (sendError) {
+      console.error("Failed to send audit email:", sendError);
+    } else if (auditId) {
+      await markReportSent(auditId, {
+        score: result.score,
+        metrics: result.metrics,
+        issueCount: result.issueCount,
+      }).catch((err) => console.error("Failed to mark audit report as sent:", err));
+    }
 
     // Return partial results to client (no detailed issues)
     return NextResponse.json({
