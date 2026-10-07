@@ -20,8 +20,19 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 
-export default function NewBlogPostPage() {
+/**
+ * One form for writing a post and for editing one.
+ *
+ * The list's "Upravit" button has always pointed at /admin/blog/{id}/edit, a
+ * route that did not exist — so a published post could be toggled or deleted
+ * but never corrected. With `postId` the same form loads that post and saves
+ * over it instead of creating a new one.
+ */
+export function BlogPostForm({ postId }: { postId?: string }) {
   const router = useRouter();
+  const editing = Boolean(postId);
+  const [loading, setLoading] = useState(editing);
+  const [loadError, setLoadError] = useState("");
   const { user } = useAdminAuth();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -44,13 +55,56 @@ export default function NewBlogPostPage() {
     publishedAt: new Date().toISOString().slice(0, 16), // Default to current date/time
   });
 
-  // Update author when user loads
+  // Editing: load the post into the form.
   useEffect(() => {
+    if (!postId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch("/api/blog", { cache: "no-store" });
+        const result = await response.json();
+        const post = (result.data ?? []).find((p: { id: string }) => p.id === postId);
+        if (cancelled) return;
+        if (!post) {
+          setLoadError("Článek se nepodařilo najít.");
+          return;
+        }
+        setFormData({
+          title: post.title ?? "",
+          slug: post.slug ?? "",
+          excerpt: post.excerpt ?? "",
+          content: post.content ?? "",
+          metaTitle: post.metaTitle ?? "",
+          metaDescription: post.metaDescription ?? "",
+          author: post.author ?? "Admin",
+          published: Boolean(post.published),
+          featured: Boolean(post.featured),
+          category: post.category ?? "",
+          tags: post.tags ?? [],
+          imageUrl: post.imageUrl ?? "",
+          publishedAt: new Date(post.publishedAt ?? post.createdAt).toISOString().slice(0, 16),
+        });
+        setImagePreview(post.imageUrl ?? "");
+      } catch (error) {
+        console.error("Error loading blog post:", error);
+        if (!cancelled) setLoadError("Článek se nepodařilo načíst.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [postId]);
+
+  // Update author when user loads — a new post only; an edit keeps its author.
+  useEffect(() => {
+    if (postId) return;
     if (user?.email) {
       const email = user.email;
       setFormData((prev) => ({ ...prev, author: email.split("@")[0] }));
     }
-  }, [user]);
+  }, [user, postId]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -199,26 +253,37 @@ export default function NewBlogPostPage() {
 
       // Use API endpoint instead of direct Firebase access
       const response = await fetch('/api/blog', {
-        method: 'POST',
+        method: editing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(blogData),
+        body: JSON.stringify(editing ? { ...blogData, id: postId } : blogData),
       });
 
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to create blog post');
+        throw new Error(result.error || 'Failed to save blog post');
       }
 
       router.push("/admin/blog");
     } catch (error) {
-      console.error("Error creating blog post:", error);
-      alert("Chyba při vytváření článku");
+      console.error("Error saving blog post:", error);
+      alert(editing ? "Chyba při ukládání článku" : "Chyba při vytváření článku");
       setSaving(false);
     }
   };
 
-  if (!user) {
+  if (loadError) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p className="mb-4 font-semibold">{loadError}</p>
+        <Button variant="outline" onClick={() => router.push("/admin/blog")}>
+          Zpět na články
+        </Button>
+      </div>
+    );
+  }
+
+  if (!user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -567,7 +632,7 @@ export default function NewBlogPostPage() {
                   Ukládám...
                 </>
               ) : (
-                "Vytvořit článek"
+                editing ? "Uložit změny" : "Vytvořit článek"
               )}
             </Button>
           </div>

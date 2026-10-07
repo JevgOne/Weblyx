@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getAllBlogPosts,
@@ -187,6 +188,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedPost = await updateBlogPost(body.id, updateData);
+
+    // The article and the list are prerendered; without this an edit stayed
+    // invisible on the site until the next scheduled rebuild of the page.
+    revalidatePath('/blog');
+    revalidatePath(`/blog/${existingPost.slug}`);
+    if (updatedPost.slug !== existingPost.slug) revalidatePath(`/blog/${updatedPost.slug}`);
 
     return NextResponse.json({
       success: true,
