@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { safeRead } from '@/lib/safe-read';
@@ -31,6 +30,7 @@ const blogDetailContent = {
     notFoundTitle: "Článek nenalezen | Weblyx Blog",
     readTimeSuffix: "min čtení",
     authorPrefix: "od",
+    homeLabel: "Domů",
     relatedLabel: "Další články",
     endLabel: "— konec článku —",
     backToBlog: "← Zpět na blog",
@@ -43,6 +43,7 @@ const blogDetailContent = {
     notFoundTitle: "Artikel nicht gefunden | Seitelyx Blog",
     readTimeSuffix: "Min. Lesezeit",
     authorPrefix: "von",
+    homeLabel: "Startseite",
     relatedLabel: "Weitere Artikel",
     endLabel: "— Ende des Artikels —",
     backToBlog: "← Zurück zum Blog",
@@ -181,14 +182,15 @@ export async function generateMetadata({
 
 // Shared prose classes for article content
 const proseClasses = `prose prose-base md:prose-lg max-w-none dark:prose-invert
-  prose-headings:font-semibold prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
-  prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:pt-6 prose-h2:border-t prose-h2:border-neutral-100 dark:prose-h2:border-border prose-h2:scroll-mt-24
-  prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:scroll-mt-24
-  prose-p:text-neutral-600 dark:prose-p:text-foreground/80 prose-p:leading-[1.9] prose-p:mb-5 prose-p:text-[16px] prose-p:md:text-[17px]
-  prose-ul:my-5 prose-ul:text-neutral-600 dark:prose-ul:text-foreground/80
-  prose-ol:my-5 prose-ol:text-neutral-600 dark:prose-ol:text-foreground/80
-  prose-li:my-1.5 prose-li:leading-relaxed
-  prose-li:marker:text-neutral-300 dark:prose-li:marker:text-border
+  prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
+  prose-h2:text-2xl prose-h2:md:text-[28px] prose-h2:font-bold prose-h2:leading-tight prose-h2:mt-14 prose-h2:mb-4 prose-h2:scroll-mt-24
+  prose-h3:text-lg prose-h3:md:text-xl prose-h3:font-semibold prose-h3:mt-9 prose-h3:mb-3 prose-h3:scroll-mt-24
+  prose-p:text-neutral-700 dark:prose-p:text-foreground/80 prose-p:leading-[1.75] prose-p:my-5 prose-p:text-[16px] prose-p:md:text-[17px]
+  prose-ul:my-5 prose-ul:text-neutral-700 dark:prose-ul:text-foreground/80
+  prose-ol:my-5 prose-ol:text-neutral-700 dark:prose-ol:text-foreground/80
+  prose-li:my-2 prose-li:leading-relaxed
+  prose-li:marker:text-primary
+  prose-table:my-8 prose-table:text-[15px] prose-th:bg-neutral-50 dark:prose-th:bg-card prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-neutral-900 dark:prose-th:text-foreground prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-neutral-100 dark:prose-td:border-border
   prose-strong:text-neutral-800 dark:prose-strong:text-foreground prose-strong:font-semibold
   prose-a:text-primary prose-a:no-underline prose-a:font-medium hover:prose-a:underline prose-a:underline-offset-4
   prose-code:text-neutral-700 dark:prose-code:text-foreground/90 prose-code:bg-neutral-100 dark:prose-code:bg-border prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[14px]
@@ -362,67 +364,74 @@ export default async function BlogPostPage({
 
         <main className="min-h-screen bg-white dark:bg-background">
           <article id="article-content" className="max-w-2xl mx-auto px-6 pt-12 md:pt-20 pb-24 md:pb-16">
-            {/* Back link */}
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-900 dark:hover:text-foreground transition-colors mb-10"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Blog
-            </Link>
+            {/* Breadcrumb: the whole path, with the article itself as the last, unlinked step. */}
+            <nav aria-label="Breadcrumb" className="mb-10 text-sm text-neutral-500 dark:text-muted-foreground">
+              <ol className="flex items-center gap-2">
+                <li className="shrink-0">
+                  <Link href="/" className="hover:text-neutral-900 dark:hover:text-foreground transition-colors">
+                    {t.homeLabel}
+                  </Link>
+                </li>
+                <li aria-hidden className="shrink-0 text-neutral-300">›</li>
+                <li className="shrink-0">
+                  <Link href="/blog" className="hover:text-neutral-900 dark:hover:text-foreground transition-colors">
+                    Blog
+                  </Link>
+                </li>
+                <li aria-hidden className="shrink-0 text-neutral-300">›</li>
+                <li className="min-w-0 truncate text-neutral-900 dark:text-foreground" aria-current="page">
+                  {post.title}
+                </li>
+              </ol>
+            </nav>
 
             {/* Header */}
             <header className="mb-10 md:mb-14">
-              {/* Monospace date + reading time */}
-              <div className="flex items-center gap-3 mb-6">
-                <time
-                  dateTime={isoDate}
-                  className="text-sm text-neutral-400 dark:text-muted-foreground font-mono"
-                >
-                  {isoDate}
-                </time>
-                <span className="text-neutral-200 dark:text-border">·</span>
-                <span className="text-sm text-neutral-400 dark:text-muted-foreground font-mono">
-                  🕐 {readTime} {t.readTimeSuffix}
+              {/* Date + reading time */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-5 text-sm text-neutral-500 dark:text-muted-foreground">
+                <time dateTime={isoDate}>{publishedDate}</time>
+                <span aria-hidden className="text-neutral-300 dark:text-border">·</span>
+                <span>
+                  {readTime} {t.readTimeSuffix}
                 </span>
-              </div>
-
-              {/* Title + thumbnail row */}
-              <div className="flex gap-5 items-start">
-                <div className="flex-1">
-                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-foreground tracking-tight leading-[1.2] mb-4">
-                    {post.title}
-                  </h1>
-
-                  {post.authorName && (
-                    <p className="text-sm text-neutral-400 dark:text-muted-foreground">
+                {post.authorName && (
+                  <>
+                    <span aria-hidden className="text-neutral-300 dark:text-border">·</span>
+                    <span>
                       {t.authorPrefix}{" "}
-                      <span className="text-neutral-600 dark:text-foreground/70 font-medium">
-                        {post.authorName}
-                      </span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Small thumbnail */}
-                {post.featuredImage && (
-                  <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0">
-                    <Image
-                      src={post.featuredImage}
-                      alt={post.title}
-                      fill
-                      priority
-                      className="object-cover"
-                    />
-                  </div>
+                      <span className="font-medium text-neutral-700 dark:text-foreground/80">{post.authorName}</span>
+                    </span>
+                  </>
                 )}
               </div>
 
+              {/* Line height inline: a global heading rule outranks the utility class. */}
+              <h1
+                className="text-3xl md:text-4xl lg:text-[44px] font-extrabold text-neutral-900 dark:text-foreground tracking-tight"
+                style={{ lineHeight: 1.18 }}
+              >
+                {post.title}
+              </h1>
+
               {/* Excerpt */}
               {post.excerpt && (
-                <p className="text-base md:text-lg text-neutral-500 dark:text-muted-foreground leading-relaxed mt-5">
+                <p className="text-lg md:text-xl text-neutral-600 dark:text-muted-foreground leading-relaxed mt-5">
                   {post.excerpt}
                 </p>
+              )}
+
+              {/* Lead image — was an 80px thumbnail beside the title. */}
+              {post.featuredImage && (
+                <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-neutral-100 dark:bg-card">
+                  <Image
+                    src={post.featuredImage}
+                    alt={post.title}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 672px"
+                    className="object-cover"
+                  />
+                </div>
               )}
 
               {/* Tags */}

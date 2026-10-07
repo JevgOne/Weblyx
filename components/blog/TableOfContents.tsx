@@ -6,12 +6,23 @@ import { useLocale } from 'next-intl';
 import type { TocHeading } from '@/lib/blog-utils';
 
 const tocLabels = {
-  cs: { title: 'Obsah článku', expand: 'Zobrazit obsah' },
+  cs: { title: 'V tomto článku', expand: 'Zobrazit obsah' },
   de: { title: 'Inhaltsverzeichnis', expand: 'Inhaltsverzeichnis anzeigen' },
 } as const;
 
 interface TableOfContentsProps {
   headings: TocHeading[];
+}
+
+/**
+ * The contents list shows chapters only. With sub-headings included it ran to
+ * twenty faint lines — "Řešení:", "Typické problémy:" repeated under every
+ * chapter — and nobody could tell where in the article they were. Sub-headings
+ * come back only for an article that has too few chapters to navigate by.
+ */
+function chapters(headings: TocHeading[]): TocHeading[] {
+  const top = headings.filter((h) => h.level === 2);
+  return top.length >= 3 ? top : headings;
 }
 
 /**
@@ -24,9 +35,10 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
 
   const [isArticleVisible, setIsArticleVisible] = useState(true);
+  const items = chapters(headings);
 
   useEffect(() => {
-    const headingElements = headings
+    const headingElements = items
       .map((h) => document.getElementById(h.id))
       .filter(Boolean) as HTMLElement[];
 
@@ -48,6 +60,7 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
 
     headingElements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headings]);
 
   // Hide when scrolled past the article into the footer
@@ -76,33 +89,31 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <nav
-      className={`hidden xl:block fixed top-28 w-52 max-h-[65vh] overflow-y-auto scrollbar-thin transition-opacity duration-300 ${isArticleVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`hidden xl:block fixed top-28 w-56 max-h-[70vh] overflow-y-auto scrollbar-thin transition-opacity duration-300 ${isArticleVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       style={{ left: 'calc(50% + 22rem + 2.5rem)' }}
       aria-label={labels.title}
     >
-      <p className="text-[11px] uppercase tracking-widest text-neutral-300 dark:text-neutral-600 font-mono mb-3">
-        {labels.title}
-      </p>
-      <ul className="space-y-1">
-        {headings.map((heading) => (
-          <li key={heading.id}>
-            <button
-              onClick={() => scrollTo(heading.id)}
-              className={`
-                text-left text-[13px] leading-snug w-full py-1 transition-colors duration-200
-                ${heading.level === 3 ? 'pl-3' : 'pl-0'}
-                ${
-                  activeId === heading.id
-                    ? 'text-primary font-medium'
-                    : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-                }
-              `}
-            >
-              {heading.text}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <p className="mb-3 text-sm font-bold text-neutral-900 dark:text-foreground">{labels.title}</p>
+      <ol className="border-l border-neutral-200 dark:border-border">
+        {items.map((heading) => {
+          const active = activeId === heading.id;
+          return (
+            <li key={heading.id}>
+              <button
+                onClick={() => scrollTo(heading.id)}
+                aria-current={active ? 'location' : undefined}
+                className={`-ml-px block w-full border-l-2 py-1.5 pl-4 text-left text-[14px] leading-snug transition-colors duration-200 ${
+                  active
+                    ? 'border-primary font-semibold text-neutral-900 dark:text-foreground'
+                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-foreground'
+                }`}
+              >
+                {heading.text}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
     </nav>
   );
 }
@@ -145,12 +156,12 @@ export function MobileTableOfContents({ headings }: TableOfContentsProps) {
 
       {open && (
         <ul className="px-4 pb-3 space-y-0.5 border-t border-neutral-100 dark:border-border pt-2">
-          {headings.map((heading) => (
+          {chapters(headings).map((heading) => (
             <li key={heading.id}>
               <button
                 onClick={() => scrollTo(heading.id)}
                 className={`
-                  text-left text-sm leading-relaxed w-full py-1 text-neutral-500 dark:text-neutral-400 hover:text-primary transition-colors
+                  text-left text-sm leading-relaxed w-full py-1 text-neutral-600 dark:text-neutral-400 hover:text-primary transition-colors
                   ${heading.level === 3 ? 'pl-4' : 'pl-0 font-medium'}
                 `}
               >
