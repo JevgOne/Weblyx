@@ -67,7 +67,7 @@ export function ArticleFeedback({ postId }: ArticleFeedbackProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={() => handleFeedback('up')}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-200 dark:border-border text-neutral-600 dark:text-neutral-300 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all duration-200 text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-200 dark:border-border text-neutral-600 dark:text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all duration-200 text-sm"
           aria-label={t.yes}
         >
           <ThumbsUp className="h-4 w-4" />
@@ -75,7 +75,7 @@ export function ArticleFeedback({ postId }: ArticleFeedbackProps) {
         </button>
         <button
           onClick={() => handleFeedback('down')}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-200 dark:border-border text-neutral-600 dark:text-neutral-300 hover:border-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-200 text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-200 dark:border-border text-neutral-600 dark:text-muted-foreground hover:border-neutral-400 hover:text-neutral-700 dark:hover:text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-200 text-sm"
           aria-label={t.no}
         >
           <ThumbsDown className="h-4 w-4" />

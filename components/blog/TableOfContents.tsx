@@ -105,7 +105,7 @@ export function DesktopTableOfContents({ headings }: TableOfContentsProps) {
                 className={`-ml-px block w-full border-l-2 py-1.5 pl-4 text-left text-[14px] leading-snug transition-colors duration-200 ${
                   active
                     ? 'border-primary font-semibold text-neutral-900 dark:text-foreground'
-                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-foreground'
+                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground dark:hover:text-foreground'
                 }`}
               >
                 {heading.text}
@@ -161,7 +161,7 @@ export function MobileTableOfContents({ headings }: TableOfContentsProps) {
               <button
                 onClick={() => scrollTo(heading.id)}
                 className={`
-                  text-left text-sm leading-relaxed w-full py-1 text-neutral-600 dark:text-neutral-400 hover:text-primary transition-colors
+                  text-left text-sm leading-relaxed w-full py-1 text-neutral-600 dark:text-muted-foreground hover:text-primary transition-colors
                   ${heading.level === 3 ? 'pl-4' : 'pl-0 font-medium'}
                 `}
               >

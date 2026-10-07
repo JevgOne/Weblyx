@@ -181,7 +181,10 @@ export async function generateMetadata({
 }
 
 // Shared prose classes for article content
-const proseClasses = `prose prose-base md:prose-lg max-w-none dark:prose-invert
+// No `dark:prose-invert`: the Czech site keeps `html.dark` but restates the
+// light tokens (nova.css), so the inverted palette painted table cells pale
+// grey on white. Colours come from tokens, which are right on both sites.
+const proseClasses = `prose prose-base md:prose-lg max-w-none text-neutral-700 dark:text-foreground/80
   prose-headings:text-neutral-900 dark:prose-headings:text-foreground prose-headings:tracking-tight
   prose-h2:text-2xl prose-h2:md:text-[28px] prose-h2:font-bold prose-h2:leading-tight prose-h2:mt-14 prose-h2:mb-4 prose-h2:scroll-mt-24
   prose-h3:text-lg prose-h3:md:text-xl prose-h3:font-semibold prose-h3:mt-9 prose-h3:mb-3 prose-h3:scroll-mt-24
@@ -441,7 +444,7 @@ export default async function BlogPostPage({
                     <Badge
                       key={i}
                       variant="outline"
-                      className="border-neutral-200 dark:border-border text-neutral-500 dark:text-muted-foreground bg-transparent font-normal text-xs rounded-full px-3"
+                      className="border-primary/25 bg-primary/10 text-foreground/80 font-medium text-[13px] rounded-full px-3 py-1"
                     >
                       {tag}
                     </Badge>
@@ -519,7 +522,7 @@ export default async function BlogPostPage({
                             {rp.excerpt}
                           </p>
                         )}
-                        <span className="text-[11px] text-neutral-300 dark:text-neutral-400 font-mono">
+                        <span className="text-[11px] text-neutral-300 dark:text-muted-foreground font-mono">
                           {rp.publishedAt
                             ? new Date(rp.publishedAt).toISOString().split("T")[0]
                             : new Date(rp.createdAt).toISOString().split("T")[0]

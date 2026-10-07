@@ -81,7 +81,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
   };
 
   const iconBtnClass =
-    'flex items-center justify-center w-10 h-10 rounded-full border border-neutral-200 dark:border-border bg-white dark:bg-card text-neutral-500 dark:text-neutral-400 hover:text-primary hover:border-primary/30 dark:hover:text-primary dark:hover:border-primary/30 transition-all duration-200 shadow-sm hover:shadow';
+    'flex items-center justify-center w-10 h-10 rounded-full border border-neutral-200 dark:border-border bg-white dark:bg-card text-neutral-500 dark:text-muted-foreground hover:text-primary hover:border-primary/30 dark:hover:text-primary dark:hover:border-primary/30 transition-all duration-200 shadow-sm hover:shadow';
 
   return (
     <>
@@ -149,7 +149,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
       <div className={`xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-card/90 backdrop-blur-md border-t border-neutral-100 dark:border-border px-4 py-2 flex items-center justify-center gap-3 transition-transform duration-300 ${visible ? 'translate-y-0' : 'translate-y-full'}`}>
         <button
           onClick={copyToClipboard}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-neutral-200 dark:border-border text-neutral-600 dark:text-neutral-300 hover:text-primary hover:border-primary/30 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-neutral-200 dark:border-border text-neutral-600 dark:text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
           aria-label={t.copyLink}
         >
           {copied ? (
@@ -168,7 +168,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
           href={shareLinks.twitter}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-primary transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-muted-foreground hover:text-primary transition-colors"
           aria-label={t.twitter}
         >
           <Twitter className="h-4 w-4" />
@@ -177,7 +177,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
           href={shareLinks.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-primary transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-muted-foreground hover:text-primary transition-colors"
           aria-label={t.linkedin}
         >
           <Linkedin className="h-4 w-4" />
@@ -186,7 +186,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
           href={shareLinks.facebook}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-primary transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-muted-foreground hover:text-primary transition-colors"
           aria-label={t.facebook}
         >
           <Facebook className="h-4 w-4" />
@@ -195,7 +195,7 @@ export function FloatingShareBar({ url, title }: FloatingShareBarProps) {
           href={shareLinks.whatsapp}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-primary transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 dark:text-muted-foreground hover:text-primary transition-colors"
           aria-label={t.whatsapp}
         >
           <MessageCircle className="h-4 w-4" />
