@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { coverUrl } from "@/lib/blog-covers/auto.mjs";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -283,7 +284,8 @@ export default async function BlogPostPage({
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.excerpt || '',
-      "image": post.featuredImage ? { "@type": "ImageObject", "url": post.featuredImage, "width": 1200, "height": 630 } : undefined,
+      // Covers live on this site now, as paths — structured data needs the full URL.
+      "image": post.featuredImage ? { "@type": "ImageObject", "url": new URL(post.featuredImage, baseUrl).toString(), "width": 1200, "height": 630 } : undefined,
       "author": {
         "@type": "Person",
         "name": post.authorName || "Weblyx Team",
@@ -423,10 +425,11 @@ export default async function BlogPostPage({
               )}
 
               {/* Lead image — was an 80px thumbnail beside the title. */}
-              {post.featuredImage && (
+              {(
                 <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-neutral-100 dark:bg-card">
                   <Image
-                    src={post.featuredImage}
+                    src={coverUrl(post)}
+                    unoptimized={!post.featuredImage}
                     alt={post.title}
                     fill
                     priority
@@ -502,10 +505,11 @@ export default async function BlogPostPage({
                       href={`/blog/${rp.slug}`}
                       className="group block rounded-xl border border-neutral-100 dark:border-border overflow-hidden hover:border-primary/20 hover:shadow-sm transition-all duration-300"
                     >
-                      {rp.featuredImage && (
+                      {(
                         <div className="relative w-full aspect-[16/9] overflow-hidden bg-neutral-100 dark:bg-card">
                           <Image
-                            src={rp.featuredImage}
+                            src={coverUrl(rp)}
+                            unoptimized={!rp.featuredImage}
                             alt={rp.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-105"

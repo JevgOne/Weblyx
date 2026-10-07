@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { coverUrl } from "@/lib/blog-covers/auto.mjs";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import Link from "next/link";
 import Image from "next/image";
@@ -201,10 +202,11 @@ export default async function BlogPage() {
                 <Link href={`/blog/${post.slug}`} className="group block py-10 md:py-14">
                   {/* Full-width image at 16:9, the covers' own shape — at 21:9 the
                       bottom of every cover was cut off. */}
-                  {post.featuredImage && (
+                  {(
                     <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-8">
                       <Image
-                        src={post.featuredImage}
+                        src={coverUrl(post)}
+                        unoptimized={!post.featuredImage}
                         alt={post.title}
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"

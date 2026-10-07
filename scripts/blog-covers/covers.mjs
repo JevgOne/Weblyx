@@ -1,5 +1,5 @@
-import { C } from './kit.mjs';
-import { sceneScore, sceneList, sceneCompare, scenePhone, sceneSerp, scenePrice, sceneSteps } from './scenes.mjs';
+import { C } from '../../lib/blog-covers/kit.mjs';
+import { sceneScore, sceneList, sceneCompare, scenePhone, sceneSerp, scenePrice, sceneSteps } from '../../lib/blog-covers/scenes.mjs';
 
 /**
  * One cover per article: [glow colour, scene, what the scene shows].

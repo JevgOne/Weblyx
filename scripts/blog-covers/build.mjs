@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { createClient } from '@libsql/client';
 import puppeteer from 'puppeteer';
 import sharp from 'sharp';
-import { wrap } from './kit.mjs';
+import { wrap } from '../../lib/blog-covers/kit.mjs';
 import { covers } from './covers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
