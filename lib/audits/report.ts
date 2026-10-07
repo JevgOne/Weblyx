@@ -407,7 +407,14 @@ export function buildEmailHtml(result: AuditResult, options: { intro?: string } 
     
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:16px 16px 0 0;padding:32px;text-align:center;">
-      <h1 style="color:#14b8a6;font-size:24px;margin:0 0 8px;">Weblyx</h1>
+      <!-- The site's own mark — teal tile with a white W, then the name — built
+           from table cells: mail clients drop SVG and many block images. -->
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 12px;">
+        <tr>
+          <td width="36" height="36" align="center" valign="middle" style="width:36px;height:36px;background:#14b8a6;border-radius:9px;font-size:20px;line-height:36px;font-weight:800;color:#ffffff;">W</td>
+          <td valign="middle" style="padding-left:10px;font-size:24px;line-height:36px;font-weight:700;letter-spacing:-0.02em;color:#ffffff;">Weblyx</td>
+        </tr>
+      </table>
       <p style="color:#94a3b8;font-size:14px;margin:0;">Bezplatný audit webu</p>
     </div>
 
