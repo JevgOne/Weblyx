@@ -345,6 +345,41 @@ export function buildEmailHtml(result: AuditResult, options: { intro?: string } 
     )
     .join("");
 
+  // Most people read the top of a report and stop. The three things worth
+  // fixing first go right under the score, so that reader still leaves with
+  // something to act on. Critical findings lead; failed checks fill the rest.
+  const failedChecks = (result.checks ?? [])
+    .filter((c) => c.ok === false)
+    .map((c) => ({ title: escapeHtml(c.label), advice: escapeHtml(c.fix) }));
+  const priorities = [
+    ...findings.filter((f) => f.critical),
+    ...findings.filter((f) => !f.critical),
+    ...failedChecks.filter((c) => !findings.some((f) => f.title === c.title)),
+  ].slice(0, 3);
+
+  const prioritiesHtml = priorities.length
+    ? `
+      <h2 style="font-size:18px;color:#0f172a;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #14b8a6;">
+        🎯 ${priorities.length === 1 ? "Co opravit jako první" : `${priorities.length} věci, které opravit jako první`}
+      </h2>
+      <table role="presentation" style="width:100%;border-collapse:collapse;margin-bottom:32px;">
+        ${priorities
+          .map(
+            (p, i) => `
+        <tr>
+          <td width="34" valign="top" style="width:34px;padding:10px 0;">
+            <div style="width:24px;height:24px;border-radius:12px;background:#14b8a6;color:#ffffff;font-size:13px;font-weight:700;line-height:24px;text-align:center;">${i + 1}</div>
+          </td>
+          <td style="padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">
+            <strong style="color:#0f172a;">${p.title}</strong>
+            ${p.advice ? `<br><span style="color:#475569;font-size:13px;line-height:1.5;">${p.advice}</span>` : ""}
+          </td>
+        </tr>`
+          )
+          .join("")}
+      </table>`
+    : "";
+
   const benchmarkHtml = `
     <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:16px 18px;margin:0 0 20px;">
       <p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#0f766e;">Jak si stojíte proti trhu</p>
@@ -435,6 +470,8 @@ export function buildEmailHtml(result: AuditResult, options: { intro?: string } 
       </div>
 
       ${benchmarkHtml}
+
+      ${prioritiesHtml}
 
       <!-- Metrics -->
       <h2 style="font-size:18px;color:#0f172a;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #14b8a6;">
