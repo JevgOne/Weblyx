@@ -38,7 +38,9 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
 export function CookieChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname?.startsWith("/admin")) {
+  // The unsubscribe page sets nothing and measures nothing worth asking about,
+  // and on a phone the bar sat on top of its one button.
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/odhlasit")) {
     return null;
   }
 
