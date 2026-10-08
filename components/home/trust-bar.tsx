@@ -1,6 +1,6 @@
 import { getLocale } from "next-intl/server";
 import { getHomepagePortfolio } from "@/lib/turso/portfolio";
-import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
+import { completedProjects } from "@/lib/site-stats";
 import Image from "next/image";
 import { TrendingUp, Users, Zap, Award, Shield, Clock, Ban } from "lucide-react";
 import type { SocialProofData, TrustBadgesData } from "@/types/cms";
@@ -28,7 +28,7 @@ export async function TrustBar({ socialProofData = null, trustBadgesData = null 
   } catch {}
 
   // Counted, never typed — see lib/site-stats.ts.
-  const projects = projectsLabel(await countPublishedProjects(isDE ? "de" : "cs"));
+  const projects = await completedProjects(isDE ? "de" : "cs");
 
   // Stats from CMS or defaults
   const stats = socialProofData?.stats && socialProofData.stats.length > 0

@@ -9,7 +9,7 @@ import { LandingForm } from "@/components/landing/LandingForm";
 import { StickyCta } from "@/components/landing/StickyCta";
 import { CallLink } from "@/components/landing/CallLink";
 import { DEPOSIT_SHORT } from "@/lib/deposit";
-import { countPublishedProjects, getRatingStat, projectsLabel } from "@/lib/site-stats";
+import { countPublishedProjects, getRatingStat, completedProjects } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
@@ -75,7 +75,7 @@ const OFFER_TIERS = [
 ];
 
 export default async function WebPrahaNabidkaPage() {
-  const projects = projectsLabel(await countPublishedProjects("cs"));
+  const projects = await completedProjects("cs");
   const rating = await getRatingStat("cs");
 
   return (

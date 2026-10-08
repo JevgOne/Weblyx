@@ -3,7 +3,7 @@ import { getPublishedReviews } from "@/lib/turso/reviews";
 import { safeRead } from "@/lib/safe-read";
 import { DEFAULT_TIER_ID } from "@/lib/nova/pricing";
 import type { PricingData } from "@/lib/pricing/types";
-import { projectsLabel } from "@/lib/site-stats";
+import { completedProjectsLabel } from "@/lib/site-stats";
 
 /**
  * Numbers are counted, not typed.
@@ -41,7 +41,7 @@ export async function NovaStatsBar({ pricing }: { pricing: PricingData }) {
   // A stat with nothing behind it is dropped rather than shown as a zero.
   const stats = [
     projects.length > 0 && {
-      value: projectsLabel(projects.length),
+      value: await completedProjectsLabel(projects.length),
       label: "Dokončených projektů",
     },
     rating && { value: rating, label: "Google hodnocení" },

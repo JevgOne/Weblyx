@@ -29,7 +29,7 @@ import {
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { isSeitelyx } from "@/lib/brand";
-import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
+import { completedProjects } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
@@ -128,7 +128,7 @@ const FAQS = [
 
 export default async function WebsiteErstellenBerlinPage() {
   // Counted, never typed — see lib/site-stats.ts.
-  const projects = projectsLabel(await countPublishedProjects("de"));
+  const projects = await completedProjects("de");
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Startseite", url: "https://seitelyx.de" },
     {

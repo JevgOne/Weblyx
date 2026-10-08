@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { completedProjectsLabel } from "@/lib/site-stats";
 import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { getAlternateLanguages } from "@/lib/seo-metadata";
 import Link from "next/link";
@@ -114,6 +115,8 @@ export default async function PortfolioPage() {
   const baseUrl = isDE ? 'https://www.seitelyx.de' : 'https://www.weblyx.cz';
 
   const projects = await getPortfolioProjects(locale);
+  // The stated total, without its plus sign: "přes 50".
+  const completed = (await completedProjectsLabel(projects.length)).replace('+', '');
 
   // Schema data
   const schemaProjects: PortfolioItem[] = projects.map(data => ({
@@ -259,9 +262,10 @@ export default async function PortfolioPage() {
             {/* CTA */}
             <div className="mt-16 text-center space-y-4">
               <p className="text-muted-foreground">
+                {/* The portfolio is a selection: a project is shown only when its client agreed. */}
                 {isDE
-                  ? `${projects.length} realisierte Projekte. Möchten Sie das nächste sein?`
-                  : `${projects.length} realizovaných projektů. Budete další?`}
+                  ? `Wir zeigen nur Projekte, deren Veröffentlichung der Kunde erlaubt hat. Insgesamt haben wir über ${completed} umgesetzt. Möchten Sie das nächste sein?`
+                  : `Ukazujeme jen projekty, které nám klienti dovolili zveřejnit. Celkem jsme jich dokončili přes ${completed}. Budete další?`}
               </p>
               <Button asChild size="lg" className="group">
                 <Link href={isDE ? '/anfrage' : '/poptavka'}>

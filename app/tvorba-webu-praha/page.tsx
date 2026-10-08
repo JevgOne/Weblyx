@@ -28,7 +28,7 @@ import {
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { isSeitelyx } from "@/lib/brand";
-import { countPublishedProjects, getRatingStat, projectsLabel } from "@/lib/site-stats";
+import { countPublishedProjects, getRatingStat, completedProjects } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
@@ -263,7 +263,7 @@ const PRAGUE_REFS = [
 
 export default async function TvorbaWebuPrahaPage() {
   // Counted, never typed — see lib/site-stats.ts.
-  const projects = projectsLabel(await countPublishedProjects("cs"));
+  const projects = await completedProjects("cs");
   // Counted too — an unverifiable "100 %" used to sit here.
   const rating = await getRatingStat("cs");
   const breadcrumbs: BreadcrumbItem[] = [

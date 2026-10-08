@@ -28,7 +28,7 @@ import {
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { LeadButton } from "@/components/tracking/LeadButton";
 import { isSeitelyx } from "@/lib/brand";
-import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
+import { completedProjects } from "@/lib/site-stats";
 
 export const revalidate = 3600;
 
@@ -128,7 +128,7 @@ const FAQS = [
 
 export default async function TvorbaWebuOstravaPage() {
   // Counted, never typed — see lib/site-stats.ts.
-  const projects = projectsLabel(await countPublishedProjects("cs"));
+  const projects = await completedProjects("cs");
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Domů", url: "https://www.weblyx.cz" },
     {

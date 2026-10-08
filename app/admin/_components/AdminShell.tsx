@@ -45,6 +45,7 @@ const NAV: NavGroup[] = [
       { label: "Recenze", href: "/admin/reviews", permission: "reviews", subtitle: "Hodnocení od klientů" },
       { label: "Blog", href: "/admin/blog", permission: "blog", subtitle: "Články a jejich publikace" },
       { label: "Stránky", href: "/admin/content", permission: "content", subtitle: "Texty sekcí na webu" },
+      { label: "Čísla o firmě", href: "/admin/content/cisla", permission: "content", subtitle: "Počet projektů uváděný na celém webu" },
       { label: "Média", href: "/admin/media", permission: "media", subtitle: "Nahrané obrázky a soubory" },
     ],
   },

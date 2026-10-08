@@ -10,7 +10,7 @@ import { LandingForm } from "@/components/landing/LandingForm";
 import { StickyCta } from "@/components/landing/StickyCta";
 import { CallLink } from "@/components/landing/CallLink";
 import { DEPOSIT_SHORT } from "@/lib/deposit";
-import { countPublishedProjects, getRatingStat, projectsLabel } from "@/lib/site-stats";
+import { countPublishedProjects, getRatingStat, completedProjects } from "@/lib/site-stats";
 
 /** Bumped when the page is edited, not on every build. */
 const LAST_UPDATED = "2026-10-01";
@@ -75,7 +75,7 @@ const OFFER_TIERS = [
 ];
 
 export default async function WebProMaleFirmyPage() {
-  const projects = projectsLabel(await countPublishedProjects("cs"));
+  const projects = await completedProjects("cs");
   const rating = await getRatingStat("cs");
 
   const breadcrumbs = [

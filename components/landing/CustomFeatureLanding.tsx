@@ -7,7 +7,7 @@ import { LandingFaq, type Faq } from "@/components/landing/LandingFaq";
 import { LandingForm } from "@/components/landing/LandingForm";
 import { StickyCta } from "@/components/landing/StickyCta";
 import { CallLink } from "@/components/landing/CallLink";
-import { countPublishedProjects, getRatingStat, projectsLabel } from "@/lib/site-stats";
+import { countPublishedProjects, getRatingStat, completedProjects } from "@/lib/site-stats";
 
 /**
  * The page behind each item of the homepage's "Funkce na míru" block.
@@ -51,7 +51,7 @@ const STEPS = [
 ];
 
 export async function CustomFeatureLanding({ content }: { content: CustomFeatureContent }) {
-  const projects = projectsLabel(await countPublishedProjects("cs"));
+  const projects = await completedProjects("cs");
   const rating = await getRatingStat("cs");
   const url = `https://www.weblyx.cz${content.path}`;
 

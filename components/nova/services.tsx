@@ -117,7 +117,8 @@ export async function NovaServices() {
             className="mt-4 max-w-[460px] text-[16px] font-medium"
             style={{ lineHeight: 1.6, color: "var(--n-text-dim)" }}
           >
-            Web bývá jen začátek. Když potřebujete vlastní funkci, vymyslíme ji s vámi a
+            Web bývá jen začátek. Stavíme i systémy na míru: pro klienta jsme udělali CRM systém
+            přesně podle jeho potřeb. Když potřebujete vlastní funkci, vymyslíme ji s vámi a
             naprogramujeme.
           </p>
           <a

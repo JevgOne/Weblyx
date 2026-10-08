@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Target, Heart, Zap, Shield, Users, TrendingUp } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
-import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
+import { completedProjects } from "@/lib/site-stats";
 
 export const metadata: Metadata = {
   title: "O nás | České webové studio od 7 990 Kč",
@@ -69,7 +69,7 @@ const ONAS_FAQ: Faq[] = [
 
 export default async function AboutPage() {
   // Counted, never typed — see lib/site-stats.ts.
-  const projects = projectsLabel(await countPublishedProjects("cs"));
+  const projects = await completedProjects("cs");
   const values = [
     {
       icon: Zap,

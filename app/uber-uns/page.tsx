@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Target, Heart, Zap, Shield, TrendingUp } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateAboutPageSchema, BreadcrumbItem, generateWebPageSchema } from "@/lib/schema-org";
-import { countPublishedProjects, projectsLabel } from "@/lib/site-stats";
+import { completedProjects } from "@/lib/site-stats";
 
 export const metadata: Metadata = {
   title: "Über uns | Seitelyx – Deutsche Webagentur | Websites ab 320 €",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 
 export default async function UberUnsPage() {
   // Gezählt, nicht getippt — siehe lib/site-stats.ts.
-  const projects = projectsLabel(await countPublishedProjects("de"));
+  const projects = await completedProjects("de");
   const values = [
     {
       icon: Zap,
