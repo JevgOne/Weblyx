@@ -52,6 +52,12 @@ export async function importLeadFinderCsv(content: string) {
   const existing = await turso.execute('SELECT lower(email) AS email, website FROM lead_generation_leads');
   const known = new Set(existing.rows.map((r) => String(r.email)));
   const knownSites = new Set(existing.rows.map((r) => site(r.website)).filter(Boolean));
+  // An address that asked not to be written to is not imported again, even
+  // after its lead has been deleted from the list.
+  const optedOut = await turso
+    .execute('SELECT email FROM outreach_unsubscribes')
+    .then((r) => r.rows.map((x) => String(x.email)), () => [] as string[]);
+  for (const address of optedOut) known.add(address);
 
   for (const row of rows) {
     // A company may list several addresses — separated by a comma, a semicolon
