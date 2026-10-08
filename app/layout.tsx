@@ -99,7 +99,7 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.variable} ${manrope.variable} font-sans antialiased${isCzech ? " nova" : ""}`}>
         <NextIntlClientProvider locale={locale} timeZone="Europe/Prague" messages={messages}>
-          <ThemeProvider>
+          <ThemeProvider lightOnly={isCzech}>
             <PWAProvider>
               {/* The chrome is chosen here, on the server, because the locale
                   is a build-time constant and the route is not: a client

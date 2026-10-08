@@ -366,3 +366,11 @@
   --hairline: 214 24% 89%;
   --hairline-strong: 214 20% 82%;
 }
+
+/* The one hard-coded dark rule in globals.css. The tokens above are restated
+   as light, but `.dark .gradient-hero` paints a near-black band regardless —
+   with the light theme's dark heading on top of it, unreadable. */
+.dark .nova .gradient-hero {
+  background: linear-gradient(180deg, hsl(172 78% 97%) 0%, hsl(0 0% 100%) 100%);
+}
+
