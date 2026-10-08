@@ -55,7 +55,9 @@ export async function getLeadReport(leadId: string): Promise<LeadReport | { erro
   const intro =
     `Dobrý den,\n\nposílám slíbený rozbor webu ${domain}. Najdete v něm celkové skóre, kontrolu bod po bodu ` +
     `a u každé věci i to, jak ji opravit. Kdybyste k čemukoli měli otázku, stačí na tento e-mail odpovědět.\n\n` +
-    `${OUTREACH.name}, Weblyx · ${OUTREACH.phone}`;
+    // Name only: the report closes with its own contact block, and the phone
+    // number used to appear in the message twice.
+    `${OUTREACH.name}`;
 
   return {
     email: String(row.email),
