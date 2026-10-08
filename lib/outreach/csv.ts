@@ -41,11 +41,17 @@ export function parseLeadFinderCsv(text: string): Record<string, string>[] {
 }
 
 export async function importLeadFinderCsv(content: string) {
-  const result = { success: true, imported: 0, skipped: 0, failed: 0, errors: [] as string[] };
+  const result = { success: true, imported: 0, duplicates: 0, skipped: 0, failed: 0, errors: [] as string[] };
   const rows = parseLeadFinderCsv(content.replace(/^﻿/, ''));
 
-  const existing = await turso.execute('SELECT lower(email) AS email FROM lead_generation_leads');
+  // A company is a duplicate if its address or its website is already here —
+  // from an earlier import or from a row above in the same file. Lists for
+  // neighbouring towns and trades overlap, and the same salon turns up with
+  // "info@" in one and the owner's address in another.
+  const site = (w: unknown) => String(w ?? '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '').trim();
+  const existing = await turso.execute('SELECT lower(email) AS email, website FROM lead_generation_leads');
   const known = new Set(existing.rows.map((r) => String(r.email)));
+  const knownSites = new Set(existing.rows.map((r) => site(r.website)).filter(Boolean));
 
   for (const row of rows) {
     // A company may list several addresses — separated by a comma, a semicolon
@@ -59,8 +65,10 @@ export async function importLeadFinderCsv(content: string) {
       .map((e) => e.trim().toLowerCase())
       .find((e) => EMAIL.test(e));
     if (!email || !row.text_emailu?.trim() || !row.predmet?.trim()) { result.skipped++; continue; }
-    if (known.has(email)) { result.skipped++; continue; }
+    const domain = site(row.web);
+    if (known.has(email) || (domain && knownSites.has(domain))) { result.duplicates++; continue; }
     known.add(email);
+    if (domain) knownSites.add(domain);
     try {
       const lead = await createLead({
         companyName: row.firma,

@@ -248,7 +248,7 @@ export default function LeadGenerationPage() {
         const data = await response.json();
 
         if (data.success) {
-          alert(`Importováno: ${data.imported} leadů${data.skipped ? `\nPřeskočeno (bez e-mailu nebo už v seznamu): ${data.skipped}` : ''}${data.failed ? `\nChyby: ${data.failed}` : ''}`);
+          alert(`Importováno: ${data.imported} leadů${data.duplicates ? `\nDuplicitní, už v seznamu: ${data.duplicates}` : ''}${data.skipped ? `\nBez e-mailu: ${data.skipped}` : ''}${data.failed ? `\nChyby: ${data.failed}` : ''}`);
           loadOutreach();
 
           // Refresh leads
