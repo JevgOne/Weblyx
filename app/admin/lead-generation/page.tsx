@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,18 @@ import {
 import Link from "next/link";
 import { Lead } from "@/types/lead-generation";
 
+type Filter = 'all' | 'queued' | 'sent' | 'rejected';
+
+/** The four counts at the top; each one also filters the table. */
+const FILTERS: { key: Filter; label: string }[] = [
+  { key: 'all', label: 'Všechny leady' },
+  { key: 'queued', label: 'Ve frontě' },
+  { key: 'sent', label: 'Odesláno' },
+  { key: 'rejected', label: 'Vyřazeno' },
+];
+
+const groupOf = (lead: Lead): Filter => (lead.emailSent ? 'sent' : lead.leadStatus === 'rejected' ? 'rejected' : 'queued');
+
 interface Outreach {
   from: string;
   queued: number;
@@ -38,6 +50,36 @@ export default function LeadGenerationPage() {
   const [outreach, setOutreach] = useState<Outreach | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [sending, setSending] = useState(false);
+  const [filter, setFilter] = useState<Filter>('all');
+  const [openLead, setOpenLead] = useState<string | null>(null);
+  const [leadEmail, setLeadEmail] = useState<{ subject: string | null; html: string | null } | null>(null);
+
+  const counts: Record<Filter, number> = {
+    all: leads.length,
+    queued: leads.filter((l) => groupOf(l) === 'queued').length,
+    sent: leads.filter((l) => groupOf(l) === 'sent').length,
+    rejected: leads.filter((l) => groupOf(l) === 'rejected').length,
+  };
+  // Sent ones newest first: that is the order someone checking a batch reads them in.
+  const shown = (filter === 'all' ? leads : leads.filter((l) => groupOf(l) === filter)).slice().sort((a, b) =>
+    filter === 'sent' ? new Date(b.emailSentAt ?? 0).getTime() - new Date(a.emailSentAt ?? 0).getTime() : 0
+  );
+
+  const toggleEmail = async (leadId: string) => {
+    if (openLead === leadId) {
+      setOpenLead(null);
+      return;
+    }
+    setOpenLead(leadId);
+    setLeadEmail(null);
+    try {
+      const response = await fetch(`/api/lead-generation/outreach?leadId=${encodeURIComponent(leadId)}`, { cache: 'no-store' });
+      const data = await response.json();
+      setLeadEmail({ subject: data.subject ?? null, html: data.html ?? null });
+    } catch {
+      setLeadEmail({ subject: null, html: null });
+    }
+  };
 
   const refreshLeads = async () => {
     const response = await fetch('/api/lead-generation?limit=5000');
@@ -118,55 +160,6 @@ export default function LeadGenerationPage() {
       loadOutreach();
     }
   }, [user]);
-
-  const handleAnalyzeLead = async (leadId: string) => {
-    try {
-      const response = await fetch('/api/lead-generation/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leadId }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Refresh leads
-        const refreshResponse = await fetch('/api/lead-generation?limit=5000');
-        const refreshData = await refreshResponse.json();
-        if (refreshData.success) {
-          setLeads(refreshData.leads);
-        }
-
-        alert(`✅ Analýza hotová! Skóre: ${data.analysisResult.overallScore}/100`);
-      } else {
-        alert(`❌ Chyba: ${data.error}`);
-      }
-    } catch (error) {
-      console.error('Failed to analyze lead:', error);
-      alert("❌ Chyba při analýze webu");
-    }
-  };
-
-  const handleGenerateEmail = async (leadId: string) => {
-    try {
-      const response = await fetch('/api/lead-generation/generate-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leadId }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert(`Email vygenerován!\n\nPředmět: ${data.email.subject}\n\nTracking link: https://weblyx.cz/t/${data.email.trackingCode}`);
-      } else {
-        alert(`❌ Chyba: ${data.error}`);
-      }
-    } catch (error) {
-      console.error('Failed to generate email:', error);
-      alert('❌ Chyba při generování emailu');
-    }
-  };
 
   const handleCSVImport = async () => {
     setIsImporting(true);
@@ -260,57 +253,26 @@ export default function LeadGenerationPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Celkem leadů
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{leads.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Analyzováno
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {leads.filter(l => l.analyzedAt).length}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              E-mail odeslán
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {leads.filter(l => l.emailSent).length}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Kliknutí na odkaz
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {leads.filter(l => l.linkClicked).length}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Counts that double as filters for the table below */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {FILTERS.map((f) => {
+          const active = filter === f.key;
+          return (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setFilter(f.key)}
+              aria-pressed={active}
+              className={`rounded-xl border bg-white p-5 text-left transition-colors hover:border-teal-500 ${
+                active ? 'border-teal-500 ring-2 ring-teal-500/20' : ''
+              }`}
+            >
+              <span className="block text-sm font-medium text-muted-foreground">{f.label}</span>
+              <span className="mt-1 block text-2xl font-bold">{counts[f.key]}</span>
+              <span className="mt-1 block text-xs text-muted-foreground">{active ? 'zobrazeno níže' : 'kliknutím zobrazit'}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Outreach: what goes out next, and the buttons that send it */}
@@ -372,7 +334,9 @@ export default function LeadGenerationPage() {
       {/* Leads Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Leady ({leads.length})</CardTitle>
+          <CardTitle>
+            {FILTERS.find((f) => f.key === filter)?.label} ({shown.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -386,87 +350,75 @@ export default function LeadGenerationPage() {
               <p>Zatím tu nejsou žádné leady.</p>
               <p className="text-sm mt-2">Importujte CSV soubor pro začátek.</p>
             </div>
+          ) : shown.length === 0 ? (
+            <p className="py-8 text-center text-muted-foreground">V této skupině nic není.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left p-2 font-medium">Firma</th>
-                    <th className="text-left p-2 font-medium">Email</th>
-                    <th className="text-left p-2 font-medium">Website</th>
-                    <th className="text-center p-2 font-medium">Skóre</th>
-                    <th className="text-center p-2 font-medium">Status</th>
-                    <th className="text-right p-2 font-medium">Akce</th>
+                    <th className="text-left p-2 font-medium">E-mail</th>
+                    <th className="text-left p-2 font-medium">Web</th>
+                    <th className="text-left p-2 font-medium">Stav</th>
+                    <th className="text-right p-2 font-medium">E-mail</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {leads.map((lead) => (
-                    <tr key={lead.id} className="border-b hover:bg-muted/50">
-                      <td className="p-2">{lead.companyName}</td>
-                      <td className="p-2 text-sm text-muted-foreground">{lead.email}</td>
-                      <td className="p-2 text-sm">
-                        {lead.website ? (
-                          <a
-                            href={`https://${lead.website}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {lead.website}
-                          </a>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </td>
-                      <td className="p-2 text-center">
-                        {lead.analyzedAt ? (
-                          <Badge variant={lead.analysisScore < 50 ? 'destructive' : lead.analysisScore < 80 ? 'default' : 'secondary'}>
-                            {lead.analysisScore}/100
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">-</span>
-                        )}
-                      </td>
-                      <td className="p-2 text-center">
-                        <Badge variant={
-                          lead.leadStatus === 'converted' ? 'default' :
-                          lead.leadStatus === 'interested' ? 'secondary' :
-                          'outline'
-                        }>
-                          {lead.leadStatus}
-                        </Badge>
-                      </td>
-                      <td className="p-2">
-                        <div className="flex gap-2 justify-end">
-                          {!lead.analyzedAt && lead.website && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleAnalyzeLead(lead.id)}
+                  {shown.map((lead) => (
+                    <Fragment key={lead.id}>
+                      <tr className="border-b hover:bg-muted/50">
+                        <td className="p-2">{lead.companyName || <span className="text-muted-foreground">bez názvu</span>}</td>
+                        <td className="p-2 text-sm text-muted-foreground">{lead.email}</td>
+                        <td className="p-2 text-sm">
+                          {lead.website ? (
+                            <a
+                              href={`https://${lead.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
                             >
-                              <Search className="h-4 w-4 mr-1" />
-                              Analyzovat
-                            </Button>
+                              {lead.website}
+                            </a>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
                           )}
-
-                          {lead.analyzedAt && !lead.emailSent && (
-                            <Button
-                              size="sm"
-                              onClick={() => handleGenerateEmail(lead.id)}
-                            >
-                              <MailPlus className="h-4 w-4 mr-1" />
-                              Generovat email
-                            </Button>
-                          )}
-
-                          {lead.emailSent && (
-                            <Badge variant="secondary" className="text-xs">
-                              E-mail odeslán
+                        </td>
+                        <td className="p-2 text-sm whitespace-nowrap">
+                          {lead.emailSent ? (
+                            <Badge variant="secondary">
+                              Odesláno{lead.emailSentAt ? ` ${new Date(lead.emailSentAt).toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
                             </Badge>
+                          ) : lead.leadStatus === 'rejected' ? (
+                            <Badge variant="destructive">Vyřazeno</Badge>
+                          ) : (
+                            <Badge variant="outline">Ve frontě</Badge>
                           )}
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="p-2 text-right">
+                          <Button size="sm" variant="outline" onClick={() => toggleEmail(lead.id)}>
+                            <Search className="h-4 w-4 mr-1" />
+                            {openLead === lead.id ? 'Skrýt' : 'Zobrazit'}
+                          </Button>
+                        </td>
+                      </tr>
+                      {openLead === lead.id && (
+                        <tr className="border-b bg-muted/30">
+                          <td colSpan={5} className="p-4">
+                            {!leadEmail ? (
+                              <Skeleton className="h-40 w-full" />
+                            ) : leadEmail.html ? (
+                              <div className="rounded-lg border bg-white">
+                                <p className="border-b px-4 py-2 text-sm font-semibold">Předmět: {leadEmail.subject}</p>
+                                <iframe title="E-mail" srcDoc={leadEmail.html} className="h-[420px] w-full rounded-b-lg bg-white" />
+                              </div>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">K této firmě není připravený žádný e-mail.</p>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>

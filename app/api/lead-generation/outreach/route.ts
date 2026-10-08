@@ -55,9 +55,26 @@ async function queue(limit?: number): Promise<Queued[]> {
   }));
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const user = await getAuthUser();
   if (!user) return unauthorizedResponse();
+
+  // ?leadId=… — the e-mail of one company, as it was or will be sent.
+  const leadId = request.nextUrl.searchParams.get('leadId');
+  if (leadId) {
+    const one = await turso.execute({
+      sql: `SELECT l.email, g.subject, g.body FROM lead_generation_leads l
+              JOIN generated_emails g ON g.lead_id = l.id
+             WHERE l.id = ? ORDER BY g.created_at DESC LIMIT 1`,
+      args: [leadId],
+    });
+    const row = one.rows[0];
+    return NextResponse.json({
+      success: true,
+      subject: row ? String(row.subject) : null,
+      html: row ? buildOutreachEmail(String(row.body), String(row.email)).html : null,
+    });
+  }
 
   const all = await queue();
   const batch = all.slice(0, OUTREACH.batchSize);
