@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 import { getLead, updateLead } from '@/lib/turso/lead-generation';
 import { analyzeWebsite } from '@/lib/web-analyzer';
 
@@ -10,6 +11,10 @@ import { analyzeWebsite } from '@/lib/web-analyzer';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Leads are other companies' contact details — admin only.
+    const authUser = await getAuthUser();
+    if (!authUser) return unauthorizedResponse();
+
     const body = await request.json();
     const { leadId } = body;
 

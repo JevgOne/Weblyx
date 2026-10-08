@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 import {
   getAllLeads,
   createLead,
@@ -14,6 +15,10 @@ import { CreateLeadData } from '@/types/lead-generation';
  */
 export async function GET(request: NextRequest) {
   try {
+    // Leads are other companies' contact details — admin only.
+    const authUser = await getAuthUser();
+    if (!authUser) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? (parseInt(limitParam, 10) || undefined) : undefined;
@@ -45,6 +50,10 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Leads are other companies' contact details — admin only.
+    const authUser = await getAuthUser();
+    if (!authUser) return unauthorizedResponse();
+
     const body: CreateLeadData = await request.json();
 
     // Validate required fields

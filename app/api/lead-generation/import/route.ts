@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { importLeadsFromCSV, generateCSVTemplate } from '@/lib/csv-import';
+import { importLeadFinderCsv, isLeadFinderCsv } from '@/lib/outreach/csv';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 
 /**
  * POST /api/lead-generation/import
@@ -9,6 +11,9 @@ import { importLeadsFromCSV, generateCSVTemplate } from '@/lib/csv-import';
  */
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return unauthorizedResponse();
+
     const body = await request.json();
     const { csvContent } = body;
 
@@ -20,6 +25,11 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
+    }
+
+    // The list from lead-finder brings its own e-mails and its own format.
+    if (isLeadFinderCsv(csvContent)) {
+      return NextResponse.json(await importLeadFinderCsv(csvContent));
     }
 
     // Import leads from CSV
@@ -44,6 +54,10 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Leads are other companies' contact details — admin only.
+    const authUser = await getAuthUser();
+    if (!authUser) return unauthorizedResponse();
+
     const searchParams = request.nextUrl.searchParams;
     const isTemplate = searchParams.get('template') === 'true';
 

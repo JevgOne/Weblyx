@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 import { getLeadGenerationStats } from '@/lib/turso/lead-generation';
 
 /**
@@ -7,6 +8,10 @@ import { getLeadGenerationStats } from '@/lib/turso/lead-generation';
  */
 export async function GET() {
   try {
+    // Leads are other companies' contact details — admin only.
+    const authUser = await getAuthUser();
+    if (!authUser) return unauthorizedResponse();
+
     const stats = await getLeadGenerationStats();
 
     return NextResponse.json({

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 import { getLead } from '@/lib/turso/lead-generation';
 import { createGeneratedEmail } from '@/lib/turso/lead-generation';
 import { generateEmail } from '@/lib/email-generator';
@@ -11,6 +12,10 @@ import { generateEmail } from '@/lib/email-generator';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Leads are other companies' contact details — admin only.
+    const authUser = await getAuthUser();
+    if (!authUser) return unauthorizedResponse();
+
     const body = await request.json();
     const { leadId, campaignId } = body;
 

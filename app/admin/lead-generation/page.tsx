@@ -20,12 +20,82 @@ import {
 import Link from "next/link";
 import { Lead } from "@/types/lead-generation";
 
+interface Outreach {
+  from: string;
+  queued: number;
+  sent: number;
+  optedOut: number;
+  batch: { company: string; email: string; subject: string }[];
+  preview: { subject: string; html: string } | null;
+}
+
 export default function LeadGenerationPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isImporting, setIsImporting] = useState(false);
+  const [outreach, setOutreach] = useState<Outreach | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const refreshLeads = async () => {
+    const response = await fetch('/api/lead-generation');
+    const data = await response.json();
+    if (data.success) setLeads(data.leads);
+  };
+
+  const loadOutreach = async () => {
+    try {
+      const response = await fetch('/api/lead-generation/outreach', { cache: 'no-store' });
+      const data = await response.json();
+      if (data.success) setOutreach(data);
+    } catch (error) {
+      console.error('Failed to load outreach queue:', error);
+    }
+  };
+
+  const handleSendTest = async () => {
+    const to = window.prompt('Na jakou adresu poslat zkušební e-mail?');
+    if (!to) return;
+    setSending(true);
+    try {
+      const response = await fetch('/api/lead-generation/outreach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'test', to: to.trim() }),
+      });
+      const data = await response.json();
+      alert(data.success ? `Zkouška odeslána na ${to.trim()}. Do evidence se nezapsala.` : `❌ ${data.error}`);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleSendBatch = async () => {
+    if (!outreach || outreach.batch.length === 0) return;
+    const ok = window.confirm(
+      `Opravdu odeslat ${outreach.batch.length} e-mailů firmám?\n\nOdesílatel: ${outreach.from}\nPrvní: ${outreach.batch[0].email}\n\nOdeslané e-maily nejdou vzít zpět.`
+    );
+    if (!ok) return;
+    setSending(true);
+    try {
+      const response = await fetch('/api/lead-generation/outreach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'send' }),
+      });
+      const data = await response.json();
+      alert(
+        data.success
+          ? `Odesláno ${data.sent} e-mailů. Ve frontě zbývá ${data.remaining}.`
+          : `Odesláno ${data.sent ?? 0}, pak chyba:\n${data.error}`
+      );
+      await Promise.all([refreshLeads(), loadOutreach()]);
+    } finally {
+      setSending(false);
+    }
+  };
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -45,6 +115,7 @@ export default function LeadGenerationPage() {
 
     if (user) {
       fetchLeads();
+      loadOutreach();
     }
   }, [user]);
 
@@ -87,7 +158,7 @@ export default function LeadGenerationPage() {
       const data = await response.json();
 
       if (data.success) {
-        alert(` Email vygenerov�n!\n\nPYedmt: ${data.email.subject}\n\nTracking link: https://weblyx.cz/t/${data.email.trackingCode}`);
+        alert(`Email vygenerován!\n\nPředmět: ${data.email.subject}\n\nTracking link: https://weblyx.cz/t/${data.email.trackingCode}`);
       } else {
         alert(`❌ Chyba: ${data.error}`);
       }
@@ -123,7 +194,8 @@ export default function LeadGenerationPage() {
         const data = await response.json();
 
         if (data.success) {
-          alert(` Importov�no: ${data.imported} leado\nL Chyby: ${data.failed}`);
+          alert(`Importováno: ${data.imported} leadů${data.skipped ? `\nPřeskočeno (bez e-mailu nebo už v seznamu): ${data.skipped}` : ''}${data.failed ? `\nChyby: ${data.failed}` : ''}`);
+          loadOutreach();
 
           // Refresh leads
           const refreshResponse = await fetch('/api/lead-generation');
@@ -132,7 +204,7 @@ export default function LeadGenerationPage() {
             setLeads(refreshData.leads);
           }
         } else {
-          alert(`❌ Chyba při importu:\n${data.errors.join('\n')}`);
+          alert(`❌ Chyba při importu:\n${(data.errors ?? [data.error]).join('\n')}`);
         }
       } catch (error) {
         console.error('Failed to import CSV:', error);
@@ -193,7 +265,7 @@ export default function LeadGenerationPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Celkem leado
+              Celkem leadů
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -217,7 +289,7 @@ export default function LeadGenerationPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Email odesl�n
+              E-mail odeslán
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -230,7 +302,7 @@ export default function LeadGenerationPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Kliknut� na link
+              Kliknutí na odkaz
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -240,6 +312,62 @@ export default function LeadGenerationPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Outreach: what goes out next, and the buttons that send it */}
+      {outreach && (outreach.queued > 0 || outreach.sent > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Rozesílka oslovení</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Ve frontě <strong className="text-foreground">{outreach.queued}</strong> · odesláno{' '}
+              <strong className="text-foreground">{outreach.sent}</strong> · odhlášeno{' '}
+              <strong className="text-foreground">{outreach.optedOut}</strong>. Odesílatel {outreach.from}. Jedna dávka
+              je nejvýše 20 e-mailů a každá firma dostane e-mail jen jednou.
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => setShowPreview((v) => !v)} disabled={outreach.batch.length === 0}>
+                <Search className="h-4 w-4 mr-2" />
+                {showPreview ? 'Skrýt náhled' : `Náhled další dávky (${outreach.batch.length})`}
+              </Button>
+              <Button variant="outline" onClick={handleSendTest} disabled={sending || outreach.batch.length === 0}>
+                <MailPlus className="h-4 w-4 mr-2" />
+                Poslat zkoušku
+              </Button>
+              <Button onClick={handleSendBatch} disabled={sending || outreach.batch.length === 0}>
+                <MailPlus className="h-4 w-4 mr-2" />
+                {sending ? 'Odesílám…' : `Odeslat dávku (${outreach.batch.length})`}
+              </Button>
+            </div>
+
+            {showPreview && outreach.preview && (
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-lg border">
+                  <p className="border-b px-4 py-2 text-sm font-semibold">Komu půjde tato dávka</p>
+                  <ul className="max-h-[420px] divide-y overflow-y-auto text-sm">
+                    {outreach.batch.map((m) => (
+                      <li key={m.email} className="px-4 py-2">
+                        <span className="font-medium">{m.company}</span>
+                        <span className="text-muted-foreground"> · {m.email}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-lg border">
+                  <p className="border-b px-4 py-2 text-sm font-semibold">První e-mail: {outreach.preview.subject}</p>
+                  <iframe
+                    title="Náhled e-mailu"
+                    srcDoc={outreach.preview.html}
+                    className="h-[420px] w-full rounded-b-lg bg-white"
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Leads Table */}
       <Card>
@@ -255,9 +383,8 @@ export default function LeadGenerationPage() {
             </div>
           ) : leads.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <p>Zat�m nejsou ~�dn� leady.</p>
-              <p className="text-sm mt-2">Importujte CSV soubor pro za
-�tek.</p>
+              <p>Zatím tu nejsou žádné leady.</p>
+              <p className="text-sm mt-2">Importujte CSV soubor pro začátek.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -267,7 +394,7 @@ export default function LeadGenerationPage() {
                     <th className="text-left p-2 font-medium">Firma</th>
                     <th className="text-left p-2 font-medium">Email</th>
                     <th className="text-left p-2 font-medium">Website</th>
-                    <th className="text-center p-2 font-medium">Sk�re</th>
+                    <th className="text-center p-2 font-medium">Skóre</th>
                     <th className="text-center p-2 font-medium">Status</th>
                     <th className="text-right p-2 font-medium">Akce</th>
                   </tr>
@@ -334,7 +461,7 @@ export default function LeadGenerationPage() {
 
                           {lead.emailSent && (
                             <Badge variant="secondary" className="text-xs">
-                               Email pYipraven
+                              E-mail odeslán
                             </Badge>
                           )}
                         </div>

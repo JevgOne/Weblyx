@@ -31,6 +31,8 @@ export async function sendEmail(params: {
   text?: string;
   replyTo?: string;
   from?: string; // Optional override for testing
+  /** Extra message headers, e.g. List-Unsubscribe on outreach. */
+  headers?: Record<string, string>;
 }) {
   try {
     // 🛑 Global kill switch — set EMAILS_DISABLED=true to stop ALL outgoing emails.
