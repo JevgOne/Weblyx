@@ -64,7 +64,6 @@ const NAV: NavGroup[] = [
       { label: "Marketing", href: "/admin/marketing", subtitle: "Google a Meta kampaně" },
       { label: "AI asistent", href: "/admin/ai-assistant", subtitle: "Generování textů a návrhů" },
       { label: "Web leady", href: "/admin/web-leads", permission: "web_analyzer", subtitle: "Firmy se zastaralým webem" },
-      { label: "Lead generation", href: "/admin/lead-generation", permission: "lead_generation", subtitle: "Vyhledávání nových kontaktů" },
     ],
   },
   {
@@ -128,8 +127,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   })).filter((group) => group.items.length > 0);
 
   const allItems = visibleGroups.flatMap((group) => group.items);
-  // Longest matching href wins, so /admin/lead-generation does not light up
-  // /admin/leads.
+  // Longest matching href wins, so a longer path never lights up a shorter
+  // one it merely starts with.
   const active = allItems
     .filter((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`))
     .sort((a, b) => b.href.length - a.href.length)[0];

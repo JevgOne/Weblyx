@@ -4,7 +4,10 @@ import { Resend } from 'resend';
 export const EMAIL_CONFIG = {
   // Trimmed: the production value carried a trailing newline.
   from: process.env.RESEND_FROM_EMAIL?.trim() || 'Weblyx <noreply@weblyx.cz>',
-  adminEmail: process.env.ADMIN_EMAIL?.trim() || 'info@weblyx.cz',
+  // Where the team's notifications go. NOTIFY_EMAIL is its own setting because
+  // ADMIN_EMAIL is also the owner's login to the admin panel — pointing
+  // notifications elsewhere must not change how anyone signs in.
+  adminEmail: process.env.NOTIFY_EMAIL?.trim() || process.env.ADMIN_EMAIL?.trim() || 'info@weblyx.cz',
 } as const;
 
 // Lazy initialize Resend client to ensure API key is loaded
