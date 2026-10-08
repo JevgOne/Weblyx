@@ -6,6 +6,7 @@ import { OUTREACH, buildOutreachEmail } from '@/lib/outreach/email';
 import { isUnsubscribed } from '@/lib/outreach/unsubscribe';
 import { EMAIL } from '@/lib/outreach/csv';
 import { improveQueuedEmails } from '@/lib/outreach/improve';
+import { getLeadReport } from '@/lib/outreach/report';
 
 /**
  * Sending the outreach e-mails that were imported with the lead list.
@@ -13,6 +14,7 @@ import { improveQueuedEmails } from '@/lib/outreach/improve';
  * GET  — what would go out next: the queue size, the next batch, and the first
  *        e-mail rendered. Sends nothing.
  * POST — { action: 'test', to }  one sample to the given address, not recorded
+ *        { action: 'report', leadId }  the full analysis to that one company
  *        { action: 'analyze' }   rewrites a few queued e-mails from an analysis
  *                                of each company's website; call until none remain
  *        { action: 'send' }      the next batch, at most 20, 1.5 s apart
@@ -64,6 +66,13 @@ export async function GET(request: NextRequest) {
 
   // ?leadId=… — the e-mail of one company, as it was or will be sent.
   const leadId = request.nextUrl.searchParams.get('leadId');
+  // ?leadId=…&report=1 — the full analysis of that company's website.
+  if (leadId && request.nextUrl.searchParams.get('report')) {
+    const report = await getLeadReport(leadId);
+    return 'error' in report
+      ? NextResponse.json({ success: false, error: report.error })
+      : NextResponse.json({ success: true, subject: report.subject, html: report.html, score: report.score });
+  }
   if (leadId) {
     const one = await turso.execute({
       sql: `SELECT l.email, g.subject, g.body FROM lead_generation_leads l
@@ -106,7 +115,21 @@ export async function POST(request: NextRequest) {
   const user = await getAuthUser();
   if (!user) return unauthorizedResponse();
 
-  const { action, to } = await request.json().catch(() => ({}));
+  const { action, to, leadId } = await request.json().catch(() => ({}));
+
+  // The full report, sent to one company — for when it replies and asks for it.
+  if (action === 'report') {
+    if (typeof leadId !== 'string') return NextResponse.json({ success: false, error: 'Chybí firma.' }, { status: 400 });
+    const report = await getLeadReport(leadId);
+    if ('error' in report) return NextResponse.json({ success: false, error: report.error }, { status: 400 });
+    const result = await sendEmail({ from: OUTREACH.from, to: report.email, subject: report.subject, html: report.html });
+    if (!result.success) return NextResponse.json({ success: false, error: result.error ?? 'Odeslání selhalo' }, { status: 502 });
+    await turso.execute({
+      sql: "UPDATE lead_generation_leads SET lead_status = 'interested', notes = coalesce(notes || ' · ', '') || 'rozbor odeslán ' || date('now'), updated_at = unixepoch() WHERE id = ?",
+      args: [leadId],
+    });
+    return NextResponse.json({ success: true, to: report.email });
+  }
 
   if (action === 'test') {
     if (typeof to !== 'string' || !to.includes('@')) {

@@ -67,7 +67,39 @@ export default function LeadGenerationPage() {
     filter === 'sent' ? new Date(b.emailSentAt ?? 0).getTime() - new Date(a.emailSentAt ?? 0).getTime() : 0
   );
 
+  const [report, setReport] = useState<{ loading: boolean; subject?: string; html?: string; error?: string } | null>(null);
+
+  const loadReport = async (leadId: string) => {
+    setReport({ loading: true });
+    try {
+      const response = await fetch(`/api/lead-generation/outreach?leadId=${encodeURIComponent(leadId)}&report=1`, { cache: 'no-store' });
+      const data = await response.json();
+      setReport(data.success ? { loading: false, subject: data.subject, html: data.html } : { loading: false, error: data.error });
+      if (data.success) refreshLeads();
+    } catch {
+      setReport({ loading: false, error: 'Rozbor se nepodařilo načíst.' });
+    }
+  };
+
+  const sendReport = async (lead: Lead) => {
+    if (!window.confirm(`Poslat celý rozbor webu na ${lead.email}?`)) return;
+    setSending(true);
+    try {
+      const response = await fetch('/api/lead-generation/outreach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'report', leadId: lead.id }),
+      });
+      const data = await response.json();
+      alert(data.success ? `Rozbor odeslán na ${data.to}.` : `❌ ${data.error}`);
+      if (data.success) refreshLeads();
+    } finally {
+      setSending(false);
+    }
+  };
+
   const toggleEmail = async (leadId: string) => {
+    setReport(null);
     if (openLead === leadId) {
       setOpenLead(null);
       return;
@@ -450,6 +482,39 @@ export default function LeadGenerationPage() {
                             ) : (
                               <p className="text-sm text-muted-foreground">K této firmě není připravený žádný e-mail.</p>
                             )}
+
+                            {/* The full analysis: to read, and to send when the company asks for it */}
+                            <div className="mt-4 rounded-lg border bg-white p-4">
+                              <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                  <p className="text-sm font-semibold">Celý rozbor webu</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {lead.website
+                                      ? 'Ten, který e-mail nabízí. Pošlete ho, až si o něj firma napíše.'
+                                      : 'Firma nemá v seznamu web, rozbor není z čeho udělat.'}
+                                  </p>
+                                </div>
+                                {lead.website && (
+                                  <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" onClick={() => loadReport(lead.id)} disabled={report?.loading}>
+                                      <BarChart3 className="h-4 w-4 mr-1" />
+                                      {report?.loading ? 'Načítám…' : 'Zobrazit rozbor'}
+                                    </Button>
+                                    <Button size="sm" onClick={() => sendReport(lead)} disabled={sending}>
+                                      <MailPlus className="h-4 w-4 mr-1" />
+                                      Poslat rozbor firmě
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                              {report?.error && <p className="mt-3 text-sm text-red-600">{report.error}</p>}
+                              {report?.html && (
+                                <div className="mt-3 rounded-lg border">
+                                  <p className="border-b px-4 py-2 text-sm font-semibold">Předmět: {report.subject}</p>
+                                  <iframe title="Rozbor webu" srcDoc={report.html} className="h-[560px] w-full rounded-b-lg bg-white" />
+                                </div>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       )}

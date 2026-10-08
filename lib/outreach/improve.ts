@@ -21,7 +21,7 @@ const withTimeout = <T,>(p: Promise<T>) =>
  * no certificate: https fails outright and only http answers. Trying https
  * alone left a third of the leads unanalysed.
  */
-async function audit(website: string) {
+export async function audit(website: string) {
   const bare = website.replace(/^https?:\/\//, '');
   try {
     return await withTimeout(runLocalAudit(`https://${bare}`));
@@ -49,10 +49,13 @@ export async function improveQueuedEmails(limit: number) {
       const id = String(row.id);
       const website = String(row.website);
       let score: number | null = null;
+      let stored: string | null = null;
       let mail: { subject: string; body: string } | null = null;
       try {
         const result = await audit(website);
         score = result.score;
+        // Kept so the full report can be shown and sent later without re-reading the site.
+        stored = JSON.stringify(result);
         mail = composeFromAudit(result, { company: String(row.company_name ?? ''), website });
       } catch {
         // Unreachable or unreadable site: the stock e-mail stays.
@@ -68,8 +71,8 @@ export async function improveQueuedEmails(limit: number) {
         outcome.kept++;
       }
       await turso.execute({
-        sql: 'UPDATE lead_generation_leads SET analyzed_at = unixepoch(), analysis_score = ?, updated_at = unixepoch() WHERE id = ?',
-        args: [score ?? 0, id],
+        sql: 'UPDATE lead_generation_leads SET analyzed_at = unixepoch(), analysis_score = ?, analysis_result = coalesce(?, analysis_result), updated_at = unixepoch() WHERE id = ?',
+        args: [score ?? 0, stored, id],
       });
     })
   );
