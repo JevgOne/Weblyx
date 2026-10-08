@@ -121,6 +121,12 @@ export default async function FAQPage() {
           <div className="container mx-auto max-w-4xl">
             {enabledFaqs.length > 0 ? (
               <>
+                {/* The questions are h3 (the accordion's own headers); without an
+                    h2 above them they hung straight off the h1. */}
+                <h2 className="mb-8 text-2xl font-bold md:text-3xl">
+                  {locale === 'de' ? 'Fragen und Antworten zur Website-Erstellung' : 'Otázky a odpovědi o tvorbě webu'}
+                </h2>
+
                 {/* Interactive accordion for users with JS */}
                 <Accordion type="single" collapsible className="space-y-4">
                   {enabledFaqs.map((faq) => (
@@ -140,15 +146,17 @@ export default async function FAQPage() {
                   ))}
                 </Accordion>
 
-                {/* Hidden FAQ content for crawlers/SEO — Radix Accordion doesn't render collapsed content in DOM */}
-                <div className="sr-only" aria-hidden="true">
+                {/* Hidden FAQ content for crawlers/SEO — Radix Accordion doesn't render collapsed content in DOM.
+                    A definition list, not headings: as h3 these repeated every
+                    question the accordion already carries as a heading. */}
+                <dl className="sr-only" aria-hidden="true">
                   {enabledFaqs.map((faq) => (
                     <div key={`seo-${faq.id}`}>
-                      <h3 className="faq-question">{faq.question}</h3>
-                      <p className="faq-answer">{faq.answer}</p>
+                      <dt className="faq-question">{faq.question}</dt>
+                      <dd className="faq-answer">{faq.answer}</dd>
                     </div>
                   ))}
-                </div>
+                </dl>
               </>
             ) : (
               <div className="text-center py-12">

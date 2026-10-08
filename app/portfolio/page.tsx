@@ -169,6 +169,20 @@ export default async function PortfolioPage() {
                 ? 'Schnelle, moderne Websites – von Fitness-Studios bis E-Commerce'
                 : 'Rychlé, moderní weby — od fitness studií po e-shopy'}
             </p>
+            {/* The page that shows the work linked to nothing that sells it. */}
+            {!isDE && (
+              <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+                Chcete podobný web? Podívejte se, jak děláme{' '}
+                <Link href="/" className="font-semibold text-primary hover:underline">
+                  tvorbu webových stránek
+                </Link>
+                , nebo rovnou na{' '}
+                <Link href="/cenik-webu" className="font-semibold text-primary hover:underline">
+                  ceník webu
+                </Link>
+                .
+              </p>
+            )}
           </div>
         </section>
 
