@@ -4,6 +4,7 @@ import { turso } from '@/lib/turso';
 import { sendEmail } from '@/lib/email/resend-client';
 import { OUTREACH, buildOutreachEmail } from '@/lib/outreach/email';
 import { isUnsubscribed } from '@/lib/outreach/unsubscribe';
+import { EMAIL } from '@/lib/outreach/csv';
 
 /**
  * Sending the outreach e-mails that were imported with the lead list.
@@ -37,7 +38,7 @@ async function queue(limit?: number): Promise<Queued[]> {
     sql: `SELECT l.id AS lead_id, g.id AS email_id, l.company_name, l.email, g.subject, g.body
             FROM lead_generation_leads l
             JOIN generated_emails g ON g.lead_id = l.id
-           WHERE l.email_sent = 0 AND g.sent = 0
+           WHERE l.email_sent = 0 AND g.sent = 0 AND l.lead_status != 'rejected'
              AND lower(l.email) NOT IN (SELECT email FROM outreach_unsubscribes)
            GROUP BY l.id
            ORDER BY l.created_at, l.id
@@ -103,6 +104,13 @@ export async function POST(request: NextRequest) {
   let error: string | null = null;
 
   for (const m of batch) {
+    // An address that is not one would be refused by the mail service, and the
+    // refusal used to stop the batch — at the same lead, every time. It is set
+    // aside instead and the batch goes on.
+    if (!EMAIL.test(m.email)) {
+      await turso.execute({ sql: "UPDATE lead_generation_leads SET lead_status = 'rejected', notes = coalesce(notes || ' · ', '') || 'neplatná adresa', updated_at = unixepoch() WHERE id = ?", args: [m.leadId] });
+      continue;
+    }
     const mail = buildOutreachEmail(m.body, m.email);
     const result = await sendEmail({ from: OUTREACH.from, to: m.email, subject: m.subject, ...mail });
     if (!result.success) {

@@ -9,6 +9,9 @@ import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
  *
  * Body: { csvContent: string }
  */
+// A few hundred rows are a few hundred round trips to the database.
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getAuthUser();

@@ -16,6 +16,8 @@ export function isLeadFinderCsv(content: string): boolean {
   return header.includes(';') && header.includes('firma') && header.includes('text_emailu');
 }
 
+export const EMAIL = /^[^\s@;,]+@[^\s@;,]+\.[a-z]{2,}$/i;
+
 /** Semicolon-separated, with quoted cells that may contain line breaks. */
 export function parseLeadFinderCsv(text: string): Record<string, string>[] {
   const rows: string[][] = [];
@@ -46,8 +48,11 @@ export async function importLeadFinderCsv(content: string) {
   const known = new Set(existing.rows.map((r) => String(r.email)));
 
   for (const row of rows) {
-    // A company may list several addresses; only the first is written to.
-    const email = (row.email ?? '').split(',')[0].trim().toLowerCase();
+    // A company may list several addresses — separated by a comma, a semicolon
+    // or a space, depending on where the list found them. Only the first valid
+    // one is written to; "a@x.cz;b@y.cz" taken whole is not an address, and one
+    // such row stopped a whole batch.
+    const email = (row.email ?? '').split(/[,;\s]+/).map((e) => e.trim().toLowerCase()).find((e) => EMAIL.test(e));
     if (!email || !row.text_emailu?.trim() || !row.predmet?.trim()) { result.skipped++; continue; }
     if (known.has(email)) { result.skipped++; continue; }
     known.add(email);

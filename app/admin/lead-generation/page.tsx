@@ -40,7 +40,7 @@ export default function LeadGenerationPage() {
   const [sending, setSending] = useState(false);
 
   const refreshLeads = async () => {
-    const response = await fetch('/api/lead-generation');
+    const response = await fetch('/api/lead-generation?limit=5000');
     const data = await response.json();
     if (data.success) setLeads(data.leads);
   };
@@ -100,7 +100,7 @@ export default function LeadGenerationPage() {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const response = await fetch('/api/lead-generation');
+        const response = await fetch('/api/lead-generation?limit=5000');
         const data = await response.json();
 
         if (data.success) {
@@ -131,7 +131,7 @@ export default function LeadGenerationPage() {
 
       if (data.success) {
         // Refresh leads
-        const refreshResponse = await fetch('/api/lead-generation');
+        const refreshResponse = await fetch('/api/lead-generation?limit=5000');
         const refreshData = await refreshResponse.json();
         if (refreshData.success) {
           setLeads(refreshData.leads);
@@ -198,7 +198,7 @@ export default function LeadGenerationPage() {
           loadOutreach();
 
           // Refresh leads
-          const refreshResponse = await fetch('/api/lead-generation');
+          const refreshResponse = await fetch('/api/lead-generation?limit=5000');
           const refreshData = await refreshResponse.json();
           if (refreshData.success) {
             setLeads(refreshData.leads);
