@@ -13,6 +13,23 @@ import { composeFromAudit } from '@/lib/outreach/compose';
  */
 const SITE_TIMEOUT_MS = 25_000;
 
+const withTimeout = <T,>(p: Promise<T>) =>
+  Promise.race([p, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), SITE_TIMEOUT_MS))]);
+
+/**
+ * The sites worth writing to are the old ones, and plenty of those still have
+ * no certificate: https fails outright and only http answers. Trying https
+ * alone left a third of the leads unanalysed.
+ */
+async function audit(website: string) {
+  const bare = website.replace(/^https?:\/\//, '');
+  try {
+    return await withTimeout(runLocalAudit(`https://${bare}`));
+  } catch {
+    return await withTimeout(runLocalAudit(`http://${bare}`));
+  }
+}
+
 export async function improveQueuedEmails(limit: number) {
   const pending = await turso.execute({
     sql: `SELECT l.id, l.company_name, l.website
@@ -34,10 +51,7 @@ export async function improveQueuedEmails(limit: number) {
       let score: number | null = null;
       let mail: { subject: string; body: string } | null = null;
       try {
-        const result = await Promise.race([
-          runLocalAudit(/^https?:\/\//.test(website) ? website : `https://${website}`),
-          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), SITE_TIMEOUT_MS)),
-        ]);
+        const result = await audit(website);
         score = result.score;
         mail = composeFromAudit(result, { company: String(row.company_name ?? ''), website });
       } catch {
