@@ -21,6 +21,20 @@ export function unsubscribeToken(email: string): string | null {
   return createHmac('sha256', secret).update(normalize(email)).digest('hex').slice(0, 32);
 }
 
+/** Token for the "send me the full report" link — a different one, so neither link can stand in for the other. */
+export function reportToken(email: string): string | null {
+  const secret = process.env.OUTREACH_UNSUBSCRIBE_SECRET;
+  if (!secret) return null;
+  return createHmac('sha256', secret).update(`report:${normalize(email)}`).digest('hex').slice(0, 32);
+}
+
+export function isValidReportLink(email: unknown, token: unknown): email is string {
+  if (typeof email !== 'string' || typeof token !== 'string' || !email.includes('@')) return false;
+  const expected = reportToken(email);
+  if (!expected || expected.length !== token.length) return false;
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(token));
+}
+
 export function isValidUnsubscribeLink(email: unknown, token: unknown): email is string {
   if (typeof email !== 'string' || typeof token !== 'string' || !email.includes('@')) return false;
   const expected = unsubscribeToken(email);

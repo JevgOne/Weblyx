@@ -40,7 +40,7 @@ export function CookieChrome({ children }: { children: React.ReactNode }) {
 
   // The unsubscribe page sets nothing and measures nothing worth asking about,
   // and on a phone the bar sat on top of its one button.
-  if (pathname?.startsWith("/admin") || pathname?.startsWith("/odhlasit")) {
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/odhlasit") || pathname?.startsWith("/rozbor")) {
     return null;
   }
 

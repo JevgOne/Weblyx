@@ -6,7 +6,7 @@ import { OUTREACH, buildOutreachEmail } from '@/lib/outreach/email';
 import { isUnsubscribed } from '@/lib/outreach/unsubscribe';
 import { EMAIL } from '@/lib/outreach/csv';
 import { improveQueuedEmails } from '@/lib/outreach/improve';
-import { getLeadReport } from '@/lib/outreach/report';
+import { getLeadReport, sendLeadReport } from '@/lib/outreach/report';
 
 /**
  * Sending the outreach e-mails that were imported with the lead list.
@@ -34,13 +34,16 @@ interface Queued {
   email: string;
   subject: string;
   body: string;
+  /** The site has been analysed, so the e-mail can carry the "send me the report" link. */
+  hasReport: boolean;
 }
 
 async function queue(limit?: number): Promise<Queued[]> {
   // Creates the opt-out table if this is the first time anything asks about it.
   await isUnsubscribed('nobody@example.invalid');
   const result = await turso.execute({
-    sql: `SELECT l.id AS lead_id, g.id AS email_id, l.company_name, l.email, g.subject, g.body
+    sql: `SELECT l.id AS lead_id, g.id AS email_id, l.company_name, l.email, g.subject, g.body,
+                 (l.analysis_result LIKE '%"checks"%') AS has_report
             FROM lead_generation_leads l
             JOIN generated_emails g ON g.lead_id = l.id
            WHERE l.email_sent = 0 AND g.sent = 0 AND l.lead_status != 'rejected'
@@ -57,6 +60,7 @@ async function queue(limit?: number): Promise<Queued[]> {
     email: String(r.email),
     subject: String(r.subject),
     body: String(r.body),
+    hasReport: Boolean(r.has_report),
   }));
 }
 
@@ -75,7 +79,7 @@ export async function GET(request: NextRequest) {
   }
   if (leadId) {
     const one = await turso.execute({
-      sql: `SELECT l.email, g.subject, g.body FROM lead_generation_leads l
+      sql: `SELECT l.email, g.subject, g.body, (l.analysis_result LIKE '%"checks"%') AS has_report FROM lead_generation_leads l
               JOIN generated_emails g ON g.lead_id = l.id
              WHERE l.id = ? ORDER BY g.created_at DESC LIMIT 1`,
       args: [leadId],
@@ -84,7 +88,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       subject: row ? String(row.subject) : null,
-      html: row ? buildOutreachEmail(String(row.body), String(row.email)).html : null,
+      html: row ? buildOutreachEmail(String(row.body), String(row.email), { withReport: Boolean(row.has_report) }).html : null,
     });
   }
 
@@ -107,7 +111,7 @@ export async function GET(request: NextRequest) {
     optedOut: Number(optedOut.rows[0].n),
     toAnalyze: Number(toAnalyze.rows[0].n),
     batch: batch.map((m) => ({ company: m.company, email: m.email, subject: m.subject })),
-    preview: batch[0] ? { subject: batch[0].subject, html: buildOutreachEmail(batch[0].body, batch[0].email).html } : null,
+    preview: batch[0] ? { subject: batch[0].subject, html: buildOutreachEmail(batch[0].body, batch[0].email, { withReport: batch[0].hasReport }).html } : null,
   });
 }
 
@@ -120,15 +124,10 @@ export async function POST(request: NextRequest) {
   // The full report, sent to one company — for when it replies and asks for it.
   if (action === 'report') {
     if (typeof leadId !== 'string') return NextResponse.json({ success: false, error: 'Chybí firma.' }, { status: 400 });
-    const report = await getLeadReport(leadId);
-    if ('error' in report) return NextResponse.json({ success: false, error: report.error }, { status: 400 });
-    const result = await sendEmail({ from: OUTREACH.from, to: report.email, subject: report.subject, html: report.html });
-    if (!result.success) return NextResponse.json({ success: false, error: result.error ?? 'Odeslání selhalo' }, { status: 502 });
-    await turso.execute({
-      sql: "UPDATE lead_generation_leads SET lead_status = 'interested', notes = coalesce(notes || ' · ', '') || 'rozbor odeslán ' || date('now'), updated_at = unixepoch() WHERE id = ?",
-      args: [leadId],
-    });
-    return NextResponse.json({ success: true, to: report.email });
+    const sent = await sendLeadReport(leadId, 'admin');
+    return 'error' in sent
+      ? NextResponse.json({ success: false, error: sent.error }, { status: 400 })
+      : NextResponse.json({ success: true, to: sent.to });
   }
 
   if (action === 'test') {
@@ -138,7 +137,7 @@ export async function POST(request: NextRequest) {
     const [first] = await queue(1);
     if (!first) return NextResponse.json({ success: false, error: 'Fronta je prázdná.' }, { status: 400 });
     // Built for the test address, so its unsubscribe link cannot opt the real company out.
-    const mail = buildOutreachEmail(first.body, to);
+    const mail = buildOutreachEmail(first.body, to, { withReport: first.hasReport });
     const result = await sendEmail({ from: OUTREACH.from, to, subject: first.subject, ...mail });
     return result.success
       ? NextResponse.json({ success: true, sent: 1 })
@@ -166,7 +165,7 @@ export async function POST(request: NextRequest) {
       await turso.execute({ sql: "UPDATE lead_generation_leads SET lead_status = 'rejected', notes = coalesce(notes || ' · ', '') || 'neplatná adresa', updated_at = unixepoch() WHERE id = ?", args: [m.leadId] });
       continue;
     }
-    const mail = buildOutreachEmail(m.body, m.email);
+    const mail = buildOutreachEmail(m.body, m.email, { withReport: m.hasReport });
     const result = await sendEmail({ from: OUTREACH.from, to: m.email, subject: m.subject, ...mail });
     if (!result.success) {
       error = `${m.email}: ${result.error ?? 'odeslání selhalo'}`;
