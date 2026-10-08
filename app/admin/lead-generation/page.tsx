@@ -37,6 +37,7 @@ interface Outreach {
   queued: number;
   sent: number;
   optedOut: number;
+  toAnalyze: number;
   batch: { company: string; email: string; subject: string }[];
   preview: { subject: string; html: string } | null;
 }
@@ -50,6 +51,7 @@ export default function LeadGenerationPage() {
   const [outreach, setOutreach] = useState<Outreach | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [sending, setSending] = useState(false);
+  const [analyzeLeft, setAnalyzeLeft] = useState<number | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [openLead, setOpenLead] = useState<string | null>(null);
   const [leadEmail, setLeadEmail] = useState<{ subject: string | null; html: string | null } | null>(null);
@@ -94,6 +96,33 @@ export default function LeadGenerationPage() {
       if (data.success) setOutreach(data);
     } catch (error) {
       console.error('Failed to load outreach queue:', error);
+    }
+  };
+
+  // Rewrites the stock e-mails from an analysis of each company's website,
+  // a few leads per request, until none are left.
+  const handleAnalyze = async () => {
+    setSending(true);
+    try {
+      let remaining = outreach?.toAnalyze ?? 0;
+      let improved = 0;
+      while (remaining > 0) {
+        const response = await fetch('/api/lead-generation/outreach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'analyze' }),
+        });
+        const data = await response.json();
+        if (!data.success) break;
+        improved += data.improved;
+        remaining = data.remaining;
+        setAnalyzeLeft(remaining);
+      }
+      alert(`Hotovo. E-mail podle rozboru webu dostalo ${improved} firem; ostatním zůstal původní text.`);
+      await loadOutreach();
+    } finally {
+      setAnalyzeLeft(null);
+      setSending(false);
     }
   };
 
@@ -294,6 +323,12 @@ export default function LeadGenerationPage() {
                 <Search className="h-4 w-4 mr-2" />
                 {showPreview ? 'Skrýt náhled' : `Náhled další dávky (${outreach.batch.length})`}
               </Button>
+              {outreach.toAnalyze > 0 && (
+                <Button variant="outline" onClick={handleAnalyze} disabled={sending}>
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  {analyzeLeft !== null ? `Analyzuji weby… zbývá ${analyzeLeft}` : `Napsat e-maily podle rozboru webu (${outreach.toAnalyze})`}
+                </Button>
+              )}
               <Button variant="outline" onClick={handleSendTest} disabled={sending || outreach.batch.length === 0}>
                 <MailPlus className="h-4 w-4 mr-2" />
                 Poslat zkoušku

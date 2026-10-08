@@ -153,7 +153,7 @@ function formatMs(ms: number): string {
 }
 
 /** Our own analysis, shaped like a PSI result so the caller cannot tell. */
-async function runLocalAudit(url: string): Promise<AuditResult> {
+export async function runLocalAudit(url: string): Promise<AuditResult> {
   const a = await analyzeWebsite(url);
   // The checklist never fails the audit: a robots.txt that times out is a
   // missing line in the report, not an error page for the visitor.

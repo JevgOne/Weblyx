@@ -5,6 +5,7 @@ import { sendEmail } from '@/lib/email/resend-client';
 import { OUTREACH, buildOutreachEmail } from '@/lib/outreach/email';
 import { isUnsubscribed } from '@/lib/outreach/unsubscribe';
 import { EMAIL } from '@/lib/outreach/csv';
+import { improveQueuedEmails } from '@/lib/outreach/improve';
 
 /**
  * Sending the outreach e-mails that were imported with the lead list.
@@ -12,6 +13,8 @@ import { EMAIL } from '@/lib/outreach/csv';
  * GET  — what would go out next: the queue size, the next batch, and the first
  *        e-mail rendered. Sends nothing.
  * POST — { action: 'test', to }  one sample to the given address, not recorded
+ *        { action: 'analyze' }   rewrites a few queued e-mails from an analysis
+ *                                of each company's website; call until none remain
  *        { action: 'send' }      the next batch, at most 20, 1.5 s apart
  *
  * A company is written to once: a lead is marked the moment its e-mail is
@@ -80,6 +83,12 @@ export async function GET(request: NextRequest) {
   const batch = all.slice(0, OUTREACH.batchSize);
   const sent = await turso.execute('SELECT COUNT(*) AS n FROM lead_generation_leads WHERE email_sent = 1');
   const optedOut = await turso.execute('SELECT COUNT(*) AS n FROM outreach_unsubscribes');
+  const toAnalyze = await turso.execute(
+    `SELECT COUNT(*) AS n FROM lead_generation_leads l
+      WHERE l.email_sent = 0 AND l.analyzed_at IS NULL AND l.lead_status != 'rejected'
+        AND l.website IS NOT NULL AND l.website != ''
+        AND EXISTS (SELECT 1 FROM generated_emails g WHERE g.lead_id = l.id AND g.sent = 0)`
+  );
 
   return NextResponse.json({
     success: true,
@@ -87,6 +96,7 @@ export async function GET(request: NextRequest) {
     queued: all.length,
     sent: Number(sent.rows[0].n),
     optedOut: Number(optedOut.rows[0].n),
+    toAnalyze: Number(toAnalyze.rows[0].n),
     batch: batch.map((m) => ({ company: m.company, email: m.email, subject: m.subject })),
     preview: batch[0] ? { subject: batch[0].subject, html: buildOutreachEmail(batch[0].body, batch[0].email).html } : null,
   });
@@ -110,6 +120,11 @@ export async function POST(request: NextRequest) {
     return result.success
       ? NextResponse.json({ success: true, sent: 1 })
       : NextResponse.json({ success: false, error: result.error ?? 'Odeslání selhalo' }, { status: 502 });
+  }
+
+  if (action === 'analyze') {
+    // A site takes ten to twenty seconds to read; four at a time fits the limit.
+    return NextResponse.json({ success: true, ...(await improveQueuedEmails(4)) });
   }
 
   if (action !== 'send') {
