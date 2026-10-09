@@ -4,8 +4,8 @@
  * Sends instant notifications to Telegram when new leads arrive
  */
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN?.trim();
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID?.trim();
 
 import type { LeadConfiguration } from '@/lib/pricing/types';
 
@@ -74,7 +74,8 @@ export async function sendTelegramNotification(
  * Format lead data into pretty Telegram message
  */
 function formatLeadMessage(lead: LeadNotificationData): string {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://weblyx.cz';
+  // Trimmed: the production value ends in a newline, which broke the link below.
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://weblyx.cz';
   const adminUrl = `${baseUrl}/admin/leads`;
 
   let message = '🎯 <b>NOVÝ LEAD!</b>\n\n';

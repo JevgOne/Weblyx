@@ -4,6 +4,7 @@ import { Lead } from "@/types/cms";
 import { validateHoneypot, validateSubmissionTime } from "@/lib/security/honeypot";
 import { nanoid } from "nanoid";
 import { sendEmail, EMAIL_CONFIG } from "@/lib/email/resend-client";
+import { sendTelegramNotification } from "@/lib/telegram";
 import { generateContactFormEmail } from "@/lib/email/templates";
 
 export async function POST(request: NextRequest) {
@@ -117,6 +118,23 @@ export async function POST(request: NextRequest) {
       console.error("⚠️ Email notification error:", emailError);
       // Continue - lead is saved, email is not critical
     }
+
+    // Telegram, like the questionnaire's enquiries get. This route — the
+    // contact form and every landing-page form — never sent one, so the team
+    // heard about most enquiries by e-mail only. Awaited: the function is
+    // frozen as soon as the response goes out. Never throws.
+    await sendTelegramNotification({
+      name,
+      email,
+      phone: phone || undefined,
+      company: companyName,
+      projectType,
+      description,
+      leadId,
+    }).catch((err) => {
+      console.error("⚠️ Telegram notification error:", err);
+      return false;
+    });
 
     return NextResponse.json(
       {
