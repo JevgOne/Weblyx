@@ -25,9 +25,11 @@ function Field({ q, value, onChange }: { q: Question; value: Answer | undefined;
       if (q.type === "choice") onChange(selected[0] === option ? "" : option);
       else onChange(selected.includes(option) ? selected.filter((o) => o !== option) : [...selected, option]);
     };
+    // Whatever the client says that is not on the list goes in as its own chip.
+    const own = selected.filter((o) => !q.options?.includes(o));
     return (
       <div className="flex flex-wrap gap-2">
-        {q.options?.map((option) => {
+        {[...(q.options ?? []), ...own].map((option) => {
           const on = selected.includes(option);
           return (
             <button
@@ -43,6 +45,19 @@ function Field({ q, value, onChange }: { q: Question; value: Answer | undefined;
             </button>
           );
         })}
+        <input
+          placeholder="+ jiné (Enter)"
+          onKeyDown={(e) => {
+            const input = e.currentTarget;
+            const added = input.value.trim();
+            if (e.key !== "Enter" || !added) return;
+            e.preventDefault();
+            if (!selected.includes(added)) onChange(q.type === "choice" ? added : [...selected, added]);
+            input.value = "";
+          }}
+          className="w-40 rounded-full border border-dashed px-3.5 py-2 text-[14px] outline-none focus:border-[color:var(--a-brand)]"
+          style={{ borderColor: "var(--a-border)", background: "transparent", color: "var(--a-ink)" }}
+        />
       </div>
     );
   }

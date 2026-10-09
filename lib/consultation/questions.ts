@@ -53,7 +53,7 @@ export const STEPS: Step[] = [
     title: 'Cíl webu',
     intro: 'Proč web chtějí a co má přinést. Od tohohle se odvíjí všechno ostatní.',
     questions: [
-      { id: 'goal', label: 'Co má web přinést', ask: 'Co by vám měl web hlavně přinést?', type: 'multi', required: true, options: ['Poptávky a telefonáty', 'Rezervace nebo objednávky online', 'Prodej zboží (e-shop)', 'Představit firmu a působit důvěryhodně', 'Nábor lidí', 'Méně dotazů po telefonu'] },
+      { id: 'goal', label: 'Co má web přinést', ask: 'Co by vám měl web hlavně přinést?', type: 'multi', required: true, options: ['Poptávky a telefonáty', 'Rezervace nebo objednávky online', 'Prodej zboží (e-shop)', 'Být vidět na Googlu', 'Představit firmu a působit důvěryhodně', 'Ukázat reference a hotovou práci', 'Odlišit se od konkurence', 'Nahradit zastaralý web', 'Informovat stávající zákazníky', 'Sbírat kontakty (newsletter)', 'Nábor lidí', 'Méně dotazů po telefonu'] },
       { id: 'whyNow', label: 'Proč právě teď', ask: 'Proč to řešíte právě teď? Co se stalo nebo změnilo?', type: 'long' },
       { id: 'audience', label: 'Zákazníci', ask: 'Kdo jsou vaši typičtí zákazníci? Firmy, nebo lidé? Odkud?', type: 'long', required: true },
       { id: 'mainAction', label: 'Co má návštěvník udělat', ask: 'Když někdo na web přijde, co chcete, aby udělal? Zavolal, napsal, objednal?', type: 'text', required: true },
