@@ -33,6 +33,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Přehled", href: "/admin/dashboard", permission: "dashboard", subtitle: "Souhrn aktivity vašeho studia" },
       { label: "Poptávky", href: "/admin/leads", permission: "leads", subtitle: "Příchozí poptávky z webu", badge: "newLeads" },
+      { label: "Konzultace", href: "/admin/konzultace", permission: "leads", subtitle: "Průvodce hovorem s klientem a rekapitulace" },
       { label: "Audity", href: "/admin/audity", permission: "leads", subtitle: "Weby, které jsme proklepli, a koho obvolat", badge: "newAudits" },
       { label: "Analyzovat web", href: "/admin/tools/web-analyzer", permission: "web_analyzer", subtitle: "Rozbor webu pro oslovení" },
       { label: "Projekty", href: "/admin/projects", permission: "projects", subtitle: "Rozpracované a hotové weby" },

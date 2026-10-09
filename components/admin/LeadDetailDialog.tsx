@@ -411,6 +411,15 @@ export function LeadDetailDialog({ open, onOpenChange, lead, onRefresh, onLeadUp
         )}
 
         <div className="space-y-6">
+          {/* The consultation call for this enquiry: start it, or return to what was said. */}
+          <a
+            href={`/admin/konzultace/${currentLead.id}`}
+            className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-teal-700"
+          >
+            <Phone className="h-4 w-4" />
+            Konzultace s klientem
+          </a>
+
           {/* Contact — the first thing anyone opening an enquiry is after */}
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <a href={`mailto:${currentLead.email}`} className="inline-flex items-center gap-2 font-semibold text-teal-700 hover:underline">
