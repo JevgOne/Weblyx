@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Facebook, Instagram, MapPin, MessageCircle } from "lucide-react";
 
 const FOOTER_COLUMNS = [
@@ -79,7 +80,7 @@ export function NovaFooter() {
       <div className="nova-container grid grid-cols-2 gap-x-8 gap-y-12 py-16 lg:gap-x-10 lg:grid-cols-[1.5fr_1.15fr_1fr_.75fr] lg:py-20">
         {/* Brand and contact: the one column a visitor is actually looking for. */}
         <div className="col-span-2 lg:col-span-1">
-          <a href="/" className="inline-flex items-center gap-3.5" aria-label="Weblyx – úvodní stránka">
+          <Link href="/" className="inline-flex items-center gap-3.5" aria-label="Weblyx – úvodní stránka">
             <span
               className="flex h-[52px] w-[52px] items-center justify-center rounded-[14px] text-[30px] font-extrabold text-white"
               style={{ background: "var(--n-brand)", letterSpacing: "-.03em" }}
@@ -89,7 +90,7 @@ export function NovaFooter() {
             <span className="text-[36px] font-bold leading-none text-white" style={{ letterSpacing: "-.02em" }}>
               Weblyx
             </span>
-          </a>
+          </Link>
 
           <p className="mt-6 max-w-[340px] text-[15px] font-medium leading-relaxed">
             Tvoříme weby, e-shopy a systémy na míru pro české firmy a živnostníky.
