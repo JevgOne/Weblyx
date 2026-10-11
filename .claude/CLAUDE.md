@@ -145,6 +145,8 @@ vercel --prod  # Deploy to production
 
 ## 🎯 Weblyx-Specific Rules
 
+0. **SEO strategie je v `docs/SEO-STRATEGIE.md` — přečti ji před jakoukoli změnou veřejných stránek.** Do 15. 11. 2026 se nemění homepage, titulky, adresy, navigace ani footer; povoleny jsou jen opravy chyb, nové články a nové stránky. Výjimka jen s výslovným souhlasem majitele.
+
 1. **Vždy pracuj v `/Users/zen/weblyx`**
 2. **Používej Teal (#14B8A6) pro brand colors**
 3. **ISR revalidation:** Homepage a portfolio používají ISR
