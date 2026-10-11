@@ -14,12 +14,13 @@ const FOOTER_COLUMNS = [
       { label: "Tvorba e-shopu", href: "/tvorba-eshopu" },
       { label: "Rezervační systém na míru", href: "/rezervacni-system-na-miru" },
       { label: "CRM systém na míru", href: "/crm-system-na-miru" },
+      { label: "GEO optimalizace", href: "/geo-optimalizace" },
       { label: "Rychlost načítání", href: "/pagespeed-garance" },
       { label: "Údržba a podpora", href: "/sluzby#maintenance" },
     ],
   },
   {
-    title: "Kde působíme",
+    title: "Města a obory",
     links: [
       { label: "Tvorba webu Praha", href: "/tvorba-webu-praha" },
       { label: "Tvorba webu Brno", href: "/tvorba-webu-brno" },
@@ -27,6 +28,7 @@ const FOOTER_COLUMNS = [
       { label: "Web pro živnostníky", href: "/web-pro-zivnostniky" },
       { label: "Web pro restaurace", href: "/web-pro-restaurace" },
       { label: "Web pro malé firmy", href: "/web-pro-male-firmy" },
+      { label: "Web pro právníky", href: "/web-pro-pravniky" },
     ],
   },
   {
@@ -37,6 +39,8 @@ const FOOTER_COLUMNS = [
       { label: "Recenze", href: "/recenze" },
       { label: "Blog", href: "/blog" },
       { label: "Časté otázky", href: "/faq" },
+      { label: "Weblyx vs. WordPress", href: "/wordpress-alternativa" },
+      { label: "Weblyx vs. Webnode", href: "/webnode-alternativa" },
       { label: "Kontakt", href: "/kontakt" },
     ],
   },
