@@ -23,6 +23,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "Jaké cookies Weblyx používá, k čemu každá skupina slouží, jak dlouho se drží a jak si souhlas kdykoli změníte nebo odvoláte. Nezbytné, analytické i marketingové.",
     alternates: { canonical: "https://www.weblyx.cz/cookies" },
+    // A legal page nobody searches for; keep Googlebot's few visits for the
+    // pages that sell. Links are still followed.
+    robots: { index: false, follow: true },
   };
 }
 

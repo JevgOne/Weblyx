@@ -19,8 +19,10 @@ export const metadata: Metadata = {
     title: "Ochrana osobních údajů | Weblyx",
     description: "Zásady ochrany osobních údajů a GDPR compliance.",
   },
+  // A legal page nobody searches for; keep Googlebot's few visits for the
+  // pages that sell. Links are still followed.
   robots: {
-    index: true,
+    index: false,
     follow: true,
   },
   alternates: {

@@ -55,6 +55,9 @@ export const metadata: Metadata = isSeitelyx ? {
     type: "website",
     images: [{ url: "/images/og/og-poptavka.png", width: 1200, height: 630, alt: "Weblyx - Nezávazná poptávka" }],
   },
+  // A form, not a page anyone searches for: each visit Googlebot spends here
+  // is one it does not spend on a service page. Links are still followed.
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://www.weblyx.cz/poptavka",
     languages: getAlternateLanguages('/poptavka'),

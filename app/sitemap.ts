@@ -89,12 +89,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'monthly',
           priority: 0.6,
         },
-        {
-          url: `${baseUrl}/poptavka`,
-          lastModified: STATIC_LAST_MODIFIED,
-          changeFrequency: 'monthly',
-          priority: 0.9,
-        },
       ];
 
   // German-specific routes
@@ -284,18 +278,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: STATIC_LAST_MODIFIED,
           changeFrequency: 'yearly',
           priority: 0.5,
-        },
-        {
-          url: `${baseUrl}/cookies`,
-          lastModified: STATIC_LAST_MODIFIED,
-          changeFrequency: 'yearly',
-          priority: 0.3,
-        },
-        {
-          url: `${baseUrl}/ochrana-udaju`,
-          lastModified: STATIC_LAST_MODIFIED,
-          changeFrequency: 'yearly',
-          priority: 0.3,
         },
         {
           url: `${baseUrl}/obchodni-podminky`,
