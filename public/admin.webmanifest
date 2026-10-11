@@ -1,0 +1,32 @@
+{
+  "id": "/admin",
+  "name": "Weblyx Admin",
+  "short_name": "Weblyx Admin",
+  "description": "Administrace webu Weblyx – poptávky, konzultace, projekty a obsah",
+  "lang": "cs",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Poptávky", "url": "/admin/leads" },
+    { "name": "Konzultace", "url": "/admin/konzultace" },
+    { "name": "Projekty", "url": "/admin/projects" }
+  ]
+}

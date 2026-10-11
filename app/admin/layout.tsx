@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     template: '%s | Admin Panel',
     default: 'Admin Panel',
   },
+  // The site-wide manifest starts at "/", so an installed app opened the public
+  // homepage. The panel gets its own, scoped to /admin, and installs as an app
+  // of its own.
+  manifest: "/admin.webmanifest",
 };
 
 export default function AdminLayout({
