@@ -168,44 +168,34 @@ export default function AdminLeadsPage() {
   // Count new leads (ALARM)
   const newLeadsCount = leads.filter(l => l.status === 'new').length;
 
-  // Handle "Vzít poptávku" - convert lead to project and assign to current user
+  // "Vzít poptávku": assign it to the signed-in user and move it to "V řešení".
+  // It is still the same enquiry — taking it used to create a project as well,
+  // and a second click created a second one.
   const handleTakeLead = async (lead: any) => {
     if (!user) return;
 
-    if (!confirm(`Chcete převést poptávku "${lead.name}" na projekt a přiřadit si ji?`)) {
+    if (!confirm(`Vzít si poptávku „${lead.name}“? Přiřadí se vám a přejde do stavu „V řešení“.`)) {
       return;
     }
 
     try {
-      const response = await fetch('/api/admin/leads/convert', {
-        method: 'POST',
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadId: lead.id,
-          adminId: user.id,
-        }),
+        body: JSON.stringify({ status: 'in_progress', assignedTo: user.name }),
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        alert(error.error || 'Chyba při převodu poptávky');
+        alert(response.status === 401 ? 'Přihlášení vypršelo.' : 'Poptávku se nepodařilo převzít.');
         return;
       }
 
-      const result = await response.json();
-
-      // Remove from leads list (or update status to converted)
       setLeads(prevLeads => prevLeads.map(l =>
-        l.id === lead.id ? { ...l, status: 'in_progress' } : l
+        l.id === lead.id ? { ...l, status: 'in_progress', assignedTo: user.name } : l
       ));
-
-      alert(`Poptávka je teď „V řešení“ a má svůj projekt v Projektech.\n\nAž web předáte, nastavte u projektu stav „Předáno“ a poptávka se sama označí jako hotová.`);
-
-      // Refresh leads
-      fetchLeads();
     } catch (error) {
       console.error('❌ Error taking lead:', error);
-      alert('Chyba při převodu poptávky');
+      alert('Poptávku se nepodařilo převzít.');
     }
   };
 
