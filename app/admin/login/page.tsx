@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -124,6 +125,13 @@ export default function AdminLoginPage() {
             >
               {loading ? "Přihlašování..." : "Přihlásit se"}
             </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Patříte do týmu a nemáte účet?{" "}
+              <Link href="/admin/register" className="text-primary hover:underline font-medium">
+                Požádat o přístup
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminCredentials, generateSessionToken } from '@/lib/auth/simple-auth';
+import { verifyAdminCredentials, generateSessionToken, isPendingRegistration } from '@/lib/auth/simple-auth';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
@@ -73,6 +73,13 @@ export async function POST(request: NextRequest) {
 
     // Verify credentials
     const user = await verifyAdminCredentials(email, password);
+
+    if (!user && (await isPendingRegistration(email, password))) {
+      return NextResponse.json(
+        { error: 'Váš účet čeká na schválení. Přihlásit se půjde, až ho vlastník potvrdí.' },
+        { status: 403 }
+      );
+    }
 
     if (!user) {
       // SECURITY: Log failed login attempt

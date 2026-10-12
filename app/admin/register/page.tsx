@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +9,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, UserPlus, Mail, Lock, User } from "lucide-react";
 
 export default function AdminRegisterPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +35,8 @@ export default function AdminRegisterPage() {
         throw new Error(data.error || "Chyba při registraci");
       }
 
-      router.push("/admin/dashboard");
-      router.refresh();
+      // Registering is a request: the account works once it is approved.
+      setSent(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Chyba při registraci. Zkuste to znovu.";
       setError(message);
@@ -55,11 +54,23 @@ export default function AdminRegisterPage() {
           </div>
           <CardTitle className="text-2xl font-bold">Registrace</CardTitle>
           <CardDescription>
-            Vytvořte si administrátorský účet
+            Požádejte o přístup do týmu. Účet začne fungovat po schválení.
           </CardDescription>
         </CardHeader>
 
         <CardContent>
+          {sent ? (
+            <div className="space-y-4 text-center">
+              <Alert>
+                <AlertDescription>
+                  Žádost je odeslaná. Přihlásit se budete moci, jakmile ji vlastník schválí a přidělí vám roli.
+                </AlertDescription>
+              </Alert>
+              <Link href="/admin/login" className="text-primary hover:underline font-medium">
+                Zpět na přihlášení
+              </Link>
+            </div>
+          ) : (
           <form onSubmit={handleRegister} className="space-y-6">
             {error && (
               <Alert variant="destructive">
@@ -150,6 +161,7 @@ export default function AdminRegisterPage() {
               </Link>
             </p>
           </form>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -133,7 +133,7 @@ export async function getAllDbAdmins(): Promise<DbAdminUser[]> {
     const { turso } = await import('@/lib/turso');
     await ensureAdminsTable();
     const result = await turso.execute({
-      sql: 'SELECT id, email, name, role, active, created_at FROM admins ORDER BY created_at DESC',
+      sql: 'SELECT id, email, name, role, active, created_at FROM admins WHERE pending = 0 ORDER BY created_at DESC',
       args: [],
     });
 
@@ -162,6 +162,85 @@ export async function ensureAdminsTable(): Promise<void> {
     )
   `);
   await turso.execute(`CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email)`);
+  // A registration waiting for the owner's approval: inactive, so it cannot
+  // log in, and flagged so it is told apart from a deactivated account.
+  await turso
+    .execute(`ALTER TABLE admins ADD COLUMN pending INTEGER NOT NULL DEFAULT 0`)
+    .catch(() => {
+      // Already there.
+    });
+}
+
+export interface PendingAdmin {
+  id: string;
+  email: string;
+  name: string;
+  created_at: number;
+}
+
+export async function countPendingAdmins(): Promise<number> {
+  const { turso } = await import('@/lib/turso');
+  await ensureAdminsTable();
+  const result = await turso.execute('SELECT COUNT(*) as count FROM admins WHERE pending = 1');
+  return Number((result.rows[0] as unknown as Record<string, unknown>).count);
+}
+
+export async function getPendingAdmins(): Promise<PendingAdmin[]> {
+  const { turso } = await import('@/lib/turso');
+  await ensureAdminsTable();
+  const result = await turso.execute(
+    'SELECT id, email, name, created_at FROM admins WHERE pending = 1 ORDER BY created_at DESC'
+  );
+  return result.rows as unknown as PendingAdmin[];
+}
+
+/**
+ * A request to join the team. The account exists but is inactive and has the
+ * narrowest role until someone with the right to manage users approves it.
+ */
+export async function createPendingAdmin(email: string, password: string, name: string): Promise<string> {
+  const { turso } = await import('@/lib/turso');
+  await ensureAdminsTable();
+  const id = `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const passwordHash = await hashPassword(password);
+  try {
+    await turso.execute({
+      sql: `INSERT INTO admins (id, email, name, password_hash, role, active, pending, created_at, updated_at)
+            VALUES (?, ?, ?, ?, 'specialist', 0, 1, unixepoch(), unixepoch())`,
+      args: [id, email, name, passwordHash],
+    });
+  } catch (error: any) {
+    if (error.message?.includes('UNIQUE constraint failed')) throw new Error('Email already exists');
+    throw error;
+  }
+  return id;
+}
+
+/** Activates a pending registration with the given role. False when there is no such request. */
+export async function approvePendingAdmin(id: string, role: UserRole): Promise<PendingAdmin | null> {
+  const { turso } = await import('@/lib/turso');
+  const found = await turso.execute({
+    sql: 'SELECT id, email, name, created_at FROM admins WHERE id = ? AND pending = 1',
+    args: [id],
+  });
+  if (found.rows.length === 0) return null;
+  await turso.execute({
+    sql: 'UPDATE admins SET active = 1, pending = 0, role = ?, updated_at = unixepoch() WHERE id = ? AND pending = 1',
+    args: [role, id],
+  });
+  return found.rows[0] as unknown as PendingAdmin;
+}
+
+/** Removes a pending registration entirely, so the address can ask again. */
+export async function rejectPendingAdmin(id: string): Promise<PendingAdmin | null> {
+  const { turso } = await import('@/lib/turso');
+  const found = await turso.execute({
+    sql: 'SELECT id, email, name, created_at FROM admins WHERE id = ? AND pending = 1',
+    args: [id],
+  });
+  if (found.rows.length === 0) return null;
+  await turso.execute({ sql: 'DELETE FROM admins WHERE id = ? AND pending = 1', args: [id] });
+  return found.rows[0] as unknown as PendingAdmin;
 }
 
 /**
@@ -453,3 +532,23 @@ function createSignature(data: string): string {
     .digest('base64url');
 }
 
+
+/**
+ * True when these are the right credentials of a registration that has not
+ * been approved yet. The password is checked first, so the answer says nothing
+ * about an address to someone who does not own it.
+ */
+export async function isPendingRegistration(email: string, password: string): Promise<boolean> {
+  try {
+    const { turso } = await import('@/lib/turso');
+    await ensureAdminsTable();
+    const result = await turso.execute({
+      sql: 'SELECT password_hash FROM admins WHERE email = ? AND pending = 1',
+      args: [email.trim().toLowerCase()],
+    });
+    const hash = (result.rows[0] as unknown as { password_hash?: string } | undefined)?.password_hash;
+    return Boolean(hash) && (await comparePassword(password, hash as string));
+  } catch {
+    return false;
+  }
+}

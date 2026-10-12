@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   verifySessionToken,
   getAllDbAdmins,
+  getPendingAdmins,
   getLegacyAdmins,
   createDbAdmin,
   AdminUser,
@@ -90,11 +91,10 @@ export async function GET(request: NextRequest) {
     // Combine: legacy users first, then DB users
     const allAdmins = [...uniqueLegacyAdmins, ...safeDbAdmins];
 
-    return NextResponse.json({ admins: allAdmins }, {
-      headers: {
-        'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
-      },
-    });
+    // Registrations waiting for approval; they are not accounts yet.
+    const pending = await getPendingAdmins();
+
+    return NextResponse.json({ admins: allAdmins, pending });
   } catch (error: any) {
     console.error('Error fetching admins:', error);
     return NextResponse.json(

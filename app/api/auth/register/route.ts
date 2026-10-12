@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import {
-  createDbAdmin,
-  hasAnyAdmins,
-  generateSessionToken,
-} from '@/lib/auth/simple-auth';
-import { cookies } from 'next/headers';
+import { countPendingAdmins, createPendingAdmin } from '@/lib/auth/simple-auth';
+import { sendTelegramText } from '@/lib/telegram';
+
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const registerSchema = z.object({
   email: z.string()
@@ -20,10 +18,16 @@ const registerSchema = z.object({
     .max(50, 'Jméno je příliš dlouhé'),
 });
 
+// More waiting requests than this and the form closes until someone clears
+// them; nobody can fill the table by posting in a loop.
+const MAX_PENDING = 20;
+
 /**
  * POST /api/auth/register
- * Register a new admin account.
- * Only the first account of a fresh install; it becomes the owner.
+ * Ask to join the team. Creates an inactive account that cannot log in; it
+ * starts working once an owner or admin approves it in Uživatelé and picks its
+ * role. Registering never grants access by itself — it used to hand out an
+ * owner or admin account to anyone.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -40,65 +44,35 @@ export async function POST(request: NextRequest) {
 
     const { email, password, name } = validationResult.data;
 
-    // Closed unless ALLOW_ADMIN_REGISTRATION=1 is set on purpose, and even then
-    // only for the very first account of a fresh install. This route used to
-    // hand an owner or admin account to anyone who posted to it; accounts are
-    // created by the owner in Uživatelé.
-    if (process.env.ALLOW_ADMIN_REGISTRATION !== '1' || (await hasAnyAdmins())) {
+    if ((await countPendingAdmins()) >= MAX_PENDING) {
       return NextResponse.json(
-        { error: 'Registrace je uzavřená. Účty zakládá vlastník v sekci Uživatelé.' },
-        { status: 403 }
-      );
-    }
-    const role = 'owner';
-
-    const newAdmin = await createDbAdmin(email, password, name, role);
-
-    if (!newAdmin) {
-      return NextResponse.json(
-        { error: 'Nepodařilo se vytvořit účet' },
-        { status: 500 }
+        { error: 'Registrace je dočasně pozastavená. Zkuste to prosím později.' },
+        { status: 429 }
       );
     }
 
-    // Auto-login after registration
-    const sessionToken = generateSessionToken({
-      id: newAdmin.id,
-      email: newAdmin.email,
-      name: newAdmin.name,
-      role: newAdmin.role,
-    });
+    await createPendingAdmin(email.trim().toLowerCase(), password, name.trim());
 
-    const cookieStore = await cookies();
-    cookieStore.set('admin-session', sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24,
-      path: '/',
-    });
+    // Never throws; the request is saved either way.
+    await sendTelegramText(
+      `👥 <b>ŽÁDOST O PŘÍSTUP DO ADMINU</b>\n\nJméno: <b>${esc(name.trim())}</b>\n📧 ${esc(email.trim().toLowerCase())}\n\n` +
+        `Účet je neaktivní, dokud ho neschválíte.\n👉 <a href="https://www.weblyx.cz/admin/users">Otevřít Uživatele</a>`
+    );
 
-    return NextResponse.json({
-      success: true,
-      user: {
-        email: newAdmin.email,
-        name: newAdmin.name,
-        role: newAdmin.role,
-      },
-    });
+    return NextResponse.json({ success: true, pending: true });
   } catch (error: unknown) {
     console.error('❌ Registration error:', error);
     const message = error instanceof Error ? error.message : 'Chyba při registraci';
 
     if (message === 'Email already exists') {
       return NextResponse.json(
-        { error: 'Účet s tímto emailem již existuje' },
+        { error: 'Účet nebo žádost s tímto e-mailem už existuje' },
         { status: 409 }
       );
     }
 
     return NextResponse.json(
-      { error: message },
+      { error: 'Chyba při registraci' },
       { status: 500 }
     );
   }

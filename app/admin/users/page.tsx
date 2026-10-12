@@ -64,6 +64,10 @@ export default function AdminUsersPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
   const [admins, setAdmins] = useState<Admin[]>([]);
+  // Registrations from /admin/register waiting for a decision.
+  const [pending, setPending] = useState<Array<{ id: string; email: string; name: string; created_at: number }>>([]);
+  const [pendingRoles, setPendingRoles] = useState<Record<string, UserRole>>({});
+  const [decidingId, setDecidingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -110,10 +114,34 @@ export default function AdminUsersPage() {
       }
 
       setAdmins(data.admins || []);
+      setPending(data.pending || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDecide = async (id: string, approve: boolean) => {
+    setDecidingId(id);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await fetch(`/api/admin/users/pending/${id}`, approve
+        ? {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: pendingRoles[id] || 'specialist' }),
+          }
+        : { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Akce selhala');
+      setSuccess(approve ? 'Žádost schválena, uživatel se může přihlásit.' : 'Žádost zamítnuta.');
+      fetchAdmins();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setDecidingId(null);
     }
   };
 
@@ -377,6 +405,50 @@ export default function AdminUsersPage() {
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>{success}</AlertDescription>
           </Alert>
+        )}
+
+        {pending.length > 0 && (
+          <Card className="mb-6 border-amber-400">
+            <CardHeader>
+              <CardTitle>Žádosti o přístup ({pending.length})</CardTitle>
+              <CardDescription>
+                Tito lidé se zaregistrovali na /admin/register. Dokud je neschválíte, nemohou se přihlásit.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {pending.map((p) => (
+                <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold">{p.name}</p>
+                    <p className="truncate text-sm text-muted-foreground">
+                      {p.email} · {new Date(p.created_at * 1000).toLocaleDateString('cs-CZ')}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Select
+                      value={pendingRoles[p.id] || 'specialist'}
+                      onValueChange={(value: UserRole) => setPendingRoles((prev) => ({ ...prev, [p.id]: value }))}
+                    >
+                      <SelectTrigger className="w-[170px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="specialist">{ROLE_NAMES.specialist.cs}</SelectItem>
+                        <SelectItem value="admin">{ROLE_NAMES.admin.cs}</SelectItem>
+                        {isOwner(user?.role) && <SelectItem value="owner">{ROLE_NAMES.owner.cs}</SelectItem>}
+                      </SelectContent>
+                    </Select>
+                    <Button disabled={decidingId === p.id} onClick={() => handleDecide(p.id, true)}>
+                      Schválit
+                    </Button>
+                    <Button variant="outline" disabled={decidingId === p.id} onClick={() => handleDecide(p.id, false)}>
+                      Zamítnout
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         )}
 
         {/* What each role may do. The server enforces this, not just the menu. */}
