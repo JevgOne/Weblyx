@@ -73,3 +73,16 @@ Po té změně znovu šest týdnů klidu a další vyhodnocení.
 - 28. 9. – 8. 10. — průběžné úpravy homepage (kanonická adresa, H1, recenze, sekce)
 - 11. 10. — nový footer s logem; odkazy na 4 osiřelé stránky; noindex na
   /poptavka, /cookies, /ochrana-udaju. **Od této chvíle platí zmrazení.**
+- 12. 10. — oprava tlačítka „Zkontrolovat další web“ na /audit (vrací nahoru);
+  obsah ani struktura stránek se neměnily.
+
+## Průběžná čtení (jen záznam, rozhoduje se až 15. 11.)
+
+| Datum exportu | Data do | Zaindexováno | Nezaindexováno | Objeveno | Prolezeno | 404 | Přesměrování |
+|---|---|---|---|---|---|---|---|
+| 11. 10. (výchozí) | ~4. 10. | 38 | 42 | 30 | 6 | 3 | 3 |
+| 12. 10. | 9. 10. | 47 | 38 | 28 | 4 | 3 | 3 |
+
+Posun na 47 nastal 5. 10., tedy před zmrazením — je to dozvuk oprav z
+19. 9. – 1. 10., ne změn z 11. 10. Tři stránky s noindex (/poptavka, /cookies,
+/ochrana-udaju) z počtu zaindexovaných časem vypadnou; to je záměr, ne zhoršení.
