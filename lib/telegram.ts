@@ -70,6 +70,12 @@ export async function sendTelegramNotification(
   }
 }
 
+// Telegram parses the message as HTML, so a stray "<" or "&" typed into a form
+// would make the API reject the whole notification.
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+const DIVIDER = '━━━━━━━━━━━━━━';
+
 /**
  * Format lead data into pretty Telegram message
  */
@@ -78,23 +84,18 @@ function formatLeadMessage(lead: LeadNotificationData): string {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://weblyx.cz';
   const adminUrl = `${baseUrl}/admin/leads`;
 
-  let message = '🎯 <b>NOVÝ LEAD!</b>\n\n';
+  // Three blocks — who, what they want, what they wrote — each under its own
+  // heading, so the message can be read at a glance on a phone.
+  let message = `🎯 <b>NOVÁ POPTÁVKA</b>\n${DIVIDER}\n\n`;
 
-  // Contact info
-  message += `👤 <b>Jméno:</b> ${lead.name}\n`;
-  message += `📧 <b>Email:</b> ${lead.email}\n`;
+  message += '👤 <b>KONTAKT</b>\n';
+  message += `Jméno: <b>${esc(lead.name)}</b>\n`;
+  if (lead.phone) message += `📱 ${esc(lead.phone)}\n`;
+  message += `📧 ${esc(lead.email)}\n`;
+  if (lead.company) message += `🏢 ${esc(lead.company)}\n`;
 
-  if (lead.phone) {
-    message += `📱 <b>Telefon:</b> ${lead.phone}\n`;
-  }
+  const project: string[] = [];
 
-  if (lead.company) {
-    message += `🏢 <b>Firma:</b> ${lead.company}\n`;
-  }
-
-  message += '\n';
-
-  // Project details
   if (lead.projectType) {
     const typeLabels: Record<string, string> = {
       'landing': 'Landing page',
@@ -104,29 +105,74 @@ function formatLeadMessage(lead: LeadNotificationData): string {
       'redesign': 'Redesign',
       'other': 'Jiné'
     };
-    message += `💼 <b>Typ projektu:</b> ${typeLabels[lead.projectType] || lead.projectType}\n`;
+    project.push(`Typ: <b>${esc(typeLabels[lead.projectType] || lead.projectType)}</b>`);
   }
 
   if (lead.budget) {
-    message += `💰 <b>Rozpočet:</b> ${lead.budget}\n`;
+    project.push(`💰 Rozpočet: <b>${esc(lead.budget)}</b>`);
   }
 
   if (lead.configuration) {
     const config = lead.configuration;
-    message += `🧩 <b>Balíček:</b> ${config.tierName}\n`;
+    project.push(`🧩 Balíček: <b>${esc(config.tierName)}</b>`);
     if (config.addons.length > 0) {
-      message += `➕ <b>Doplňky:</b> ${config.addons.map((a) => a.name).join(', ')}\n`;
+      project.push(`➕ Doplňky: ${esc(config.addons.map((a) => a.name).join(', '))}`);
     }
-    message += `💵 <b>Cena:</b> ${config.totalPrice.toLocaleString('cs-CZ')} Kč · ${config.totalHours} h`;
-    if (config.deliveryDays) message += ` · dodání ${config.deliveryDays} dní`;
-    message += '\n';
+    let price = `💵 Cena: <b>${config.totalPrice.toLocaleString('cs-CZ')} Kč</b> · ${config.totalHours} h`;
+    if (config.deliveryDays) price += ` · dodání ${config.deliveryDays} dní`;
+    project.push(price);
+  }
+
+  if (project.length > 0) {
+    message += `\n💼 <b>CO CHCE</b>\n${project.join('\n')}\n`;
   }
 
   if (lead.description) {
-    message += `\n📝 <b>Popis:</b>\n${truncate(lead.description, 200)}\n`;
+    message += `\n📝 <b>ZPRÁVA</b>\n<i>${esc(truncate(lead.description, 400))}</i>\n`;
   }
 
-  message += `\n👉 <a href="${adminUrl}">Zobrazit v admin panelu</a>`;
+  message += `\n${DIVIDER}\n👉 <a href="${adminUrl}">Otevřít v adminu</a>`;
+
+  return message;
+}
+
+/**
+ * The message for a free audit run on the site. Same layout as an enquiry, so
+ * the two are told apart by the first line and read the same way after it.
+ */
+export function formatAuditMessage(a: {
+  host: string;
+  url: string;
+  email: string;
+  name?: string | null;
+  score?: number | null;
+  missing: string[];
+  failed?: boolean;
+  adminUrl: string;
+}): string {
+  let message = `🔍 <b>NOVÝ AUDIT WEBU</b>\n${DIVIDER}\n\n`;
+
+  message += '🌐 <b>WEB</b>\n';
+  message += `<a href="${esc(a.url)}">${esc(a.host)}</a>\n`;
+  if (a.failed) {
+    message += '⚠️ Audit se nepodařilo dokončit (web možná nejede)\n';
+  } else if (typeof a.score === 'number') {
+    const light = a.score >= 80 ? '🟢' : a.score >= 50 ? '🟡' : '🔴';
+    message += `${light} Skóre: <b>${a.score}/100</b>\n`;
+  }
+
+  message += '\n👤 <b>KONTAKT</b>\n';
+  if (a.name) message += `Jméno: <b>${esc(a.name)}</b>\n`;
+  message += `📧 ${esc(a.email)}\n`;
+
+  if (a.missing.length > 0) {
+    const shown = a.missing.slice(0, 8);
+    message += `\n❌ <b>CO NA WEBU CHYBÍ (${a.missing.length})</b>\n`;
+    message += shown.map((m) => `• ${esc(m)}`).join('\n') + '\n';
+    if (a.missing.length > shown.length) message += `… a dalších ${a.missing.length - shown.length}\n`;
+  }
+
+  message += `\n${DIVIDER}\n👉 <a href="${a.adminUrl}">Otevřít audity</a>`;
 
   return message;
 }

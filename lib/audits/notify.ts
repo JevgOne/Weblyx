@@ -1,5 +1,5 @@
 import { EMAIL_CONFIG, sendEmail } from '@/lib/email/resend-client';
-import { sendTelegramText } from '@/lib/telegram';
+import { formatAuditMessage, sendTelegramText } from '@/lib/telegram';
 import type { AuditCheck } from '@/lib/audits/checks';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -52,9 +52,7 @@ export async function notifyNewAudit(a: {
       replyTo: a.email,
     }),
     sendTelegramText(
-      `🔍 <b>Nový audit z webu</b>\n${esc(host)} — ${esc(scoreLine)}\n${a.name ? esc(a.name) + ' · ' : ''}${esc(a.email)}` +
-        (missing.length ? `\nChybí: ${esc(missing.slice(0, 6).join(', '))}${missing.length > 6 ? '…' : ''}` : '') +
-        `\n${adminUrl}`
+      formatAuditMessage({ host, url: a.url, email: a.email, name: a.name, score: a.score, missing, failed: a.failed, adminUrl })
     ),
   ];
   await Promise.allSettled(tasks).then((results) =>
