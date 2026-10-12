@@ -35,6 +35,14 @@ export async function NovaClientLogos() {
   const clients = [...new Set(items.map(clientName).filter(Boolean))];
   if (clients.length === 0) return null;
 
+  // Shuffled on every render (the page is rebuilt about once a minute), so the
+  // band does not open with the same five names for every visitor. Done on the
+  // server: no script, and the copy below stays identical to the original.
+  for (let i = clients.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [clients[i], clients[j]] = [clients[j], clients[i]];
+  }
+
   return (
     <section className="nova-container pt-16 pb-6">
       <h2
