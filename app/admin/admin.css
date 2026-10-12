@@ -95,9 +95,11 @@
   white-space: nowrap;
 }
 
+/* Amber, not the brand teal: "new" means somebody has to act, and teal was
+   already the colour of every neutral accent on the screen. */
 .wbx-status-new {
-  color: #0d9488;
-  background: rgba(20, 184, 166, 0.12);
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.16);
 }
 
 .wbx-status-progress {

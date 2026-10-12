@@ -35,6 +35,28 @@ import {
 } from "@/lib/leads/status";
 import { leadValueLabel } from "@/lib/leads/labels";
 
+const GROUP_TITLES: Record<string, string> = {
+  new: "Čeká na převzetí",
+  in_progress: "V řešení",
+  done: "Hotovo",
+};
+
+/** "Základní Web - 9 990 Kč" → package and price on separate lines. */
+function splitBudget(value: string): [string, string] {
+  if (!value || value === "-") return ["", ""];
+  const i = value.lastIndexOf(" - ");
+  return i > 0 ? [value.slice(0, i), value.slice(i + 3)] : [value, ""];
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
+}
+
 export default function AdminLeadsPage() {
   const router = useRouter();
   const { user } = useAdminAuth();
@@ -75,6 +97,27 @@ export default function AdminLeadsPage() {
       return matchesSearch && matchesStatus;
     });
   }, [leads, searchTerm, statusFilter]);
+
+  // One order for the whole screen: what waits for someone first, finished
+  // work last. Sorted by date alone, new enquiries sat scattered between
+  // ones already in hand.
+  const groups = useMemo(() => {
+    const byDate = (a: any, b: any) => new Date(b.created).getTime() - new Date(a.created).getTime();
+    return LEAD_STATUS_OPTIONS.map((option) => ({
+      option,
+      leads: filteredLeads.filter((l) => canonicalLeadStatus(l.status) === option.value).sort(byDate),
+    }))
+      .concat([
+        {
+          option: leadStatusMeta(null),
+          leads: filteredLeads.filter((l) => canonicalLeadStatus(l.status) === null).sort(byDate),
+        },
+      ])
+      .filter((g) => g.leads.length > 0);
+  }, [filteredLeads]);
+
+  const countFor = (status: string) =>
+    status === "all" ? leads.length : leads.filter((l) => canonicalLeadStatus(l.status) === status).length;
 
   const handleConvertLead = (lead: any) => {
     setSelectedLead(lead);
@@ -216,7 +259,7 @@ export default function AdminLeadsPage() {
           {newLeadsCount > 0 && (
             <>
               {" · "}
-              <span className="font-semibold text-teal-700">{newLeadsCount}</span> čeká na převzetí
+              <span className="font-semibold text-amber-700">{newLeadsCount}</span> čeká na převzetí
             </>
           )}
         </p>
@@ -224,41 +267,34 @@ export default function AdminLeadsPage() {
       </div>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Filtry</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Hledat podle jména, emailu, firmy..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full md:w-64">
-                  <SelectValue placeholder="Filtrovat podle stavu" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Všechny stavy</SelectItem>
-                  {LEAD_STATUS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value!} value={option.value!}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Search and state tabs in one row — the tabs carry the counts. */}
+        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {[{ value: "all", label: "Vše" }, ...LEAD_STATUS_OPTIONS.map((o) => ({ value: o.value!, label: o.label }))].map(
+              (tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setStatusFilter(tab.value)}
+                  data-active={statusFilter === tab.value}
+                  className="wbx-filter inline-flex items-center gap-2"
+                >
+                  {tab.label}
+                  <span className="text-[12px] font-bold opacity-60">{countFor(tab.value)}</span>
+                </button>
+              )
+            )}
+          </div>
+          <div className="relative w-full lg:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Hledat jméno, e-mail, firmu…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
 
         {/* Load / update errors — no mock data stands in for a failed request */}
         {loadError && (
@@ -269,11 +305,6 @@ export default function AdminLeadsPage() {
             </Button>
           </div>
         )}
-
-        {/* Results count */}
-        <div className="mb-4 text-sm text-muted-foreground">
-          Zobrazeno {filteredLeads.length} z {leads.length} poptávek
-        </div>
 
         {/* Leads Table - Hidden on mobile */}
         {/*
@@ -287,13 +318,13 @@ export default function AdminLeadsPage() {
           <Table className="w-full table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[180px]">Jméno / Firma</TableHead>
-                <TableHead className="w-[178px]">Kontakt</TableHead>
-                <TableHead className="w-[110px]">Typ</TableHead>
-                <TableHead className="w-[110px]">Rozpočet</TableHead>
-                <TableHead className="w-[95px]">Stav</TableHead>
-                <TableHead className="w-[95px]">Přiřazeno</TableHead>
-                <TableHead className="w-[100px]">Datum</TableHead>
+                <TableHead className="w-[190px]">Jméno / Firma</TableHead>
+                <TableHead className="w-[190px]">Kontakt</TableHead>
+                <TableHead className="w-[120px]">Typ</TableHead>
+                <TableHead className="w-[130px]">Balíček</TableHead>
+                <TableHead className="w-[100px]">Stav</TableHead>
+                <TableHead className="w-[120px]">Řeší</TableHead>
+                <TableHead className="w-[90px]">Přišlo</TableHead>
                 {/* Pinned: the action must stay reachable when the table
                     scrolls sideways — it is the whole point of the screen. */}
                 <TableHead className="sticky right-0 z-20 w-[130px] bg-card text-right shadow-[-8px_0_8px_-8px_rgba(15,23,42,.15)]">
@@ -341,132 +372,140 @@ export default function AdminLeadsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredLeads.map((lead) => (
+                groups.flatMap((group) => [
+                  <TableRow key={`group-${group.option.value ?? "other"}`} className="hover:bg-transparent">
+                    <TableCell colSpan={8} className="bg-slate-50 py-2">
+                      <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-slate-600">
+                        <span className={`${group.option.pillClass} !p-0 h-2 w-2 rounded-full`} style={{ background: "currentColor" }} />
+                        {GROUP_TITLES[group.option.value ?? ""] ?? group.option.label}
+                        <span className="font-semibold text-slate-400">{group.leads.length}</span>
+                      </span>
+                    </TableCell>
+                  </TableRow>,
+                  ...group.leads.map((lead) => {
+                    const meta = leadStatusMeta(lead.status);
+                    const isNew = meta.value === "new";
+                    const isDone = meta.value === "done";
+                    const [pack, price] = splitBudget(leadValueLabel(lead.budgetRange || lead.budget || ""));
+                    return (
                   <TableRow
                     key={lead.id}
-                    className={`cursor-pointer transition-colors hover:bg-slate-50 ${
-                      lead.status === 'new'
-                        ? 'bg-[#f1faf9] border-l-4 border-l-teal-500'
-                        : 'bg-white'
-                    }`}
+                    onClick={() => handleViewDetail(lead)}
+                    className="cursor-pointer bg-white transition-colors hover:bg-slate-50"
                   >
                     <TableCell>
-                      <div>
+                      <div className={isDone ? "text-slate-500" : ""}>
                         <div className="flex items-center gap-2">
-                          {lead.status === 'new' && (
-                            <span
-                              aria-label="Nová poptávka"
-                              className="h-2 w-2 shrink-0 rounded-full bg-teal-500"
-                            />
-                          )}
-                          <span className="font-medium">{lead.name}</span>
+                          <span
+                            title={lead.name || "Bez jména"}
+                            className={`truncate ${isNew ? "font-bold" : "font-medium"} ${lead.name ? "" : "text-slate-400"}`}
+                          >
+                            {lead.name || "Bez jména"}
+                          </span>
                           {lead.aiDesignSuggestion && (
                             <Badge variant="secondary" className="gap-1">
                               <Sparkles className="h-3 w-3" /> AI
                             </Badge>
                           )}
                         </div>
-                        {lead.company && (
-                          <div
-                            title={lead.company}
-                            className="text-sm text-muted-foreground flex items-center gap-1 mt-1"
-                          >
-                            <Building2 className="h-3 w-3 shrink-0" />
-                            <span className="truncate">{lead.company}</span>
+                        {lead.company && lead.company !== lead.name && (
+                          <div title={lead.company} className="mt-0.5 truncate text-[13px] text-slate-500">
+                            {lead.company}
                           </div>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Mail className="h-3 w-3 shrink-0 text-muted-foreground" />
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <div className="space-y-0.5 text-[13px]">
+                        {lead.email ? (
                           <a
                             href={`mailto:${lead.email}`}
                             title={lead.email}
-                            className="truncate hover:text-primary"
+                            className="block truncate text-slate-700 hover:text-teal-700 hover:underline"
                           >
                             {lead.email}
                           </a>
-                        </div>
+                        ) : (
+                          <span className="text-slate-400">bez e-mailu</span>
+                        )}
                         {lead.phone && (
-                          <div className="flex items-center gap-1 text-sm">
-                            <Phone className="h-3 w-3 text-muted-foreground" />
-                            <a href={`tel:${lead.phone}`} className="hover:text-primary">
-                              {lead.phone}
-                            </a>
-                          </div>
+                          <a href={`tel:${lead.phone}`} className="block font-semibold text-slate-900 hover:text-teal-700">
+                            {lead.phone}
+                          </a>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="whitespace-nowrap">
-                        {leadValueLabel(lead.projectType ?? "")}
-                      </Badge>
+                    <TableCell className="text-[13px] text-slate-700">
+                      {leadValueLabel(lead.projectType ?? "") || <span className="text-slate-300">—</span>}
                     </TableCell>
-                    <TableCell className="text-sm">
-                      <span className="line-clamp-2">
-                        {leadValueLabel(lead.budgetRange || lead.budget || '-')}
-                      </span>
+                    <TableCell className="text-[13px]">
+                      {pack ? (
+                        <>
+                          <div className="truncate font-medium text-slate-800" title={pack}>{pack}</div>
+                          {price && <div className="whitespace-nowrap text-slate-500">{price}</div>}
+                        </>
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"
                         onClick={() => handleCycleStatus(lead)}
                         disabled={statusSaving === lead.id}
                         title="Kliknutím posunete stav"
-                        className="disabled:opacity-60"
+                        className={`${meta.pillClass} !px-2.5 !py-1 !text-[12px] disabled:opacity-60`}
                       >
-                        <Badge className={`${leadStatusMeta(lead.status).badgeClass} text-white`}>
-                          {leadStatusMeta(lead.status).label}
-                        </Badge>
+                        {meta.label}
                       </button>
                     </TableCell>
-                    <TableCell className="text-sm">
+                    <TableCell className="text-[13px]">
                       {lead.assignedTo ? (
-                        <Badge variant="secondary" className="font-normal">
-                          {lead.assignedTo}
-                        </Badge>
+                        <span className="inline-flex max-w-full items-center gap-1.5" title={lead.assignedTo}>
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-700">
+                            {initials(lead.assignedTo)}
+                          </span>
+                          <span className="truncate font-medium text-slate-700">{lead.assignedTo}</span>
+                        </span>
                       ) : (
-                        <span className="text-muted-foreground">Nepřiřazeno</span>
+                        <span className="text-slate-400">nikdo</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm">
-                      <span className="whitespace-nowrap">
-                        {new Date(lead.created).toLocaleDateString('cs-CZ')}
-                      </span>
+                    <TableCell className="whitespace-nowrap text-[13px] text-slate-500">
+                      {new Date(lead.created).toLocaleDateString('cs-CZ')}
                     </TableCell>
                     <TableCell
+                      onClick={(e) => e.stopPropagation()}
                       className="sticky right-0 z-10 bg-inherit text-right shadow-[-8px_0_8px_-8px_rgba(15,23,42,.12)]"
                     >
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="ghost" onClick={() => handleViewDetail(lead)}>
-                          Detail
-                        </Button>
-                        {lead.status === 'new' ? (
+                      <div className="flex justify-end gap-1.5">
+                        {isNew ? (
                           <Button
                             size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleTakeLead(lead);
-                            }}
+                            onClick={() => handleTakeLead(lead)}
                             className="gap-1.5 whitespace-nowrap bg-slate-900 font-semibold text-white hover:bg-slate-800"
                           >
                             <UserCheck className="h-3.5 w-3.5" />
                             Vzít
                           </Button>
-                        ) : lead.convertedToProjectId && (
+                        ) : lead.convertedToProjectId ? (
                           <Button asChild size="sm" variant="outline" className="gap-1 whitespace-nowrap">
                             <a href={`/admin/projects/${lead.convertedToProjectId}`}>
-                              <ArrowRight className="h-3 w-3" />
                               Projekt
+                              <ArrowRight className="h-3 w-3" />
                             </a>
+                          </Button>
+                        ) : (
+                          <Button size="sm" variant="ghost" onClick={() => handleViewDetail(lead)}>
+                            Detail
                           </Button>
                         )}
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
+                    );
+                  }),
+                ])
               )}
             </TableBody>
           </Table>
@@ -497,21 +536,14 @@ export default function AdminLeadsPage() {
             filteredLeads.map((lead) => (
               <Card
                 key={lead.id}
-                className={`p-4 transition-all ${
-                  lead.status === 'new'
-                    ? 'border-l-4 border-l-teal-500 bg-[#f1faf9]'
-                    : ''
-                }`}
+                className="p-4"
               >
                 <div className="space-y-3">
                   {/* Header */}
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        {lead.status === 'new' && (
-                          <span aria-label="Nová poptávka" className="h-2 w-2 shrink-0 rounded-full bg-teal-500" />
-                        )}
-                        <h3 className="font-semibold text-lg">{lead.name}</h3>
+                        <h3 className="font-semibold text-lg">{lead.name || "Bez jména"}</h3>
                       </div>
                       {lead.company && (
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
@@ -525,11 +557,9 @@ export default function AdminLeadsPage() {
                       onClick={() => handleCycleStatus(lead)}
                       disabled={statusSaving === lead.id}
                       title="Kliknutím posunete stav"
-                      className="disabled:opacity-60"
+                      className={`${leadStatusMeta(lead.status).pillClass} disabled:opacity-60`}
                     >
-                      <Badge className={`${leadStatusMeta(lead.status).badgeClass} text-white`}>
-                        {leadStatusMeta(lead.status).label}
-                      </Badge>
+                      {leadStatusMeta(lead.status).label}
                     </button>
                   </div>
 
@@ -625,13 +655,6 @@ export default function AdminLeadsPage() {
           />
         )}
 
-        {/* Info note */}
-        <div className="mt-6 p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            💡 <strong>Tip:</strong> Zde se zobrazují všechny poptávky odeslané přes kontaktní formulář.
-            Data jsou uložena v databázi a automaticky se aktualizují.
-          </p>
-        </div>
       </main>
       </div>
     </>
