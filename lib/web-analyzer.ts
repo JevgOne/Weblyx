@@ -93,7 +93,10 @@ export class WebAnalyzer {
     // Images
     const images = $('img');
     const totalImages = images.length;
-    const imagesWithoutAlt = images.filter((_, el) => !$(el).attr('alt')).length;
+    // Only a missing attribute is a fault. alt="" is the correct way to mark a
+    // decorative image (an avatar next to the person's name), and counting it
+    // reported sites that had done this right.
+    const imagesWithoutAlt = images.filter((_, el) => $(el).attr('alt') === undefined).length;
 
     // Links
     const links = $('a[href]');
@@ -338,7 +341,22 @@ export class WebAnalyzer {
 
     // Form labels
     const formInputsTotal = $('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select').length;
-    const formLabelsAssociated = $('label[for]').length;
+    // A field is labelled by a <label for>, a wrapping <label>, or an aria
+    // label. Counting only label[for] scored every form built the other two
+    // ways as unlabelled.
+    const formLabelsAssociated = $('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select')
+      .filter((_, el) => {
+        const id = $(el).attr('id');
+        return Boolean(
+          (id && $(`label[for="${id}"]`).length > 0) ||
+            $(el).closest('label').length > 0 ||
+            $(el).attr('aria-label') ||
+            $(el).attr('aria-labelledby') ||
+            // Honeypots and other fields no visitor ever reaches.
+            $(el).attr('aria-hidden') === 'true' ||
+            $(el).attr('tabindex') === '-1'
+        );
+      }).length;
     if (formInputsTotal > 0 && formLabelsAssociated < formInputsTotal) {
       issues.push(`${formInputsTotal - formLabelsAssociated} formulářových polí bez přiřazeného labelu`);
     }
@@ -390,7 +408,7 @@ export class WebAnalyzer {
     if (headingHierarchyValid) score += 10;
     // Alt texts (check from total images)
     const totalImages = $('img').length;
-    const imagesWithAlt = $('img[alt]').filter((_, el) => ($(el).attr('alt') || '').trim().length > 0).length;
+    const imagesWithAlt = $('img[alt]').length; // alt="" counts: it marks a decorative image
     if (totalImages === 0 || imagesWithAlt >= totalImages) score += 10;
     else if (imagesWithAlt > totalImages * 0.5) score += 5;
 
@@ -1349,9 +1367,13 @@ export class WebAnalyzer {
     }
 
     // Check for mixed content (http resources on https page)
-    const mixedContent = this.url.startsWith('https://') &&
-      this.html.includes('http://') &&
-      !this.html.match(/http:\/\/localhost/);
+    // Only something the page actually loads over http. The old test was "the
+    // HTML contains http://", which every inline SVG does in its xmlns, so
+    // nearly every site was told it had mixed content.
+    const mixedContent = this.url.startsWith('https://') && (
+      /<(?:img|script|iframe|source|video|audio|embed)\b[^>]*\ssrc=["']http:\/\/(?!localhost)/i.test(this.html) ||
+      /<link\b(?=[^>]*\brel=["']?stylesheet)[^>]*\shref=["']http:\/\/(?!localhost)/i.test(this.html)
+    );
 
     // Check HTTPS redirect
     const httpsRedirect = this.url.startsWith('https://');

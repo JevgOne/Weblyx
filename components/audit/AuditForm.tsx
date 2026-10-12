@@ -80,6 +80,8 @@ interface AuditResult {
 
 function scoreTone(score: number): { color: string; label: string } {
   if (score >= 90) return { color: "#16a34a", label: "Výborně" };
+  // 88 read "Průměr" one line above "nad průměrem českých firemních webů".
+  if (score >= 75) return { color: "#65a30d", label: "Dobré" };
   if (score >= 50) return { color: "#d97706", label: "Průměr" };
   return { color: "#dc2626", label: "Potřebuje zlepšit" };
 }

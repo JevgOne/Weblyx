@@ -143,6 +143,7 @@ function getScoreEmoji(score: number): string {
 
 function getScoreLabel(score: number): string {
   if (score >= 0.9) return "Výborně";
+  if (score >= 0.75) return "Dobré";
   if (score >= 0.5) return "Průměr";
   return "Potřebuje zlepšit";
 }
@@ -273,8 +274,15 @@ export async function runAudit(url: string): Promise<AuditResult> {
     ? Math.round(categories.reduce((sum, c) => sum + c.score, 0) / categories.length)
     : result.score;
 
+  // The same goes for the speed finding. It is written from the estimate, so
+  // a site Lighthouse scored 99 was still told it loads slowly.
+  const ESTIMATED_SPEED_FINDINGS = ["Pomalé načítání", "Velmi pomalé načítání"];
+  const contradicted = (title: string) => psi.score >= 75 && ESTIMATED_SPEED_FINDINGS.includes(title);
+
   return {
     ...result,
+    findings: result.findings?.filter((f) => !contradicted(f.title)),
+    issues: result.issues?.filter((i) => !contradicted(i.title)),
     vitals: psi.vitals,
     speedSource: "lighthouse",
     categories,
