@@ -5,6 +5,7 @@ import {
   listAudits,
   markReportSent,
   recordAdminAudit,
+  saveAuditReport,
   updateAuditCall,
   type AuditSource,
   type CallStatus,
@@ -109,10 +110,11 @@ export async function POST(request: NextRequest) {
       `podívali jsme se na web ${host} a sepsali, co na něm brzdí návštěvníky i vyhledávače — a co s tím. ` +
       `Přehled je zdarma a k ničemu vás nezavazuje. Kdybyste k němu měli otázky, stačí na tento e-mail odpovědět.`;
 
+  const reportHtml = buildEmailHtml(result, { intro });
   const sent = await sendEmail({
     to: email,
     subject: `Audit webu ${host} — skóre ${result.score}/100 a co zlepšit`,
-    html: buildEmailHtml(result, { intro }),
+    html: reportHtml,
     replyTo: EMAIL_CONFIG.adminEmail,
   });
   // Resend reports a rejected message in the payload instead of throwing.
@@ -123,6 +125,7 @@ export async function POST(request: NextRequest) {
   }
 
   await markReportSent(id, numbers);
+  await saveAuditReport(id, reportHtml);
   return NextResponse.json({ success: true, data: { audit: await getAudit(id) } });
 }
 

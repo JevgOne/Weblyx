@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EMAIL_CONFIG, sendEmail } from "@/lib/email/resend-client";
-import { markReportSent, recordAudit } from "@/lib/audits/server";
+import { markReportSent, recordAudit, saveAuditReport } from "@/lib/audits/server";
 import { notifyNewAudit } from "@/lib/audits/notify";
 import {
   BENCHMARK_AVERAGE,
@@ -75,10 +75,13 @@ export async function POST(request: NextRequest) {
     // Resend never finished and no report was ever delivered. Roughly 300ms on
     // a three-second call, and a failure here must not cost the visitor their
     // result, so it stays non-fatal.
+    const reportHtml = buildEmailHtml(result);
+    if (auditId) await saveAuditReport(auditId, reportHtml);
+
     const sent = await sendEmail({
       to: email,
       subject: `🔍 Audit webu: ${normalizedUrl} — skóre ${result.score}/100`,
-      html: buildEmailHtml(result),
+      html: reportHtml,
       // The report invites a reply; from noreply@ that reply went nowhere.
       replyTo: EMAIL_CONFIG.adminEmail,
     }).catch((err) => ({ success: false as const, error: String(err) }));

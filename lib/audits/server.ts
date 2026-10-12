@@ -279,3 +279,34 @@ export async function updateAuditCall(
   args.push(id);
   await turso.execute({ sql: `UPDATE audits SET ${sets.join(', ')} WHERE id = ?`, args });
 }
+
+/**
+ * Keeps the report exactly as it was mailed, so whoever phones the prospect
+ * reads the same thing the prospect does. Never throws — a report that could
+ * not be stored must not stop the mail.
+ */
+export async function saveAuditReport(id: string, html: string): Promise<void> {
+  try {
+    await turso.execute({
+      sql: `INSERT INTO audit_reports (audit_id, html, created_at) VALUES (?, ?, unixepoch())
+            ON CONFLICT(audit_id) DO UPDATE SET html = excluded.html, created_at = excluded.created_at`,
+      args: [id, html.slice(0, 600_000)],
+    });
+  } catch (error) {
+    console.error('Failed to save audit report:', error);
+  }
+}
+
+export async function getAuditReport(id: string): Promise<{ html: string; createdAt: number } | null> {
+  try {
+    const result = await turso.execute({
+      sql: 'SELECT html, created_at FROM audit_reports WHERE audit_id = ? LIMIT 1',
+      args: [id],
+    });
+    const row = result.rows[0] as any;
+    return row ? { html: String(row.html), createdAt: Number(row.created_at) } : null;
+  } catch (error) {
+    console.error('Failed to read audit report:', error);
+    return null;
+  }
+}
