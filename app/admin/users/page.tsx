@@ -136,7 +136,13 @@ export default function AdminUsersPage() {
         : { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Akce selhala');
-      setSuccess(approve ? 'Žádost schválena, uživatel se může přihlásit.' : 'Žádost zamítnuta.');
+      setSuccess(
+        !approve
+          ? 'Žádost zamítnuta.'
+          : data.emailed
+            ? 'Žádost schválena. Uživateli odešel e-mail s potvrzením a přihlašovacími údaji.'
+            : 'Žádost schválena, ale potvrzovací e-mail se nepodařilo odeslat. Dejte uživateli vědět sami.'
+      );
       fetchAdmins();
     } catch (err: any) {
       setError(err.message);
