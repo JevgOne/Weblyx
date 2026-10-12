@@ -250,7 +250,7 @@ export async function middleware(request: NextRequest) {
     // CSRF double-submit cookie check (skip for public form endpoints and admin sessions)
     // Prefix endpoints cover their subpaths; exact ones must not, otherwise
     // /api/leads/{id} (admin-only) would inherit the public form exemption.
-    const publicPrefixEndpoints = ['/api/audit', '/api/newsletter', '/api/auth/login', '/api/auth/register'];
+    const publicPrefixEndpoints = ['/api/audit', '/api/newsletter', '/api/auth/login', '/api/auth/register', '/api/dotaznik'];
     const publicExactEndpoints = ['/api/contact', '/api/leads'];
     const isPublicEndpoint =
       publicExactEndpoints.includes(pathname) ||
