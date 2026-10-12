@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
-import { createConsultation, getConsultation, listConsultations, saveConsultation } from '@/lib/consultation/store';
+import { createConsultation, ensureShareToken, getConsultation, getOfferOptions, listConsultations, saveConsultation } from '@/lib/consultation/store';
 
 /**
  * Consultation calls: the answers a client gives while the site is being scoped.
@@ -8,6 +8,7 @@ import { createConsultation, getConsultation, listConsultations, saveConsultatio
  * GET            the list
  * GET ?id=…      one consultation, pre-filled with what the enquiry already knows
  * POST           starts one without an enquiry behind it
+ * POST { id, share: true }   the link the client can fill the questionnaire through
  * PUT { id, answers }   saves; called after every change, so nothing is lost mid-call
  */
 export const dynamic = 'force-dynamic';
@@ -21,13 +22,21 @@ export async function GET(request: NextRequest) {
 
   const consultation = await getConsultation(id);
   return consultation
-    ? NextResponse.json({ success: true, consultation })
+    ? NextResponse.json({ success: true, consultation, offer: await getOfferOptions() })
     : NextResponse.json({ success: false, error: 'Poptávka nenalezena.' }, { status: 404 });
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const user = await getAuthUser();
   if (!user) return unauthorizedResponse();
+
+  const body = await request.json().catch(() => null);
+  if (body?.share === true && typeof body.id === 'string') {
+    const token = await ensureShareToken(body.id);
+    return token
+      ? NextResponse.json({ success: true, token })
+      : NextResponse.json({ success: false, error: 'Poptávka nenalezena.' }, { status: 404 });
+  }
   return NextResponse.json({ success: true, id: await createConsultation(user.name) });
 }
 

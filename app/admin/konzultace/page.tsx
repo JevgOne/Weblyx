@@ -24,6 +24,7 @@ interface Item {
   nextStepWhen: string;
   updatedAt: number | null;
   updatedBy: string;
+  clientFilledAt: number | null;
 }
 
 const muted = { color: "var(--a-muted)" };
@@ -70,7 +71,8 @@ export default function ConsultationsPage() {
         </p>
         {i.held && (
           <p className="mt-1 text-[13px]" style={{ color: "var(--a-ink)" }}>
-            Povinné údaje {i.requiredDone}/{i.requiredTotal}
+            Potřebné údaje {i.requiredDone}/{i.requiredTotal}
+            {i.clientFilledAt && <span style={{ color: "var(--a-brand)" }}> · klient vyplnil dotazník</span>}
             {i.nextStep && ` · další krok: ${i.nextStep}${i.nextStepWhen ? ` (${i.nextStepWhen})` : ""}`}
             <span style={muted}>{i.updatedAt ? ` · ${when(i.updatedAt)}${i.updatedBy ? `, ${i.updatedBy}` : ""}` : ""}</span>
           </p>
@@ -92,8 +94,8 @@ export default function ConsultationsPage() {
         <div>
           <p className="text-[17px] font-bold" style={{ color: "var(--a-ink)" }}>Konzultace s klientem</p>
           <p className="mt-1 max-w-xl text-[14px]" style={muted}>
-            Průvodce hovorem: krok za krokem se zeptáte na všechno, co je potřeba k nacenění a stavbě webu. Odpovědi se
-            ukládají samy a na konci máte rekapitulaci.
+            Průvodce hovorem: šest krátkých kroků s tím, co je potřeba k nacenění webu. Klientovi můžete poslat odkaz,
+            aby si základ vyplnil sám. Odpovědi se ukládají samy a na konci máte rekapitulaci.
           </p>
         </div>
         <button

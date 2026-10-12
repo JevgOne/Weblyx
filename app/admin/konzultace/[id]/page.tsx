@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Check, ChevronLeft, ChevronRight, Copy, Loader2, Printer } from "lucide-react";
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Copy, Link2, Loader2, Printer } from "lucide-react";
 import { useAdminAuth } from "@/app/admin/_components/AdminAuthProvider";
-import { STEPS, answerText, isAnswered, progress, recapMarkdown, type Answer, type Answers, type Question } from "@/lib/consultation/questions";
+import { STEPS, answerText, isAnswered, optionsOf, progress, recapMarkdown, type Answer, type Answers, type OfferOptions, type Question } from "@/lib/consultation/questions";
 
 /**
  * The consultation call, one topic at a time.
@@ -18,7 +18,7 @@ const muted = { color: "var(--a-muted)" };
 const field = "w-full rounded-lg border px-3 py-2.5 text-[15px] outline-none focus:border-[color:var(--a-brand)]";
 const fieldStyle = { borderColor: "var(--a-border)", background: "var(--a-bg)", color: "var(--a-ink)" };
 
-function Field({ q, value, onChange }: { q: Question; value: Answer | undefined; onChange: (v: Answer) => void }) {
+function Field({ q, options, value, onChange }: { q: Question; options: string[]; value: Answer | undefined; onChange: (v: Answer) => void }) {
   if (q.type === "choice" || q.type === "multi") {
     const selected = Array.isArray(value) ? value : value ? [value] : [];
     const toggle = (option: string) => {
@@ -26,10 +26,10 @@ function Field({ q, value, onChange }: { q: Question; value: Answer | undefined;
       else onChange(selected.includes(option) ? selected.filter((o) => o !== option) : [...selected, option]);
     };
     // Whatever the client says that is not on the list goes in as its own chip.
-    const own = selected.filter((o) => !q.options?.includes(o));
+    const own = selected.filter((o) => !options.includes(o));
     return (
       <div className="flex flex-wrap gap-2">
-        {[...(q.options ?? []), ...own].map((option) => {
+        {[...options, ...own].map((option) => {
           const on = selected.includes(option);
           return (
             <button
@@ -78,6 +78,10 @@ export default function ConsultationPage() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [offer, setOffer] = useState<OfferOptions>({ packages: [], addons: [] });
+  const [clientFilledAt, setClientFilledAt] = useState<number | null>(null);
+  const [shareLink, setShareLink] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latest = useRef<Answers>({});
 
@@ -90,6 +94,9 @@ export default function ConsultationPage() {
         latest.current = d.consultation.answers;
         setAnswers(d.consultation.answers);
         setSavedAt(d.consultation.updatedAt);
+        setClientFilledAt(d.consultation.clientFilledAt ?? null);
+        if (d.offer) setOffer(d.offer);
+        if (d.consultation.shareToken) setShareLink(`${window.location.origin}/dotaznik/${d.consultation.shareToken}`);
       });
   }, [user, id]);
 
@@ -109,6 +116,26 @@ export default function ConsultationPage() {
       setSaveState("error");
     }
   }, [id]);
+
+  // The link the client fills the short questionnaire through. Created on the
+  // first click, copied on every click.
+  const share = async () => {
+    let link = shareLink;
+    if (!link) {
+      const response = await fetch("/api/admin/konzultace", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, share: true }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!data.success) return;
+      link = `${window.location.origin}/dotaznik/${data.token}`;
+      setShareLink(link);
+    }
+    await navigator.clipboard.writeText(link).catch(() => undefined);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2500);
+  };
 
   const change = (questionId: string, value: Answer) => {
     const next = { ...latest.current, [questionId]: value };
@@ -166,10 +193,26 @@ export default function ConsultationPage() {
               {answerText(answers.company) || answerText(answers.contactName) || "Nová konzultace"}
             </p>
             <p className="text-[13px]" style={muted}>
-              Povinné údaje {p.requiredDone}/{p.requiredTotal} · vyplněno {p.answered} z {p.total} otázek
+              Potřebné údaje {p.requiredDone}/{p.requiredTotal}
+              {clientFilledAt && (
+                <span style={{ color: "var(--a-brand)" }}>
+                  {" "}· klient vyplnil dotazník {new Date(clientFilledAt * 1000).toLocaleDateString("cs-CZ")}
+                </span>
+              )}
             </p>
           </div>
         </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={share}
+            title="Klient si přes odkaz vyplní krátký dotazník sám. Pošlete ho WhatsAppem, Telegramem, SMS nebo e-mailem."
+            className="inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-[13px] font-bold"
+            style={{ borderColor: "var(--a-brand)", color: "var(--a-brand)" }}
+          >
+            {shareCopied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+            {shareCopied ? "Odkaz zkopírován" : "Odkaz pro klienta"}
+          </button>
         <p className="text-[13px] font-bold" style={{ color: saveState === "error" ? "#b91c1c" : "var(--a-muted)" }}>
           {saveState === "saving" && "Ukládám…"}
           {saveState === "saved" && (savedAt ? `Uloženo ${new Date(savedAt).toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" })}` : "Zatím nic k uložení")}
@@ -178,7 +221,13 @@ export default function ConsultationPage() {
             <button type="button" onClick={save} className="ml-2 underline">Zkusit znovu</button>
           )}
         </p>
+        </div>
       </div>
+      {shareLink && (
+        <p className="-mt-2 break-all px-1 text-[13px] print:hidden" style={muted}>
+          Odkaz pro klienta: <a href={shareLink} target="_blank" rel="noreferrer" className="underline">{shareLink}</a>
+        </p>
+      )}
 
       <div className="grid gap-5 xl:grid-cols-[220px_1fr_400px]">
         {/* Steps */}
@@ -192,10 +241,10 @@ export default function ConsultationPage() {
                 key={s.id}
                 type="button"
                 onClick={() => setStepIndex(i)}
-                className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-[14px] font-bold"
-                style={active ? { background: "var(--a-ink)", color: "#fff" } : { color: "var(--a-ink)" }}
+                className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-[14px] font-bold ${s.later ? "mt-2 border-t pt-3" : ""}`}
+                style={active ? { background: "var(--a-ink)", color: "#fff" } : { color: s.later ? "var(--a-muted)" : "var(--a-ink)", borderColor: "var(--a-border)" }}
               >
-                <span>{i + 1}. {s.title}</span>
+                <span>{s.later ? s.title : `${i + 1}. ${s.title}`}</span>
                 {/* A tick means the step is covered — not merely that nothing in it is required. */}
                 <span className="shrink-0 text-[12px]" style={{ color: active ? "#fff" : missing ? "#b45309" : done ? "var(--a-brand)" : "var(--a-muted)" }}>
                   {!missing && done > 0 ? <Check className="h-4 w-4" /> : `${done}/${s.questions.length}`}
@@ -207,7 +256,7 @@ export default function ConsultationPage() {
 
         {/* Questions */}
         <div className="wbx-card p-[26px] print:hidden">
-          <p className="text-[13px] font-bold uppercase tracking-wide" style={muted}>Krok {stepIndex + 1} z {STEPS.length}</p>
+          <p className="text-[13px] font-bold uppercase tracking-wide" style={muted}>{step.later ? "Nepovinné" : `Krok ${stepIndex + 1} z ${STEPS.filter((s) => !s.later).length}`}</p>
           <p className="mt-1 text-[22px] font-extrabold" style={{ color: "var(--a-ink)" }}>{step.title}</p>
           <p className="mt-1 text-[14px]" style={muted}>{step.intro}</p>
 
@@ -219,7 +268,7 @@ export default function ConsultationPage() {
                   {q.label}
                   {q.required && !isAnswered(answers[q.id]) && <span style={{ color: "#b45309" }}> · potřebujeme</span>}
                 </p>
-                <Field q={q} value={answers[q.id]} onChange={(v) => change(q.id, v)} />
+                <Field q={q} options={optionsOf(q, offer)} value={answers[q.id]} onChange={(v) => change(q.id, v)} />
               </div>
             ))}
           </div>

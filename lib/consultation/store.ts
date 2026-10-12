@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid';
 import { turso } from '@/lib/turso';
-import { ALL_QUESTIONS, answerText, progress, type Answers } from '@/lib/consultation/questions';
+import { ALL_QUESTIONS, CLIENT_QUESTIONS, answerText, progress, type Answers, type OfferOptions } from '@/lib/consultation/questions';
+import { getPricingData } from '@/lib/pricing/server';
+import { formatCzk } from '@/lib/pricing/types';
 
 /**
  * Consultation answers live with the enquiry they belong to (`leads.consultation`).
@@ -18,6 +20,32 @@ export interface Consultation {
   answers: Answers;
   updatedAt: number | null;
   updatedBy: string;
+  /** Opens the client's own questionnaire; null until staff ask for the link. */
+  shareToken: string | null;
+  /** When the client last sent the questionnaire, unix seconds. */
+  clientFilledAt: number | null;
+}
+
+/**
+ * Package and add-on choices straight from the price list — the client picks
+ * from what we actually sell, at the price the website shows.
+ */
+export async function getOfferOptions(): Promise<OfferOptions> {
+  const pricing = await getPricingData();
+  // One add-on can carry a different price per package; quote the lowest.
+  const addons = new Map<string, number>();
+  for (const addon of pricing.addons) {
+    addons.set(addon.name, Math.min(addons.get(addon.name) ?? Infinity, addon.price));
+  }
+  const several = (name: string) => pricing.addons.filter((a) => a.name === name && a.price !== addons.get(name)).length > 0;
+  return {
+    packages: [
+      ...pricing.tiers.map((t) => `${t.name} – ${formatCzk(t.price)} Kč`),
+      'E-shop nebo systém na míru (cena individuálně)',
+      'Zatím nevím, poraďte mi',
+    ],
+    addons: [...addons].map(([name, price]) => `${name} (+ ${several(name) ? 'od ' : ''}${formatCzk(price)} Kč)`),
+  };
 }
 
 const parse = (raw: unknown): { answers: Answers; updatedAt: number | null; updatedBy: string } => {
@@ -55,7 +83,45 @@ export async function getConsultation(leadId: string): Promise<Consultation | nu
     answers,
     updatedAt: stored.updatedAt,
     updatedBy: stored.updatedBy,
+    shareToken: row.consultation_token ? String(row.consultation_token) : null,
+    clientFilledAt: row.consultation_client_at ? Number(row.consultation_client_at) : null,
   };
+}
+
+/** The link token for this consultation, created the first time it is asked for. */
+export async function ensureShareToken(leadId: string): Promise<string | null> {
+  const existing = await turso.execute({ sql: 'SELECT consultation_token FROM leads WHERE id = ?', args: [leadId] });
+  if (!existing.rows[0]) return null;
+  const current = (existing.rows[0] as any).consultation_token;
+  if (current) return String(current);
+  const token = nanoid(24);
+  await turso.execute({ sql: 'UPDATE leads SET consultation_token = ? WHERE id = ?', args: [token, leadId] });
+  return token;
+}
+
+export async function getConsultationByToken(token: string): Promise<Consultation | null> {
+  if (!/^[A-Za-z0-9_-]{16,40}$/.test(token)) return null;
+  const result = await turso.execute({ sql: 'SELECT id FROM leads WHERE consultation_token = ? LIMIT 1', args: [token] });
+  const row = result.rows[0] as any;
+  return row ? getConsultation(String(row.id)) : null;
+}
+
+/**
+ * What the client sent through their link. Only the questions the client is
+ * shown are taken, and they are merged over what staff already wrote down —
+ * nothing from the call is lost because the client skipped a field.
+ */
+export async function saveClientAnswers(token: string, incoming: Answers): Promise<Consultation | null> {
+  const consultation = await getConsultationByToken(token);
+  if (!consultation) return null;
+  const merged: Answers = { ...consultation.answers };
+  for (const q of CLIENT_QUESTIONS) {
+    const value = incoming[q.id];
+    if (Array.isArray(value) ? value.length > 0 : typeof value === 'string' && value.trim()) merged[q.id] = value;
+  }
+  await saveConsultation(consultation.leadId, merged, 'klient');
+  await turso.execute({ sql: 'UPDATE leads SET consultation_client_at = unixepoch() WHERE id = ?', args: [consultation.leadId] });
+  return getConsultation(consultation.leadId);
 }
 
 export async function createConsultation(by: string): Promise<string> {
@@ -103,7 +169,7 @@ export async function saveConsultation(leadId: string, incoming: Answers, by: st
 /** Consultations already held, newest first, and recent enquiries that have not had one yet. */
 export async function listConsultations() {
   const result = await turso.execute(
-    `SELECT id, name, company, email, phone, source, status, consultation, created_at
+    `SELECT id, name, company, email, phone, source, status, consultation, consultation_client_at, created_at
        FROM leads WHERE COALESCE(source, '') != 'audit'
       ORDER BY (consultation IS NOT NULL) DESC, updated_at DESC LIMIT 80`
   );
@@ -124,6 +190,7 @@ export async function listConsultations() {
       nextStepWhen: answerText(stored.answers.nextStepWhen),
       updatedAt: stored.updatedAt,
       updatedBy: stored.updatedBy,
+      clientFilledAt: row.consultation_client_at ? Number(row.consultation_client_at) : null,
     };
   });
 }

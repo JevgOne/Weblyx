@@ -16,6 +16,8 @@ const PUBLIC_RULES: Rule[] = [
   { path: '/api/contact', methods: ['POST'], exact: true },
   { path: '/api/leads', methods: ['POST'], exact: true },
   { path: '/api/audit', methods: ['POST'], exact: true },
+  // The client's own questionnaire; the unguessable token in the path is the key.
+  { path: '/api/dotaznik', methods: ['GET', 'POST'] },
   { path: '/api/newsletter/subscribe', methods: ['POST'], exact: true },
   { path: '/api/blog/feedback', methods: ['POST'], exact: true },
   { path: '/api/reviews/submit', methods: ['POST'], exact: true },
