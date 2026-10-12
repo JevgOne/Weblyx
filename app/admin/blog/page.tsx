@@ -251,9 +251,11 @@ export default function BlogPage() {
                       )}
                     </div>
 
-                    {post.imageUrl && (
+                    {/* An article without its own cover is shown on the blog with the
+                        generated one; show that same image here instead of nothing. */}
+                    {(post.imageUrl || post.slug) && (
                       <img
-                        src={post.imageUrl}
+                        src={post.imageUrl || `/blog-cover/${post.slug}.svg`}
                         alt={post.title}
                         className="w-32 h-32 object-cover rounded-lg shrink-0"
                       />
