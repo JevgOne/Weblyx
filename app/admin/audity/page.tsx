@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExternalLink, FileText, Loader2, Phone, Send } from "lucide-react";
 import type { AuditRecord, AuditSource, CallStatus } from "@/lib/audits/server";
 
@@ -106,17 +107,13 @@ export default function AdminAuditsPage() {
   const [running, setRunning] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  // The report as mailed, opened under its row.
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [report, setReport] = useState<{ id: string; html: string; stored: boolean } | null>(null);
+  // The report as mailed, opened in a window over the list.
+  const [openAudit, setOpenAudit] = useState<AuditRecord | null>(null);
+  const [report, setReport] = useState<{ id: string; html: string } | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
 
-  const toggleReport = async (a: AuditRecord) => {
-    if (openId === a.id) {
-      setOpenId(null);
-      return;
-    }
-    setOpenId(a.id);
+  const openReport = async (a: AuditRecord) => {
+    setOpenAudit(a);
     setReportError(null);
     if (report?.id === a.id) return;
     setReport(null);
@@ -124,7 +121,7 @@ export default function AdminAuditsPage() {
       const res = await fetch(`/api/admin/audits/${a.id}/report`);
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || "Report se nepodařilo načíst.");
-      setReport({ id: a.id, html: json.data.html, stored: Boolean(json.data.stored) });
+      setReport({ id: a.id, html: json.data.html });
     } catch (e) {
       setReportError(e instanceof Error ? e.message : "Report se nepodařilo načíst.");
     }
@@ -422,15 +419,15 @@ export default function AdminAuditsPage() {
                       {a.reportSentAt ? "Report odeslán" : "Poslat report"}
                     </button>
                   )}
-                  {a.status === "ok" && (
+                  {a.hasReport && (
                     <button
                       type="button"
-                      onClick={() => toggleReport(a)}
+                      onClick={() => openReport(a)}
                       className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-bold"
                       style={{ color: "var(--a-brand)", borderColor: "var(--a-brand)" }}
                     >
                       <FileText className="h-3.5 w-3.5" />
-                      {openId === a.id ? "Skrýt report" : "Zobrazit report"}
+                      Zobrazit report
                     </button>
                   )}
                   {a.leadId && (
@@ -444,43 +441,41 @@ export default function AdminAuditsPage() {
                   )}
                 </div>
 
-                {openId === a.id && (
-                  <div className="w-full pt-2">
-                    {reportError ? (
-                      <p className="text-[13px] font-semibold" style={{ color: "#DC2626" }}>
-                        {reportError}
-                      </p>
-                    ) : report?.id !== a.id ? (
-                      <p
-                        className="inline-flex items-center gap-2 text-[13px] font-medium"
-                        style={{ color: "var(--a-muted)" }}
-                      >
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Načítám report… u staršího auditu se web měří znovu, trvá to až půl minuty.
-                      </p>
-                    ) : (
-                      <>
-                        <p className="mb-2 text-[12px] font-medium" style={{ color: "var(--a-muted)" }}>
-                          {report.stored
-                            ? "Přesně tento report odešel na e-mail."
-                            : "Report k tomuto auditu se ještě neukládal. Tohle je nové měření z této chvíle, čísla se mohou lišit od toho, co klient dostal."}
-                        </p>
-                        <iframe
-                          title={`Report ${pageOf(a.url)}`}
-                          srcDoc={report.html}
-                          sandbox="allow-popups allow-popups-to-escape-sandbox"
-                          className="h-[720px] w-full rounded-xl border bg-white"
-                          style={{ borderColor: "var(--a-border)" }}
-                        />
-                      </>
-                    )}
-                  </div>
-                )}
               </li>
             );
           })}
         </ul>
       )}
+
+      <Dialog open={openAudit !== null} onOpenChange={(open) => !open && setOpenAudit(null)}>
+        <DialogContent className="flex h-[90vh] w-[min(760px,96vw)] max-w-none flex-col gap-3 p-5">
+          <DialogHeader>
+            <DialogTitle>Report: {openAudit ? pageOf(openAudit.url) : ""}</DialogTitle>
+            <DialogDescription>
+              {openAudit?.reportSentAt
+                ? `Přesně tento report odešel na ${openAudit.email}.`
+                : "Report je sestavený, ale e-mail s ním neodešel."}
+            </DialogDescription>
+          </DialogHeader>
+          {reportError ? (
+            <p className="text-[13px] font-semibold" style={{ color: "#DC2626" }}>
+              {reportError}
+            </p>
+          ) : !openAudit || report?.id !== openAudit.id ? (
+            <p className="inline-flex items-center gap-2 text-[13px] font-medium text-slate-500">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Načítám report…
+            </p>
+          ) : (
+            <iframe
+              title={`Report ${pageOf(openAudit.url)}`}
+              srcDoc={report.html}
+              sandbox="allow-popups allow-popups-to-escape-sandbox"
+              className="min-h-0 w-full flex-1 rounded-xl border bg-white"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {audits.length < total && !loading && (
         <div className="pt-5 text-center">

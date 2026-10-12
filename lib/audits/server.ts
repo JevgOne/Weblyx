@@ -32,6 +32,8 @@ export interface AuditRecord {
   error: string | null;
   /** When the report was last mailed from the admin panel, unix seconds. */
   reportSentAt: number | null;
+  /** The mailed report is on file and can be opened in the panel. */
+  hasReport: boolean;
   createdAt: number;
 }
 
@@ -70,6 +72,7 @@ function toRecord(row: any): AuditRecord {
     status: row.status === 'failed' ? 'failed' : 'ok',
     error: row.error ? String(row.error) : null,
     reportSentAt: row.report_sent_at ? Number(row.report_sent_at) : null,
+    hasReport: Number(row.has_report ?? 0) === 1,
     createdAt: Number(row.created_at),
   };
 }
@@ -144,7 +147,8 @@ export async function listAudits(
       args: filterArgs,
     });
     const result = await turso.execute({
-      sql: `SELECT * FROM audits ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      sql: `SELECT audits.*, EXISTS(SELECT 1 FROM audit_reports r WHERE r.audit_id = audits.id) AS has_report
+              FROM audits ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       args: [...filterArgs, limit, offset],
     });
     return {
@@ -204,7 +208,7 @@ export async function recordAdminAnalysis(params: {
 }
 
 export async function getAudit(id: string): Promise<AuditRecord | null> {
-  const result = await turso.execute({ sql: 'SELECT * FROM audits WHERE id = ? LIMIT 1', args: [id] });
+  const result = await turso.execute({ sql: 'SELECT audits.*, EXISTS(SELECT 1 FROM audit_reports r WHERE r.audit_id = audits.id) AS has_report FROM audits WHERE id = ? LIMIT 1', args: [id] });
   return result.rows[0] ? toRecord(result.rows[0]) : null;
 }
 
