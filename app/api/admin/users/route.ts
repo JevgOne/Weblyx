@@ -133,6 +133,14 @@ export async function POST(request: NextRequest) {
 
     const { email, password, name, role } = validationResult.data;
 
+    // An owner is made only by an owner; otherwise an admin could mint one.
+    if (role === 'owner' && currentUser.role !== 'owner') {
+      return NextResponse.json(
+        { error: 'Vlastníka může založit jen vlastník' },
+        { status: 403 }
+      );
+    }
+
     // Create new admin
     const newAdmin = await createDbAdmin(email, password, name, role);
 

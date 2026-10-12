@@ -6,6 +6,9 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    // Status colours are defined in lib/leads/status.ts; without this the
+    // "V řešení" and "Hotovo" badges had no background and read white on white.
+    "./lib/**/*.{ts,tsx}",
   ],
   theme: {
   	container: {

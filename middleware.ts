@@ -3,6 +3,14 @@ import type { NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import { checkRateLimit } from './lib/rate-limit';
+import {
+  hasInternalSecret,
+  isPublicApi,
+  permissionForAdminPage,
+  permissionForApi,
+  roleFromSessionToken,
+  roleMay,
+} from './lib/auth/api-access';
 
 // WHITELIST: Legitimate search engine bots + AI crawlers + monitoring tools (NEVER block these!)
 const WHITELISTED_BOTS = [
@@ -189,6 +197,31 @@ export async function middleware(request: NextRequest) {
         status: 429,
         headers: { 'Retry-After': isApiRoute ? '60' : '10' },
       });
+    }
+  }
+
+  // 4b. Access control. Every /api route is private unless api-access.ts lists
+  // it as public, and a signed-in role only reaches what its permissions allow.
+  // The menu hiding a section was never protection: the address still worked.
+  if (isApiRoute && !isPublicApi(pathname, request.method) && !hasInternalSecret(request.headers.get('x-internal-secret'))) {
+    const role = await roleFromSessionToken(request.cookies.get('admin-session')?.value);
+    if (!role) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!roleMay(role, permissionForApi(pathname))) {
+      return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
+    }
+  }
+
+  // The same for admin pages, for a signed-in role that lacks the section. A
+  // visitor with no session is left to the panel's own redirect to the login.
+  if (isAdminRoute) {
+    const needed = permissionForAdminPage(pathname);
+    if (needed) {
+      const role = await roleFromSessionToken(request.cookies.get('admin-session')?.value);
+      if (role && !roleMay(role, needed)) {
+        return NextResponse.redirect(new URL('/admin/tasks', request.url));
+      }
     }
   }
 

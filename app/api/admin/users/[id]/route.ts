@@ -133,6 +133,23 @@ export async function PATCH(
       );
     }
 
+    // Only an owner touches an owner's account or hands the role out, and
+    // nobody changes their own role — an admin could otherwise promote himself.
+    if (!isOwner(currentUser.role)) {
+      if (existingAdmin.role === 'owner' || updateData.role === 'owner') {
+        return NextResponse.json(
+          { error: 'Účet vlastníka může měnit jen vlastník' },
+          { status: 403 }
+        );
+      }
+      if (updateData.role !== undefined && id === currentUser.id) {
+        return NextResponse.json(
+          { error: 'Vlastní roli si změnit nemůžete' },
+          { status: 403 }
+        );
+      }
+    }
+
     // Prevent deactivating yourself
     if (updateData.active === false && id === currentUser.id) {
       return NextResponse.json(

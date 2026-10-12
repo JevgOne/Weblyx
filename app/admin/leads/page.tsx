@@ -196,10 +196,10 @@ export default function AdminLeadsPage() {
 
       // Remove from leads list (or update status to converted)
       setLeads(prevLeads => prevLeads.map(l =>
-        l.id === lead.id ? { ...l, status: 'converted' } : l
+        l.id === lead.id ? { ...l, status: 'in_progress' } : l
       ));
 
-      alert(`✅ Poptávka převedena na projekt!\n\nMůžete ji najít v Projekty → ID: ${result.project.id}`);
+      alert(`Poptávka je teď „V řešení“ a má svůj projekt v Projektech.\n\nAž web předáte, nastavte u projektu stav „Předáno“ a poptávka se sama označí jako hotová.`);
 
       // Refresh leads
       fetchLeads();
@@ -465,14 +465,12 @@ export default function AdminLeadsPage() {
                             <UserCheck className="h-3.5 w-3.5" />
                             Vzít
                           </Button>
-                        ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleConvertLead(lead)}
-                            className="gap-1"
-                          >
-                            <ArrowRight className="h-3 w-3" />
-                            Převést
+                        ) : lead.convertedToProjectId && (
+                          <Button asChild size="sm" variant="outline" className="gap-1 whitespace-nowrap">
+                            <a href={`/admin/projects/${lead.convertedToProjectId}`}>
+                              <ArrowRight className="h-3 w-3" />
+                              Projekt
+                            </a>
                           </Button>
                         )}
                       </div>
@@ -602,14 +600,12 @@ export default function AdminLeadsPage() {
                         <UserCheck className="h-4 w-4" />
                         Vzít poptávku
                       </Button>
-                    ) : (lead.status === "approved" || lead.status === "quoted") && !lead.convertedToProjectId && (
-                      <Button
-                        size="sm"
-                        className="flex-1 gap-1"
-                        onClick={() => handleConvertLead(lead)}
-                      >
-                        <ArrowRight className="h-3 w-3" />
-                        Převést
+                    ) : lead.convertedToProjectId && (
+                      <Button asChild size="sm" variant="outline" className="flex-1 gap-1">
+                        <a href={`/admin/projects/${lead.convertedToProjectId}`}>
+                          <ArrowRight className="h-3 w-3" />
+                          Projekt
+                        </a>
                       </Button>
                     )}
                   </div>

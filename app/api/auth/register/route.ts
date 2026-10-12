@@ -23,7 +23,7 @@ const registerSchema = z.object({
 /**
  * POST /api/auth/register
  * Register a new admin account.
- * First registered user gets "owner" role, subsequent get "admin" role.
+ * Only the first account of a fresh install; it becomes the owner.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -40,9 +40,17 @@ export async function POST(request: NextRequest) {
 
     const { email, password, name } = validationResult.data;
 
-    // First user becomes owner, others become admin
-    const existingAdmins = await hasAnyAdmins();
-    const role = existingAdmins ? 'admin' : 'owner';
+    // Closed unless ALLOW_ADMIN_REGISTRATION=1 is set on purpose, and even then
+    // only for the very first account of a fresh install. This route used to
+    // hand an owner or admin account to anyone who posted to it; accounts are
+    // created by the owner in Uživatelé.
+    if (process.env.ALLOW_ADMIN_REGISTRATION !== '1' || (await hasAnyAdmins())) {
+      return NextResponse.json(
+        { error: 'Registrace je uzavřená. Účty zakládá vlastník v sekci Uživatelé.' },
+        { status: 403 }
+      );
+    }
+    const role = 'owner';
 
     const newAdmin = await createDbAdmin(email, password, name, role);
 

@@ -305,7 +305,13 @@ export function AuditForm() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => { setResult(null); setFormData({ url: "", email: formData.email, name: formData.name }); }}
+              onClick={() => {
+                setResult(null);
+                setFormData({ url: "", email: formData.email, name: formData.name });
+                // The report is far taller than the form that replaces it, so
+                // without this the visitor is left looking at the footer.
+                window.scrollTo({ top: 0 });
+              }}
             >
               Zkontrolovat další web
             </Button>

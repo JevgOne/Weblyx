@@ -73,6 +73,18 @@ export async function POST(request: NextRequest) {
 
     const lead = leadResult.rows[0];
 
+    // One project per enquiry. A second click used to create a second project.
+    const existing = await turso.execute({
+      sql: 'SELECT id FROM projects WHERE lead_id = ? LIMIT 1',
+      args: [leadId],
+    });
+    if (existing.rows.length > 0) {
+      return NextResponse.json(
+        { error: 'Tahle poptávka už projekt má. Najdete ho v Projektech.' },
+        { status: 409 }
+      );
+    }
+
     // Parse JSON fields
     const parseJSON = (field: any) => {
       if (!field) return null;
@@ -132,13 +144,16 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    // Update lead status to 'converted'
+    // Taken, not finished: the enquiry is "V řešení" until its project is
+    // handed over. It used to be marked done the moment someone took it.
     await turso.execute({
       sql: `UPDATE leads
-            SET status = 'converted',
+            SET status = 'in_progress',
+                assigned_to = ?,
+                converted_to_project_id = ?,
                 updated_at = unixepoch()
             WHERE id = ?`,
-      args: [leadId],
+      args: [user.name || targetAdmin.name, projectId, leadId],
     });
 
     return NextResponse.json({

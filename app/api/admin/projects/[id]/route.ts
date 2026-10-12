@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { turso } from '@/lib/turso';
 import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 import { getProject, updateProject } from '@/lib/turso/projects';
 
@@ -32,6 +33,23 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
 
   try {
     const project = await updateProject(id, body);
+
+    // The enquiry follows its project: handed over means done, reopened means
+    // back in progress. Nobody should have to mark the same thing twice.
+    const status = (body as Record<string, unknown>).status;
+    if (typeof status === 'string') {
+      const leadStatus =
+        status === 'delivered' || status === 'warranty_ended' ? 'done' : status === 'in_progress' ? 'in_progress' : null;
+      if (leadStatus) {
+        await turso
+          .execute({
+            sql: `UPDATE leads SET status = ?, updated_at = unixepoch()
+                  WHERE id = (SELECT lead_id FROM projects WHERE id = ?)`,
+            args: [leadStatus, id],
+          })
+          .catch((error) => console.error('Lead status sync failed:', error));
+      }
+    }
     return NextResponse.json({ success: true, data: project });
   } catch (error) {
     console.error('Error updating project:', error);

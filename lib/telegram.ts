@@ -97,30 +97,48 @@ function formatLeadMessage(lead: LeadNotificationData): string {
   const project: string[] = [];
 
   if (lead.projectType) {
+    // The ids the enquiry form sends, plus the older ones still used elsewhere.
     const typeLabels: Record<string, string> = {
+      'new-web': 'Nový web',
+      'redesign': 'Redesign webu',
+      'web-app': 'Webová aplikace',
       'landing': 'Landing page',
+      'other': 'Jiné',
       'website': 'Firemní web',
       'eshop': 'E-shop',
       'webapp': 'Webová aplikace',
-      'redesign': 'Redesign',
-      'other': 'Jiné'
     };
     project.push(`Typ: <b>${esc(typeLabels[lead.projectType] || lead.projectType)}</b>`);
   }
 
-  if (lead.budget) {
-    project.push(`💰 Rozpočet: <b>${esc(lead.budget)}</b>`);
-  }
-
   if (lead.configuration) {
+    // What the client put together in the price configurator, line by line as
+    // they saw it: the package, each paid extra, then the total.
     const config = lead.configuration;
-    project.push(`🧩 Balíček: <b>${esc(config.tierName)}</b>`);
+    const czk = (n: number) => `${n.toLocaleString('cs-CZ')} Kč`;
+    const addonsTotal = config.addons.reduce((sum, a) => sum + a.price, 0);
+
+    project.push(`🧩 Balíček: <b>${esc(config.tierName)}</b> — ${czk(config.totalPrice - addonsTotal)}`);
     if (config.addons.length > 0) {
-      project.push(`➕ Doplňky: ${esc(config.addons.map((a) => a.name).join(', '))}`);
+      project.push(`➕ Doplňky (${config.addons.length}):`);
+      for (const addon of config.addons) {
+        project.push(`   • ${esc(addon.name)} — ${czk(addon.price)}`);
+      }
+    } else {
+      project.push('➕ Doplňky: žádné');
     }
-    let price = `💵 Cena: <b>${config.totalPrice.toLocaleString('cs-CZ')} Kč</b> · ${config.totalHours} h`;
-    if (config.deliveryDays) price += ` · dodání ${config.deliveryDays} dní`;
-    project.push(price);
+    project.push(`💰 Cena celkem: <b>${czk(config.totalPrice)}</b>`);
+
+    // Only what the client was told on the site. The price list's hours are a
+    // scope figure for the page, not how long the job takes us, so they stay
+    // out of a message meant for the team.
+    const promised: string[] = [];
+    if (config.deliveryDays) promised.push(`dodání ${config.deliveryDays} dní`);
+    if (config.supportMonths) promised.push(`podpora ${config.supportMonths} měs.`);
+    if (promised.length > 0) project.push(`📅 Klient na webu viděl: ${promised.join(' · ')}`);
+  } else if (lead.budget) {
+    // With a configuration the budget field only repeats its total.
+    project.push(`💰 Rozpočet: <b>${esc(lead.budget)}</b>`);
   }
 
   if (project.length > 0) {

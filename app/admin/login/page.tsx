@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -125,13 +124,6 @@ export default function AdminLoginPage() {
             >
               {loading ? "Přihlašování..." : "Přihlásit se"}
             </Button>
-
-            <p className="text-center text-sm text-muted-foreground">
-              Nemáte účet?{" "}
-              <Link href="/admin/register" className="text-primary hover:underline font-medium">
-                Zaregistrujte se
-              </Link>
-            </p>
           </form>
         </CardContent>
       </Card>

@@ -96,7 +96,7 @@ Vždy uveď:
 // ===========================================
 
 // Fetch marketing data from internal APIs
-async function fetchMarketingData(baseUrl: string) {
+async function fetchMarketingData(baseUrl: string, cookie: string) {
   const data: {
     google_ads: any[] | null;
     meta_ads: any[] | null;
@@ -109,6 +109,7 @@ async function fetchMarketingData(baseUrl: string) {
     // Google Ads data
     const googleRes = await fetch(`${baseUrl}/api/google-ads/campaigns`, {
       cache: "no-store",
+      headers: { cookie },
     });
     if (googleRes.ok) {
       const googleData = await googleRes.json();
@@ -124,6 +125,7 @@ async function fetchMarketingData(baseUrl: string) {
     // Meta Ads data
     const metaRes = await fetch(`${baseUrl}/api/meta-ads/campaigns`, {
       cache: "no-store",
+      headers: { cookie },
     });
     if (metaRes.ok) {
       const metaData = await metaRes.json();
@@ -278,7 +280,9 @@ export async function POST(request: NextRequest) {
     const baseUrl = `${protocol}://${host}`;
 
     // Fetch current data from platforms
-    const marketingData = await fetchMarketingData(baseUrl);
+    // These endpoints need a session; the browser's cookie does not travel on a
+    // server-side fetch by itself.
+    const marketingData = await fetchMarketingData(baseUrl, request.headers.get("cookie") || "");
 
     // Format data for AI
     const dataContext = formatDataForAI(marketingData, context?.config);
