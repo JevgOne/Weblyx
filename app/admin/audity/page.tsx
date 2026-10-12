@@ -37,13 +37,34 @@ function scoreColor(score: number | null) {
   return { fg: "#0F9268", bg: "rgba(15,146,104,.12)" };
 }
 
-/** What to open the call with — the worse the score, the blunter the line. */
+/** What to open the call with — names the weakest measured area, never a guess. */
 function talkingPoint(a: AuditRecord): string {
   if (a.status === "failed") return "Audit se nepodařilo dokončit — web možná nejede.";
   if (a.score === null) return "Skóre se nepodařilo změřit.";
-  if (a.score < 50) return `Web má ${a.score}/100 — načítá se pomalu a přichází o zákazníky.`;
-  if (a.score < 90) return `Web má ${a.score}/100 — je co zlepšovat, hlavně rychlost.`;
+  // Only "NN/100" values are comparable; older records carry seconds and sizes.
+  const weakest = a.metrics
+    .map((m) => ({ m, points: /^(\d+)\/100$/.exec(m.value)?.[1] }))
+    .filter((x) => x.points !== undefined)
+    .map((x) => ({ m: x.m, points: Number(x.points) }))
+    .sort((x, y) => x.points - y.points)[0];
+  const weak =
+    weakest && weakest.points < 90
+      ? `nejslabší je ${weakest.m.label.toLowerCase()} (${weakest.m.value})`
+      : null;
+  if (a.score < 50) return `Web má ${a.score}/100 — ${weak ?? "vážné nedostatky"}, přichází o zákazníky.`;
+  if (a.score < 90) return `Web má ${a.score}/100 — ${weak ?? "drobné nedostatky"}.`;
   return `Web má ${a.score}/100 — technicky je v pořádku, prostor je jinde.`;
+}
+
+/** Host plus path, so an audit of a subpage is not mistaken for the homepage. */
+function pageOf(url: string) {
+  try {
+    const u = new URL(url);
+    const path = u.pathname.replace(/\/$/, "");
+    return u.hostname.replace(/^www\./, "") + path;
+  } catch {
+    return url;
+  }
 }
 
 function hostOf(url: string) {
@@ -307,7 +328,7 @@ export default function AdminAuditsPage() {
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-[15px] font-semibold hover:underline"
                   >
-                    {hostOf(a.url)}
+                    {pageOf(a.url)}
                     <ExternalLink className="h-3.5 w-3.5" style={{ color: "var(--a-muted)" }} />
                   </a>
                   <p className="mt-0.5 text-sm font-medium" style={{ color: "var(--a-muted)" }}>
