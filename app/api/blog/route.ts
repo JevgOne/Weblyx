@@ -15,7 +15,9 @@ import { getAuthUser, unauthorizedResponse } from '@/lib/auth/require-auth';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const publishedOnly = searchParams.get('published') === 'true';
+    // Drafts are for the panel only; without a session the listing is always
+    // the published one, whatever the query says.
+    const publishedOnly = searchParams.get('published') === 'true' || !(await getAuthUser());
 
     const posts = publishedOnly
       ? await getPublishedBlogPosts()

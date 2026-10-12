@@ -142,10 +142,14 @@ export async function middleware(request: NextRequest) {
   const isWhitelistedBot = WHITELISTED_BOTS.some(bot => userAgent.toLowerCase().includes(bot));
 
   // Skip security checks for static assets
+  // Never for /api or /admin: a dynamic route answers to any last segment, so
+  // /api/reviews/x.png reached the handler while skipping every check here.
+  const isProtectedArea = pathname.startsWith('/api/') || pathname.startsWith('/admin/');
   if (
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/static/') ||
-    pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|webp|css|js)$/)
+    !isProtectedArea &&
+    (pathname.startsWith('/_next/') ||
+      pathname.startsWith('/static/') ||
+      pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|webp|css|js)$/))
   ) {
     return NextResponse.next();
   }
@@ -213,13 +217,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // The same for admin pages, for a signed-in role that lacks the section. A
-  // visitor with no session is left to the panel's own redirect to the login.
+  // The same for admin pages: no session goes to the login, and a role that
+  // lacks the section goes to its own start page.
   if (isAdminRoute) {
     const needed = permissionForAdminPage(pathname);
     if (needed) {
       const role = await roleFromSessionToken(request.cookies.get('admin-session')?.value);
-      if (role && !roleMay(role, needed)) {
+      if (!role) {
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+      if (!roleMay(role, needed)) {
         return NextResponse.redirect(new URL('/admin/tasks', request.url));
       }
     }
@@ -335,5 +342,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:css|js|svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    // The pattern above skips anything that ends like a file. These two must
+    // always pass through, whatever the last segment looks like.
+    '/api/:path*',
+    '/admin/:path*',
   ],
 };

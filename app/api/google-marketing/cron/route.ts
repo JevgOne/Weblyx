@@ -34,17 +34,21 @@ interface AnalysisResult {
   phase: string;
 }
 
+// Known only to this process: POST is reached through a signed-in session and
+// uses it to call GET, so it cannot be supplied from outside.
+const MANUAL_TRIGGER_TOKEN = crypto.randomUUID();
+
 export async function GET(request: NextRequest) {
-  // Verify cron secret for security
+  // The scheduler's secret, or the token POST below hands to its own call.
+  // A plain `x-manual-trigger: true` header used to be enough, which let
+  // anyone start a run and spend model credits.
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
+  const fromScheduler = Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}`;
+  const fromAdmin = request.headers.get('x-manual-trigger') === MANUAL_TRIGGER_TOKEN;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    // Allow local/manual testing without secret
-    const isLocalOrManual = request.headers.get('x-manual-trigger') === 'true';
-    if (!isLocalOrManual) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!fromScheduler && !fromAdmin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -345,7 +349,7 @@ export async function POST(request: NextRequest) {
 
   // Trigger full analysis
   const mockRequest = new Request(request.url, {
-    headers: { 'x-manual-trigger': 'true' },
+    headers: { 'x-manual-trigger': MANUAL_TRIGGER_TOKEN },
   });
 
   return GET(mockRequest as NextRequest);

@@ -48,7 +48,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { type UserRole, ROLE_NAMES, ROLE_DESCRIPTIONS, isOwner } from "@/lib/auth/permissions";
+import { type UserRole, ROLE_NAMES, ROLE_DESCRIPTIONS, ROLE_SUMMARY, isOwner } from "@/lib/auth/permissions";
 
 interface Admin {
   id: string;
@@ -378,6 +378,41 @@ export default function AdminUsersPage() {
             <AlertDescription>{success}</AlertDescription>
           </Alert>
         )}
+
+        {/* What each role may do. The server enforces this, not just the menu. */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Role a oprávnění</CardTitle>
+            <CardDescription>
+              Co která role v panelu smí. Platí to i při zadání adresy ručně, nejen v menu.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              {ROLE_SUMMARY.map(({ role, can, cannot }) => (
+                <div key={role} className="rounded-lg border p-4">
+                  <p className="font-semibold">{ROLE_NAMES[role].cs}</p>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-emerald-700">Smí</p>
+                  <ul className="mt-1 space-y-1 text-sm">
+                    {can.map((item) => (
+                      <li key={item}>✓ {item}</li>
+                    ))}
+                  </ul>
+                  {cannot.length > 0 && (
+                    <>
+                      <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-red-700">Nesmí</p>
+                      <ul className="mt-1 space-y-1 text-sm text-muted-foreground">
+                        {cannot.map((item) => (
+                          <li key={item}>✕ {item}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Users Table */}
         <Card>

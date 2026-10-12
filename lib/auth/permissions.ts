@@ -182,3 +182,42 @@ export function isOwner(role: UserRole | undefined): boolean {
 export function isAdminOrHigher(role: UserRole | undefined): boolean {
   return role === 'owner' || role === 'admin';
 }
+
+/**
+ * What each role may do, in words, for the Uživatelé page. The rules themselves
+ * are ROLE_PERMISSIONS above (which sections) and api-access.ts plus the users
+ * API (who may manage accounts) — keep this in step with them.
+ */
+export const ROLE_SUMMARY: Array<{ role: UserRole; can: string[]; cannot: string[] }> = [
+  {
+    role: 'owner',
+    can: [
+      'Všechny sekce panelu',
+      'Zakládat, upravovat a mazat uživatele',
+      'Zakládat další vlastníky a měnit role',
+    ],
+    cannot: [],
+  },
+  {
+    role: 'admin',
+    can: [
+      'Všechny sekce panelu (poptávky, projekty, obsah, ceník, platby, faktury, statistiky)',
+      'Zakládat a upravovat administrátory a specialisty',
+    ],
+    cannot: [
+      'Mazat uživatele',
+      'Založit vlastníka nebo upravit jeho účet',
+      'Změnit si vlastní roli',
+    ],
+  },
+  {
+    role: 'specialist',
+    can: ['Přehled', 'Úkoly, které má přiřazené', 'Nastavení (změna vlastního hesla)'],
+    cannot: [
+      'Poptávky, konzultace, audity a projekty',
+      'Obsah webu, blog, média, ceník',
+      'Platby, faktury, statistiky a reklama',
+      'Uživatelé a logy',
+    ],
+  },
+];

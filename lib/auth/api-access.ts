@@ -24,7 +24,9 @@ const PUBLIC_RULES: Rule[] = [
   { path: '/api/status', methods: ['GET'], exact: true },
   { path: '/api/auth' },
   { path: '/api/cron' },
-  { path: '/api/google-marketing/cron' },
+  // GET is the scheduler (it checks the cron secret); POST is the admin's
+  // "run now" button and needs a session like the rest.
+  { path: '/api/google-marketing/cron', methods: ['GET'], exact: true },
   { path: '/api/payments/webhook' },
   // Published content. Their write handlers check the session themselves and
   // are covered by the permission table below.
@@ -102,6 +104,8 @@ export function permissionForApi(pathname: string): Permission {
 }
 
 export function permissionForAdminPage(pathname: string): Permission | null {
+  // /admin.webmanifest and the like are not the panel.
+  if (!under(pathname, '/admin')) return null;
   if (pathname === '/admin' || under(pathname, '/admin/login') || under(pathname, '/admin/register')) return null;
   return PAGE_RULES.find((r) => under(pathname, r.path))?.permission ?? FALLBACK_PERMISSION;
 }
