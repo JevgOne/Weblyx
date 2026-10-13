@@ -1,12 +1,13 @@
-import { getHomepagePortfolio } from "@/lib/turso/portfolio";
+import { getPublishedPortfolio } from "@/lib/turso/portfolio";
 import { safeRead } from "@/lib/safe-read";
 
 /**
  * Clients, read from the portfolio CMS.
  *
  * The names were typed into this file during design and had already drifted —
- * the list missed a client the CMS carries. Flagging a project for the
- * homepage in the admin is now the only thing that puts a name here.
+ * the list missed a client the CMS carries. Every published project puts its
+ * name here, so a new one appears without anyone remembering to flag it; the
+ * "show on homepage" flag only picks the projects for the showcase below.
  *
  * They are set as type rather than logos: each gets its own weight and
  * tracking so the row reads as a wall of distinct marks. The styles are keyed
@@ -29,7 +30,7 @@ function clientName(item: { clientName?: string; title: string }): string {
 }
 
 export async function NovaClientLogos() {
-  const items = await safeRead(() => getHomepagePortfolio("cs"), [], "nova client logos");
+  const items = await safeRead(() => getPublishedPortfolio("cs"), [], "nova client logos");
 
   // A "trusted by" row with nobody in it is worse than no row.
   const clients = [...new Set(items.map(clientName).filter(Boolean))];
